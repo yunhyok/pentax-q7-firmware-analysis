@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="PENTAX Q7 v1.01 펌웨어의 파일 식별, MIPS ELF 구조, ThreadX·FileX 근거와 재현 도구">
+<title>PENTAX Q7 — 펌웨어 분석 노트</title>
+<link rel="stylesheet" href="assets/report.css">
+</head>
+<body>
+<header class="hero">
+<div><p class="eyebrow">FIRMWARE RESEARCH · 2026.11.07 · INITIAL PASS</p>
+<h1>PENTAX Q7<br><span>펌웨어 분석 노트</span></h1>
+<p class="lead">{{copy_lead}}</p>
+<p class="links"><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소 ↗</a> <a href="#evidence">측정 근거 보기 ↓</a></p></div>
+<figure class="camera"><img src="https://www.ricoh-imaging.co.jp/english/products/q7/top/img/bod_line_01.jpg" alt="리코 공식 PENTAX Q7 제품 사진" width="312" height="236" referrerpolicy="no-referrer"><figcaption><a href="https://www.ricoh-imaging.co.jp/english/products/q7/">제품 사진: RICOH IMAGING</a> · 외부 이미지</figcaption></figure>
+</header>
+<nav aria-label="문서 목차"><a href="#identity">파일 식별</a><a href="#method">분석 방법</a><a href="#layout">ELF 지도</a><a href="#rtos">RTOS·심볼</a><a href="#entropy">엔트로피</a><a href="#reproduce">재현</a><a href="#next">다음 단계</a></nav>
+<main>
+<section id="identity"><p class="eyebrow">01 / IDENTITY</p><h2>공식 v1.01 파일과 바이트 단위 일치</h2>
+<p>{{copy_identity}} <a href="analysis/provenance.json">[P1]</a> <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[S1]</a></p>
+<dl class="metrics"><div><dt>원본 크기</dt><dd>18,743,520 <small>bytes</small></dd></div><div><dt>검사 통과 ELF</dt><dd>12 <small>/ 서명 13곳</small></dd></div><div><dt>공식 배포</dt><dd>1.01 <small>2013-12-05</small></dd></div></dl>
+<div class="hash"><span>SHA-256</span><code>{{sha256}}</code></div>
+<p class="note">v1.01의 공식 변경 사항: PENTAX-08 WIDE ZOOM 지원, 렌즈 펌웨어 버전 표시, M 모드 그린 버튼 동작과 전반적인 안정성 개선. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[S1]</a></p></section>
+
+<section id="method"><p class="eyebrow">02 / METHOD</p><h2>검증 순서는 이어가고, 형식은 다시 확인</h2>
+<p>{{copy_method}} <a href="analysis/evidence.json">[E1: k3_lz_probe]</a> <a href="analysis/baseline.json">[B1]</a></p>
+<figure><ol class="flow"><li><strong>01 · 원본 식별</strong><span>SHA-256<br>공식 ZIP 대조</span></li><li><strong>02 · 파일 구조</strong><span>ELF 헤더<br>구간·경계 검사</span></li><li><strong>03 · 분석 지점</strong><span>진입점·심볼<br>문자열 오프셋</span></li><li class="pending"><strong>04 · 다음 분석</strong><span>호출 관계<br>함수 동작 검증</span></li></ol><figcaption>실선 단계는 이번에 수행했습니다. 마지막 단계는 후속 작업입니다.</figcaption></figure>
+<div class="table-wrap"><table><caption>기존 K-3 Mark III와 이번 Q7의 분석 시작점</caption><thead><tr><th>항목</th><th>K-3 Mark III v2.20</th><th>Q7 v1.01</th></tr></thead><tbody>
+<tr><th scope="row">원본 크기</th><td>35,106,716 bytes</td><td>18,743,520 bytes</td></tr>
+<tr><th scope="row">첫 구조</th><td>0x80에서 LZ 스트림 해제</td><td>0x200에서 첫 MIPS ELF 확인</td></tr>
+<tr><th scope="row">주소 기준</th><td>압축 해제 결과·RTOS 적재 주소</td><td>원본 파일 오프셋·ELF별 가상주소</td></tr>
+<tr><th scope="row">공통 절차</th><td colspan="2">해시 고정 → 구조·경계 확인 → 함수 분석 → 근거와 재현 검사</td></tr>
+</tbody></table></div><p class="note">K-3 기준은 기존 저장소의 고정 커밋을 참조합니다. <a href="analysis/baseline.json">[B1]</a></p></section>
+
+<section id="layout"><p class="eyebrow">03 / FILE LAYOUT</p><h2>12개 ELF가 가리키는 파일 구간</h2>
+<p>{{copy_map}} <a href="analysis/evidence.json">[E1: elfs, rejected_candidates]</a></p>
+<figure class="file-map"><div class="map-axis"><span>0 bytes</span><span>18,743,520 bytes</span></div>{{elf_map}}<figcaption>가로 위치와 길이는 원본 파일에 비례합니다. 작은 ELF도 최소 너비를 부풀리지 않았습니다. EXEC = 실행 파일, REL = 재배치 가능 파일. 빈 구간은 미분류 상태입니다.</figcaption></figure>
+<p>{{copy_architecture}} <a href="analysis/evidence.json">[E1: warnings]</a> <a href="https://gabi.xinuos.com/elf/02-eheader.html">[S2]</a></p>
+<div class="table-wrap"><table><caption>ELF 헤더·참조 범위·심볼 집계 — 종료 오프셋 제외</caption><thead><tr><th>ID</th><th>원본 시작</th><th>최대 참조 끝</th><th>타입</th><th>e_entry</th><th>심볼</th><th>정의 FUNC</th></tr></thead><tbody>{{elf_rows}}</tbody></table></div>
+<p class="note">e_entry는 ELF가 기록한 값 그대로입니다. 파일 오프셋이나 실제 부팅 순서가 아닙니다. E02의 홀수 값도 임의로 보정하지 않았습니다.</p></section>
+
+<section id="rtos"><p class="eyebrow">04 / RTOS & SYMBOLS</p><h2>ThreadX·FileX를 조사할 지점 확보</h2>
+<p>{{copy_rtos}} <a href="analysis/evidence.json">[E1: markers, selected_symbols]</a></p>
+<div class="table-wrap"><table><caption>원본 파일에서 직접 확인한 식별 문자열</caption><thead><tr><th>문자열</th><th>원본 오프셋</th><th>해석 범위</th></tr></thead><tbody>
+<tr><th scope="row">ThreadX LX4180/Green Hills</th><td><code>0x0009843D</code></td><td>RTOS 식별 문자열</td></tr><tr><th scope="row">FileX LX4180/Green Hills</th><td><code>0x000A7031</code></td><td>파일시스템 라이브러리 식별 문자열</td></tr><tr><th scope="row">PENTAX Q7</th><td><code>0x01196AC7</code></td><td>제품명 문자열</td></tr><tr><th scope="row">ORION / KB538 / 77690</th><td><code>0x011E00C0 / C8 / D0</code></td><td>말미 식별자. 필드 의미 미확정</td></tr></tbody></table></div>
+<p>{{copy_symbols}} <a href="analysis/evidence.json">[E1: symbol_count]</a> <a href="https://gabi.xinuos.com/elf/05-symtab.html">[S3]</a></p>
+<div class="table-wrap"><table><caption>E01의 선택 심볼 — 주소는 이 ELF의 st_value</caption><thead><tr><th>심볼</th><th>값</th><th>st_size (bytes)</th></tr></thead><tbody>{{symbols}}</tbody></table></div>
+<p class="note">st_size가 0인 심볼은 길이가 알려지지 않았을 수 있습니다. 전체 심볼과 추출 ELF는 로컬 분석용으로만 보관했습니다.</p></section>
+
+<section id="entropy"><p class="eyebrow">05 / BYTE DISTRIBUTION</p><h2>파일 전체의 엔트로피 분포</h2><p>{{copy_entropy}} <a href="analysis/evidence.json">[E1: entropy_windows]</a></p>
+<figure><div class="chart-heading"><span>Shannon entropy · bits/byte</span><span>세로 범위 0–8</span></div>{{entropy}}<div class="chart-axis"><span>0 MiB</span><span>8.94 MiB</span><span>17.88 MiB</span></div><figcaption>원본 파일 오프셋에 따른 분포. 64 KiB 창, 마지막 창 {{last_window_size}} bytes. 가운데 수평선은 4 bits/byte입니다.</figcaption></figure></section>
+
+<section id="reproduce"><p class="eyebrow">06 / REPRODUCIBILITY</p><h2>같은 파일로 다시 검사하기</h2>
+<p>Python 3.10 이상에서 표준 라이브러리만 사용합니다. 원본 파일은 읽기 전용으로 다루며 결과는 새 경로에 씁니다.</p>
+<pre><code>python -m unittest discover -s tests -v
+python tools/pentax_lz.py --self-test
+python tools/inspect_q7.py "path/to/fwdc603p.bin" --output .private/recheck.json --private-dir .private/recheck-elf
+python tools/verify_report.py --firmware "path/to/fwdc603p.bin"
+python tools/build_report.py</code></pre>
+<p>검증 도구는 파서의 합성 입력 테스트, 공개 근거의 일관성, 보고서 생성 결과와 로컬 링크를 확인합니다. 원본을 지정하면 공개 측정값 전체를 다시 계산해 비교합니다. <a href="tools/inspect_q7.py">분석기</a> · <a href="tests/test_inspect_q7.py">테스트</a> · <a href="tools/verify_report.py">보고서 검사</a></p>
+<p>{{copy_limits}} <a href="analysis/tool-status.json">[T1]</a></p></section>
+
+<section id="next"><p class="eyebrow">07 / NEXT QUESTIONS</p><h2>다음은 코드 참조와 로더 구조</h2><p>{{copy_next}}</p>
+<ol class="next-list"><li>ThreadX 초기화의 직접 호출과 간접 호출 구분</li><li>ELF 밖 데이터의 컨테이너 레코드·자원 경계 확인</li><li>ET_REL 재배치·심볼 해석 및 런타임 적재 주소 확인</li><li>AF·셔터·JPEG·색 처리 후보를 함수 호출과 연결</li></ol>
+<p>{{copy_publication}}</p></section>
+
+<section id="evidence"><p class="eyebrow">08 / SOURCES</p><h2>근거와 출처</h2><ul class="sources">
+<li><a href="analysis/evidence.json">E1 · 원본에서 계산한 ELF·심볼·문자열·엔트로피</a></li>
+<li><a href="analysis/provenance.json">P1 · 공식 ZIP과 제공 파일의 동일성 기록</a></li>
+<li><a href="analysis/baseline.json">B1 · K-3 분석 기준과 재사용 도구의 고정 커밋</a></li>
+<li><a href="analysis/tool-status.json">T1 · REA 공급자 가용성 및 실제 사용 도구</a></li>
+<li><a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">S1 · Ricoh Q7 v1.01 배포 페이지·변경 사항</a></li>
+<li><a href="https://gabi.xinuos.com/elf/02-eheader.html">S2 · System V ABI: ELF 헤더</a> · <a href="https://gabi.xinuos.com/elf/a-emachine.html">e_machine 값</a></li>
+<li><a href="https://gabi.xinuos.com/elf/05-symtab.html">S3 · System V ABI: 심볼 테이블</a></li>
+<li><a href="https://www.ricoh-imaging.co.jp/english/products/q7/">S4 · Ricoh Q7 제품 소개·사진</a></li>
+</ul></section>
+</main><footer>2026-11-07 · PENTAX Q7 firmware analysis · 독립 분석 기록 · Ricoh 공식 프로젝트가 아닙니다.</footer>
+</body></html>

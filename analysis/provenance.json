@@ -1,0 +1,14 @@
+{
+  "source_page": "https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html",
+  "archive_url": "https://www.ricoh-imaging.co.jp/english/support/digital/firmware/q7_101.zip",
+  "accessed_date": "2026-11-07",
+  "archive_size": 8614556,
+  "archive_sha256": "b78f766a18a3c8e3d60dc83b1e894f3762a25aaaa8d603c09e8d4b49279ff8cc",
+  "member_name": "fwdc603p.bin",
+  "member_size": 18743520,
+  "member_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "supplied_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "byte_identical": true,
+  "official_version": "1.01",
+  "official_release_date": "2013-12-05"
+}

@@ -1,0 +1,20 @@
+{
+  "skill": "humanize-korean 2.3.2",
+  "route": "light",
+  "route_source": "shim route_hint",
+  "genre": "report",
+  "execution": "Native Codex worker using installed monolith rules; Claude Opus was not invoked",
+  "gate_result": "OK",
+  "gate_character_change_percent": 0.0,
+  "sentence_touch_percent": 1.9,
+  "self_check": "6/6",
+  "worker_grade": "B",
+  "changes": [
+    "C-11: one comma removed; 1 -> 0"
+  ],
+  "modality_restored": 0,
+  "modality_lost": 0,
+  "golden": "PASS",
+  "numeric_and_identifier_tokens_preserved": true,
+  "note": "Grade B reflects the skill change-rate rubric; strict second pass remains optional."
+}

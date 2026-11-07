@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis",
+  "commit": "b51d680202336a5872a66f99ca2924a2cb7c75fa",
+  "file": "inspect_firmware.py",
+  "copied_to": "tools/pentax_lz.py",
+  "decoder_sha256": "5a8a60bdbaf7be7c5acead0ab04877b93a3c6e753e8b8f332281974f36c3b6bf",
+  "input_size": 35106716,
+  "input_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+  "stream_start": 128,
+  "decoded_size": 78683892,
+  "reuse": "Unmodified original analysis script from the same owner; used only for a bounded format probe and its self-tests."
+}

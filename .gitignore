@@ -1,0 +1,9 @@
+.private/
+_workspace/
+__pycache__/
+*.pyc
+*.bin
+*.elf
+*.zip
+*.exe
+*.EXE

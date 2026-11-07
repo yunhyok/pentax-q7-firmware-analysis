@@ -1,0 +1,5094 @@
+{
+  "schema_version": 1,
+  "input_size": 18743520,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "coordinate_system": "original-file byte offsets; all ranges end-exclusive",
+  "elf_magic_count": 13,
+  "accepted_elf_count": 12,
+  "elfs": [
+    {
+      "offset": 512,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 2147549184,
+      "flags": 1879052289,
+      "referenced_extent": 904564,
+      "referenced_end": 905076,
+      "sha256_referenced_bytes": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+      "entry_file_offsets": [
+        1144
+      ],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 212,
+          "file_offset": 724,
+          "virtual_address": 2147484032,
+          "physical_address": 2147484032,
+          "file_size": 416,
+          "memory_size": 416,
+          "flags": 5,
+          "alignment": 1
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 632,
+          "file_offset": 1144,
+          "virtual_address": 2147549184,
+          "physical_address": 2147549184,
+          "file_size": 619068,
+          "memory_size": 619068,
+          "flags": 5,
+          "alignment": 8
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "relative_offset": 619700,
+          "file_offset": 620212,
+          "virtual_address": 2148168256,
+          "physical_address": 2148168256,
+          "file_size": 572,
+          "memory_size": 572,
+          "flags": 5,
+          "alignment": 4
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "relative_offset": 620272,
+          "file_offset": 620784,
+          "virtual_address": 2148168832,
+          "physical_address": 2148168832,
+          "file_size": 130964,
+          "memory_size": 203384,
+          "flags": 6,
+          "alignment": 16
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "relative_offset": 751236,
+          "file_offset": 751748,
+          "virtual_address": 3217063936,
+          "physical_address": 3217063936,
+          "file_size": 16,
+          "memory_size": 16,
+          "flags": 7,
+          "alignment": 1
+        }
+      ],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 512,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 7,
+          "virtual_address": 3217063936,
+          "relative_offset": 751236,
+          "file_offset": 751748,
+          "size": 16,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc0"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217065984,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc1"
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217068032,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc2"
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217070084,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc3"
+        },
+        {
+          "index": 5,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217071104,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc4"
+        },
+        {
+          "index": 6,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415951872,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd0"
+        },
+        {
+          "index": 7,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415953920,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd1"
+        },
+        {
+          "index": 8,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415955968,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd2"
+        },
+        {
+          "index": 9,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415958020,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd3"
+        },
+        {
+          "index": 10,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415959040,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd4"
+        },
+        {
+          "index": 11,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2147484032,
+          "relative_offset": 212,
+          "file_offset": 724,
+          "size": 416,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".exception"
+        },
+        {
+          "index": 12,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2147549184,
+          "relative_offset": 632,
+          "file_offset": 1144,
+          "size": 32,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".boot"
+        },
+        {
+          "index": 13,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2147549216,
+          "relative_offset": 664,
+          "file_offset": 1176,
+          "size": 618052,
+          "link": 0,
+          "info": 0,
+          "alignment": 8,
+          "entry_size": 0,
+          "name": ".text"
+        },
+        {
+          "index": 14,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148167268,
+          "relative_offset": 618716,
+          "file_offset": 619228,
+          "size": 16,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.37___COUNTER__"
+        },
+        {
+          "index": 15,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148167284,
+          "relative_offset": 618732,
+          "file_offset": 619244,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.56___COUNTER__"
+        },
+        {
+          "index": 16,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148167292,
+          "relative_offset": 618740,
+          "file_offset": 619252,
+          "size": 340,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.75___COUNTER__"
+        },
+        {
+          "index": 17,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148167632,
+          "relative_offset": 619080,
+          "file_offset": 619592,
+          "size": 388,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.179___COUNTER__"
+        },
+        {
+          "index": 18,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168020,
+          "relative_offset": 619468,
+          "file_offset": 619980,
+          "size": 108,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.154___COUNTER__"
+        },
+        {
+          "index": 19,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168128,
+          "relative_offset": 619576,
+          "file_offset": 620088,
+          "size": 12,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.274___COUNTER__"
+        },
+        {
+          "index": 20,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168140,
+          "relative_offset": 619588,
+          "file_offset": 620100,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.293___COUNTER__"
+        },
+        {
+          "index": 21,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168148,
+          "relative_offset": 619596,
+          "file_offset": 620108,
+          "size": 16,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.312___COUNTER__"
+        },
+        {
+          "index": 22,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168164,
+          "relative_offset": 619612,
+          "file_offset": 620124,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.341___COUNTER__"
+        },
+        {
+          "index": 23,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168172,
+          "relative_offset": 619620,
+          "file_offset": 620132,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.359___COUNTER__"
+        },
+        {
+          "index": 24,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168180,
+          "relative_offset": 619628,
+          "file_offset": 620140,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.379___COUNTER__"
+        },
+        {
+          "index": 25,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168188,
+          "relative_offset": 619636,
+          "file_offset": 620148,
+          "size": 64,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".romtext.196___COUNTER__"
+        },
+        {
+          "index": 26,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168256,
+          "relative_offset": 619700,
+          "file_offset": 620212,
+          "size": 36,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.33___COUNTER__"
+        },
+        {
+          "index": 27,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168292,
+          "relative_offset": 619736,
+          "file_offset": 620248,
+          "size": 48,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.54___COUNTER__"
+        },
+        {
+          "index": 28,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168340,
+          "relative_offset": 619784,
+          "file_offset": 620296,
+          "size": 56,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.94___COUNTER__"
+        },
+        {
+          "index": 29,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168396,
+          "relative_offset": 619840,
+          "file_offset": 620352,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.113___COUNTER__"
+        },
+        {
+          "index": 30,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168404,
+          "relative_offset": 619848,
+          "file_offset": 620360,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".primaryboot.338___COUNTER__"
+        },
+        {
+          "index": 31,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168412,
+          "relative_offset": 619856,
+          "file_offset": 620368,
+          "size": 136,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0.619___COUNTER__"
+        },
+        {
+          "index": 32,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168548,
+          "relative_offset": 619992,
+          "file_offset": 620504,
+          "size": 72,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0.421___COUNTER__"
+        },
+        {
+          "index": 33,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168620,
+          "relative_offset": 620064,
+          "file_offset": 620576,
+          "size": 44,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0.430___COUNTER__"
+        },
+        {
+          "index": 34,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2148168664,
+          "relative_offset": 620108,
+          "file_offset": 620620,
+          "size": 132,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0.1072___COUNTER__"
+        },
+        {
+          "index": 35,
+          "type": 1,
+          "flags": 2,
+          "virtual_address": 2148168796,
+          "relative_offset": 620240,
+          "file_offset": 620752,
+          "size": 32,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".eh_frame"
+        },
+        {
+          "index": 36,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148168832,
+          "relative_offset": 620272,
+          "file_offset": 620784,
+          "size": 103984,
+          "link": 0,
+          "info": 0,
+          "alignment": 16,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 37,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148272816,
+          "relative_offset": 724256,
+          "file_offset": 724768,
+          "size": 1176,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spd0.126___COUNTER__"
+        },
+        {
+          "index": 38,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148273992,
+          "relative_offset": 725432,
+          "file_offset": 725944,
+          "size": 4580,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".CpuVars"
+        },
+        {
+          "index": 39,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148278576,
+          "relative_offset": 730016,
+          "file_offset": 730528,
+          "size": 20756,
+          "link": 0,
+          "info": 0,
+          "alignment": 16,
+          "entry_size": 0,
+          "name": ".CopVars"
+        },
+        {
+          "index": 40,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148299332,
+          "relative_offset": 750772,
+          "file_offset": 751284,
+          "size": 4,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".ctors"
+        },
+        {
+          "index": 41,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148299336,
+          "relative_offset": 750776,
+          "file_offset": 751288,
+          "size": 4,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".dtors"
+        },
+        {
+          "index": 42,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148299340,
+          "relative_offset": 750780,
+          "file_offset": 751292,
+          "size": 224,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spd0.84___COUNTER__"
+        },
+        {
+          "index": 43,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148299564,
+          "relative_offset": 751004,
+          "file_offset": 751516,
+          "size": 224,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spd0.81___COUNTER__"
+        },
+        {
+          "index": 44,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148299788,
+          "relative_offset": 751228,
+          "file_offset": 751740,
+          "size": 4,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spd0.72___COUNTER__"
+        },
+        {
+          "index": 45,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2148299792,
+          "relative_offset": 751232,
+          "file_offset": 751744,
+          "size": 4,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spd0.71___COUNTER__"
+        },
+        {
+          "index": 46,
+          "type": 8,
+          "flags": 268435459,
+          "virtual_address": 2148299796,
+          "relative_offset": 751236,
+          "file_offset": 751748,
+          "size": 8,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".sbss"
+        },
+        {
+          "index": 47,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 2148299808,
+          "relative_offset": 751236,
+          "file_offset": 751748,
+          "size": 72408,
+          "link": 0,
+          "info": 0,
+          "alignment": 16,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 48,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 751252,
+          "file_offset": 751764,
+          "size": 54624,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".pdr"
+        },
+        {
+          "index": 49,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 805876,
+          "file_offset": 806388,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".mdebug.abi32"
+        },
+        {
+          "index": 50,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 805876,
+          "file_offset": 806388,
+          "size": 17594,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".comment"
+        },
+        {
+          "index": 51,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 823470,
+          "file_offset": 823982,
+          "size": 875,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        },
+        {
+          "index": 52,
+          "type": 2,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 826508,
+          "file_offset": 827020,
+          "size": 33936,
+          "link": 53,
+          "info": 346,
+          "alignment": 4,
+          "entry_size": 16,
+          "name": ".symtab"
+        },
+        {
+          "index": 53,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 860444,
+          "file_offset": 860956,
+          "size": 44120,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".strtab"
+        }
+      ],
+      "symbol_count": 2121,
+      "defined_function_symbol_count": 1437,
+      "symbol_type_counts": {
+        "0": 12,
+        "1": 327,
+        "2": 1437,
+        "3": 53,
+        "4": 292
+      },
+      "warnings": [],
+      "selected_symbols": [
+        {
+          "name": "_tx_initialize_kernel_enter",
+          "value": 2147634132,
+          "size": 108,
+          "type": 2,
+          "binding": 1,
+          "section_index": 13
+        },
+        {
+          "name": "_tx_thread_create",
+          "value": 2147658768,
+          "size": 564,
+          "type": 2,
+          "binding": 1,
+          "section_index": 13
+        },
+        {
+          "name": "_fx_media_open",
+          "value": 2147870732,
+          "size": 56,
+          "type": 2,
+          "binding": 1,
+          "section_index": 13
+        },
+        {
+          "name": "_tx_thread_schedule",
+          "value": 2147661092,
+          "size": 0,
+          "type": 1,
+          "binding": 1,
+          "section_index": 13
+        }
+      ],
+      "contained_in": []
+    },
+    {
+      "offset": 1050304,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 2164261889,
+      "flags": 268439552,
+      "referenced_extent": 4496,
+      "referenced_end": 1054800,
+      "sha256_referenced_bytes": "6c039e8db737d3e247f7c76444f69b885c51bd7eeed8b3070c5d6b4689c2fb1d",
+      "entry_file_offsets": [
+        1050421
+      ],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 1050420,
+          "virtual_address": 2164261888,
+          "physical_address": 2164261888,
+          "file_size": 2440,
+          "memory_size": 2440,
+          "flags": 5,
+          "alignment": 4
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 2556,
+          "file_offset": 1052860,
+          "virtual_address": 2164264336,
+          "physical_address": 2164264336,
+          "file_size": 920,
+          "memory_size": 5536,
+          "flags": 6,
+          "alignment": 4
+        }
+      ],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 1050304,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 2164261888,
+          "relative_offset": 116,
+          "file_offset": 1050420,
+          "size": 2440,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".text"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 2164264336,
+          "relative_offset": 2556,
+          "file_offset": 1052860,
+          "size": 920,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 3,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 2164265256,
+          "relative_offset": 3476,
+          "file_offset": 1053780,
+          "size": 4616,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3476,
+          "file_offset": 1053780,
+          "size": 512,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".pdr"
+        },
+        {
+          "index": 5,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3988,
+          "file_offset": 1054292,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".mdebug.abi32"
+        },
+        {
+          "index": 6,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3988,
+          "file_offset": 1054292,
+          "size": 129,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".comment"
+        },
+        {
+          "index": 7,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 4117,
+          "file_offset": 1054421,
+          "size": 56,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        }
+      ],
+      "symbol_count": 0,
+      "defined_function_symbol_count": 0,
+      "symbol_type_counts": {},
+      "warnings": [],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 1058496,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 2147485184,
+      "flags": 1879052289,
+      "referenced_extent": 1237924,
+      "referenced_end": 2296420,
+      "sha256_referenced_bytes": "09fe6efb54313ec3c95dbc0931adc3be199b7caa46ecc7d2f3b535c4dc73123a",
+      "entry_file_offsets": [
+        1059092
+      ],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 180,
+          "file_offset": 1058676,
+          "virtual_address": 2147484032,
+          "physical_address": 2147484032,
+          "file_size": 416,
+          "memory_size": 416,
+          "flags": 5,
+          "alignment": 1
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 596,
+          "file_offset": 1059092,
+          "virtual_address": 2147485184,
+          "physical_address": 2147485184,
+          "file_size": 340,
+          "memory_size": 340,
+          "flags": 5,
+          "alignment": 4
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "relative_offset": 936,
+          "file_offset": 1059432,
+          "virtual_address": 2147485568,
+          "physical_address": 2147485568,
+          "file_size": 1233080,
+          "memory_size": 1233080,
+          "flags": 7,
+          "alignment": 16
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "relative_offset": 1234016,
+          "file_offset": 2292512,
+          "virtual_address": 3217063936,
+          "physical_address": 3217063936,
+          "file_size": 3908,
+          "memory_size": 3908,
+          "flags": 7,
+          "alignment": 4
+        }
+      ],
+      "sections": [],
+      "symbol_count": 0,
+      "defined_function_symbol_count": 0,
+      "symbol_type_counts": {},
+      "warnings": [
+        "segment 2: load offset/address alignment mismatch",
+        "section table absent but e_shstrndx=13; preserved as producer quirk"
+      ],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 2360000,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 2147485184,
+      "flags": 1879052289,
+      "referenced_extent": 2146116,
+      "referenced_end": 4506116,
+      "sha256_referenced_bytes": "0734fc1152f9387c9896f16bb16d971123915a6a4d24c63eaf0d5d86d46e141d",
+      "entry_file_offsets": [],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 84,
+          "file_offset": 2360084,
+          "virtual_address": 2148719232,
+          "physical_address": 2148719232,
+          "file_size": 2146032,
+          "memory_size": 4137728,
+          "flags": 7,
+          "alignment": 32
+        }
+      ],
+      "sections": [],
+      "symbol_count": 0,
+      "defined_function_symbol_count": 0,
+      "symbol_type_counts": {},
+      "warnings": [
+        "segment 0: load offset/address alignment mismatch",
+        "section table absent but e_shstrndx=13; preserved as producer quirk"
+      ],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 4506116,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 2147485184,
+      "flags": 1879052289,
+      "referenced_extent": 1582172,
+      "referenced_end": 6088288,
+      "sha256_referenced_bytes": "d433f34418fdcbe8d9d58489df6cb03969ab0ee764da50203a89138eef79feae",
+      "entry_file_offsets": [],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 84,
+          "file_offset": 4506200,
+          "virtual_address": 2152857088,
+          "physical_address": 2152857088,
+          "file_size": 1582088,
+          "memory_size": 2960896,
+          "flags": 7,
+          "alignment": 32
+        }
+      ],
+      "sections": [],
+      "symbol_count": 0,
+      "defined_function_symbol_count": 0,
+      "symbol_type_counts": {},
+      "warnings": [
+        "segment 0: load offset/address alignment mismatch",
+        "section table absent but e_shstrndx=13; preserved as producer quirk"
+      ],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 6088288,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 2147485184,
+      "flags": 1879052289,
+      "referenced_extent": 1759596,
+      "referenced_end": 7847884,
+      "sha256_referenced_bytes": "15eb49152222751352a121e885e95c8b7061be30f058aa822bda2b8bd8d1de6b",
+      "entry_file_offsets": [],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 6088404,
+          "virtual_address": 2155818112,
+          "physical_address": 2155818112,
+          "file_size": 1573068,
+          "memory_size": 3604352,
+          "flags": 5,
+          "alignment": 8
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 1573184,
+          "file_offset": 7661472,
+          "virtual_address": 2159422464,
+          "physical_address": 2159422464,
+          "file_size": 186412,
+          "memory_size": 563072,
+          "flags": 6,
+          "alignment": 16
+        }
+      ],
+      "sections": [],
+      "symbol_count": 0,
+      "defined_function_symbol_count": 0,
+      "symbol_type_counts": {},
+      "warnings": [
+        "segment 0: load offset/address alignment mismatch",
+        "section table absent but e_shstrndx=13; preserved as producer quirk"
+      ],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 7946944,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 3217063936,
+      "flags": 1342177281,
+      "referenced_extent": 7082,
+      "referenced_end": 7954026,
+      "sha256_referenced_bytes": "d1be45d029c193dc2fc9f780074fce784d58e92cf7dacbb7f5028cc3d9528e12",
+      "entry_file_offsets": [
+        7947060
+      ],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7947060,
+          "virtual_address": 2415964160,
+          "physical_address": 2415964160,
+          "file_size": 0,
+          "memory_size": 3072,
+          "flags": 6,
+          "alignment": 1
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7947060,
+          "virtual_address": 3217063936,
+          "physical_address": 3217063936,
+          "file_size": 3824,
+          "memory_size": 3824,
+          "flags": 7,
+          "alignment": 4
+        }
+      ],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 7946944,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 7,
+          "virtual_address": 3217063936,
+          "relative_offset": 116,
+          "file_offset": 7947060,
+          "size": 3824,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217068032,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc1"
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072128,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc2"
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072640,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc3"
+        },
+        {
+          "index": 5,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217073152,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc4"
+        },
+        {
+          "index": 6,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217074176,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc5"
+        },
+        {
+          "index": 7,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217076224,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc6"
+        },
+        {
+          "index": 8,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415951872,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd0"
+        },
+        {
+          "index": 9,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415955968,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd1"
+        },
+        {
+          "index": 10,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960064,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd2"
+        },
+        {
+          "index": 11,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960576,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd3"
+        },
+        {
+          "index": 12,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415961088,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd4"
+        },
+        {
+          "index": 13,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415962112,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd5"
+        },
+        {
+          "index": 14,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd6"
+        },
+        {
+          "index": 15,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 16,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 2415964160,
+          "relative_offset": 116,
+          "file_offset": 7947060,
+          "size": 3072,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 17,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3940,
+          "file_offset": 7950884,
+          "size": 122,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        },
+        {
+          "index": 18,
+          "type": 2,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 4864,
+          "file_offset": 7951808,
+          "size": 1472,
+          "link": 19,
+          "info": 36,
+          "alignment": 4,
+          "entry_size": 16,
+          "name": ".symtab"
+        },
+        {
+          "index": 19,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6336,
+          "file_offset": 7953280,
+          "size": 746,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".strtab"
+        }
+      ],
+      "symbol_count": 92,
+      "defined_function_symbol_count": 17,
+      "symbol_type_counts": {
+        "0": 1,
+        "1": 37,
+        "2": 17,
+        "3": 35,
+        "4": 2
+      },
+      "warnings": [],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 7954112,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 3217063936,
+      "flags": 1342177281,
+      "referenced_extent": 7413,
+      "referenced_end": 7961525,
+      "sha256_referenced_bytes": "711585f7d34843d9581f92af6a41745671f1acb2893c674b8a1352798f78bc5d",
+      "entry_file_offsets": [
+        7954228
+      ],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7954228,
+          "virtual_address": 2415964160,
+          "physical_address": 2415964160,
+          "file_size": 0,
+          "memory_size": 3072,
+          "flags": 6,
+          "alignment": 1
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7954228,
+          "virtual_address": 3217063936,
+          "physical_address": 3217063936,
+          "file_size": 4016,
+          "memory_size": 4016,
+          "flags": 7,
+          "alignment": 4
+        }
+      ],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 7954112,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 7,
+          "virtual_address": 3217063936,
+          "relative_offset": 116,
+          "file_offset": 7954228,
+          "size": 4016,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217068032,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc1"
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072128,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc2"
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072640,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc3"
+        },
+        {
+          "index": 5,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217073152,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc4"
+        },
+        {
+          "index": 6,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217074176,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc5"
+        },
+        {
+          "index": 7,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217076224,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc6"
+        },
+        {
+          "index": 8,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415951872,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd0"
+        },
+        {
+          "index": 9,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415955968,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd1"
+        },
+        {
+          "index": 10,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960064,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd2"
+        },
+        {
+          "index": 11,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960576,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd3"
+        },
+        {
+          "index": 12,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415961088,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd4"
+        },
+        {
+          "index": 13,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415962112,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd5"
+        },
+        {
+          "index": 14,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd6"
+        },
+        {
+          "index": 15,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 16,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 2415964160,
+          "relative_offset": 116,
+          "file_offset": 7954228,
+          "size": 3072,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 17,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 4132,
+          "file_offset": 7958244,
+          "size": 122,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        },
+        {
+          "index": 18,
+          "type": 2,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 5056,
+          "file_offset": 7959168,
+          "size": 1536,
+          "link": 19,
+          "info": 36,
+          "alignment": 4,
+          "entry_size": 16,
+          "name": ".symtab"
+        },
+        {
+          "index": 19,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6592,
+          "file_offset": 7960704,
+          "size": 821,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".strtab"
+        }
+      ],
+      "symbol_count": 96,
+      "defined_function_symbol_count": 21,
+      "symbol_type_counts": {
+        "0": 1,
+        "1": 37,
+        "2": 21,
+        "3": 35,
+        "4": 2
+      },
+      "warnings": [],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 7962304,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 3217063936,
+      "flags": 1342177281,
+      "referenced_extent": 6277,
+      "referenced_end": 7968581,
+      "sha256_referenced_bytes": "e1f21d1d8d71f54f3085989a8b49f8bd748352ab071644e3d2db796ea3334418",
+      "entry_file_offsets": [
+        7962420
+      ],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7962420,
+          "virtual_address": 2415964160,
+          "physical_address": 2415964160,
+          "file_size": 0,
+          "memory_size": 3072,
+          "flags": 6,
+          "alignment": 1
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7962420,
+          "virtual_address": 3217063936,
+          "physical_address": 3217063936,
+          "file_size": 2836,
+          "memory_size": 2836,
+          "flags": 7,
+          "alignment": 4
+        }
+      ],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 7962304,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 7,
+          "virtual_address": 3217063936,
+          "relative_offset": 116,
+          "file_offset": 7962420,
+          "size": 2836,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217068032,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc1"
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072128,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc2"
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072640,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc3"
+        },
+        {
+          "index": 5,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217073152,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc4"
+        },
+        {
+          "index": 6,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217074176,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc5"
+        },
+        {
+          "index": 7,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217076224,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc6"
+        },
+        {
+          "index": 8,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415951872,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd0"
+        },
+        {
+          "index": 9,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415955968,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd1"
+        },
+        {
+          "index": 10,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960064,
+          "relative_offset": 2952,
+          "file_offset": 7965256,
+          "size": 256,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd2"
+        },
+        {
+          "index": 11,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960576,
+          "relative_offset": 3208,
+          "file_offset": 7965512,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd3"
+        },
+        {
+          "index": 12,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415961088,
+          "relative_offset": 3208,
+          "file_offset": 7965512,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd4"
+        },
+        {
+          "index": 13,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415962112,
+          "relative_offset": 3208,
+          "file_offset": 7965512,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd5"
+        },
+        {
+          "index": 14,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 3208,
+          "file_offset": 7965512,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd6"
+        },
+        {
+          "index": 15,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 3208,
+          "file_offset": 7965512,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 16,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 2415964160,
+          "relative_offset": 116,
+          "file_offset": 7962420,
+          "size": 3072,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 17,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3208,
+          "file_offset": 7965512,
+          "size": 122,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        },
+        {
+          "index": 18,
+          "type": 2,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 4132,
+          "file_offset": 7966436,
+          "size": 1440,
+          "link": 19,
+          "info": 36,
+          "alignment": 4,
+          "entry_size": 16,
+          "name": ".symtab"
+        },
+        {
+          "index": 19,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 5572,
+          "file_offset": 7967876,
+          "size": 705,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".strtab"
+        }
+      ],
+      "symbol_count": 90,
+      "defined_function_symbol_count": 15,
+      "symbol_type_counts": {
+        "0": 1,
+        "1": 37,
+        "2": 15,
+        "3": 35,
+        "4": 2
+      },
+      "warnings": [],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 7969472,
+      "elf_type": 2,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 3217063936,
+      "flags": 1342177281,
+      "referenced_extent": 5282,
+      "referenced_end": 7974754,
+      "sha256_referenced_bytes": "90068821468dd848a64235ee3f5138543de03748b5607d32ed4ec8570413d42e",
+      "entry_file_offsets": [
+        7969588
+      ],
+      "segments": [
+        {
+          "index": 0,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7969588,
+          "virtual_address": 2415964160,
+          "physical_address": 2415964160,
+          "file_size": 0,
+          "memory_size": 3072,
+          "flags": 6,
+          "alignment": 1
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "relative_offset": 116,
+          "file_offset": 7969588,
+          "virtual_address": 3217063936,
+          "physical_address": 3217063936,
+          "file_size": 2140,
+          "memory_size": 2140,
+          "flags": 7,
+          "alignment": 4
+        }
+      ],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 7969472,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 7,
+          "virtual_address": 3217063936,
+          "relative_offset": 116,
+          "file_offset": 7969588,
+          "size": 2140,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".spc0"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217068032,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc1"
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072128,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc2"
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217072640,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc3"
+        },
+        {
+          "index": 5,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217073152,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc4"
+        },
+        {
+          "index": 6,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217074176,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc5"
+        },
+        {
+          "index": 7,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 3217076224,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spc6"
+        },
+        {
+          "index": 8,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415951872,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd0"
+        },
+        {
+          "index": 9,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415955968,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd1"
+        },
+        {
+          "index": 10,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960064,
+          "relative_offset": 2256,
+          "file_offset": 7971728,
+          "size": 256,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd2"
+        },
+        {
+          "index": 11,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415960576,
+          "relative_offset": 2512,
+          "file_offset": 7971984,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd3"
+        },
+        {
+          "index": 12,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415961088,
+          "relative_offset": 2512,
+          "file_offset": 7971984,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd4"
+        },
+        {
+          "index": 13,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415962112,
+          "relative_offset": 2512,
+          "file_offset": 7971984,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd5"
+        },
+        {
+          "index": 14,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 2512,
+          "file_offset": 7971984,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".spd6"
+        },
+        {
+          "index": 15,
+          "type": 1,
+          "flags": 1,
+          "virtual_address": 2415964160,
+          "relative_offset": 2512,
+          "file_offset": 7971984,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 16,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 2415964160,
+          "relative_offset": 116,
+          "file_offset": 7969588,
+          "size": 3072,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 17,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2512,
+          "file_offset": 7971984,
+          "size": 122,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        },
+        {
+          "index": 18,
+          "type": 2,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3436,
+          "file_offset": 7972908,
+          "size": 1312,
+          "link": 19,
+          "info": 36,
+          "alignment": 4,
+          "entry_size": 16,
+          "name": ".symtab"
+        },
+        {
+          "index": 19,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 4748,
+          "file_offset": 7974220,
+          "size": 534,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".strtab"
+        }
+      ],
+      "symbol_count": 82,
+      "defined_function_symbol_count": 8,
+      "symbol_type_counts": {
+        "0": 1,
+        "1": 37,
+        "2": 8,
+        "3": 35,
+        "4": 1
+      },
+      "warnings": [],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 7986880,
+      "elf_type": 1,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 0,
+      "flags": 1879052289,
+      "referenced_extent": 8297,
+      "referenced_end": 7995177,
+      "sha256_referenced_bytes": "6fa3e014fa954b8cf72b3c56a3455ad3778aa57f2d52295226d0a0f98f5dc227",
+      "entry_file_offsets": [],
+      "segments": [],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 7986880,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 7,
+          "virtual_address": 0,
+          "relative_offset": 52,
+          "file_offset": 7986932,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".text"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 0,
+          "relative_offset": 52,
+          "file_offset": 7986932,
+          "size": 64,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".text.ModuleInit"
+        },
+        {
+          "index": 3,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6132,
+          "file_offset": 7993012,
+          "size": 32,
+          "link": 47,
+          "info": 2,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.text.ModuleInit"
+        },
+        {
+          "index": 4,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6164,
+          "file_offset": 7993044,
+          "size": 0,
+          "link": 47,
+          "info": 2,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.text.ModuleInit"
+        },
+        {
+          "index": 5,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 0,
+          "relative_offset": 116,
+          "file_offset": 7986996,
+          "size": 60,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".text.ModuleCleanup"
+        },
+        {
+          "index": 6,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6164,
+          "file_offset": 7993044,
+          "size": 32,
+          "link": 47,
+          "info": 5,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.text.ModuleCleanup"
+        },
+        {
+          "index": 7,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6196,
+          "file_offset": 7993076,
+          "size": 0,
+          "link": 47,
+          "info": 5,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.text.ModuleCleanup"
+        },
+        {
+          "index": 8,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 0,
+          "relative_offset": 176,
+          "file_offset": 7987056,
+          "size": 16,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".text.ModExampleModulePrint"
+        },
+        {
+          "index": 9,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6196,
+          "file_offset": 7993076,
+          "size": 24,
+          "link": 47,
+          "info": 8,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.text.ModExampleModulePrint"
+        },
+        {
+          "index": 10,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6220,
+          "file_offset": 7993100,
+          "size": 0,
+          "link": 47,
+          "info": 8,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.text.ModExampleModulePrint"
+        },
+        {
+          "index": 11,
+          "type": 1,
+          "flags": 6,
+          "virtual_address": 0,
+          "relative_offset": 192,
+          "file_offset": 7987072,
+          "size": 12,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".text.ModExampleModuleGetScrd"
+        },
+        {
+          "index": 12,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6220,
+          "file_offset": 7993100,
+          "size": 16,
+          "link": 47,
+          "info": 11,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.text.ModExampleModuleGetScrd"
+        },
+        {
+          "index": 13,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6236,
+          "file_offset": 7993116,
+          "size": 0,
+          "link": 47,
+          "info": 11,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.text.ModExampleModuleGetScrd"
+        },
+        {
+          "index": 14,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 204,
+          "file_offset": 7987084,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 15,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 204,
+          "file_offset": 7987084,
+          "size": 124,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".linkonce.this_module"
+        },
+        {
+          "index": 16,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6236,
+          "file_offset": 7993116,
+          "size": 16,
+          "link": 47,
+          "info": 15,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.linkonce.this_module"
+        },
+        {
+          "index": 17,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6252,
+          "file_offset": 7993132,
+          "size": 0,
+          "link": 47,
+          "info": 15,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.linkonce.this_module"
+        },
+        {
+          "index": 18,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 328,
+          "file_offset": 7987208,
+          "size": 16,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".data.psApiTable"
+        },
+        {
+          "index": 19,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6252,
+          "file_offset": 7993132,
+          "size": 32,
+          "link": 47,
+          "info": 18,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.data.psApiTable"
+        },
+        {
+          "index": 20,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6284,
+          "file_offset": 7993164,
+          "size": 0,
+          "link": 47,
+          "info": 18,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.data.psApiTable"
+        },
+        {
+          "index": 21,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 344,
+          "file_offset": 7987224,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 22,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 344,
+          "file_offset": 7987224,
+          "size": 43,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".comment"
+        },
+        {
+          "index": 23,
+          "type": 1879048222,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 387,
+          "file_offset": 7987267,
+          "size": 64,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".debug_aranges"
+        },
+        {
+          "index": 24,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6284,
+          "file_offset": 7993164,
+          "size": 48,
+          "link": 47,
+          "info": 23,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.debug_aranges"
+        },
+        {
+          "index": 25,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6332,
+          "file_offset": 7993212,
+          "size": 0,
+          "link": 47,
+          "info": 23,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.debug_aranges"
+        },
+        {
+          "index": 26,
+          "type": 1879048222,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 451,
+          "file_offset": 7987331,
+          "size": 123,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".debug_pubnames"
+        },
+        {
+          "index": 27,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6332,
+          "file_offset": 7993212,
+          "size": 8,
+          "link": 47,
+          "info": 26,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.debug_pubnames"
+        },
+        {
+          "index": 28,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6340,
+          "file_offset": 7993220,
+          "size": 0,
+          "link": 47,
+          "info": 26,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.debug_pubnames"
+        },
+        {
+          "index": 29,
+          "type": 1879048222,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 574,
+          "file_offset": 7987454,
+          "size": 972,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".debug_info"
+        },
+        {
+          "index": 30,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6340,
+          "file_offset": 7993220,
+          "size": 656,
+          "link": 47,
+          "info": 29,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.debug_info"
+        },
+        {
+          "index": 31,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6996,
+          "file_offset": 7993876,
+          "size": 0,
+          "link": 47,
+          "info": 29,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.debug_info"
+        },
+        {
+          "index": 32,
+          "type": 1879048222,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1546,
+          "file_offset": 7988426,
+          "size": 389,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".debug_abbrev"
+        },
+        {
+          "index": 33,
+          "type": 1879048222,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1935,
+          "file_offset": 7988815,
+          "size": 207,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".debug_line"
+        },
+        {
+          "index": 34,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 6996,
+          "file_offset": 7993876,
+          "size": 32,
+          "link": 47,
+          "info": 33,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.debug_line"
+        },
+        {
+          "index": 35,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 7028,
+          "file_offset": 7993908,
+          "size": 0,
+          "link": 47,
+          "info": 33,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.debug_line"
+        },
+        {
+          "index": 36,
+          "type": 1879048222,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2144,
+          "file_offset": 7989024,
+          "size": 80,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".debug_frame"
+        },
+        {
+          "index": 37,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 7028,
+          "file_offset": 7993908,
+          "size": 64,
+          "link": 47,
+          "info": 36,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.debug_frame"
+        },
+        {
+          "index": 38,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 7092,
+          "file_offset": 7993972,
+          "size": 0,
+          "link": 47,
+          "info": 36,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.debug_frame"
+        },
+        {
+          "index": 39,
+          "type": 1879048222,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2224,
+          "file_offset": 7989104,
+          "size": 931,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".debug_str"
+        },
+        {
+          "index": 40,
+          "type": 1879048198,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3156,
+          "file_offset": 7990036,
+          "size": 24,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 1,
+          "name": ".reginfo"
+        },
+        {
+          "index": 41,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3180,
+          "file_offset": 7990060,
+          "size": 128,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".pdr"
+        },
+        {
+          "index": 42,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 7092,
+          "file_offset": 7993972,
+          "size": 32,
+          "link": 47,
+          "info": 41,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.pdr"
+        },
+        {
+          "index": 43,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 7124,
+          "file_offset": 7994004,
+          "size": 0,
+          "link": 47,
+          "info": 41,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.pdr"
+        },
+        {
+          "index": 44,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3308,
+          "file_offset": 7990188,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".mdebug.abi32"
+        },
+        {
+          "index": 45,
+          "type": 1,
+          "flags": 2,
+          "virtual_address": 0,
+          "relative_offset": 3308,
+          "file_offset": 7990188,
+          "size": 16,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".rodata.str1.4"
+        },
+        {
+          "index": 46,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 3324,
+          "file_offset": 7990204,
+          "size": 845,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        },
+        {
+          "index": 47,
+          "type": 2,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 7124,
+          "file_offset": 7994004,
+          "size": 976,
+          "link": 48,
+          "info": 52,
+          "alignment": 4,
+          "entry_size": 16,
+          "name": ".symtab"
+        },
+        {
+          "index": 48,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 8100,
+          "file_offset": 7994980,
+          "size": 197,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".strtab"
+        }
+      ],
+      "symbol_count": 61,
+      "defined_function_symbol_count": 4,
+      "symbol_type_counts": {
+        "0": 4,
+        "1": 4,
+        "2": 4,
+        "3": 48,
+        "4": 1
+      },
+      "warnings": [],
+      "selected_symbols": [],
+      "contained_in": []
+    },
+    {
+      "offset": 16034496,
+      "elf_type": 1,
+      "machine": 8,
+      "elf_class": 32,
+      "byte_order": "little",
+      "entry": 0,
+      "flags": 1879052289,
+      "referenced_extent": 2400947,
+      "referenced_end": 18435443,
+      "sha256_referenced_bytes": "787081e5ef4a7b1f5fdc4fa0cff00902e95c431f1c331eceb5bb1ec3b7f10077",
+      "entry_file_offsets": [],
+      "segments": [],
+      "sections": [
+        {
+          "index": 0,
+          "type": 0,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 0,
+          "file_offset": 16034496,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 0,
+          "entry_size": 0,
+          "name": ""
+        },
+        {
+          "index": 1,
+          "type": 1,
+          "flags": 7,
+          "virtual_address": 0,
+          "relative_offset": 52,
+          "file_offset": 16034548,
+          "size": 24,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".text"
+        },
+        {
+          "index": 2,
+          "type": 1,
+          "flags": 2,
+          "virtual_address": 0,
+          "relative_offset": 76,
+          "file_offset": 16034572,
+          "size": 1126412,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".rodata"
+        },
+        {
+          "index": 3,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 1126488,
+          "file_offset": 17160984,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".data"
+        },
+        {
+          "index": 4,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 1126488,
+          "file_offset": 17160984,
+          "size": 636296,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": "__ksymtab"
+        },
+        {
+          "index": 5,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1764064,
+          "file_offset": 17798560,
+          "size": 636312,
+          "link": 18,
+          "info": 4,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel__ksymtab"
+        },
+        {
+          "index": 6,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2400376,
+          "file_offset": 18434872,
+          "size": 0,
+          "link": 18,
+          "info": 4,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela__ksymtab"
+        },
+        {
+          "index": 7,
+          "type": 1,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 1762784,
+          "file_offset": 17797280,
+          "size": 124,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".linkonce.this_module"
+        },
+        {
+          "index": 8,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2400376,
+          "file_offset": 18434872,
+          "size": 16,
+          "link": 18,
+          "info": 7,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.linkonce.this_module"
+        },
+        {
+          "index": 9,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2400392,
+          "file_offset": 18434888,
+          "size": 0,
+          "link": 18,
+          "info": 7,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.linkonce.this_module"
+        },
+        {
+          "index": 10,
+          "type": 8,
+          "flags": 3,
+          "virtual_address": 0,
+          "relative_offset": 1762908,
+          "file_offset": 17797404,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".bss"
+        },
+        {
+          "index": 11,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1762908,
+          "file_offset": 17797404,
+          "size": 43,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".comment"
+        },
+        {
+          "index": 12,
+          "type": 1879048198,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1762952,
+          "file_offset": 17797448,
+          "size": 24,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 1,
+          "name": ".reginfo"
+        },
+        {
+          "index": 13,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1762976,
+          "file_offset": 17797472,
+          "size": 64,
+          "link": 0,
+          "info": 0,
+          "alignment": 4,
+          "entry_size": 0,
+          "name": ".pdr"
+        },
+        {
+          "index": 14,
+          "type": 9,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2400392,
+          "file_offset": 18434888,
+          "size": 16,
+          "link": 18,
+          "info": 13,
+          "alignment": 4,
+          "entry_size": 8,
+          "name": ".rel.pdr"
+        },
+        {
+          "index": 15,
+          "type": 4,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2400408,
+          "file_offset": 18434904,
+          "size": 0,
+          "link": 18,
+          "info": 13,
+          "alignment": 4,
+          "entry_size": 12,
+          "name": ".rela.pdr"
+        },
+        {
+          "index": 16,
+          "type": 1,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1763040,
+          "file_offset": 17797536,
+          "size": 0,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".mdebug.abi32"
+        },
+        {
+          "index": 17,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 1763040,
+          "file_offset": 17797536,
+          "size": 222,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".shstrtab"
+        },
+        {
+          "index": 18,
+          "type": 2,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2400408,
+          "file_offset": 18434904,
+          "size": 432,
+          "link": 19,
+          "info": 21,
+          "alignment": 4,
+          "entry_size": 16,
+          "name": ".symtab"
+        },
+        {
+          "index": 19,
+          "type": 3,
+          "flags": 0,
+          "virtual_address": 0,
+          "relative_offset": 2400840,
+          "file_offset": 18435336,
+          "size": 107,
+          "link": 0,
+          "info": 0,
+          "alignment": 1,
+          "entry_size": 0,
+          "name": ".strtab"
+        }
+      ],
+      "symbol_count": 27,
+      "defined_function_symbol_count": 2,
+      "symbol_type_counts": {
+        "0": 1,
+        "1": 4,
+        "2": 2,
+        "3": 19,
+        "4": 1
+      },
+      "warnings": [],
+      "selected_symbols": [],
+      "contained_in": []
+    }
+  ],
+  "rejected_candidates": [
+    {
+      "offset": 1950404,
+      "reason": "not ELF32 little-endian version 1"
+    }
+  ],
+  "markers": [
+    {
+      "text": "ThreadX LX4180/Green Hills",
+      "offset": 623677
+    },
+    {
+      "text": "FileX LX4180/Green Hills",
+      "offset": 684081
+    },
+    {
+      "text": "PENTAX Q7",
+      "offset": 18442951
+    },
+    {
+      "text": "ORION",
+      "offset": 18743488
+    },
+    {
+      "text": "KB538",
+      "offset": 18743496
+    },
+    {
+      "text": "77690",
+      "offset": 18743504
+    }
+  ],
+  "k3_lz_probe": {
+    "status": "rejected",
+    "offset": 128,
+    "reason": "invalid LZ trailer at 0x80"
+  },
+  "entropy_window_size": 65536,
+  "entropy_windows": [
+    {
+      "offset": 0,
+      "size": 65536,
+      "entropy": 6.124229
+    },
+    {
+      "offset": 65536,
+      "size": 65536,
+      "entropy": 6.015743
+    },
+    {
+      "offset": 131072,
+      "size": 65536,
+      "entropy": 6.11179
+    },
+    {
+      "offset": 196608,
+      "size": 65536,
+      "entropy": 6.028276
+    },
+    {
+      "offset": 262144,
+      "size": 65536,
+      "entropy": 6.06219
+    },
+    {
+      "offset": 327680,
+      "size": 65536,
+      "entropy": 6.090356
+    },
+    {
+      "offset": 393216,
+      "size": 65536,
+      "entropy": 6.175187
+    },
+    {
+      "offset": 458752,
+      "size": 65536,
+      "entropy": 5.906821
+    },
+    {
+      "offset": 524288,
+      "size": 65536,
+      "entropy": 6.141441
+    },
+    {
+      "offset": 589824,
+      "size": 65536,
+      "entropy": 4.950024
+    },
+    {
+      "offset": 655360,
+      "size": 65536,
+      "entropy": 5.403321
+    },
+    {
+      "offset": 720896,
+      "size": 65536,
+      "entropy": 2.055336
+    },
+    {
+      "offset": 786432,
+      "size": 65536,
+      "entropy": 4.693866
+    },
+    {
+      "offset": 851968,
+      "size": 65536,
+      "entropy": 4.927025
+    },
+    {
+      "offset": 917504,
+      "size": 65536,
+      "entropy": -0.0
+    },
+    {
+      "offset": 983040,
+      "size": 65536,
+      "entropy": -0.0
+    },
+    {
+      "offset": 1048576,
+      "size": 65536,
+      "entropy": 5.924097
+    },
+    {
+      "offset": 1114112,
+      "size": 65536,
+      "entropy": 6.189969
+    },
+    {
+      "offset": 1179648,
+      "size": 65536,
+      "entropy": 4.183561
+    },
+    {
+      "offset": 1245184,
+      "size": 65536,
+      "entropy": 4.338539
+    },
+    {
+      "offset": 1310720,
+      "size": 65536,
+      "entropy": 5.442074
+    },
+    {
+      "offset": 1376256,
+      "size": 65536,
+      "entropy": 6.051598
+    },
+    {
+      "offset": 1441792,
+      "size": 65536,
+      "entropy": 6.682543
+    },
+    {
+      "offset": 1507328,
+      "size": 65536,
+      "entropy": 6.10787
+    },
+    {
+      "offset": 1572864,
+      "size": 65536,
+      "entropy": 6.200763
+    },
+    {
+      "offset": 1638400,
+      "size": 65536,
+      "entropy": 6.544811
+    },
+    {
+      "offset": 1703936,
+      "size": 65536,
+      "entropy": 6.021881
+    },
+    {
+      "offset": 1769472,
+      "size": 65536,
+      "entropy": 5.83688
+    },
+    {
+      "offset": 1835008,
+      "size": 65536,
+      "entropy": 5.969639
+    },
+    {
+      "offset": 1900544,
+      "size": 65536,
+      "entropy": 6.071858
+    },
+    {
+      "offset": 1966080,
+      "size": 65536,
+      "entropy": 4.430286
+    },
+    {
+      "offset": 2031616,
+      "size": 65536,
+      "entropy": 6.167922
+    },
+    {
+      "offset": 2097152,
+      "size": 65536,
+      "entropy": 6.162283
+    },
+    {
+      "offset": 2162688,
+      "size": 65536,
+      "entropy": 6.097267
+    },
+    {
+      "offset": 2228224,
+      "size": 65536,
+      "entropy": 4.311835
+    },
+    {
+      "offset": 2293760,
+      "size": 65536,
+      "entropy": 0.09916
+    },
+    {
+      "offset": 2359296,
+      "size": 65536,
+      "entropy": 7.690403
+    },
+    {
+      "offset": 2424832,
+      "size": 65536,
+      "entropy": 7.751391
+    },
+    {
+      "offset": 2490368,
+      "size": 65536,
+      "entropy": 7.688786
+    },
+    {
+      "offset": 2555904,
+      "size": 65536,
+      "entropy": 7.758684
+    },
+    {
+      "offset": 2621440,
+      "size": 65536,
+      "entropy": 7.658811
+    },
+    {
+      "offset": 2686976,
+      "size": 65536,
+      "entropy": 7.67164
+    },
+    {
+      "offset": 2752512,
+      "size": 65536,
+      "entropy": 7.731019
+    },
+    {
+      "offset": 2818048,
+      "size": 65536,
+      "entropy": 7.738017
+    },
+    {
+      "offset": 2883584,
+      "size": 65536,
+      "entropy": 7.725953
+    },
+    {
+      "offset": 2949120,
+      "size": 65536,
+      "entropy": 7.753783
+    },
+    {
+      "offset": 3014656,
+      "size": 65536,
+      "entropy": 7.775936
+    },
+    {
+      "offset": 3080192,
+      "size": 65536,
+      "entropy": 7.704761
+    },
+    {
+      "offset": 3145728,
+      "size": 65536,
+      "entropy": 7.762869
+    },
+    {
+      "offset": 3211264,
+      "size": 65536,
+      "entropy": 7.76188
+    },
+    {
+      "offset": 3276800,
+      "size": 65536,
+      "entropy": 7.769356
+    },
+    {
+      "offset": 3342336,
+      "size": 65536,
+      "entropy": 7.758445
+    },
+    {
+      "offset": 3407872,
+      "size": 65536,
+      "entropy": 7.727568
+    },
+    {
+      "offset": 3473408,
+      "size": 65536,
+      "entropy": 7.770594
+    },
+    {
+      "offset": 3538944,
+      "size": 65536,
+      "entropy": 7.760339
+    },
+    {
+      "offset": 3604480,
+      "size": 65536,
+      "entropy": 7.738708
+    },
+    {
+      "offset": 3670016,
+      "size": 65536,
+      "entropy": 7.74164
+    },
+    {
+      "offset": 3735552,
+      "size": 65536,
+      "entropy": 7.738545
+    },
+    {
+      "offset": 3801088,
+      "size": 65536,
+      "entropy": 7.7388
+    },
+    {
+      "offset": 3866624,
+      "size": 65536,
+      "entropy": 7.785897
+    },
+    {
+      "offset": 3932160,
+      "size": 65536,
+      "entropy": 7.697603
+    },
+    {
+      "offset": 3997696,
+      "size": 65536,
+      "entropy": 7.74638
+    },
+    {
+      "offset": 4063232,
+      "size": 65536,
+      "entropy": 7.736609
+    },
+    {
+      "offset": 4128768,
+      "size": 65536,
+      "entropy": 7.778731
+    },
+    {
+      "offset": 4194304,
+      "size": 65536,
+      "entropy": 7.78047
+    },
+    {
+      "offset": 4259840,
+      "size": 65536,
+      "entropy": 7.718535
+    },
+    {
+      "offset": 4325376,
+      "size": 65536,
+      "entropy": 7.660233
+    },
+    {
+      "offset": 4390912,
+      "size": 65536,
+      "entropy": 7.761849
+    },
+    {
+      "offset": 4456448,
+      "size": 65536,
+      "entropy": 7.696418
+    },
+    {
+      "offset": 4521984,
+      "size": 65536,
+      "entropy": 7.771553
+    },
+    {
+      "offset": 4587520,
+      "size": 65536,
+      "entropy": 7.774841
+    },
+    {
+      "offset": 4653056,
+      "size": 65536,
+      "entropy": 7.762395
+    },
+    {
+      "offset": 4718592,
+      "size": 65536,
+      "entropy": 7.699198
+    },
+    {
+      "offset": 4784128,
+      "size": 65536,
+      "entropy": 7.764065
+    },
+    {
+      "offset": 4849664,
+      "size": 65536,
+      "entropy": 7.734019
+    },
+    {
+      "offset": 4915200,
+      "size": 65536,
+      "entropy": 7.748305
+    },
+    {
+      "offset": 4980736,
+      "size": 65536,
+      "entropy": 7.77946
+    },
+    {
+      "offset": 5046272,
+      "size": 65536,
+      "entropy": 7.759812
+    },
+    {
+      "offset": 5111808,
+      "size": 65536,
+      "entropy": 7.773112
+    },
+    {
+      "offset": 5177344,
+      "size": 65536,
+      "entropy": 7.76438
+    },
+    {
+      "offset": 5242880,
+      "size": 65536,
+      "entropy": 7.759795
+    },
+    {
+      "offset": 5308416,
+      "size": 65536,
+      "entropy": 7.69372
+    },
+    {
+      "offset": 5373952,
+      "size": 65536,
+      "entropy": 7.7861
+    },
+    {
+      "offset": 5439488,
+      "size": 65536,
+      "entropy": 7.773078
+    },
+    {
+      "offset": 5505024,
+      "size": 65536,
+      "entropy": 7.714146
+    },
+    {
+      "offset": 5570560,
+      "size": 65536,
+      "entropy": 7.730176
+    },
+    {
+      "offset": 5636096,
+      "size": 65536,
+      "entropy": 7.755596
+    },
+    {
+      "offset": 5701632,
+      "size": 65536,
+      "entropy": 7.759331
+    },
+    {
+      "offset": 5767168,
+      "size": 65536,
+      "entropy": 7.777259
+    },
+    {
+      "offset": 5832704,
+      "size": 65536,
+      "entropy": 7.771279
+    },
+    {
+      "offset": 5898240,
+      "size": 65536,
+      "entropy": 7.780459
+    },
+    {
+      "offset": 5963776,
+      "size": 65536,
+      "entropy": 7.708794
+    },
+    {
+      "offset": 6029312,
+      "size": 65536,
+      "entropy": 7.735204
+    },
+    {
+      "offset": 6094848,
+      "size": 65536,
+      "entropy": 7.645036
+    },
+    {
+      "offset": 6160384,
+      "size": 65536,
+      "entropy": 7.723951
+    },
+    {
+      "offset": 6225920,
+      "size": 65536,
+      "entropy": 7.713124
+    },
+    {
+      "offset": 6291456,
+      "size": 65536,
+      "entropy": 7.722734
+    },
+    {
+      "offset": 6356992,
+      "size": 65536,
+      "entropy": 7.876476
+    },
+    {
+      "offset": 6422528,
+      "size": 65536,
+      "entropy": 7.772149
+    },
+    {
+      "offset": 6488064,
+      "size": 65536,
+      "entropy": 7.798167
+    },
+    {
+      "offset": 6553600,
+      "size": 65536,
+      "entropy": 7.811277
+    },
+    {
+      "offset": 6619136,
+      "size": 65536,
+      "entropy": 7.737908
+    },
+    {
+      "offset": 6684672,
+      "size": 65536,
+      "entropy": 7.796825
+    },
+    {
+      "offset": 6750208,
+      "size": 65536,
+      "entropy": 7.743562
+    },
+    {
+      "offset": 6815744,
+      "size": 65536,
+      "entropy": 7.772034
+    },
+    {
+      "offset": 6881280,
+      "size": 65536,
+      "entropy": 7.769308
+    },
+    {
+      "offset": 6946816,
+      "size": 65536,
+      "entropy": 7.758282
+    },
+    {
+      "offset": 7012352,
+      "size": 65536,
+      "entropy": 7.752631
+    },
+    {
+      "offset": 7077888,
+      "size": 65536,
+      "entropy": 7.758757
+    },
+    {
+      "offset": 7143424,
+      "size": 65536,
+      "entropy": 7.782946
+    },
+    {
+      "offset": 7208960,
+      "size": 65536,
+      "entropy": 7.773241
+    },
+    {
+      "offset": 7274496,
+      "size": 65536,
+      "entropy": 7.783595
+    },
+    {
+      "offset": 7340032,
+      "size": 65536,
+      "entropy": 7.702061
+    },
+    {
+      "offset": 7405568,
+      "size": 65536,
+      "entropy": 7.757704
+    },
+    {
+      "offset": 7471104,
+      "size": 65536,
+      "entropy": 7.767178
+    },
+    {
+      "offset": 7536640,
+      "size": 65536,
+      "entropy": 7.706739
+    },
+    {
+      "offset": 7602176,
+      "size": 65536,
+      "entropy": 7.752907
+    },
+    {
+      "offset": 7667712,
+      "size": 65536,
+      "entropy": 7.639631
+    },
+    {
+      "offset": 7733248,
+      "size": 65536,
+      "entropy": 7.687305
+    },
+    {
+      "offset": 7798784,
+      "size": 65536,
+      "entropy": 7.679002
+    },
+    {
+      "offset": 7864320,
+      "size": 65536,
+      "entropy": 1.525119
+    },
+    {
+      "offset": 7929856,
+      "size": 65536,
+      "entropy": 3.43395
+    },
+    {
+      "offset": 7995392,
+      "size": 65536,
+      "entropy": 1.835153
+    },
+    {
+      "offset": 8060928,
+      "size": 65536,
+      "entropy": 2.800139
+    },
+    {
+      "offset": 8126464,
+      "size": 65536,
+      "entropy": 2.905271
+    },
+    {
+      "offset": 8192000,
+      "size": 65536,
+      "entropy": 2.852355
+    },
+    {
+      "offset": 8257536,
+      "size": 65536,
+      "entropy": 2.906203
+    },
+    {
+      "offset": 8323072,
+      "size": 65536,
+      "entropy": 2.86493
+    },
+    {
+      "offset": 8388608,
+      "size": 65536,
+      "entropy": 2.920382
+    },
+    {
+      "offset": 8454144,
+      "size": 65536,
+      "entropy": 2.905241
+    },
+    {
+      "offset": 8519680,
+      "size": 65536,
+      "entropy": 2.756342
+    },
+    {
+      "offset": 8585216,
+      "size": 65536,
+      "entropy": 1.986999
+    },
+    {
+      "offset": 8650752,
+      "size": 65536,
+      "entropy": 2.888765
+    },
+    {
+      "offset": 8716288,
+      "size": 65536,
+      "entropy": 2.880449
+    },
+    {
+      "offset": 8781824,
+      "size": 65536,
+      "entropy": 2.873824
+    },
+    {
+      "offset": 8847360,
+      "size": 65536,
+      "entropy": 2.846252
+    },
+    {
+      "offset": 8912896,
+      "size": 65536,
+      "entropy": 2.851993
+    },
+    {
+      "offset": 8978432,
+      "size": 65536,
+      "entropy": 2.928837
+    },
+    {
+      "offset": 9043968,
+      "size": 65536,
+      "entropy": 2.901213
+    },
+    {
+      "offset": 9109504,
+      "size": 65536,
+      "entropy": 2.292385
+    },
+    {
+      "offset": 9175040,
+      "size": 65536,
+      "entropy": 1.64116
+    },
+    {
+      "offset": 9240576,
+      "size": 65536,
+      "entropy": 1.493468
+    },
+    {
+      "offset": 9306112,
+      "size": 65536,
+      "entropy": 1.616182
+    },
+    {
+      "offset": 9371648,
+      "size": 65536,
+      "entropy": 1.723141
+    },
+    {
+      "offset": 9437184,
+      "size": 65536,
+      "entropy": 1.766063
+    },
+    {
+      "offset": 9502720,
+      "size": 65536,
+      "entropy": 2.52932
+    },
+    {
+      "offset": 9568256,
+      "size": 65536,
+      "entropy": 2.751691
+    },
+    {
+      "offset": 9633792,
+      "size": 65536,
+      "entropy": 2.760781
+    },
+    {
+      "offset": 9699328,
+      "size": 65536,
+      "entropy": 2.767101
+    },
+    {
+      "offset": 9764864,
+      "size": 65536,
+      "entropy": 2.746836
+    },
+    {
+      "offset": 9830400,
+      "size": 65536,
+      "entropy": 2.617802
+    },
+    {
+      "offset": 9895936,
+      "size": 65536,
+      "entropy": 1.910061
+    },
+    {
+      "offset": 9961472,
+      "size": 65536,
+      "entropy": 2.70559
+    },
+    {
+      "offset": 10027008,
+      "size": 65536,
+      "entropy": 2.531294
+    },
+    {
+      "offset": 10092544,
+      "size": 65536,
+      "entropy": 2.82368
+    },
+    {
+      "offset": 10158080,
+      "size": 65536,
+      "entropy": 2.862844
+    },
+    {
+      "offset": 10223616,
+      "size": 65536,
+      "entropy": 2.873708
+    },
+    {
+      "offset": 10289152,
+      "size": 65536,
+      "entropy": 1.90293
+    },
+    {
+      "offset": 10354688,
+      "size": 65536,
+      "entropy": 1.75397
+    },
+    {
+      "offset": 10420224,
+      "size": 65536,
+      "entropy": 4.173399
+    },
+    {
+      "offset": 10485760,
+      "size": 65536,
+      "entropy": 5.108313
+    },
+    {
+      "offset": 10551296,
+      "size": 65536,
+      "entropy": 4.459711
+    },
+    {
+      "offset": 10616832,
+      "size": 65536,
+      "entropy": 3.626067
+    },
+    {
+      "offset": 10682368,
+      "size": 65536,
+      "entropy": 4.159916
+    },
+    {
+      "offset": 10747904,
+      "size": 65536,
+      "entropy": 5.157659
+    },
+    {
+      "offset": 10813440,
+      "size": 65536,
+      "entropy": 7.041911
+    },
+    {
+      "offset": 10878976,
+      "size": 65536,
+      "entropy": 7.958022
+    },
+    {
+      "offset": 10944512,
+      "size": 65536,
+      "entropy": 7.968966
+    },
+    {
+      "offset": 11010048,
+      "size": 65536,
+      "entropy": 7.97152
+    },
+    {
+      "offset": 11075584,
+      "size": 65536,
+      "entropy": 6.769486
+    },
+    {
+      "offset": 11141120,
+      "size": 65536,
+      "entropy": 6.115298
+    },
+    {
+      "offset": 11206656,
+      "size": 65536,
+      "entropy": 7.690924
+    },
+    {
+      "offset": 11272192,
+      "size": 65536,
+      "entropy": 6.935662
+    },
+    {
+      "offset": 11337728,
+      "size": 65536,
+      "entropy": 7.927294
+    },
+    {
+      "offset": 11403264,
+      "size": 65536,
+      "entropy": 7.969457
+    },
+    {
+      "offset": 11468800,
+      "size": 65536,
+      "entropy": 7.560008
+    },
+    {
+      "offset": 11534336,
+      "size": 65536,
+      "entropy": 6.287821
+    },
+    {
+      "offset": 11599872,
+      "size": 65536,
+      "entropy": 6.250391
+    },
+    {
+      "offset": 11665408,
+      "size": 65536,
+      "entropy": 6.008743
+    },
+    {
+      "offset": 11730944,
+      "size": 65536,
+      "entropy": 5.781785
+    },
+    {
+      "offset": 11796480,
+      "size": 65536,
+      "entropy": 5.754866
+    },
+    {
+      "offset": 11862016,
+      "size": 65536,
+      "entropy": 5.987078
+    },
+    {
+      "offset": 11927552,
+      "size": 65536,
+      "entropy": 5.578845
+    },
+    {
+      "offset": 11993088,
+      "size": 65536,
+      "entropy": 5.93334
+    },
+    {
+      "offset": 12058624,
+      "size": 65536,
+      "entropy": 6.081928
+    },
+    {
+      "offset": 12124160,
+      "size": 65536,
+      "entropy": 5.96143
+    },
+    {
+      "offset": 12189696,
+      "size": 65536,
+      "entropy": 6.214454
+    },
+    {
+      "offset": 12255232,
+      "size": 65536,
+      "entropy": 6.182544
+    },
+    {
+      "offset": 12320768,
+      "size": 65536,
+      "entropy": 6.112834
+    },
+    {
+      "offset": 12386304,
+      "size": 65536,
+      "entropy": 6.187312
+    },
+    {
+      "offset": 12451840,
+      "size": 65536,
+      "entropy": 6.222124
+    },
+    {
+      "offset": 12517376,
+      "size": 65536,
+      "entropy": 5.322519
+    },
+    {
+      "offset": 12582912,
+      "size": 65536,
+      "entropy": 5.227989
+    },
+    {
+      "offset": 12648448,
+      "size": 65536,
+      "entropy": 5.239889
+    },
+    {
+      "offset": 12713984,
+      "size": 65536,
+      "entropy": 5.329393
+    },
+    {
+      "offset": 12779520,
+      "size": 65536,
+      "entropy": 5.330882
+    },
+    {
+      "offset": 12845056,
+      "size": 65536,
+      "entropy": 5.160276
+    },
+    {
+      "offset": 12910592,
+      "size": 65536,
+      "entropy": 4.784037
+    },
+    {
+      "offset": 12976128,
+      "size": 65536,
+      "entropy": 4.913107
+    },
+    {
+      "offset": 13041664,
+      "size": 65536,
+      "entropy": 5.149337
+    },
+    {
+      "offset": 13107200,
+      "size": 65536,
+      "entropy": 5.277879
+    },
+    {
+      "offset": 13172736,
+      "size": 65536,
+      "entropy": 5.266366
+    },
+    {
+      "offset": 13238272,
+      "size": 65536,
+      "entropy": 5.257682
+    },
+    {
+      "offset": 13303808,
+      "size": 65536,
+      "entropy": 5.250689
+    },
+    {
+      "offset": 13369344,
+      "size": 65536,
+      "entropy": 4.931563
+    },
+    {
+      "offset": 13434880,
+      "size": 65536,
+      "entropy": 4.964804
+    },
+    {
+      "offset": 13500416,
+      "size": 65536,
+      "entropy": 4.83019
+    },
+    {
+      "offset": 13565952,
+      "size": 65536,
+      "entropy": 4.835883
+    },
+    {
+      "offset": 13631488,
+      "size": 65536,
+      "entropy": 4.838186
+    },
+    {
+      "offset": 13697024,
+      "size": 65536,
+      "entropy": 4.845302
+    },
+    {
+      "offset": 13762560,
+      "size": 65536,
+      "entropy": 4.86715
+    },
+    {
+      "offset": 13828096,
+      "size": 65536,
+      "entropy": 4.733541
+    },
+    {
+      "offset": 13893632,
+      "size": 65536,
+      "entropy": 4.849118
+    },
+    {
+      "offset": 13959168,
+      "size": 65536,
+      "entropy": 4.912205
+    },
+    {
+      "offset": 14024704,
+      "size": 65536,
+      "entropy": 5.025653
+    },
+    {
+      "offset": 14090240,
+      "size": 65536,
+      "entropy": 4.851241
+    },
+    {
+      "offset": 14155776,
+      "size": 65536,
+      "entropy": 4.966419
+    },
+    {
+      "offset": 14221312,
+      "size": 65536,
+      "entropy": 4.862923
+    },
+    {
+      "offset": 14286848,
+      "size": 65536,
+      "entropy": 4.943032
+    },
+    {
+      "offset": 14352384,
+      "size": 65536,
+      "entropy": 4.81131
+    },
+    {
+      "offset": 14417920,
+      "size": 65536,
+      "entropy": 4.82511
+    },
+    {
+      "offset": 14483456,
+      "size": 65536,
+      "entropy": 4.700161
+    },
+    {
+      "offset": 14548992,
+      "size": 65536,
+      "entropy": 4.734116
+    },
+    {
+      "offset": 14614528,
+      "size": 65536,
+      "entropy": 4.814961
+    },
+    {
+      "offset": 14680064,
+      "size": 65536,
+      "entropy": 4.884183
+    },
+    {
+      "offset": 14745600,
+      "size": 65536,
+      "entropy": 4.880769
+    },
+    {
+      "offset": 14811136,
+      "size": 65536,
+      "entropy": 4.945228
+    },
+    {
+      "offset": 14876672,
+      "size": 65536,
+      "entropy": 4.754478
+    },
+    {
+      "offset": 14942208,
+      "size": 65536,
+      "entropy": 4.797259
+    },
+    {
+      "offset": 15007744,
+      "size": 65536,
+      "entropy": 4.898383
+    },
+    {
+      "offset": 15073280,
+      "size": 65536,
+      "entropy": 5.152535
+    },
+    {
+      "offset": 15138816,
+      "size": 65536,
+      "entropy": 4.895872
+    },
+    {
+      "offset": 15204352,
+      "size": 65536,
+      "entropy": 5.197329
+    },
+    {
+      "offset": 15269888,
+      "size": 65536,
+      "entropy": 4.757157
+    },
+    {
+      "offset": 15335424,
+      "size": 65536,
+      "entropy": 4.709805
+    },
+    {
+      "offset": 15400960,
+      "size": 65536,
+      "entropy": 4.707843
+    },
+    {
+      "offset": 15466496,
+      "size": 65536,
+      "entropy": 4.815386
+    },
+    {
+      "offset": 15532032,
+      "size": 65536,
+      "entropy": 4.724294
+    },
+    {
+      "offset": 15597568,
+      "size": 65536,
+      "entropy": 4.641503
+    },
+    {
+      "offset": 15663104,
+      "size": 65536,
+      "entropy": 4.651423
+    },
+    {
+      "offset": 15728640,
+      "size": 65536,
+      "entropy": 4.687177
+    },
+    {
+      "offset": 15794176,
+      "size": 65536,
+      "entropy": 4.66523
+    },
+    {
+      "offset": 15859712,
+      "size": 65536,
+      "entropy": 5.190112
+    },
+    {
+      "offset": 15925248,
+      "size": 65536,
+      "entropy": 3.947415
+    },
+    {
+      "offset": 15990784,
+      "size": 65536,
+      "entropy": 4.702852
+    },
+    {
+      "offset": 16056320,
+      "size": 65536,
+      "entropy": 4.97102
+    },
+    {
+      "offset": 16121856,
+      "size": 65536,
+      "entropy": 5.000121
+    },
+    {
+      "offset": 16187392,
+      "size": 65536,
+      "entropy": 4.87223
+    },
+    {
+      "offset": 16252928,
+      "size": 65536,
+      "entropy": 4.774763
+    },
+    {
+      "offset": 16318464,
+      "size": 65536,
+      "entropy": 4.783833
+    },
+    {
+      "offset": 16384000,
+      "size": 65536,
+      "entropy": 4.857822
+    },
+    {
+      "offset": 16449536,
+      "size": 65536,
+      "entropy": 4.824107
+    },
+    {
+      "offset": 16515072,
+      "size": 65536,
+      "entropy": 4.792676
+    },
+    {
+      "offset": 16580608,
+      "size": 65536,
+      "entropy": 4.699902
+    },
+    {
+      "offset": 16646144,
+      "size": 65536,
+      "entropy": 4.70145
+    },
+    {
+      "offset": 16711680,
+      "size": 65536,
+      "entropy": 4.863628
+    },
+    {
+      "offset": 16777216,
+      "size": 65536,
+      "entropy": 4.806493
+    },
+    {
+      "offset": 16842752,
+      "size": 65536,
+      "entropy": 4.633438
+    },
+    {
+      "offset": 16908288,
+      "size": 65536,
+      "entropy": 4.617847
+    },
+    {
+      "offset": 16973824,
+      "size": 65536,
+      "entropy": 4.742287
+    },
+    {
+      "offset": 17039360,
+      "size": 65536,
+      "entropy": 4.931409
+    },
+    {
+      "offset": 17104896,
+      "size": 65536,
+      "entropy": 5.519669
+    },
+    {
+      "offset": 17170432,
+      "size": 65536,
+      "entropy": 6.107569
+    },
+    {
+      "offset": 17235968,
+      "size": 65536,
+      "entropy": 6.145752
+    },
+    {
+      "offset": 17301504,
+      "size": 65536,
+      "entropy": 5.877499
+    },
+    {
+      "offset": 17367040,
+      "size": 65536,
+      "entropy": 5.91156
+    },
+    {
+      "offset": 17432576,
+      "size": 65536,
+      "entropy": 6.004271
+    },
+    {
+      "offset": 17498112,
+      "size": 65536,
+      "entropy": 5.944772
+    },
+    {
+      "offset": 17563648,
+      "size": 65536,
+      "entropy": 5.97002
+    },
+    {
+      "offset": 17629184,
+      "size": 65536,
+      "entropy": 6.028669
+    },
+    {
+      "offset": 17694720,
+      "size": 65536,
+      "entropy": 6.059762
+    },
+    {
+      "offset": 17760256,
+      "size": 65536,
+      "entropy": 5.420256
+    },
+    {
+      "offset": 17825792,
+      "size": 65536,
+      "entropy": 3.53012
+    },
+    {
+      "offset": 17891328,
+      "size": 65536,
+      "entropy": 3.617513
+    },
+    {
+      "offset": 17956864,
+      "size": 65536,
+      "entropy": 3.568387
+    },
+    {
+      "offset": 18022400,
+      "size": 65536,
+      "entropy": 3.795292
+    },
+    {
+      "offset": 18087936,
+      "size": 65536,
+      "entropy": 3.793437
+    },
+    {
+      "offset": 18153472,
+      "size": 65536,
+      "entropy": 3.813553
+    },
+    {
+      "offset": 18219008,
+      "size": 65536,
+      "entropy": 3.813553
+    },
+    {
+      "offset": 18284544,
+      "size": 65536,
+      "entropy": 3.813553
+    },
+    {
+      "offset": 18350080,
+      "size": 65536,
+      "entropy": 3.813553
+    },
+    {
+      "offset": 18415616,
+      "size": 65536,
+      "entropy": 5.787889
+    },
+    {
+      "offset": 18481152,
+      "size": 65536,
+      "entropy": 7.151247
+    },
+    {
+      "offset": 18546688,
+      "size": 65536,
+      "entropy": 6.797474
+    },
+    {
+      "offset": 18612224,
+      "size": 65536,
+      "entropy": 1.553945
+    },
+    {
+      "offset": 18677760,
+      "size": 65536,
+      "entropy": -0.0
+    },
+    {
+      "offset": 18743296,
+      "size": 224,
+      "entropy": 0.915117
+    }
+  ],
+  "ascii_runs_min6": 197201,
+  "limitations": [
+    "ELF extents are maximum file references, not proven container partitions.",
+    "ELF acceptance validates this parser's bounded subset, not complete ELF ABI conformance.",
+    "ELF machine and strings do not identify the physical SoC or prove execution.",
+    "Entropy does not distinguish encryption, compression, code or media by itself.",
+    "No update checksum, signature, runtime behavior or flashing was verified."
+  ]
+}

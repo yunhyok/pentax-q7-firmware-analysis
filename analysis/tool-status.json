@@ -1,0 +1,16 @@
+{
+  "checked_date": "2026-11-07",
+  "rea_session_open": false,
+  "rea_firmware_provider": {
+    "available": false,
+    "reason": "provider_missing",
+    "requires": "Linux Binwalk/Unblob and prlimit"
+  },
+  "rea_native_providers": {
+    "ghidra": "not_configured; JDK 17 does not meet provider JDK 21 requirement",
+    "hopper": "unsupported_host",
+    "ida": "not_configured"
+  },
+  "actual_analysis": "Python standard library; tools/inspect_q7.py and reused K-3 LZ decoder",
+  "claim_boundary": "No REA firmware Evidence, disassembly, decompilation or camera execution was produced."
+}
