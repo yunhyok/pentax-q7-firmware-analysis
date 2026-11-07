@@ -16,6 +16,8 @@
 </header>
 <nav aria-label="문서 목차"><a href="#identity">파일 식별</a><a href="#method">분석 방법</a><a href="#layout">ELF 지도</a><a href="#rtos">RTOS·심볼</a><a href="#entropy">엔트로피</a><a href="#reproduce">재현</a><a href="#next">다음 단계</a></nav>
 <main>
+<aside class="hash"><strong>2026-11-08 후속 분석</strong><a href="deep-report.html">압축 448블록 복원 · ThreadX · AF·셔터·JPEG·색 처리 · 300개 함수와 K-3 대조 →</a></aside>
+<p class="note">이 페이지는 초기 구조 조사 기록입니다. 호출 관계와 압축 복원의 최신 결과는 후속 분석을 참조하십시오.</p>
 <section id="identity"><p class="eyebrow">01 / IDENTITY</p><h2>공식 v1.01 파일과 바이트 단위 일치</h2>
 <p>{{copy_identity}} <a href="analysis/provenance.json">[P1]</a> <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[S1]</a></p>
 <dl class="metrics"><div><dt>원본 크기</dt><dd>18,743,520 <small>bytes</small></dd></div><div><dt>검사 통과 ELF</dt><dd>12 <small>/ 서명 13곳</small></dd></div><div><dt>공식 배포</dt><dd>1.01 <small>2013-12-05</small></dd></div></dl>

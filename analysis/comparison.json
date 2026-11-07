@@ -1,0 +1,24 @@
+{
+  "k3_commit": "4e15d25ecaf36f23ada6bcedfb83067a5dc3c653",
+  "k3_repository": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis",
+  "rows": [
+    ["촬영·AF 요청 분기", "dispatch-af.html", "수신 분기 확인", "OnNotifyCommand 0x8037e218: 시작·중단·별도 제어 명령 분기. 전체 송신자 등록은 미확정."],
+    ["활성 컨트롤러·콜백", "dispatch-af.html", "일부 확인", "GetOnNotifyCommand 0x803786dc와 LensDriveControl의 간접 전달을 확보. 전역 포인터 바인딩은 미확정."],
+    ["AF 객체·초기화", "dispatch-af.html", "초기화 확인", "CAFSequenceStart → Initialize, EventFlag_Set. K-3의 C++ 팩터리 구조와 동일성은 주장하지 않음."],
+    ["AF 상관·예측", "dispatch-af.html", "다른 경로 확인", "PeakCheck 0x8037b988 및 영역별 피크 처리. K-3의 SAD/SSD 상관 알고리즘 대응은 미확정."],
+    ["디포커스·렌즈 이동", "dispatch-af.html", "일부 확인", "CalcFocus 0x8037d848 → Approximation, LensDriveControl 인자 기록. 디포커스 단위는 미확정."],
+    ["비동기 셔터", "pipeline-report.html", "이벤트 확인", "WaitShutterCompleteEvent 0x8040ee20: 마스크 3, 완료/취소 비트. 실제 타이밍은 미측정."],
+    ["셔터 GPIO·레지스터", "pipeline-report.html", "쓰기 확인", "RequestReleaseShutterClose 0x8042df7c → 0xb0022814에 0. 보드 핀 대응은 미확정."],
+    ["촬영 레시피·모듈 분기", "pipeline-report.html", "일부 확인", "PathSubmit의 타입 1 → JpegPathSubmit. K-3의 레시피 opcode 7과 같은 상위 파서는 미확정."],
+    ["JPEG 상위 경로", "pipeline-report.html", "호출 확인", "StillCaptureImageTuneJpegEnc → ApsJpegCreate. Emulation 이름의 버퍼를 사용하므로 일반 촬영 도달성은 미확정."],
+    ["JPEG 버퍼·양자화", "pipeline-report.html", "계산 확인", "ApsCmpRecalcDqt: Y/C 64개, Q14 배율과 1..255 제한. QtConvert 경로 확보. 하드웨어 테이블 레지스터 미확정."],
+    ["JPEG 인터럽트", "pipeline-report.html", "등록·분기 확인", "ID 0x14 → IsrJpegDone; 상태 0xb0181ca0, 이벤트 0x04/0x40. 실기 발생은 미확인."],
+    ["커스텀 이미지 행렬", "color-algorithms.html", "명령 재실행 검증", "MatrixMultiplication 0x8041bc90: 3×3, +0x1000, >>13. MakeColorMatrix에서 계수 범위 제한."],
+    ["색상 회전", "color-algorithms.html", "명령 재실행 검증", "HueShift 0x8041be94: 3×3, +0x80, >>8. 색상 선택 테이블을 MakeColorMatrix가 참조."],
+    ["Gold·Cross·감마", "color-algorithms.html", "Cross·감마 확인", "CrossProcess·Reversal 함수와 4,096항 테이블 합성 확인. Gold 전용 대응은 미확정."],
+    ["톤·히스토그램", "color-algorithms.html", "계산 확인", "MakeHistogram 0x8041e8d8: byte 입력 → u16 카운터. 입력 영상 도메인·주기는 미확정."],
+    ["색 공간 설정", "color-algorithms.html", "조건 확인", "IsAdobeRGB 0x8041c104는 값 1 검사. MakeColorMatrix에서 변환 행렬 적용. UI 메시지 전체 경로 미확정."],
+    ["WB 이득·하드웨어", "color-algorithms.html", "계산 확인", "SetDevelopPreGain 0x80378010: 네 성분 곱과 >>13. ISP 레지스터 적용은 미확정."],
+    ["RGB→YUV·클리핑", "color-algorithms.html", "설정 경로 확인", "SetupColorMatrix → I43_SetImageProcessing 및 Rgb2YuvPassEx 확보. K-3 B2r/R2y/M2PCLIP 대응 미확정."]
+  ]
+}

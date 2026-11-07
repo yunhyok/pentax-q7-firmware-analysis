@@ -1,0 +1,2813 @@
+{
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "functions": [
+    {
+      "name": "HceThreadXStart",
+      "address": 2147498824,
+      "candidate_end": 2147498832,
+      "file_offset": 1072688,
+      "size": 8,
+      "sha256": "6d64edf91449c1b17746c1ef18afa2eb25c70bdf1322ab3df5a2630993b7e2f1",
+      "transfers": []
+    },
+    {
+      "name": "HceGetResidentMemoryType",
+      "address": 2147499136,
+      "candidate_end": 2147499172,
+      "file_offset": 1073000,
+      "size": 36,
+      "sha256": "1ca71fb9627ddbfd3d8cbf5e4b7983861ba4bdf2ba069a1567eebc335be10320",
+      "transfers": [
+        {
+          "site": 2147499148,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HceGetResourceLocation",
+      "address": 2147499172,
+      "candidate_end": 2147499340,
+      "file_offset": 1073036,
+      "size": 168,
+      "sha256": "d8d9fed351c114e5264dd53dd4ff515a936f8d92dc67dc111d0841ccd490664b",
+      "transfers": [
+        {
+          "site": 2147499288,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147499304,
+          "word": "0c0137c5",
+          "kind": "call",
+          "target": 2147802900,
+          "target_names": [
+            "DmaCfgShadowRead"
+          ]
+        },
+        {
+          "site": 2147499332,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HceGetHostThreadsNumber",
+      "address": 2147499348,
+      "candidate_end": 2147499356,
+      "file_offset": 1073212,
+      "size": 8,
+      "sha256": "c6b547b4671effd3ede0f03e234df32e14a5d678e9d3f846542e3b8c9e864bb0",
+      "transfers": []
+    },
+    {
+      "name": "HceSecondaryBootDelay",
+      "address": 2147499372,
+      "candidate_end": 2147499380,
+      "file_offset": 1073236,
+      "size": 8,
+      "sha256": "207819bf4ebe30789debac4affc1a07c833e14f530eef04dc87a6cf369209b43",
+      "transfers": []
+    },
+    {
+      "name": "HceFastBootReturnTotalSections",
+      "address": 2147499380,
+      "candidate_end": 2147499388,
+      "file_offset": 1073244,
+      "size": 8,
+      "sha256": "7f688255e2c7d3e142c17a5dc559007ce8f75a39f6e24152f0659f00537259df",
+      "transfers": []
+    },
+    {
+      "name": "HceGetSmallPoolSize",
+      "address": 2147499388,
+      "candidate_end": 2147499396,
+      "file_offset": 1073252,
+      "size": 8,
+      "sha256": "6b83309cadba8691efccfe4c1118b8444c5014b4a223f5c4d6d50aa8e9fc0cf5",
+      "transfers": []
+    },
+    {
+      "name": "PoolAllocEx",
+      "address": 2147532584,
+      "candidate_end": 2147533044,
+      "file_offset": 1106448,
+      "size": 460,
+      "sha256": "062ac36501408c0da0dfbcaee00a9110704c87e54a89b8510e51764b3cf59c05",
+      "transfers": [
+        {
+          "site": 2147532724,
+          "word": "0240f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147532756,
+          "word": "0c002d56",
+          "kind": "call",
+          "target": 2147530072,
+          "target_names": [
+            "PoolHandleFlags"
+          ]
+        },
+        {
+          "site": 2147532872,
+          "word": "0c0023f9",
+          "kind": "call",
+          "target": 2147520484,
+          "target_names": [
+            "GetAllocSize"
+          ]
+        },
+        {
+          "site": 2147532880,
+          "word": "0c002d03",
+          "kind": "call",
+          "target": 2147529740,
+          "target_names": [
+            "PoolGetPoolBySize"
+          ]
+        },
+        {
+          "site": 2147532916,
+          "word": "0c033b41",
+          "kind": "call",
+          "target": 2148330756,
+          "target_names": [
+            "_tx_thread_identify"
+          ]
+        },
+        {
+          "site": 2147532960,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2147533020,
+          "word": "0c0023f9",
+          "kind": "call",
+          "target": 2147520484,
+          "target_names": [
+            "GetAllocSize"
+          ]
+        },
+        {
+          "site": 2147533028,
+          "word": "0c002d03",
+          "kind": "call",
+          "target": 2147529740,
+          "target_names": [
+            "PoolGetPoolBySize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PoolInit",
+      "address": 2147533044,
+      "candidate_end": 2147533492,
+      "file_offset": 1106908,
+      "size": 448,
+      "sha256": "b483902b0d8240fc2586c1a15ad8b597e1d9f9d8dfa4c6194060b25c6e83d157",
+      "transfers": [
+        {
+          "site": 2147533072,
+          "word": "0c026267",
+          "kind": "call",
+          "target": 2148108700,
+          "target_names": [
+            "ListReset"
+          ]
+        },
+        {
+          "site": 2147533084,
+          "word": "0c026267",
+          "kind": "call",
+          "target": 2148108700,
+          "target_names": [
+            "ListReset"
+          ]
+        },
+        {
+          "site": 2147533108,
+          "word": "0c004c98",
+          "kind": "call",
+          "target": 2147562080,
+          "target_names": [
+            "DcuGetDramAttributes"
+          ]
+        },
+        {
+          "site": 2147533180,
+          "word": "0c002e31",
+          "kind": "call",
+          "target": 2147530948,
+          "target_names": [
+            "PoolCreateDirect"
+          ]
+        },
+        {
+          "site": 2147533236,
+          "word": "0c0014df",
+          "kind": "call",
+          "target": 2147505020,
+          "target_names": [
+            "PoolInfoInit"
+          ]
+        },
+        {
+          "site": 2147533244,
+          "word": "0c002e9e",
+          "kind": "call",
+          "target": 2147531384,
+          "target_names": [
+            "PoolCreateSubPools"
+          ]
+        },
+        {
+          "site": 2147533312,
+          "word": "0c002e31",
+          "kind": "call",
+          "target": 2147530948,
+          "target_names": [
+            "PoolCreateDirect"
+          ]
+        },
+        {
+          "site": 2147533368,
+          "word": "0c0014df",
+          "kind": "call",
+          "target": 2147505020,
+          "target_names": [
+            "PoolInfoInit"
+          ]
+        },
+        {
+          "site": 2147533376,
+          "word": "0c002e9e",
+          "kind": "call",
+          "target": 2147531384,
+          "target_names": [
+            "PoolCreateSubPools"
+          ]
+        },
+        {
+          "site": 2147533416,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147533440,
+          "word": "0c0336c0",
+          "kind": "call",
+          "target": 2148326144,
+          "target_names": [
+            "_tx_mutex_create"
+          ]
+        },
+        {
+          "site": 2147533484,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PoolCallocEx",
+      "address": 2147533492,
+      "candidate_end": 2147534008,
+      "file_offset": 1107356,
+      "size": 516,
+      "sha256": "583ea853ffb2cb4982f128cd2bce5d90f0d9db86d4ff3baa4962c2e7a37ff643",
+      "transfers": [
+        {
+          "site": 2147533652,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147533684,
+          "word": "0c002d56",
+          "kind": "call",
+          "target": 2147530072,
+          "target_names": [
+            "PoolHandleFlags"
+          ]
+        },
+        {
+          "site": 2147533720,
+          "word": "0c0023f9",
+          "kind": "call",
+          "target": 2147520484,
+          "target_names": [
+            "GetAllocSize"
+          ]
+        },
+        {
+          "site": 2147533728,
+          "word": "0c002d03",
+          "kind": "call",
+          "target": 2147529740,
+          "target_names": [
+            "PoolGetPoolBySize"
+          ]
+        },
+        {
+          "site": 2147533884,
+          "word": "0c033b41",
+          "kind": "call",
+          "target": 2148330756,
+          "target_names": [
+            "_tx_thread_identify"
+          ]
+        },
+        {
+          "site": 2147533928,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2147533984,
+          "word": "0c0023f9",
+          "kind": "call",
+          "target": 2147520484,
+          "target_names": [
+            "GetAllocSize"
+          ]
+        },
+        {
+          "site": 2147533992,
+          "word": "0c002d03",
+          "kind": "call",
+          "target": 2147529740,
+          "target_names": [
+            "PoolGetPoolBySize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DcuInit",
+      "address": 2147556136,
+      "candidate_end": 2147557336,
+      "file_offset": 1130000,
+      "size": 1200,
+      "sha256": "d2887abb7dffa5d9427eedc0f27e691e453d82ec58d70c308347d6bc9c0a99fb",
+      "transfers": [
+        {
+          "site": 2147556200,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556220,
+          "word": "00e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556236,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556280,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556312,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556392,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556424,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556744,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556804,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556820,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556836,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556852,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556872,
+          "word": "01a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556892,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556912,
+          "word": "00a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147556984,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557032,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557076,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557096,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557116,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557136,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557164,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557236,
+          "word": "03c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557260,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147557276,
+          "word": "00a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "DcuInitDram",
+      "address": 2147561552,
+      "candidate_end": 2147561620,
+      "file_offset": 1135416,
+      "size": 68,
+      "sha256": "998df9c68e1ebe3876babba3e335c6a04ade5e2f4284eec426a382704e35a30e",
+      "transfers": [
+        {
+          "site": 2147561580,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147561612,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "DmaCfgShadowRead",
+      "address": 2147802900,
+      "candidate_end": 2147803008,
+      "file_offset": 1376764,
+      "size": 108,
+      "sha256": "e1ac2332bc41b69dc4a50993a538beb1caaa926cd22382acecdf92857fc2c053",
+      "transfers": [
+        {
+          "site": 2147802916,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2147802944,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2147802980,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FcuMediaInfoGet",
+      "address": 2147832848,
+      "candidate_end": 2147833032,
+      "file_offset": 1406712,
+      "size": 184,
+      "sha256": "f7131d4ac79240cebecc4fea986191ca318dc94969035d8587592f872c1677d2",
+      "transfers": [
+        {
+          "site": 2147832920,
+          "word": "0c032fb9",
+          "kind": "call",
+          "target": 2148318948,
+          "target_names": [
+            "_tx_mutex_get"
+          ]
+        },
+        {
+          "site": 2147832980,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        },
+        {
+          "site": 2147833016,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TimingMark",
+      "address": 2148128424,
+      "candidate_end": 2148128440,
+      "file_offset": 1702288,
+      "size": 16,
+      "sha256": "95e9ec7ec951d69bbce66d0a647502dbf6c87b377f7a10b77bb726f1fed7ef15",
+      "transfers": [
+        {
+          "site": 2148128432,
+          "word": "08027505",
+          "kind": "jump",
+          "target": 2148127764,
+          "target_names": [
+            "TimingMarkByLog"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Printf_B",
+      "address": 2148144376,
+      "candidate_end": 2148144672,
+      "file_offset": 1718240,
+      "size": 296,
+      "sha256": "43f8543e32b1b79ec4bedbf9222c09efe77c042b75292b5db05e49a4c6962919",
+      "transfers": [
+        {
+          "site": 2148144452,
+          "word": "0c03f9f7",
+          "kind": "call",
+          "target": 2148526044,
+          "target_names": [
+            "vsnprintf"
+          ]
+        },
+        {
+          "site": 2148144472,
+          "word": "0c03f008",
+          "kind": "call",
+          "target": 2148515872,
+          "target_names": [
+            "strlen"
+          ]
+        },
+        {
+          "site": 2148144548,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2148144572,
+          "word": "0c028463",
+          "kind": "call",
+          "target": 2148143500,
+          "target_names": [
+            "BlockingPrint"
+          ]
+        },
+        {
+          "site": 2148144596,
+          "word": "0c0343a1",
+          "kind": "call",
+          "target": 2148339332,
+          "target_names": [
+            "_tx_is_in_isr_handling"
+          ]
+        },
+        {
+          "site": 2148144624,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148144632,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148144664,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PerfInitGroup",
+      "address": 2148166208,
+      "candidate_end": 2148166544,
+      "file_offset": 1740072,
+      "size": 336,
+      "sha256": "1529a29fe6d510a8f24272cc0a56c952f6a262e3d70dd216ecac86bb8ecec5fd",
+      "transfers": [
+        {
+          "site": 2148166356,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2148166512,
+          "word": "0c029a80",
+          "kind": "call",
+          "target": 2148166144,
+          "target_names": [
+            "PerfInitLogging"
+          ]
+        },
+        {
+          "site": 2148166528,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CpuInit",
+      "address": 2148211376,
+      "candidate_end": 2148211812,
+      "file_offset": 1785240,
+      "size": 436,
+      "sha256": "eee784bd96994c206dfba3c5689de7105c3c6d69b8698e5ec066cbc72ca0474e",
+      "transfers": [
+        {
+          "site": 2148211420,
+          "word": "0c0336c0",
+          "kind": "call",
+          "target": 2148326144,
+          "target_names": [
+            "_tx_mutex_create"
+          ]
+        },
+        {
+          "site": 2148211464,
+          "word": "0c0348fa",
+          "kind": "call",
+          "target": 2148344808,
+          "target_names": [
+            "_tx_isr_register"
+          ]
+        },
+        {
+          "site": 2148211656,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148211672,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148211688,
+          "word": "0802c39a",
+          "kind": "jump",
+          "target": 2148208232,
+          "target_names": [
+            "_Z15CpuPreFetchInitv"
+          ]
+        },
+        {
+          "site": 2148211728,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2148211756,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2148211780,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2148211804,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_tx_thread_initialize",
+      "address": 2148317896,
+      "candidate_end": 2148318080,
+      "file_offset": 1891760,
+      "size": 184,
+      "sha256": "a5b7b62f1f2e3a2446cecb7dfeb0ef7926ce9c5a33ad50ebf23e445826255d7b",
+      "transfers": [
+        {
+          "site": 2148318040,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OsThreadCreateExSilent",
+      "address": 2148324988,
+      "candidate_end": 2148325344,
+      "file_offset": 1898852,
+      "size": 356,
+      "sha256": "c7a91f269cf3124ad1753ae5a943bca624f12ed72aad12b7a03446180d3fbcb4",
+      "transfers": [
+        {
+          "site": 2148325064,
+          "word": "0c033272",
+          "kind": "call",
+          "target": 2148321736,
+          "target_names": [
+            "OsThreadLock"
+          ]
+        },
+        {
+          "site": 2148325228,
+          "word": "0c0334ba",
+          "kind": "call",
+          "target": 2148324072,
+          "target_names": [
+            "OsThreadCreate"
+          ]
+        },
+        {
+          "site": 2148325244,
+          "word": "0c03327d",
+          "kind": "call",
+          "target": 2148321780,
+          "target_names": [
+            "OsThreadUnlock"
+          ]
+        },
+        {
+          "site": 2148325288,
+          "word": "0c03604a",
+          "kind": "call",
+          "target": 2148368680,
+          "target_names": [
+            "_tx_thread_delete"
+          ]
+        },
+        {
+          "site": 2148325316,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2148325336,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OsThreadCreateEx",
+      "address": 2148325344,
+      "candidate_end": 2148325520,
+      "file_offset": 1899208,
+      "size": 176,
+      "sha256": "9c5cb1746ef7699b9c30eea1cc934c44c207b033cb2834d89a2b10f37bf6a65c",
+      "transfers": [
+        {
+          "site": 2148325444,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2148325512,
+          "word": "0803359f",
+          "kind": "jump",
+          "target": 2148324988,
+          "target_names": [
+            "OsThreadCreateExSilent"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OsThreadInit",
+      "address": 2148325520,
+      "candidate_end": 2148325960,
+      "file_offset": 1899384,
+      "size": 440,
+      "sha256": "47d67cf67383eb5c296df01ecaea8af91bf032cf7c6983611e26892e262eac0e",
+      "transfers": [
+        {
+          "site": 2148325612,
+          "word": "0c034a06",
+          "kind": "call",
+          "target": 2148345880,
+          "target_names": [
+            "_tx_event_flags_create"
+          ]
+        },
+        {
+          "site": 2148325636,
+          "word": "0c0336c0",
+          "kind": "call",
+          "target": 2148326144,
+          "target_names": [
+            "_tx_mutex_create"
+          ]
+        },
+        {
+          "site": 2148325728,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2148325776,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148325828,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2148325908,
+          "word": "0c0335f8",
+          "kind": "call",
+          "target": 2148325344,
+          "target_names": [
+            "OsThreadCreateEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_tx_mutex_create",
+      "address": 2148326144,
+      "candidate_end": 2148326584,
+      "file_offset": 1900008,
+      "size": 440,
+      "sha256": "3b010c2777cc8e867ebb0704e4e88e4d3ad67d5390f1e2176ba5c853cde5bcaa",
+      "transfers": [
+        {
+          "site": 2148326232,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148326296,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148326372,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148326412,
+          "word": "0c035d6e",
+          "kind": "call",
+          "target": 2148365752,
+          "target_names": [
+            "OsSysCheckIsMutexValid"
+          ]
+        },
+        {
+          "site": 2148326464,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148326488,
+          "word": "0180f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148326512,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148326556,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2148326568,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "_tx_initialize_high_level",
+      "address": 2148332064,
+      "candidate_end": 2148332340,
+      "file_offset": 1905928,
+      "size": 276,
+      "sha256": "a22572fe3b1dfb70e01052203dde3f1150f9a7ff21da901457bac6de3ce3569b",
+      "transfers": [
+        {
+          "site": 2148332072,
+          "word": "0c032eb2",
+          "kind": "call",
+          "target": 2148317896,
+          "target_names": [
+            "_tx_thread_initialize"
+          ]
+        },
+        {
+          "site": 2148332080,
+          "word": "0c03418d",
+          "kind": "call",
+          "target": 2148337204,
+          "target_names": [
+            "_tx_timer_initialize"
+          ]
+        },
+        {
+          "site": 2148332332,
+          "word": "08035ee1",
+          "kind": "jump",
+          "target": 2148367236,
+          "target_names": [
+            "_tx_isr_initialize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_tx_timer_initialize",
+      "address": 2148337204,
+      "candidate_end": 2148337404,
+      "file_offset": 1911068,
+      "size": 200,
+      "sha256": "c55a255dcdcbb34366251c1fa1addc108ddec0485d9fdb0076c6c856a3533afc",
+      "transfers": [
+        {
+          "site": 2148337280,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148337368,
+          "word": "0c036246",
+          "kind": "call",
+          "target": 2148370712,
+          "target_names": [
+            "_tx_thread_create"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_tx_initialize_kernel_enter",
+      "address": 2148343176,
+      "candidate_end": 2148343284,
+      "file_offset": 1917040,
+      "size": 108,
+      "sha256": "5bd2f7cbaf664d95965c73949bddb0483adc3f596cd2d22ec4531bb164fc73fe",
+      "transfers": [
+        {
+          "site": 2148343232,
+          "word": "0c03674e",
+          "kind": "call",
+          "target": 2148375864,
+          "target_names": [
+            "_tx_initialize_low_level"
+          ]
+        },
+        {
+          "site": 2148343240,
+          "word": "0c033c88",
+          "kind": "call",
+          "target": 2148332064,
+          "target_names": [
+            "_tx_initialize_high_level"
+          ]
+        },
+        {
+          "site": 2148343252,
+          "word": "0c03a51c",
+          "kind": "call",
+          "target": 2148439152,
+          "target_names": [
+            "tx_application_define"
+          ]
+        },
+        {
+          "site": 2148343276,
+          "word": "080366c3",
+          "kind": "jump",
+          "target": 2148375308,
+          "target_names": [
+            "_tx_thread_schedule"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_tx_event_flags_create",
+      "address": 2148345880,
+      "candidate_end": 2148346324,
+      "file_offset": 1919744,
+      "size": 444,
+      "sha256": "c9fe72b1085e68dc2ea53f3e220d739cb67aed08bf3f73f79153694db13e56a3",
+      "transfers": [
+        {
+          "site": 2148345972,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148346036,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148346112,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2148346152,
+          "word": "0c035d05",
+          "kind": "call",
+          "target": 2148365332,
+          "target_names": [
+            "OsSysCheckIsEventValid"
+          ]
+        },
+        {
+          "site": 2148346204,
+          "word": "01e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148346228,
+          "word": "01a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148346252,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148346296,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2148346308,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "_tx_isr_initialize",
+      "address": 2148367236,
+      "candidate_end": 2148367364,
+      "file_offset": 1941100,
+      "size": 128,
+      "sha256": "1e21eeaf89382a88cbab14a9c9055d5ff548eeeffd900085b6f6ed53d47f4f07",
+      "transfers": [
+        {
+          "site": 2148367340,
+          "word": "0c034376",
+          "kind": "call",
+          "target": 2148339160,
+          "target_names": [
+            "_tx_isrhi_initialize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TimerInit",
+      "address": 2148370192,
+      "candidate_end": 2148370240,
+      "file_offset": 1944056,
+      "size": 48,
+      "sha256": "ed8f56677b4ceb89168c255f6e493940ea1d56407ce87f7469550f55d8c80efc",
+      "transfers": [
+        {
+          "site": 2148370232,
+          "word": "0803edd5",
+          "kind": "jump",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_tx_counter_get",
+      "address": 2148375240,
+      "candidate_end": 2148375256,
+      "file_offset": 1949104,
+      "size": 16,
+      "sha256": "5c8d7c92fdf13076924c1562cfb672de3045021320acb1455ca0df6818725f94",
+      "transfers": []
+    },
+    {
+      "name": "_tx_thread_schedule",
+      "address": 2148375308,
+      "candidate_end": 2148375364,
+      "file_offset": 1949172,
+      "size": 56,
+      "sha256": "b78653dd00083b7696428417d2696f61db35bbde5f352d2c16902d34209bd7df",
+      "transfers": [
+        {
+          "site": 2148375356,
+          "word": "080366d3",
+          "kind": "jump",
+          "target": 2148375372,
+          "target_names": [
+            "Done1",
+            "_tx_thread_schedule_loop"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_tx_thread_schedule_loop",
+      "address": 2148375372,
+      "candidate_end": 2148375392,
+      "file_offset": 1949236,
+      "size": 20,
+      "sha256": "7a2ff9010ef32aaf4ae3c04b7f4a958c36a03da1ce8e4e705132aeb29a10a6c0",
+      "transfers": []
+    },
+    {
+      "name": "_tx_initialize_low_level",
+      "address": 2148375864,
+      "candidate_end": 2148375964,
+      "file_offset": 1949728,
+      "size": 100,
+      "sha256": "293772d1dd1f37658e8a5003e374d387c5315608919442cdc75fd54fe8facbc8",
+      "transfers": []
+    },
+    {
+      "name": "AppWaitBootComplete",
+      "address": 2148431036,
+      "candidate_end": 2148431048,
+      "file_offset": 2004900,
+      "size": 12,
+      "sha256": "4c09c7416332584b69ab0572dcd07f6f6f39eb7e1a7067fbea25d923cc8f8215",
+      "transfers": [
+        {
+          "site": 2148431040,
+          "word": "08039d1b",
+          "kind": "jump",
+          "target": 2148430956,
+          "target_names": [
+            "AppGetBootEvent"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppSetBootEvent",
+      "address": 2148431996,
+      "candidate_end": 2148432040,
+      "file_offset": 2005860,
+      "size": 44,
+      "sha256": "2b37bb400d8df3f4e5f7489c27833e25fb3528b3604a01ed104c5046686c7da5",
+      "transfers": [
+        {
+          "site": 2148432016,
+          "word": "0c0363aa",
+          "kind": "call",
+          "target": 2148372136,
+          "target_names": [
+            "_tx_event_flags_set"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppLoadSecondarySegments",
+      "address": 2148433964,
+      "candidate_end": 2148434244,
+      "file_offset": 2007828,
+      "size": 280,
+      "sha256": "9a25b41c02f47b96cf4cd644ac5e04f5120009a2f4686d62d4445a5f427a7cb4",
+      "transfers": [
+        {
+          "site": 2148434012,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2148434020,
+          "word": "0c000f20",
+          "kind": "call",
+          "target": 2147499136,
+          "target_names": [
+            "HceGetResidentMemoryType"
+          ]
+        },
+        {
+          "site": 2148434032,
+          "word": "0c03d33c",
+          "kind": "call",
+          "target": 2148486384,
+          "target_names": [
+            "AppResourceToMediaType"
+          ]
+        },
+        {
+          "site": 2148434044,
+          "word": "0c015504",
+          "kind": "call",
+          "target": 2147832848,
+          "target_names": [
+            "FcuMediaInfoGet"
+          ]
+        },
+        {
+          "site": 2148434060,
+          "word": "0c03a6e0",
+          "kind": "call",
+          "target": 2148440960,
+          "target_names": [
+            "CreateInflater"
+          ]
+        },
+        {
+          "site": 2148434100,
+          "word": "0c039e48",
+          "kind": "call",
+          "target": 2148432160,
+          "target_names": [
+            "AppLoadFinish"
+          ]
+        },
+        {
+          "site": 2148434128,
+          "word": "0c035f01",
+          "kind": "call",
+          "target": 2148367364,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2148434144,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2148434168,
+          "word": "0c039fce",
+          "kind": "call",
+          "target": 2148433720,
+          "target_names": [
+            "AppAfbLoader"
+          ]
+        },
+        {
+          "site": 2148434200,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2148434208,
+          "word": "0c039f59",
+          "kind": "call",
+          "target": 2148433252,
+          "target_names": [
+            "AppFbLoader"
+          ]
+        },
+        {
+          "site": 2148434236,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppBootSectionInit",
+      "address": 2148435840,
+      "candidate_end": 2148437060,
+      "file_offset": 2009704,
+      "size": 1220,
+      "sha256": "9c7acfa67bd5a39792d04be07dda133fc6ac29d017dc912801c292009eed8f91",
+      "transfers": [
+        {
+          "site": 2148435880,
+          "word": "0c000f5d",
+          "kind": "call",
+          "target": 2147499380,
+          "target_names": [
+            "HceFastBootReturnTotalSections"
+          ]
+        },
+        {
+          "site": 2148435900,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2148435908,
+          "word": "0c000ecd",
+          "kind": "call",
+          "target": 2147498804,
+          "target_names": [
+            "HceFastBootGetConfig"
+          ]
+        },
+        {
+          "site": 2148435936,
+          "word": "0c000e9e",
+          "kind": "call",
+          "target": 2147498616,
+          "target_names": [
+            "HceFastBootSectionMarkers"
+          ]
+        },
+        {
+          "site": 2148435952,
+          "word": "0c039d1b",
+          "kind": "call",
+          "target": 2148430956,
+          "target_names": [
+            "AppGetBootEvent"
+          ]
+        },
+        {
+          "site": 2148436068,
+          "word": "0c005158",
+          "kind": "call",
+          "target": 2147566944,
+          "target_names": [
+            "DcuMemoryProtectionConfig"
+          ]
+        },
+        {
+          "site": 2148436080,
+          "word": "0c00523d",
+          "kind": "call",
+          "target": 2147567860,
+          "target_names": [
+            "DcuMemoryProtectionSetHandler"
+          ]
+        },
+        {
+          "site": 2148436092,
+          "word": "0c0051fb",
+          "kind": "call",
+          "target": 2147567596,
+          "target_names": [
+            "DcuMemoryProtectionEnable"
+          ]
+        },
+        {
+          "site": 2148436112,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2148436120,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2148436384,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148436416,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2148436444,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2148436456,
+          "word": "0c039e1f",
+          "kind": "call",
+          "target": 2148431996,
+          "target_names": [
+            "AppSetBootEvent"
+          ]
+        },
+        {
+          "site": 2148436476,
+          "word": "0c039e2a",
+          "kind": "call",
+          "target": 2148432040,
+          "target_names": [
+            "AppSetBootEventBySection"
+          ]
+        },
+        {
+          "site": 2148436528,
+          "word": "0c039aea",
+          "kind": "call",
+          "target": 2148428712,
+          "target_names": [
+            "AppStartHcePreBootProc"
+          ]
+        },
+        {
+          "site": 2148436576,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148436596,
+          "word": "0c001123",
+          "kind": "call",
+          "target": 2147501196,
+          "target_names": [
+            "CppSetupUnexpected"
+          ]
+        },
+        {
+          "site": 2148436612,
+          "word": "0c039d32",
+          "kind": "call",
+          "target": 2148431048,
+          "target_names": [
+            "AppGetBootEventBySection"
+          ]
+        },
+        {
+          "site": 2148436628,
+          "word": "0c0051fb",
+          "kind": "call",
+          "target": 2147567596,
+          "target_names": [
+            "DcuMemoryProtectionEnable"
+          ]
+        },
+        {
+          "site": 2148436636,
+          "word": "0c00523d",
+          "kind": "call",
+          "target": 2147567860,
+          "target_names": [
+            "DcuMemoryProtectionSetHandler"
+          ]
+        },
+        {
+          "site": 2148436652,
+          "word": "0c13cd13",
+          "kind": "call",
+          "target": 2152674380,
+          "target_names": [
+            "__register_frame"
+          ]
+        },
+        {
+          "site": 2148436672,
+          "word": "0c00043a",
+          "kind": "call",
+          "target": 2147487976,
+          "target_names": [
+            "HceFastBootQueryMountPartition"
+          ]
+        },
+        {
+          "site": 2148436692,
+          "word": "0c03a110",
+          "kind": "call",
+          "target": 2148435008,
+          "target_names": [
+            "AppClearBootEvent"
+          ]
+        },
+        {
+          "site": 2148436744,
+          "word": "0c03359f",
+          "kind": "call",
+          "target": 2148324988,
+          "target_names": [
+            "OsThreadCreateExSilent"
+          ]
+        },
+        {
+          "site": 2148436756,
+          "word": "0c039d1b",
+          "kind": "call",
+          "target": 2148430956,
+          "target_names": [
+            "AppGetBootEvent"
+          ]
+        },
+        {
+          "site": 2148436796,
+          "word": "0c03a1d2",
+          "kind": "call",
+          "target": 2148435784,
+          "target_names": [
+            "AppInitFinished"
+          ]
+        },
+        {
+          "site": 2148436812,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2148436820,
+          "word": "0c039e1f",
+          "kind": "call",
+          "target": 2148431996,
+          "target_names": [
+            "AppSetBootEvent"
+          ]
+        },
+        {
+          "site": 2148436840,
+          "word": "0c039afc",
+          "kind": "call",
+          "target": 2148428784,
+          "target_names": [
+            "AppPrintVersion"
+          ]
+        },
+        {
+          "site": 2148436880,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2148436896,
+          "word": "0c039e1f",
+          "kind": "call",
+          "target": 2148431996,
+          "target_names": [
+            "AppSetBootEvent"
+          ]
+        },
+        {
+          "site": 2148436920,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2148436936,
+          "word": "0c01df9d",
+          "kind": "call",
+          "target": 2147974772,
+          "target_names": [
+            "_fx_media_close"
+          ]
+        },
+        {
+          "site": 2148436956,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2148436972,
+          "word": "0c03a1d2",
+          "kind": "call",
+          "target": 2148435784,
+          "target_names": [
+            "AppInitFinished"
+          ]
+        },
+        {
+          "site": 2148436988,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2148436996,
+          "word": "0c039e1f",
+          "kind": "call",
+          "target": 2148431996,
+          "target_names": [
+            "AppSetBootEvent"
+          ]
+        },
+        {
+          "site": 2148437016,
+          "word": "0c000e9e",
+          "kind": "call",
+          "target": 2147498616,
+          "target_names": [
+            "HceFastBootSectionMarkers"
+          ]
+        },
+        {
+          "site": 2148437052,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppBootPrimary",
+      "address": 2148437060,
+      "candidate_end": 2148437572,
+      "file_offset": 2010924,
+      "size": 512,
+      "sha256": "98b92d9b0ec0021b46838d2407817b6e5014f55d60f77732df42da9f46d75c99",
+      "transfers": [
+        {
+          "site": 2148437096,
+          "word": "0c000f5d",
+          "kind": "call",
+          "target": 2147499380,
+          "target_names": [
+            "HceFastBootReturnTotalSections"
+          ]
+        },
+        {
+          "site": 2148437136,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2148437160,
+          "word": "0c000f5d",
+          "kind": "call",
+          "target": 2147499380,
+          "target_names": [
+            "HceFastBootReturnTotalSections"
+          ]
+        },
+        {
+          "site": 2148437192,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2148437216,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2148437236,
+          "word": "0c034a06",
+          "kind": "call",
+          "target": 2148345880,
+          "target_names": [
+            "_tx_event_flags_create"
+          ]
+        },
+        {
+          "site": 2148437244,
+          "word": "0c039e1f",
+          "kind": "call",
+          "target": 2148431996,
+          "target_names": [
+            "AppSetBootEvent"
+          ]
+        },
+        {
+          "site": 2148437252,
+          "word": "0c039e1f",
+          "kind": "call",
+          "target": 2148431996,
+          "target_names": [
+            "AppSetBootEvent"
+          ]
+        },
+        {
+          "site": 2148437260,
+          "word": "0c039e1f",
+          "kind": "call",
+          "target": 2148431996,
+          "target_names": [
+            "AppSetBootEvent"
+          ]
+        },
+        {
+          "site": 2148437268,
+          "word": "0c03a1e0",
+          "kind": "call",
+          "target": 2148435840,
+          "target_names": [
+            "AppBootSectionInit"
+          ]
+        },
+        {
+          "site": 2148437276,
+          "word": "0c0137c5",
+          "kind": "call",
+          "target": 2147802900,
+          "target_names": [
+            "DmaCfgShadowRead"
+          ]
+        },
+        {
+          "site": 2148437300,
+          "word": "0c000f29",
+          "kind": "call",
+          "target": 2147499172,
+          "target_names": [
+            "HceGetResourceLocation"
+          ]
+        },
+        {
+          "site": 2148437320,
+          "word": "0c000f5b",
+          "kind": "call",
+          "target": 2147499372,
+          "target_names": [
+            "HceSecondaryBootDelay"
+          ]
+        },
+        {
+          "site": 2148437328,
+          "word": "0c03a00b",
+          "kind": "call",
+          "target": 2148433964,
+          "target_names": [
+            "AppLoadSecondarySegments"
+          ]
+        },
+        {
+          "site": 2148437336,
+          "word": "0c039d2f",
+          "kind": "call",
+          "target": 2148431036,
+          "target_names": [
+            "AppWaitBootComplete"
+          ]
+        },
+        {
+          "site": 2148437348,
+          "word": "0c09af7a",
+          "kind": "call",
+          "target": 2150022632,
+          "target_names": [
+            "HostPostMessage"
+          ]
+        },
+        {
+          "site": 2148437364,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2148437388,
+          "word": "0c029a90",
+          "kind": "call",
+          "target": 2148166208,
+          "target_names": [
+            "PerfInitGroup"
+          ]
+        },
+        {
+          "site": 2148437432,
+          "word": "0c000f20",
+          "kind": "call",
+          "target": 2147499136,
+          "target_names": [
+            "HceGetResidentMemoryType"
+          ]
+        },
+        {
+          "site": 2148437444,
+          "word": "0c03d33c",
+          "kind": "call",
+          "target": 2148486384,
+          "target_names": [
+            "AppResourceToMediaType"
+          ]
+        },
+        {
+          "site": 2148437512,
+          "word": "0c04ba2d",
+          "kind": "call",
+          "target": 2148722868,
+          "target_names": [
+            "CopPrimaryBoot"
+          ]
+        },
+        {
+          "site": 2148437540,
+          "word": "0c015504",
+          "kind": "call",
+          "target": 2147832848,
+          "target_names": [
+            "FcuMediaInfoGet"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tx_application_define",
+      "address": 2148439152,
+      "candidate_end": 2148439360,
+      "file_offset": 2013016,
+      "size": 208,
+      "sha256": "d2e158138f6d4ce6e08e8cd2ffaa9e5a3e9a3ae276ccaef35b949fae97a11e12",
+      "transfers": [
+        {
+          "site": 2148439164,
+          "word": "0c02c6ac",
+          "kind": "call",
+          "target": 2148211376,
+          "target_names": [
+            "CpuInit"
+          ]
+        },
+        {
+          "site": 2148439192,
+          "word": "0c004c14",
+          "kind": "call",
+          "target": 2147561552,
+          "target_names": [
+            "DcuInitDram"
+          ]
+        },
+        {
+          "site": 2148439216,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148439224,
+          "word": "0c000f5f",
+          "kind": "call",
+          "target": 2147499388,
+          "target_names": [
+            "HceGetSmallPoolSize"
+          ]
+        },
+        {
+          "site": 2148439236,
+          "word": "0c00303d",
+          "kind": "call",
+          "target": 2147533044,
+          "target_names": [
+            "PoolInit"
+          ]
+        },
+        {
+          "site": 2148439244,
+          "word": "0c000f55",
+          "kind": "call",
+          "target": 2147499348,
+          "target_names": [
+            "HceGetHostThreadsNumber"
+          ]
+        },
+        {
+          "site": 2148439252,
+          "word": "0c033624",
+          "kind": "call",
+          "target": 2148325520,
+          "target_names": [
+            "OsThreadInit"
+          ]
+        },
+        {
+          "site": 2148439260,
+          "word": "0c0361c4",
+          "kind": "call",
+          "target": 2148370192,
+          "target_names": [
+            "TimerInit"
+          ]
+        },
+        {
+          "site": 2148439288,
+          "word": "0c0046ca",
+          "kind": "call",
+          "target": 2147556136,
+          "target_names": [
+            "DcuInit"
+          ]
+        },
+        {
+          "site": 2148439336,
+          "word": "0c0335f8",
+          "kind": "call",
+          "target": 2148325344,
+          "target_names": [
+            "OsThreadCreateEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppResourceToMediaType",
+      "address": 2148486384,
+      "candidate_end": 2148486632,
+      "file_offset": 2060248,
+      "size": 248,
+      "sha256": "8636b0244b4e607ab49d7e16dee7ab1892db4bde213c8afcfe3da5cde694b8b8",
+      "transfers": [
+        {
+          "site": 2148486424,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148486448,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memset",
+      "address": 2148513620,
+      "candidate_end": 2148513788,
+      "file_offset": 2087484,
+      "size": 168,
+      "sha256": "0e5fcb67b706d038aa7850bebf241876e0cc86081081de6c3ce49955dbfb9e56",
+      "transfers": []
+    },
+    {
+      "name": "LensService_LensProcessWait",
+      "address": 2148594928,
+      "candidate_end": 2148594936,
+      "file_offset": 2168792,
+      "size": 8,
+      "sha256": "48e9d69277c015bd4e150f702a60199df35011a14ea699bdb7ed79e57d39713f",
+      "transfers": [
+        {
+          "site": 2148594928,
+          "word": "0804983f",
+          "kind": "jump",
+          "target": 2148688124,
+          "target_names": [
+            "Thread_Delay"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_SetLensState",
+      "address": 2148596316,
+      "candidate_end": 2148596328,
+      "file_offset": 2170180,
+      "size": 12,
+      "sha256": "4f98d5f4d2dfd3521b895bb00d9aec68eaabd1f86f8ac10509afe9d0e1c367dc",
+      "transfers": []
+    },
+    {
+      "name": "LensService_GetLensFunctionMapEnableOperation",
+      "address": 2148597232,
+      "candidate_end": 2148597296,
+      "file_offset": 2171096,
+      "size": 64,
+      "sha256": "8560e94bec93d88445d64f8e3c1e3e26a46e657c352ad79193f389b9849fba5c",
+      "transfers": []
+    },
+    {
+      "name": "LensService_LensCommunication",
+      "address": 2148602388,
+      "candidate_end": 2148602708,
+      "file_offset": 2176252,
+      "size": 320,
+      "sha256": "ac2903b68cbb472022ba2f4312f0b647aa67e63c85913c3f9f387d2e91b82d6f",
+      "transfers": [
+        {
+          "site": 2148602480,
+          "word": "0c045d67",
+          "kind": "call",
+          "target": 2148627868,
+          "target_names": [
+            "LensService_SetLensMapCommunicationSendDataSize"
+          ]
+        },
+        {
+          "site": 2148602500,
+          "word": "0c045d78",
+          "kind": "call",
+          "target": 2148627936,
+          "target_names": [
+            "LensService_SetLensMapCommunicationReceiveDataSize"
+          ]
+        },
+        {
+          "site": 2148602520,
+          "word": "0c045d89",
+          "kind": "call",
+          "target": 2148628004,
+          "target_names": [
+            "LensService_SetLensMapCommunicationComMode"
+          ]
+        },
+        {
+          "site": 2148602580,
+          "word": "0c044314",
+          "kind": "call",
+          "target": 2148600912,
+          "target_names": [
+            "LensService_LensCommunicationBase"
+          ]
+        },
+        {
+          "site": 2148602684,
+          "word": "0c043f7c",
+          "kind": "call",
+          "target": 2148597232,
+          "target_names": [
+            "LensService_GetLensFunctionMapEnableOperation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_GetReleaseShutterDelayTable",
+      "address": 2148608772,
+      "candidate_end": 2148608820,
+      "file_offset": 2182636,
+      "size": 48,
+      "sha256": "b5b5dadbf2fdebc5c35e2300876bf5d01fe05616857175087b3d962b02e8f606",
+      "transfers": []
+    },
+    {
+      "name": "LensDataServer_GetShutterMoveStatus",
+      "address": 2148608820,
+      "candidate_end": 2148608844,
+      "file_offset": 2182684,
+      "size": 24,
+      "sha256": "abcdf6f34d4d5a4ebddc588fac1c44340f40d2ac3a28231b91488397ae0b6e34",
+      "transfers": []
+    },
+    {
+      "name": "LensDataServer_GetShutterStatus",
+      "address": 2148608844,
+      "candidate_end": 2148608868,
+      "file_offset": 2182708,
+      "size": 24,
+      "sha256": "97fe1eddc03a5ff8ee5b95c7dd77e49662899666f58fa834ebb67271ed001f1c",
+      "transfers": []
+    },
+    {
+      "name": "LensDataServer_ToolReceiveDataConverterPRISTD_WORD",
+      "address": 2148609384,
+      "candidate_end": 2148609452,
+      "file_offset": 2183248,
+      "size": 68,
+      "sha256": "dd8367f6acd4232bf7559f50a0c62afa307c8352494b70038d88fb1fc19c5d7b",
+      "transfers": []
+    },
+    {
+      "name": "LensDataServer_GetMaxShutterSpeedTimeValue",
+      "address": 2148610636,
+      "candidate_end": 2148610680,
+      "file_offset": 2184500,
+      "size": 44,
+      "sha256": "2db1614e223d91eda24366b9809276147469847a680230342222217fca025da5",
+      "transfers": [
+        {
+          "site": 2148610652,
+          "word": "0c044b5a",
+          "kind": "call",
+          "target": 2148609384,
+          "target_names": [
+            "LensDataServer_ToolReceiveDataConverterPRISTD_WORD"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_SetReleaseShutterClose",
+      "address": 2148612092,
+      "candidate_end": 2148612108,
+      "file_offset": 2185956,
+      "size": 16,
+      "sha256": "5611eff76cb45bf7b1660c1b19d43a276a1cdc5acc2d680fd292b3139882820a",
+      "transfers": []
+    },
+    {
+      "name": "LensDataServer_SetReleaseShutterOpen",
+      "address": 2148612192,
+      "candidate_end": 2148612292,
+      "file_offset": 2186056,
+      "size": 100,
+      "sha256": "517d4cb68635bde1a75cf5ab81ead9d744f664f47044e5396bd537cb0dcf65b2",
+      "transfers": [
+        {
+          "site": 2148612236,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148612264,
+          "word": "0c043e97",
+          "kind": "call",
+          "target": 2148596316,
+          "target_names": [
+            "LensService_SetLensState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_SetReleaseShutterOpenMoveOnly",
+      "address": 2148612292,
+      "candidate_end": 2148612444,
+      "file_offset": 2186156,
+      "size": 152,
+      "sha256": "a51f04306780ef07aa6cfea861be981bd8aaf37ab6955bfc7e7056985c4be949",
+      "transfers": [
+        {
+          "site": 2148612324,
+          "word": "0c045abe",
+          "kind": "call",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148612392,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_SetReleaseShutterCloseMoveOnly",
+      "address": 2148612444,
+      "candidate_end": 2148612596,
+      "file_offset": 2186308,
+      "size": 152,
+      "sha256": "42c313a271f57a1000a8e6b5e8fa7449c2f151d37961ed6875eeee15f32380df",
+      "transfers": [
+        {
+          "site": 2148612476,
+          "word": "0c045abe",
+          "kind": "call",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148612544,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComSetReleaseShutterOpen",
+      "address": 2148612596,
+      "candidate_end": 2148612672,
+      "file_offset": 2186460,
+      "size": 76,
+      "sha256": "8ce6f1a5106fba52c2ed12cb6949d6bef369108bc319c57604ce526c13f1e402",
+      "transfers": [
+        {
+          "site": 2148612636,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComSetReleaseShutterClose",
+      "address": 2148612672,
+      "candidate_end": 2148612748,
+      "file_offset": 2186536,
+      "size": 76,
+      "sha256": "c15918e3e18ee8bb1900191a2525a387f9b39ec45c2c824eb023c6797ece7968",
+      "transfers": [
+        {
+          "site": 2148612712,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComSetReleaseDummyShutterCloseOpen",
+      "address": 2148612748,
+      "candidate_end": 2148612896,
+      "file_offset": 2186612,
+      "size": 148,
+      "sha256": "860dec50528199127f99a4505bb2c599070ab841eb89e50a9b386185d3624e88",
+      "transfers": [
+        {
+          "site": 2148612784,
+          "word": "0c043e97",
+          "kind": "call",
+          "target": 2148596316,
+          "target_names": [
+            "LensService_SetLensState"
+          ]
+        },
+        {
+          "site": 2148612812,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148612820,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148612848,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148612860,
+          "word": "0c043e97",
+          "kind": "call",
+          "target": 2148596316,
+          "target_names": [
+            "LensService_SetLensState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComGetReleaseShutterDelayTable",
+      "address": 2148613668,
+      "candidate_end": 2148613804,
+      "file_offset": 2187532,
+      "size": 136,
+      "sha256": "3b46e69e0a328278c7326122ab2cc29289473517b960d9a907743d763cae3be7",
+      "transfers": [
+        {
+          "site": 2148613720,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_SetShutterInit",
+      "address": 2148615772,
+      "candidate_end": 2148615832,
+      "file_offset": 2189636,
+      "size": 60,
+      "sha256": "71c787976cc837afae08c4963c203a17631979348747cb3b67f7d5e12070d895",
+      "transfers": [
+        {
+          "site": 2148615812,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ExGetLensAttached",
+      "address": 2148616340,
+      "candidate_end": 2148616376,
+      "file_offset": 2190204,
+      "size": 36,
+      "sha256": "0762cc2a7a40568b2c04955f482b8a7e15cd4ab296542e396a4352fc5a6aff93",
+      "transfers": [
+        {
+          "site": 2148616348,
+          "word": "0c043e9a",
+          "kind": "call",
+          "target": 2148596328,
+          "target_names": [
+            "LensService_GetLensCommunicationCompleteState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ExGetShutterEnable",
+      "address": 2148623448,
+      "candidate_end": 2148623528,
+      "file_offset": 2197312,
+      "size": 80,
+      "sha256": "2ac08eba0e649649526dedbfefe46146b25ff1bdeb5cb5eac4029023d0dce8f0",
+      "transfers": [
+        {
+          "site": 2148623456,
+          "word": "0c045225",
+          "kind": "call",
+          "target": 2148616340,
+          "target_names": [
+            "LensDataServer_ExGetLensAttached"
+          ]
+        },
+        {
+          "site": 2148623500,
+          "word": "0c043f7c",
+          "kind": "call",
+          "target": 2148597232,
+          "target_names": [
+            "LensService_GetLensFunctionMapEnableOperation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensComThreadService_LensCommunicationSendMessage",
+      "address": 2148625144,
+      "candidate_end": 2148625188,
+      "file_offset": 2199008,
+      "size": 44,
+      "sha256": "57b58fe4d1b531670dec43f7c53e00714868877a4d2d23c2b2bdaaf0c0af7a18",
+      "transfers": [
+        {
+          "site": 2148625168,
+          "word": "0c049743",
+          "kind": "call",
+          "target": 2148687116,
+          "target_names": [
+            "MessageQueue_Send"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ShutterEventCallBack",
+      "address": 2148644140,
+      "candidate_end": 2148644156,
+      "file_offset": 2218004,
+      "size": 16,
+      "sha256": "6bd61cbb0e5abea09163a4b0ec250221329d498a3864ebb5b8374d82210021c7",
+      "transfers": [
+        {
+          "site": 2148644148,
+          "word": "08103baa",
+          "kind": "jump",
+          "target": 2151739048,
+          "target_names": [
+            "CaptureSystemService_SetShutterCompleteEvent"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StillSensor_ShutterCancel",
+      "address": 2148645128,
+      "candidate_end": 2148645268,
+      "file_offset": 2218992,
+      "size": 140,
+      "sha256": "914c417e46523c594e875390117354713bfea05e1b7e960057222bc5959fa60c",
+      "transfers": [
+        {
+          "site": 2148645140,
+          "word": "0c10433c",
+          "kind": "call",
+          "target": 2151746800,
+          "target_names": [
+            "GetAutoExposureConfig"
+          ]
+        },
+        {
+          "site": 2148645200,
+          "word": "08103bae",
+          "kind": "jump",
+          "target": 2151739064,
+          "target_names": [
+            "CaptureSystemService_SetShutterCancelEvent"
+          ]
+        },
+        {
+          "site": 2148645220,
+          "word": "0c080afd",
+          "kind": "call",
+          "target": 2149592052,
+          "target_names": [
+            "SensorUpdateCurrentSubModeNumber"
+          ]
+        },
+        {
+          "site": 2148645240,
+          "word": "0c0f89ec",
+          "kind": "call",
+          "target": 2151557040,
+          "target_names": [
+            "Imx144Driver_GetSHRMinimumLimit"
+          ]
+        },
+        {
+          "site": 2148645260,
+          "word": "080f7ef0",
+          "kind": "jump",
+          "target": 2151545792,
+          "target_names": [
+            "SerserDriver_ForseSetSsBreak"
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ]
+}

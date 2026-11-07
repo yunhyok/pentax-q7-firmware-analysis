@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="PENTAX Q7 v1.01: 압축 복원, ThreadX 초기화, AF·셔터·JPEG·색 처리의 정적 분석과 재현 검증"><title>Q7 — ThreadX에서 영상 처리까지</title><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
+<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08</p><h1>ThreadX에서<br><span>영상 처리까지</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="index.html">초기 구조 분석</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></p></div><aside class="milestone"><strong>448</strong><span>압축 블록 복원</span><strong>300</strong><span>선별 함수 C 출력</span><strong>6 / 6</strong><span>행렬 명령 재실행 일치</span></aside></header>
+<nav aria-label="문서 목차"><a href="#recovery">코드 복원</a><a href="#threadx">ThreadX</a><a href="#af">AF</a><a href="#shutter">셔터</a><a href="#jpeg">JPEG</a><a href="#color">색 처리</a><a href="#comparison">K-3 대조</a><a href="#functions">함수 근거</a><a href="#reproduce">재현</a></nav>
+<main>
+<section id="recovery"><p class="eyebrow">01 / RECOVERED CODE</p><h2>주소·이름과 압축 코드를 연결하다</h2><p>{{decode}} <a href="analysis/main-symbols.json">[S1]</a> <a href="analysis/segment-decode.json">[S2]</a></p>
+<figure><ol class="flow"><li><strong>공식 BIN</strong><span>SHA-256 고정<br>공식 배포본과 동일</span></li><li><strong>FAT16 리소스</strong><span>ADR + OFT + STR<br>주소·이름 연결</span></li><li><strong>조회표 + LZ 복원</strong><span>블록별 경계 검사<br>이전 블록 참조 보존</span></li><li><strong>MIPS 분석 이미지</strong><span>ELF 가상주소 적용<br>명령어·C 교차 확인</span></li></ol><figcaption>생성한 ELF는 분석용 합성 이미지입니다. 카메라 업데이트 파일이 아닙니다. 원본 파일 오프셋과 복원 후 가상주소(VA)는 별개의 좌표입니다.</figcaption></figure>
+<div class="table-wrap"><table><caption>복원한 네 구간 — 입력 파일 범위와 출력 VA 범위는 끝값 제외</caption><thead><tr><th>구간</th><th>압축 파일 범위</th><th>복원 VA 범위</th><th>출력 bytes</th><th>블록</th></tr></thead><tbody>{{segments}}</tbody></table></div>
+<p>총 복원 크기는 <strong>11,266,048 bytes</strong>입니다. FAT16의 선언 볼륨 크기는 업데이트 파일보다 크므로 전체 파일시스템이 완전하다고 보지는 않았습니다. 이번에 사용한 세 심볼 파일의 할당 체인과 문자열 경계는 검사했습니다. <a href="analysis/main-symbols.json">[S1: geometry, sources]</a></p>
+<p class="note">초기 보고서의 1,504개 FUNC는 ELF 심볼표의 집계입니다. 이번의 122,154개 주소·이름 레코드와 300개 선별 함수는 서로 다른 집합이며 합산하지 않습니다.</p></section>
+
+<section id="threadx"><p class="eyebrow">02 / KERNEL INITIALIZATION</p><h2>초기화와 스레드 진입점</h2><p>{{threadx}} <a href="analysis/deep-evidence.json">[S3: 0x800d1d88]</a></p>
+{{threadx_diagram}}
+<p>{{boot}} <a href="analysis/deep-evidence.json">[S3: 0x800e9470]</a></p>
+<div class="table-wrap"><table><caption>명령어에서 확인한 주요 전이</caption><thead><tr><th>명령 VA</th><th>종류</th><th>대상 / 인자</th></tr></thead><tbody><tr><td><code>0x800d1dc0</code></td><td>jal</td><td>_tx_initialize_low_level · 0x800d9d38</td></tr><tr><td><code>0x800d1dc8</code></td><td>jal</td><td>_tx_initialize_high_level · 0x800cf220</td></tr><tr><td><code>0x800d1dd4</code></td><td>jal</td><td>tx_application_define · 0x800e9470</td></tr><tr><td><code>0x800d1dec</code></td><td>j</td><td>_tx_thread_schedule · 0x800d9b0c</td></tr><tr><td><code>0x800e9528</code></td><td>jal / 진입점 인자</td><td>OsThreadCreateEx(…, AppBootPrimary=0x800e8c44, 0, 0x3ee, 0x3ee, 3, 1)</td></tr></tbody></table></div>
+<p class="note">첫 ELF(E01)는 Zburn/Main.c 이름을 포함한 별도 이미지입니다. 위 주소는 카메라 본체 E03 기준입니다. E01의 초기화 주소를 섞지 않았습니다. 리셋 벡터에서 위 진입점까지의 전체 부팅 경로는 이번 분석 범위 밖입니다.</p></section>
+
+<section id="af"><p class="eyebrow">03 / AUTOFOCUS</p><h2>명령 분기에서 피크 검사·렌즈 요청까지</h2><p>{{af}} <a href="analysis/deep-evidence.json">[S3: OnNotifyCommand, AfMain_Thread_sub]</a></p>
+{{af_diagram}}
+<div class="table-wrap"><table><caption>AF에서 확인한 연결과 남은 경계</caption><thead><tr><th>위치</th><th>관찰</th></tr></thead><tbody><tr><td><code>0x8037e268 / 0x8037e2dc</code></td><td>명령 수신 분기 → CAFSequenceStart</td></tr><tr><td><code>0x8037e1c4 / 0x8037e1d8</code></td><td>Initialize 호출 / EventFlag_Set 호출</td></tr><tr><td><code>0x80384658 / 0x80384684 / 0x80384804</code></td><td>AF 작업 함수 → PeakCheck</td></tr><tr><td><code>0x8037dccc</code></td><td>CalcFocus → Approximation. 부동소수점 보조 함수와 렌즈 정보도 사용</td></tr><tr><td><code>0x8037ec14 / 0x8037ec60 / 0x8037ecc4 / 0x8037ed24</code></td><td>전역 함수 포인터를 통한 간접 점프. 대상 미확정</td></tr></tbody></table></div>
+<p>{{af_limit}} <a href="analysis/decompilation.json">[S4: functions_with_unrecovered_indirect_warnings]</a></p></section>
+
+<section id="shutter"><p class="eyebrow">04 / SHUTTER</p><h2>통신·레지스터·완료 이벤트를 구분하다</h2><p>{{shutter}} <a href="analysis/deep-evidence.json">[S3: CaptureLensControlService, LensDataServer]</a></p>
+<div class="table-wrap"><table><caption>셔터 경로의 서로 다른 동작</caption><thead><tr><th>함수</th><th>주소</th><th>확인한 동작</th></tr></thead><tbody><tr><td>RequestReleaseShutterClose</td><td><code>0x8042df7c</code></td><td>MMIO 0xb0022814 ← 0</td></tr><tr><td>ReqestReleaseShutterOpen</td><td><code>0x8042df90</code></td><td>마운트 상태 대기 후 LensDataServer_SetReleaseShutterOpen으로 이동</td></tr><tr><td>SetReleaseShutterClose</td><td><code>0x801137fc</code></td><td>RAM 상태 바이트 0x80c2aa65 ← 1. 위 MMIO 함수와 별개</td></tr><tr><td>SetReleaseShutterOpen</td><td><code>0x80113860</code></td><td>LensCommunication(0,1,4,3,…) 후 LensState(3)</td></tr><tr><td>WaitShutterCompleteEvent</td><td><code>0x8040ee20</code></td><td>이벤트 마스크 3 대기. 비트 1 없이 비트 2가 있으면 취소 분기</td></tr><tr><td>ShutterEventCallBack</td><td><code>0x8011b52c</code></td><td>SetShutterCompleteEvent(0x8040eea8)로 꼬리 점프</td></tr></tbody></table></div></section>
+
+<section id="jpeg"><p class="eyebrow">05 / JPEG</p><h2>양자화 계산과 인터럽트까지</h2><p>{{jpeg}} <a href="analysis/deep-evidence.json">[S3: ApsCmpRecalcDqt, PathSetJpeg, QtConvert]</a></p>
+{{jpeg_diagram}}
+<pre aria-label="분석으로 재구성한 양자화 계산식"><code>scale = input_scale &amp; 0xffff
+QY[i] = clamp((scale * baseY[i]) &gt;&gt; 14, 1, 255)
+QC[i] = clamp((scale * baseC[i]) &gt;&gt; 14, 1, 255)     // i = 0..63
+
+QtConvert: inverse-zigzag 순서로 64개 항목 변환
+  mode == 1 : 원본 byte를 32비트 항목에 저장
+  그 외     : max(1, 0x4000 / source_byte); 0 입력은 trap</code></pre>
+<p>StillCaptureImageTuneJpegEnc(0x802de3e0)는 ApsCmpRecalcDqt와 ApsJpegCreate를 호출하지만 Emulation 이름의 입출력 버퍼를 사용합니다. 일반 촬영의 유일한 JPEG 경로로 단정하지 않았습니다. PathSubmit은 경로 타입이 1일 때 JpegPathSubmit을 선택하고 이 함수는 객체 +0x3c4의 비트 0x40이 켜진 경우 IcaPathSubmit을 호출합니다. <a href="analysis/deep-evidence.json">[S3: 0x801c84bc, 0x801df5a4, 0x802de574, 0x802de728]</a></p>
+<p>{{jpeg_irq}} <a href="analysis/deep-evidence.json">[S3: IsrJpegDone, JpegPathInit]</a></p><p class="note">ISR의 0x801df628은 호출, 0x801df644는 꼬리 점프입니다. 대상은 둘 다 _tx_isr_suspend이며 인자는 각각 0x801e3890, 0x815a1d6c입니다. 등록은 확인했지만 실기에서 인터럽트가 발생했는지는 검사하지 않았습니다.</p></section>
+
+<section id="color"><p class="eyebrow">06 / COLOR MATH</p><h2>행렬 연산을 원본 명령으로 검산하다</h2><p>{{color}} <a href="analysis/deep-evidence.json">[S3: ColorMatchingService]</a></p>
+{{color_diagram}}
+<pre aria-label="분석으로 재구성한 행렬 계산식"><code>acc = Σ A[row,k] × B[k,col]                    // k = 0..2
+MatrixMultiplication: low16(uint32(acc + 0x1000) &gt;&gt; 13)
+HueShift:             low16(uint32(acc + 0x0080) &gt;&gt;  8)
+// 입력 계수는 signed 16비트. MIPS의 32비트 누산·저장을 반영.</code></pre>
+<p>{{color_check}} <a href="analysis/color-math-checks.json">[S5]</a> <a href="tools/check_color_math.py">[재실행 코드]</a></p>
+<div class="table-wrap"><table><caption>색 처리에서 확보한 추가 근거</caption><thead><tr><th>함수 / 주소</th><th>확인 내용</th><th>한계</th></tr></thead><tbody><tr><td>MakeColorMatrix · <code>0x8041c180</code></td><td>HueShift·MatrixMultiplication 호출, 일부 출력 계수 −2047..2047 제한</td><td>계수 제한은 최종 픽셀 클리핑과 구분</td></tr><tr><td>IsAdobeRGB · <code>0x8041c104</code></td><td>값 1 검사. MakeColorMatrix 조건부 변환 행렬 적용</td><td>UI 메시지 전달 전체 경로 미확정</td></tr><tr><td>SetDevelopPreGain · <code>0x80378010</code></td><td>네 성분의 입력·기준 이득 곱, 13비트 시프트</td><td>실제 ISP 이득 레지스터와 미연결</td></tr><tr><td>SetupColorMatrix · <code>0x80428654</code></td><td>MakeColorMatrix를 호출한 뒤 조건에 따라 I43_SetImageProcessing 호출</td><td>매 픽셀의 소프트웨어 계산 루프로 해석하지 않음</td></tr><tr><td>CrossProcess gamma · <code>0x8041e19c</code></td><td>4,096개 항목, 세 채널 테이블 합성</td><td>실제 LUT 선택·화질 검증 미완료</td></tr><tr><td>MakeHistogram · <code>0x8041e8d8</code></td><td>byte 값으로 256개 16비트 카운터 중 하나 증가</td><td>카운터 누적 범위와 입력 도메인 미확정</td></tr></tbody></table></div>
+<p>{{gamma}} <a href="analysis/deep-evidence.json">[S3: GammaCorrectionService]</a></p></section>
+
+<section id="comparison"><p class="eyebrow">07 / SAME QUESTIONS, SEPARATE EVIDENCE</p><h2>K-3 Mark III와 18개 항목 대조</h2><p>{{compare}} <a href="analysis/comparison.json">[S6]</a></p><p class="note">K-3 참조 커밋: <code>4e15d25ecaf36f23ada6bcedfb83067a5dc3c653</code>. 아래 항목 링크는 해당 커밋의 HTML 원문입니다.</p><div class="table-wrap"><table><caption>분석 가능성 검토와 이번 Q7 결과</caption><thead><tr><th># / K-3 항목</th><th>Q7 상태</th><th>근거와 남은 범위</th></tr></thead><tbody>{{comparison_rows}}</tbody></table></div></section>
+
+<section id="functions"><p class="eyebrow">08 / AUDIT TRAIL</p><h2>선별 함수 300개의 근거 찾기</h2><p>표의 범위는 다음 주소·이름 레코드까지로 추정했습니다. 전이 수에는 직접 호출, 외부 점프와 간접 전이가 포함됩니다. 선형 명령 스캔 결과이므로 모든 전이의 실행 가능성을 보증하지 않습니다. <a href="analysis/deep-evidence.json">[S3]</a> <a href="analysis/decompilation.json">[S4]</a></p>
+<label for="function-search">함수 이름 또는 주소 검색</label><input id="function-search" type="search" placeholder="예: PeakCheck, Jpeg, 8041bc90" autocomplete="off"><p id="function-count" role="status" aria-live="polite">300개 표시</p><div class="table-wrap function-table"><table><thead><tr><th>함수</th><th>VA</th><th>추정 bytes</th><th>전이</th><th>코드 구간</th></tr></thead><tbody id="function-rows">{{function_rows}}</tbody></table></div>
+<p>{{limits}} <a href="analysis/decompilation.json">[S4: limitations]</a></p></section>
+
+<section id="reproduce"><p class="eyebrow">09 / REPRODUCE & REFERENCES</p><h2>재현 절차와 검증 범위</h2><p>구조·심볼·압축·전이 도구는 Python 표준 라이브러리를 사용합니다. 함수 디컴파일은 Ghidra 12.1 / JDK 21, 계산 재실행은 angr 10.0.5 / VEX를 사용했습니다. REA MCP는 제공자가 설정되지 않은 상태여서 portable Ghidra를 직접 실행했습니다. 초기 angr 디컴파일은 CP0 명령에서 멈췄으며 최종 C 결과에 포함하지 않았습니다. <a href="analysis/decompilation.json">[S4]</a></p>
+<pre><code>python -m unittest discover -s tests -v
+python tools/q7_symbols.py original.bin --output .private/symbol-summary.json --private-symbols .private/symbols.json
+python tools/decode_segments.py original.bin --output-dir .private/decoded
+python tools/build_analysis_elf.py original.bin --decoded-dir .private/decoded --output .private/analysis.elf
+python tools/trace_q7.py original.bin --selected analysis/deep-selected-functions.json --decoded-dir .private/decoded --output .private/deep.json --ghidra-dir .private/ghidra-input
+
+# process-scoped JAVA_HOME에 JDK 21 경로를 지정한 뒤 실행.
+# Ghidra 프로젝트 디렉터리는 점(.)으로 시작하는 경로 요소를 피한다.
+analyzeHeadless &lt;project-directory&gt; q7 -import .private/analysis.elf -noanalysis -scriptPath tools -postScript Q7Decompile.java .private/ghidra-input/symbols.tsv .private/ghidra-input/seeds.tsv .private/decompiled
+python tools/check_color_math.py .private/analysis.elf --output .private/math.json
+python tools/verify_report.py --firmware original.bin</code></pre>
+<p class="note">출력 경로는 새 경로를 사용합니다. 전체 펌웨어 재검증은 로컬에서 수행했고 공개 CI는 펌웨어 없이 단위 검사·메타데이터·HTML 재생성을 검사합니다. 문장 윤문 기록은 <a href="analysis/deep-editorial.json">deep-editorial.json</a>에 있습니다.</p>
+<ol class="sources"><li><a href="analysis/main-symbols.json">[S1] FAT16 심볼 복원 근거·해시·범위</a></li><li><a href="analysis/segment-decode.json">[S2] 압축 448블록 입력/출력 지도·SHA-256</a></li><li><a href="analysis/deep-evidence.json">[S3] 함수 범위·바이트 해시·명령어 전이</a></li><li><a href="analysis/decompilation.json">[S4] 디컴파일 완료·출력 해시·경고</a></li><li><a href="analysis/color-math-checks.json">[S5] MIPS 명령 재실행 6개 입력·기대값·출력</a></li><li><a href="analysis/comparison.json">[S6] K-3 기준 커밋과 18개 항목</a></li><li><a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">리코 Q7 공식 펌웨어 페이지</a> · <a href="analysis/provenance.json">파일 동일성 검사</a></li><li><a href="https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1_build">Ghidra 12.1 공식 배포</a> · <a href="https://docs.angr.io/en/latest/analyses/decompiler.html">angr 디컴파일러 공식 문서</a></li></ol>
+</section></main><footer>독립적인 정적 분석 기록 · 원본 펌웨어 SHA-256: <code>8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b</code></footer>
+<script>const search=document.getElementById('function-search'), rows=[...document.querySelectorAll('#function-rows tr')];search.addEventListener('input',()=>{const q=search.value.toLowerCase();let n=0;for(const r of rows){r.hidden=!r.textContent.toLowerCase().includes(q);if(!r.hidden)n++}document.getElementById('function-count').textContent=n+'개 표시'});</script></body></html>

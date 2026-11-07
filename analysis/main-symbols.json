@@ -1,0 +1,65 @@
+{
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "geometry": {
+    "volume_offset": 7848640,
+    "sector_size": 512,
+    "sectors_per_cluster": 2,
+    "cluster_size": 1024,
+    "fat_start": 7849152,
+    "root_start": 7918272,
+    "data_start": 7934656,
+    "declared_volume_bytes": 35206144,
+    "declared_volume_exceeds_update": true
+  },
+  "sources": [
+    {
+      "name": "MAINSO~3.ADR",
+      "directory_offset": 7922496,
+      "first_cluster": 3495,
+      "size": 488616,
+      "sha256": "828e4ae33d154b1b79422cb9de152c9fb418e272fe1ef8fed9f17dc17f7414fc",
+      "file_spans": [
+        {
+          "offset": 11511488,
+          "size": 488616
+        }
+      ]
+    },
+    {
+      "name": "MAINSO~5.OFT",
+      "directory_offset": 7922560,
+      "first_cluster": 3973,
+      "size": 488616,
+      "sha256": "d7f229ce88f6c881c6e33c3fb6f267a90d4dd64d45f20d5935d9d66e932db4e1",
+      "file_spans": [
+        {
+          "offset": 12000960,
+          "size": 488616
+        }
+      ]
+    },
+    {
+      "name": "MAINSO~7.STR",
+      "directory_offset": 7922624,
+      "first_cluster": 4451,
+      "size": 3438560,
+      "sha256": "d9aeb5f7f938f75e88a4ae1044095ac2d85f747328c862a342b17d9af9e5d1d7",
+      "file_spans": [
+        {
+          "offset": 12490432,
+          "size": 3438560
+        }
+      ]
+    }
+  ],
+  "symbol_records": 122154,
+  "unique_addresses": 122124,
+  "unique_names": 101955,
+  "all_names_bounded_and_ascii": true,
+  "addresses_nondecreasing": true,
+  "limitations": [
+    "Address/name records carry no ELF symbol type or function size.",
+    "Duplicate addresses and data labels are retained; records are not a function count.",
+    "Only allocated root file chains used by the three sidecars were verified."
+  ]
+}

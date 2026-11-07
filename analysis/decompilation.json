@@ -1,0 +1,3684 @@
+{
+  "tool": "Ghidra 12.1",
+  "language": "MIPS:LE:32:default:default",
+  "java": "Temurin 21.0.13+9",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "function_count": 300,
+  "completed_count": 300,
+  "functions": [
+    {
+      "address": 2147487976,
+      "name": "HceFastBootQueryMountPartition",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "96d79d02d89ac4e50028f61a0514224a802ff9e15d3f466a0bfa7d5de20a39f8",
+      "asm_sha256": "609e54d0bf13b71b72e7c7804272e1fcae8ae98c62f3dbd0ab9e7ad88e969e4a",
+      "c_bytes": 168,
+      "warnings": []
+    },
+    {
+      "address": 2147498616,
+      "name": "HceFastBootSectionMarkers",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 188,
+      "c_sha256": "0f458e14b2f483e397561c4576c8b71bd21aa93919cc0a557ad5ff615900f54c",
+      "asm_sha256": "8655b828aaaef01fdc985f2e3855fdbae330f93d6899e6280eaa548e7aee1ad3",
+      "c_bytes": 569,
+      "warnings": []
+    },
+    {
+      "address": 2147498804,
+      "name": "HceFastBootGetConfig",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 20,
+      "c_sha256": "ea9ed90263fc37ab1d3b5ee65b3c538484d59eeebf7877cc88bf5273e1a3a10a",
+      "asm_sha256": "b577010538f846fc65351a48dba9231f3e71ecdd7213b513ba1d7e43aadfecc6",
+      "c_bytes": 101,
+      "warnings": []
+    },
+    {
+      "address": 2147498824,
+      "name": "HceThreadXStart",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "94b6baa84271de552ae3f4a8cd42d1d7e39a67fd2a193def5349b1464b2b2875",
+      "asm_sha256": "aeba5b2a206f4ed85fb69e62ec83845dd6aa58ff06689770e3138eafa66a19ab",
+      "c_bytes": 51,
+      "warnings": []
+    },
+    {
+      "address": 2147499136,
+      "name": "HceGetResidentMemoryType",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 36,
+      "c_sha256": "10b4474618703b0496b68b4c1c3306ccb7a4f52f7d5aa0771f975e1778429b24",
+      "asm_sha256": "d6c234f47d41111b6b7c236482c29646551acc67ce0952dc5fb23cdc97ce5b26",
+      "c_bytes": 88,
+      "warnings": []
+    },
+    {
+      "address": 2147499172,
+      "name": "HceGetResourceLocation",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 168,
+      "c_sha256": "9d6aa79dc7c59e9551d3355fcbd8ed8eaaee8b5079dd71e44428d36572b4935f",
+      "asm_sha256": "8b31c69dd6e5b6531c627c64cc74b80a36cc0a336936efafdec40958455074e4",
+      "c_bytes": 395,
+      "warnings": []
+    },
+    {
+      "address": 2147499348,
+      "name": "HceGetHostThreadsNumber",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "222e80c937c41488446a9c7d89cd82109422f2a9472e87573a55e00137b3747d",
+      "asm_sha256": "6254417be8d6328f1d103a310dcdee241cd1912d4b890f9fda3733fec9449037",
+      "c_bytes": 70,
+      "warnings": []
+    },
+    {
+      "address": 2147499372,
+      "name": "HceSecondaryBootDelay",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "04dfa626dacad5a804e7d2a8783e8c7f58be2898fd5a2232216ddcb6b1c55942",
+      "asm_sha256": "1412c422069fe1c1d136d30060255b077809943faf4918526151f0602d4ff1ab",
+      "c_bytes": 65,
+      "warnings": []
+    },
+    {
+      "address": 2147499380,
+      "name": "HceFastBootReturnTotalSections",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "9516fc192d7c9b1e94e33583a3ba8c63ca9ab913e62f4d9a066f2a24528963c3",
+      "asm_sha256": "11d2ff403bc3bfe28280812c8afe302f522eeb90d5f634a0eaf7f644c18a18cc",
+      "c_bytes": 74,
+      "warnings": []
+    },
+    {
+      "address": 2147499388,
+      "name": "HceGetSmallPoolSize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "3e6f507eda29af5f58249f712a98e6b6484c5105a0a2211bd7de9bffc92ca5cc",
+      "asm_sha256": "d055e176d0134c0cdec818b2ed4981d8d494188c631aa044ec13fc188c6e8987",
+      "c_bytes": 70,
+      "warnings": []
+    },
+    {
+      "address": 2147501196,
+      "name": "CppSetupUnexpected",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "5304f59162f7c6ab92a0e8f0a21ad63fbd2320d259f60a3fd15e2c90e6fdcdf3",
+      "asm_sha256": "f8cd4db4a74100777cce194a74e1a87068cb99cc8adbfdd00f296a85adc1c71a",
+      "c_bytes": 294,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147505020,
+      "name": "PoolInfoInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 112,
+      "c_sha256": "6d2ab1609c673570ff9f93edafd2918f5548507758da983654df0e268d847eca",
+      "asm_sha256": "f82f8b2dd477396531cbb5d6d30c8ddd44a96a741c50612d08e2f21e4a8aa937",
+      "c_bytes": 405,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147520484,
+      "name": "GetAllocSize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "1a30df23c892065e8cac92c3d782dce15b6c782db399b6499a2d1848cedcfd0f",
+      "asm_sha256": "78b1ef1e05d81e12bb4c1394914c92bd937f4869d31979c263f4e40b09d4825e",
+      "c_bytes": 84,
+      "warnings": []
+    },
+    {
+      "address": 2147529740,
+      "name": "PoolGetPoolBySize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 36,
+      "c_sha256": "a1f23a4b0a0d1dfa9807e9a51b4387aa7ede3686478caac1e4a5e97c9274eb1c",
+      "asm_sha256": "372f1fbf2c3659f642d473233348fa4a43933c603374bec7c7895fda48b6e24c",
+      "c_bytes": 138,
+      "warnings": []
+    },
+    {
+      "address": 2147530072,
+      "name": "PoolHandleFlags",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 876,
+      "c_sha256": "6a20ade0931d25279c95e158b31196f8ee0cf50a235c04ffbe23d5ffb2e4053f",
+      "asm_sha256": "0ac9c7ea79b2cf21e07c7ac8603addbbab9d8f8697866982bc3e24e0579b404d",
+      "c_bytes": 3690,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147530948,
+      "name": "PoolCreateDirect",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 176,
+      "c_sha256": "1e44b15dae0091dcb0bd253485eb1d2af03797ed565f70aebebea48779c633db",
+      "asm_sha256": "1506e2098161f56962b033dd5ebf8c97350516e9bb0b2f4dd89e065c7a21cfeb",
+      "c_bytes": 769,
+      "warnings": []
+    },
+    {
+      "address": 2147531384,
+      "name": "PoolCreateSubPools",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 156,
+      "c_sha256": "ec221a46c1dc92dbd72f2f4be10a95a16c70cefab94331f65b75a39de204f1c9",
+      "asm_sha256": "3b012a90a46b6c1b990a7e17483b2603dde7f7c43d9b3c3b8d26751ff43ae8bd",
+      "c_bytes": 366,
+      "warnings": []
+    },
+    {
+      "address": 2147532584,
+      "name": "PoolAllocEx",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 460,
+      "c_sha256": "8840227c32c7cf7d614b84682fa5cff81e0ada34c6ba3d0cf7c58570fd78e0b9",
+      "asm_sha256": "eb28ef8621bcafeb427a992e8ca2ba92abb036db67b68eb39ae1801a23c699fa",
+      "c_bytes": 1598,
+      "warnings": []
+    },
+    {
+      "address": 2147533044,
+      "name": "PoolInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 448,
+      "c_sha256": "9b4f32909da030b54c735fadef3a4bf7776ea1edca37dd06105b0638fa2ac180",
+      "asm_sha256": "70988897f09aa6a930215bf739700a817b7937371c13282b7ac9ebaef17bf20c",
+      "c_bytes": 2690,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147533492,
+      "name": "PoolCallocEx",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 516,
+      "c_sha256": "af157db8f4523182afd6a2a51d91fe95377168c85bfe5287df9b044e9f673937",
+      "asm_sha256": "f0775365611e8c017590198a7710f65a8d5acb59341ba5d0dab8d3e0b47eb521",
+      "c_bytes": 1464,
+      "warnings": []
+    },
+    {
+      "address": 2147534232,
+      "name": "PoolFreeEx",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 448,
+      "c_sha256": "64ccf1581b78863d61b4116ccb31c45b4c42877bba2302b6f6a40346126ca761",
+      "asm_sha256": "5bef60a297af8e30ea54610f53675e36ebafe460456b97129966d3abe5e01832",
+      "c_bytes": 1383,
+      "warnings": []
+    },
+    {
+      "address": 2147546788,
+      "name": "CguUnitSetEnabled",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 732,
+      "c_sha256": "007ea7536dcc6e03c534142f95e4e62a8cb5da60d36dd1feb777a7f9ff4b2e2b",
+      "asm_sha256": "4ff298c35f3476289f2f751fe4644a9a400e18d69ca87e1b75e03a4580ae2751",
+      "c_bytes": 2598,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147556136,
+      "name": "DcuInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1200,
+      "c_sha256": "770f889efe907947b12493c31fd4a1e6cae10b8be2f30fe02b496ef88739d17c",
+      "asm_sha256": "13c0dc3b8de6f51e564d7675f78ee74fb340dde982a73ea9a6b45f7ad7015ace",
+      "c_bytes": 3989,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147561552,
+      "name": "DcuInitDram",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 68,
+      "c_sha256": "8938a69b8c1c30e6f81c9c6b81fa5d9ba56c4fdc736114bfd7ae0df23afee718",
+      "asm_sha256": "c19a83eef022b560b90d035e7c4f7a57b6058f83c9522774b7fd1b7e6e32dfdf",
+      "c_bytes": 584,
+      "warnings": [
+        "Removing unreachable block (ram,0x80012fbc)",
+        "Removing unreachable block (ram,0x80012f6c)",
+        "Removing unreachable block (ram,0x80012ff4)",
+        "Removing unreachable block (ram,0x80013010)",
+        "Removing unreachable block (ram,0x80012f7c)",
+        "Removing unreachable block (ram,0x80012f88)",
+        "Removing unreachable block (ram,0x80013030)",
+        "Removing unreachable block (ram,0x80012f90)"
+      ]
+    },
+    {
+      "address": 2147562080,
+      "name": "DcuGetDramAttributes",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 456,
+      "c_sha256": "d0fdf1ae79ebaf779a091b8089508f3e695452d01b6549db4f8f336c7ca0ec83",
+      "asm_sha256": "311865acda101ab6877e9d289e94f02cfe32b4c594dc368298e2e42300871d71",
+      "c_bytes": 2232,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147566944,
+      "name": "DcuMemoryProtectionConfig",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 124,
+      "c_sha256": "95b4b6ac95e5b7080cfaca42376dcc0f4ae2bb9915c0b3d26b115517be21b327",
+      "asm_sha256": "95ae06315ab00423e2a26ab13b1593fcd630ba03cac8e1ce33b48c4494a24400",
+      "c_bytes": 2834,
+      "warnings": []
+    },
+    {
+      "address": 2147567596,
+      "name": "DcuMemoryProtectionEnable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "545f6953bd7f1fc24b3dc358e740276af45a2fc850dad1d9edbc6ea339346b7f",
+      "asm_sha256": "3b4931afb623d579e4942a15d4f46fb7415398e54574e864a61f11a2d0af6558",
+      "c_bytes": 138,
+      "warnings": []
+    },
+    {
+      "address": 2147567860,
+      "name": "DcuMemoryProtectionSetHandler",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 20,
+      "c_sha256": "88d06fea36c063fec30a8931dd12e03929cf0b9265723eeddbb8dc3db0538f55",
+      "asm_sha256": "e98393550df5eadb79657992341d7bb3c9a7e53f9dc6ba4d2773a1f3f571ba95",
+      "c_bytes": 276,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147802900,
+      "name": "DmaCfgShadowRead",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 108,
+      "c_sha256": "eef42738749a35e9da0aaf25b151224d848564e7ae1cb0daf78fb939f83af839",
+      "asm_sha256": "0f55625d6dd5c063336537f17a02b30fe18da787fc3a8bf86cb77947210b1f0d",
+      "c_bytes": 403,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147832848,
+      "name": "FcuMediaInfoGet",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 184,
+      "c_sha256": "125de8cf109de41a8906c0d7369431890522e6e49925aedfe50e5cd599a891bf",
+      "asm_sha256": "7bf44398821485d826857dbbb6a6d33a59e3134f40bd1abf45f6ad6ceff37c16",
+      "c_bytes": 719,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2147974772,
+      "name": "_fx_media_close",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 384,
+      "c_sha256": "d57dbe2da832a4bdb6d6a3aaf4150f2abcc1b5bf6a106ecb2d9b1605cf727b67",
+      "asm_sha256": "a7119c52359a12a37f631db3fcdd04e43bd0401ee1211b81694926a865190fe0",
+      "c_bytes": 1757,
+      "warnings": []
+    },
+    {
+      "address": 2148108700,
+      "name": "ListReset",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 80,
+      "c_sha256": "9bf50709e0cc05f3c684003c3031580c9c64be662df03614827ac48f09cc031b",
+      "asm_sha256": "6c745c5f09c1b002988b271553a9157b5552a902ad0535d11f6eb569632ee851",
+      "c_bytes": 334,
+      "warnings": []
+    },
+    {
+      "address": 2148127764,
+      "name": "TimingMarkByLog",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 660,
+      "c_sha256": "8818cc91e5020d8f345b89d96edfbb7d04c4b7cd33f715c07f94b47625f86458",
+      "asm_sha256": "c8504f1fd9a54bc1afc7b1fb0c22a1e81e5d092d36b0b3d1e0bf016c13dcf967",
+      "c_bytes": 2698,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148128424,
+      "name": "TimingMark",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "08d182ab0776a8f2b7d9a46162a5d3271f5bf1e8127475fe9d4237cd514114ff",
+      "asm_sha256": "6154cf47866cd992ef927f18b0a5076d4ed72452c8bd5d89f7bd4e3beaf928fb",
+      "c_bytes": 2392,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148129040,
+      "name": "TimingMarkF",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 208,
+      "c_sha256": "4be7da8e28fbb3cabbe404cdc2741d04fc02336581880fa3a24576a9fe68180c",
+      "asm_sha256": "229d74b8adf5b72c575d713e7dc210353293f776148bf75dd9682eddb33e9bdd",
+      "c_bytes": 721,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148143500,
+      "name": "BlockingPrint",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 388,
+      "c_sha256": "a1bfd32e552b156f6e24907f0017b11ab829036ad31cc8822b3d3edad6ab6a82",
+      "asm_sha256": "a72fe8a2f3d54268659ca5ab090aa0e2263645488f37be207978c0718adc9c51",
+      "c_bytes": 4523,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148143888,
+      "name": "Fprintf_B",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 488,
+      "c_sha256": "1093f84d41064b3a62416e77dab3fbb12419c69dbd11a0dc27338146c90dfe44",
+      "asm_sha256": "dd716c7381cef0ac21953426ef9340f6ac7697df3b7f3b3872ea0ea046c3fadd",
+      "c_bytes": 1642,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148144376,
+      "name": "Printf_B",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 296,
+      "c_sha256": "397c184fab270c8cbb038085b8d0eb381958b01fc88fdf1b377ee418e96ae3da",
+      "asm_sha256": "93ca21964db36fadb349c7f43ed10cab5fb0bb0e6e9ad4ec2c57c0ec4a23d3c6",
+      "c_bytes": 1774,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148147584,
+      "name": "__assfail",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 60,
+      "c_sha256": "2e883b873a4beb01be1925c64f5f397b1014f71c92e23677cee4e6d9288f992c",
+      "asm_sha256": "621b5064df7796af76e78d82da33816c01dac75950ca442fd9aefb71908f6274",
+      "c_bytes": 2384,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address",
+        "Do nothing block with infinite loop",
+        "Do nothing block with infinite loop"
+      ]
+    },
+    {
+      "address": 2148166144,
+      "name": "PerfInitLogging",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 64,
+      "c_sha256": "b5855cbd46fb619356a859766f90b9daad88ccbab355c296371cc938ae4cfbc4",
+      "asm_sha256": "81719f01e37286a22f679e6bfe445acfc21b773908b8dee49cf72a3a28c6d689",
+      "c_bytes": 130,
+      "warnings": []
+    },
+    {
+      "address": 2148166208,
+      "name": "PerfInitGroup",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 336,
+      "c_sha256": "44bf837abbb368d9045be88f14c9b4233af4906fc9df7ce6890bb5e80bd55ec5",
+      "asm_sha256": "f4ff871ad1d1b1711c93c168eb0ce6f64a30777fe3bdb399def0d2e77a9953fa",
+      "c_bytes": 1001,
+      "warnings": []
+    },
+    {
+      "address": 2148208232,
+      "name": "_Z15CpuPreFetchInitv",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 188,
+      "c_sha256": "9da5e208529f788f35e358b71917d395d61fcdf5ed1f6c219cbc35d10eee6eff",
+      "asm_sha256": "851e7791a2d3a618353f762af9360ef6e70a0db5bbd7798432a4ffd9c686b471",
+      "c_bytes": 833,
+      "warnings": []
+    },
+    {
+      "address": 2148211376,
+      "name": "CpuInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 436,
+      "c_sha256": "bb211328429b29a44c3ef8e57ee3d736d17e497ba4da7153b060fdceb10ed39b",
+      "asm_sha256": "38ea270959cc49b919e0cb225efcbc6b0506e360854060d457ce85f287a39a2b",
+      "c_bytes": 2596,
+      "warnings": []
+    },
+    {
+      "address": 2148317896,
+      "name": "_tx_thread_initialize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 184,
+      "c_sha256": "837479305d466649613866deac96d568bbe2957d1bdbb6a3df1834c72b39e8fc",
+      "asm_sha256": "6b65b45fc2cbf7c679594ae3e2e0426fbd8eae209d51b1b04849d6d094153161",
+      "c_bytes": 947,
+      "warnings": []
+    },
+    {
+      "address": 2148318948,
+      "name": "_tx_mutex_get",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 868,
+      "c_sha256": "b9ec53579dc47ff92a185d6d0921873ea833c13c992ec4fb93a706facab44e6c",
+      "asm_sha256": "4720d5925d2b931ca40916a651da2b0d0f44bb111cc6cc94faaa50290399fafc",
+      "c_bytes": 4218,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148321584,
+      "name": "_tx_isr_unmask",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 152,
+      "c_sha256": "087a91d3c38bd4a4971b56cef3a2b158e9adf87f69224f08532b3b118eb0e3a7",
+      "asm_sha256": "e6d143378f033aaf33378ad95b2caf671e5bd99d5e49e9b6c6f032ccb600f604",
+      "c_bytes": 546,
+      "warnings": []
+    },
+    {
+      "address": 2148321736,
+      "name": "OsThreadLock",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "b8335db54926c83caa6941b04447a51be3f3010594d2c7094b7fc785445ebe08",
+      "asm_sha256": "72acd1c7a15dc4136ee09f136c61ea145d41defb0d35436a615632f2936d0e6c",
+      "c_bytes": 4250,
+      "warnings": [
+        "Removing unreachable block (ram,0x800cc088)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148321780,
+      "name": "OsThreadUnlock",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 40,
+      "c_sha256": "5b2a46d5aeaecfc5c153fe680f1d0452b11e3c78a73ab5d0fb8c36bcb888c3b4",
+      "asm_sha256": "2b872b8f85a3209c707702d1f0c7f88d9f4c0af11cf8f4efde4aa0f01cc3d06b",
+      "c_bytes": 4580,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148321820,
+      "name": "OsThreadSleepMS",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "6bd54527afa9e6ce12b2374b70e93e2c7343c88dae12e75cd8d62108319c413e",
+      "asm_sha256": "f5841f2aabb48d60c283c4da8abcbc8f5139b4da650d090d50be861b65617daf",
+      "c_bytes": 1003,
+      "warnings": []
+    },
+    {
+      "address": 2148324072,
+      "name": "OsThreadCreate",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 152,
+      "c_sha256": "32e5785f7b6958ba3f7320ca74f2742b8e6965d6500e5b9dd6d95d264cbd857c",
+      "asm_sha256": "1a3f8c8e208d1e2a80dfbd2689bd02625e3161299c54e5d44f10d4db33952823",
+      "c_bytes": 463,
+      "warnings": []
+    },
+    {
+      "address": 2148324988,
+      "name": "OsThreadCreateExSilent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 356,
+      "c_sha256": "b5b8a2e91160e5571ba6ee53b631434365b09e63617c3a7195f61b008b5e2e9c",
+      "asm_sha256": "4fa73007c68f62c9c816a1dc890a5a47d59a9770acff318a6bf5c7c056244562",
+      "c_bytes": 4573,
+      "warnings": []
+    },
+    {
+      "address": 2148325344,
+      "name": "OsThreadCreateEx",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 176,
+      "c_sha256": "623e55fc40e2cd833f775ee09a87d1c443c4bff1e0288a719681912d09d6efcc",
+      "asm_sha256": "35bf2c3ab23db451ab429c61e816360342d3557776e9e9adf637d21fd7910e27",
+      "c_bytes": 4426,
+      "warnings": []
+    },
+    {
+      "address": 2148325520,
+      "name": "OsThreadInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 440,
+      "c_sha256": "cbe4f658e591125ce62e6810ef0d33f9bb58a37bcc1aa564d18a5e93fb98f8d6",
+      "asm_sha256": "cdb2a2d9dfe44a25b4e745b8fe84f9cb8c7f8d8a424a3269ec62c49419237c5a",
+      "c_bytes": 1759,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148326144,
+      "name": "_tx_mutex_create",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 440,
+      "c_sha256": "1a913f433bfe1d0a290683289b712029ac3c7cf8c43e5a17efc669f1ad44bfce",
+      "asm_sha256": "058fba3fe02754112ca0bf444238df0af6729721d7519443549a62aea9784241",
+      "c_bytes": 1921,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148330756,
+      "name": "_tx_thread_identify",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 40,
+      "c_sha256": "5d0d625989373d00fb0605ee3db981f400569623a610f9b4e009df85ed4881f0",
+      "asm_sha256": "4869d89e4513b2108a91c30f87f3387cf86443cf4096c807c71ceab791963b3d",
+      "c_bytes": 241,
+      "warnings": []
+    },
+    {
+      "address": 2148332064,
+      "name": "_tx_initialize_high_level",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 276,
+      "c_sha256": "faacbf5d395126b11c62ed46fbc95e0cde8b1cd07f141cdbdbe7c655f24e55d5",
+      "asm_sha256": "d3bc512c25e7af2b9fb8f0a7c84dddf18c132df48b804264d42e5acb2e700ca8",
+      "c_bytes": 1880,
+      "warnings": []
+    },
+    {
+      "address": 2148332844,
+      "name": "_tx_isr_suspend",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "c8f7a1bef7886b65afd3c8e8e8a63399003accc7274e4ab308054c01bf2ed834",
+      "asm_sha256": "4d4f275d06df9fe8aa6b20d35392dd784b63b302a8cda49b47381510e24a3401",
+      "c_bytes": 103,
+      "warnings": []
+    },
+    {
+      "address": 2148337204,
+      "name": "_tx_timer_initialize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 200,
+      "c_sha256": "280a87abc81309981e2edf336c6ff8ae8e59a81c926ca620c0cbd79ec39f37ba",
+      "asm_sha256": "04f56d9ce9f961ed4d812f41d752319f25d2222736355db5528fa822ee477daf",
+      "c_bytes": 920,
+      "warnings": []
+    },
+    {
+      "address": 2148339160,
+      "name": "_tx_isrhi_initialize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 172,
+      "c_sha256": "0570ab0fbcd2c45e8bb961ed8e4660a96222714861cdf7f3010e0dfcc70cb02a",
+      "asm_sha256": "b20953f5c05c633a2a8bfa16e0e3c306b9d67d3b6c2e2c02e1eed11fc84f6283",
+      "c_bytes": 538,
+      "warnings": []
+    },
+    {
+      "address": 2148339332,
+      "name": "_tx_is_in_isr_handling",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 40,
+      "c_sha256": "1f206b4ac89906837ac17f451c6b28280fdc53662271804209e213fc40451f41",
+      "asm_sha256": "f9c378cdbf9c0bbaa653393f0447864abe01b0429ae88cc270460f8b7586e0e5",
+      "c_bytes": 231,
+      "warnings": []
+    },
+    {
+      "address": 2148342076,
+      "name": "_tx_mutex_put",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 904,
+      "c_sha256": "ed6259b1a189763f1b1b7b23ae79520b77e0c51b3d8053f8e4d38fbb349794c1",
+      "asm_sha256": "e4281918c1d73fcb5da041d0dd1730fef0c53fc8cb2dc872885433e958a0b19c",
+      "c_bytes": 4320,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148343176,
+      "name": "_tx_initialize_kernel_enter",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 108,
+      "c_sha256": "94be0ddbf2e7bfc563f351067c4676148354e5ccc6e489599ce26031a8d591c5",
+      "asm_sha256": "a5b7af7a7e8d4e2bd2f0698124f00caa4224f1f0f77d2dbc3eac5111699f740b",
+      "c_bytes": 1710,
+      "warnings": []
+    },
+    {
+      "address": 2148344808,
+      "name": "_tx_isr_register",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 392,
+      "c_sha256": "a772ab9915c964981682a8e11d50b1de9f92af80f36482bacbf45ab5afa00388",
+      "asm_sha256": "384b9730f2bbe188687e51a2891fbf5e5fce48cc8dfa8287ab0dbc28214eabfa",
+      "c_bytes": 1648,
+      "warnings": []
+    },
+    {
+      "address": 2148345880,
+      "name": "_tx_event_flags_create",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 444,
+      "c_sha256": "778595f41030df1afc8b5a6c5f49d1da3d617911f42417dd723cd927d41b3225",
+      "asm_sha256": "f844ed2d8d5f52751aa447002743f9ff96af95b76f3800a0619d1e0b513a50ea",
+      "c_bytes": 2000,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148362916,
+      "name": "OsSysHaltEx",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 812,
+      "c_sha256": "5bbc157c3d8b42c499585ceb5c6c91fdce0412925d60c457db52648a3cc1fafa",
+      "asm_sha256": "34c21a090d7087d25dab88a04def49f80bc46e2a36c278349b1c014d94309e2e",
+      "c_bytes": 3113,
+      "warnings": [
+        "Removing unreachable block (ram,0x800d6c88)",
+        "Globals starting with '_' overlap smaller symbols at the same address",
+        "Do nothing block with infinite loop"
+      ]
+    },
+    {
+      "address": 2148365332,
+      "name": "OsSysCheckIsEventValid",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 420,
+      "c_sha256": "69de17af42026659a5e395ec762436a380ebb60ca6a24e088ae66dd3d8e39e7e",
+      "asm_sha256": "87d57468b4e255e4f88ce1a6d30fadca9616f324e76e1290c52a71050018da64",
+      "c_bytes": 1080,
+      "warnings": []
+    },
+    {
+      "address": 2148365752,
+      "name": "OsSysCheckIsMutexValid",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 420,
+      "c_sha256": "ca3b59577558a5114f2364132cfbb614e76acf6928be491f3be5f5137b9ec114",
+      "asm_sha256": "ce7fe5afcfbfe5e25edf13ff9a9e2c24fcaad73d7052637f4fee8a6012dcb6a7",
+      "c_bytes": 1082,
+      "warnings": []
+    },
+    {
+      "address": 2148367236,
+      "name": "_tx_isr_initialize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 128,
+      "c_sha256": "56f32ab9ccdd0cecac1770df421eca552b6de5f6a87a3287c75e44be0622acbd",
+      "asm_sha256": "f96cbde22f5dc02f9fe4bf2a81069980f082644eeb94e0015382bf867dcc8f02",
+      "c_bytes": 583,
+      "warnings": []
+    },
+    {
+      "address": 2148367364,
+      "name": "_tx_queue_send",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1316,
+      "c_sha256": "f5e983130f009d10de7143f1b611e26423874d36028e23f7dbfa5253c719d290",
+      "asm_sha256": "35af73056d139ecbe51a76c4ca3b1821a9cf39a5dcd3d0c1b14a930ab49f43a5",
+      "c_bytes": 5814,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address",
+        "Could not recover jumptable at 0x800d7f7c. Too many branches",
+        "Treating indirect jump as call"
+      ]
+    },
+    {
+      "address": 2148368680,
+      "name": "_tx_thread_delete",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 308,
+      "c_sha256": "6325780bdff4db60b189e46a511bff3b9d4b0bcab1ae86a8d18052e9a36c8b34",
+      "asm_sha256": "b34d0464cae28f9622292436d20d2670ee7c041fe12915f4a57cd84ced63779c",
+      "c_bytes": 1359,
+      "warnings": []
+    },
+    {
+      "address": 2148369456,
+      "name": "TimerCreate",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "fc979c207d17af13bc4563c7e209f3ae4c3e210a7e8a60a4a1a157ff3a070a33",
+      "asm_sha256": "aaf9c00bab29cc0cea3b0bd3526df9a4a286c213aa7706867791fc6d45e4d89d",
+      "c_bytes": 2474,
+      "warnings": []
+    },
+    {
+      "address": 2148369836,
+      "name": "TimerDeactivate",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 168,
+      "c_sha256": "0d7f86c940eed3057c8a5ce4bc744b8bd55723ac5b4e0392e6deebf6007afb48",
+      "asm_sha256": "df283b591ef9230b28a71d51684a71b2fa6453640eba1ebc6af9028f3b3815ac",
+      "c_bytes": 448,
+      "warnings": []
+    },
+    {
+      "address": 2148370192,
+      "name": "TimerInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 48,
+      "c_sha256": "10b057375251cda120114b20d27b77a9876088a28450e5a35a23070db402b9f0",
+      "asm_sha256": "e86b77a55a8d1b26d0e282bd1f11b02be66403001752b7d88882a17bbdbdfe11",
+      "c_bytes": 758,
+      "warnings": [
+        "Removing unreachable block (ram,0x800fb784)",
+        "Removing unreachable block (ram,0x800fb7e8)",
+        "Removing unreachable block (ram,0x800fb7d0)",
+        "Removing unreachable block (ram,0x800fb7d4)"
+      ]
+    },
+    {
+      "address": 2148370712,
+      "name": "_tx_thread_create",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 564,
+      "c_sha256": "171fb0989179ca9ed0955dd0f63bbcfc49eca87d6f17f4608671ee3af862a46c",
+      "asm_sha256": "cf6edae246f80269f8a11f20e2a59ea9ffb222904eabbacee37ecdae13f05799",
+      "c_bytes": 2250,
+      "warnings": []
+    },
+    {
+      "address": 2148372136,
+      "name": "_tx_event_flags_set",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1208,
+      "c_sha256": "fac0b2e27f136f911bcb299bd3d1a44767ba25fee8d1e9447b96d52369fa6153",
+      "asm_sha256": "95885076495218c36df48f50499b263353dcaeefdf9c19753dd4ea392ca99160",
+      "c_bytes": 7072,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148375240,
+      "name": "_tx_counter_get",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "275dee0380c472c4230ad084031e5b299352d6a96932bea8637fd9be3b25296f",
+      "asm_sha256": "a0787646bff3a38d1cbbe395df2f2fff953dc8260269b3ba87e8d1eac0a9b914",
+      "c_bytes": 63,
+      "warnings": []
+    },
+    {
+      "address": 2148375308,
+      "name": "_tx_thread_schedule",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 56,
+      "c_sha256": "1079cf6b555e88b55ddac9580ff6bdfe603ae09aa11edb455c0608302c40dfeb",
+      "asm_sha256": "e4c7dd9281f9876a0ccfddc7130cbacd1f714aed4b6424a9bb162735a6e78886",
+      "c_bytes": 1348,
+      "warnings": []
+    },
+    {
+      "address": 2148375372,
+      "name": "_tx_thread_schedule_loop",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 20,
+      "c_sha256": "8c6d5e31fa7df1d298e41148cd5c511550c915337549bd48a67eb6dd81d4b453",
+      "asm_sha256": "7d555a3e619ca1a353b0fd7d4d3026c80b1773393c92bb89c28137583f4f8c96",
+      "c_bytes": 1139,
+      "warnings": []
+    },
+    {
+      "address": 2148375864,
+      "name": "_tx_initialize_low_level",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 100,
+      "c_sha256": "e23e1fe54eb5f7ce2f2524d09e96c40843d732244e9846a6c0fa0193913c1419",
+      "asm_sha256": "f503f8e86c05bcc78fc5dadbcfe2f78a33c9d280691b229e8345e342b0288038",
+      "c_bytes": 849,
+      "warnings": []
+    },
+    {
+      "address": 2148376048,
+      "name": "_tx_thread_interrupt_control",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 40,
+      "c_sha256": "3a15a4e1a5063bf7357d59f8693ea336fcc8d6751717494d8281b29f1d4e3cf2",
+      "asm_sha256": "6fde8d61df4083cbda36fe6457c4f0b6f00db04701d7b0828efdb00ef2b4f185",
+      "c_bytes": 142,
+      "warnings": []
+    },
+    {
+      "address": 2148428712,
+      "name": "AppStartHcePreBootProc",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 72,
+      "c_sha256": "02f70daf0a6eface4775f0f700303a481b51d9b82035097d7b95c4d31b174df7",
+      "asm_sha256": "a3e8203d102094c976efaab374da6ecfa984a0124fed071a7623f8e6550a37f6",
+      "c_bytes": 141,
+      "warnings": []
+    },
+    {
+      "address": 2148428784,
+      "name": "AppPrintVersion",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 912,
+      "c_sha256": "e78cb7a9465443a6d2221526242451ff77768b18b36f6875460a695ff704c045",
+      "asm_sha256": "cd0326626d1a55a683e319adfea131730fe8562fd899c7d0f43afa2b1b86ca0c",
+      "c_bytes": 2449,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148430956,
+      "name": "AppGetBootEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 80,
+      "c_sha256": "8d7a806ce4f9450709b8fa81a26141fb2749ad5eb1cc43eb72498481f8d55f41",
+      "asm_sha256": "1f2c4097e157efcb02c0c362c81ae8c2c4d9f09b0943b76c437093d4e7023872",
+      "c_bytes": 234,
+      "warnings": []
+    },
+    {
+      "address": 2148431036,
+      "name": "AppWaitBootComplete",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "3f35cb631dcf920fdd568217601e9c4127b156845e7528f68d6ddb0185ae0646",
+      "asm_sha256": "8978cb54ae1267faf226e1d2a4ce8658939b70eafb43cbd8ca72d3cc7732008d",
+      "c_bytes": 228,
+      "warnings": [
+        "Removing unreachable block (ram,0x800e7490)"
+      ]
+    },
+    {
+      "address": 2148431048,
+      "name": "AppGetBootEventBySection",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 68,
+      "c_sha256": "920564fc44fde4ffdbaed84655336d36b449a6f757053c1cf5e0e45c232de114",
+      "asm_sha256": "87dc5fd4064b38fdf0cf94b4a506f2bc04957fdafd634feaa404be1fd8bcad4d",
+      "c_bytes": 166,
+      "warnings": []
+    },
+    {
+      "address": 2148431996,
+      "name": "AppSetBootEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "0c5f257955821a6af1326ad8c592a540d3ebcd3ff08646e8975b83f11c0736ef",
+      "asm_sha256": "f02e966c8bc2ad7328d179ff6619ba840595e9ed3661075a32bd1a1472d06165",
+      "c_bytes": 121,
+      "warnings": []
+    },
+    {
+      "address": 2148432040,
+      "name": "AppSetBootEventBySection",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 120,
+      "c_sha256": "db960771500bd75470e6f4b0252b8e575b14dcb9c94953b94efbab437948b8b8",
+      "asm_sha256": "214708b6cba412ef99c01f4b0f1ca05b53d6985b007535c35e9c129090ad757d",
+      "c_bytes": 399,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148432160,
+      "name": "AppLoadFinish",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 116,
+      "c_sha256": "22beab7c87c9542e0d2f6cf3e293a89207b4a1f9666cc1f4fde974c8ffc7d1c4",
+      "asm_sha256": "d601495dcace21e4a0519aa13de84d4be838bb45cb00b05558727733f341a341",
+      "c_bytes": 770,
+      "warnings": [
+        "Removing unreachable block (ram,0x800e78c4)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148433252,
+      "name": "AppFbLoader",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 468,
+      "c_sha256": "aa11e4b35b3bdd4e40b11fe75d45e1ab0922f1169aa4f807a8d7ba04efc4d242",
+      "asm_sha256": "bf21e7e02719fffbb6eeffe6301f01cb6e1fab4225680f67477bc9ead23622f0",
+      "c_bytes": 2423,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148433720,
+      "name": "AppAfbLoader",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 244,
+      "c_sha256": "95835ed4c483abe0dd69980d264563116627db4ec9c027dc3fc9ea1cfa01128a",
+      "asm_sha256": "7ae91f023226b0384aeb8b97600a97b0faccae18ce93bdc33e99697f2aea26a9",
+      "c_bytes": 720,
+      "warnings": []
+    },
+    {
+      "address": 2148433964,
+      "name": "AppLoadSecondarySegments",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 280,
+      "c_sha256": "33278c20f68bcd86e949623908e90c706d432672e2cf155d746d81dcb0e2b8cc",
+      "asm_sha256": "a4b86aea188c00b850dbc24d9ed2b4941eecad374c9b2fc17e979689e7b3d26e",
+      "c_bytes": 1313,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148435008,
+      "name": "AppClearBootEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "d5d1171f623550ad0dbbd151cfa45d0541e2b7d5fa9564ba0b6f532790dc2d70",
+      "asm_sha256": "5c8289cc47e80caeed2f9eb302714a8f4666aa04ed31387db71f4b80a0d9a214",
+      "c_bytes": 118,
+      "warnings": []
+    },
+    {
+      "address": 2148435784,
+      "name": "AppInitFinished",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 56,
+      "c_sha256": "8a56f56b682fe6526dc8d489c3075e11950f611f5a5fd656bb0a91d87c805f3c",
+      "asm_sha256": "0bc13fecab2923166cf34740b0839192c116e0aa2122bdf91ecf29b6a53d54e2",
+      "c_bytes": 225,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148435840,
+      "name": "AppBootSectionInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1220,
+      "c_sha256": "434f9c069ff2274ce52ff7fd528fb64401114820eca195661da121af55bf82b5",
+      "asm_sha256": "6bd5102c8630e51f5c90fdb6fa3d14f3f10661edb8df5b01e65ce28928c395fc",
+      "c_bytes": 6202,
+      "warnings": [
+        "Removing unreachable block (ram,0x800e88f0)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148437060,
+      "name": "AppBootPrimary",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 512,
+      "c_sha256": "523c7825161cf20e0417739f399528653bfa2e3385eeee1a3ae758f3ee55c427",
+      "asm_sha256": "40fb960fbe3b55df0d1b3ddf998e5d07fd162bacb80d9d0bc1dc2e67363c05df",
+      "c_bytes": 1706,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148439152,
+      "name": "tx_application_define",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 208,
+      "c_sha256": "6d98152f68706c5266a7e9ae73e3a30a43abc7f9d3fd258ac53eb4f3f31553cc",
+      "asm_sha256": "3fd3f17a2364b064325ad99233b5d916b731b01ba8ea2a5c3e1612ba01cc67ef",
+      "c_bytes": 447,
+      "warnings": []
+    },
+    {
+      "address": 2148440960,
+      "name": "CreateInflater",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 148,
+      "c_sha256": "e33acf7a696060a05d7920b879da988b9b0b8e9c35fc7e1fa8540cfaf2046d2b",
+      "asm_sha256": "f0ef85785f2858291c38da09f92e1a6c0427a4aeca491c90d445029a0a9845b7",
+      "c_bytes": 224,
+      "warnings": []
+    },
+    {
+      "address": 2148486384,
+      "name": "AppResourceToMediaType",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 248,
+      "c_sha256": "dd507ed3196f8eaf6d0d07f8c5a0ac89698ae72c6263a9dc713f6e17c81a92f4",
+      "asm_sha256": "c60bc737042230a3197a48939fa74bf86904ec3ce444e55401fb1efc2a7ba902",
+      "c_bytes": 471,
+      "warnings": []
+    },
+    {
+      "address": 2148513144,
+      "name": "memcpy",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 360,
+      "c_sha256": "bd9e4e52f5a281d402171ddc416e8a5a13a91e87145776e712cb3ab53154b3df",
+      "asm_sha256": "68d30eb47e9a1efe742e5e7bdd38b2cae97b2f19fbed9065dc843487ffe5ad92",
+      "c_bytes": 5652,
+      "warnings": []
+    },
+    {
+      "address": 2148513620,
+      "name": "memset",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 168,
+      "c_sha256": "0360e844bf4acd9957777350c9913a3bb361f4c902a09c811a0a4cc0567ad961",
+      "asm_sha256": "0ce1d611107aae6fa93607d2aed5531a13b4c37cc12d188b3731ded9a3506ab2",
+      "c_bytes": 1698,
+      "warnings": []
+    },
+    {
+      "address": 2148515872,
+      "name": "strlen",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 36,
+      "c_sha256": "e5571865f6a0397f9c1c6980930f518ddb6c274c158e099a654602135860a108",
+      "asm_sha256": "8a48d49a642fd908d79fa3323f9d483302b5ada770504445363952aef466cac0",
+      "c_bytes": 264,
+      "warnings": []
+    },
+    {
+      "address": 2148526044,
+      "name": "vsnprintf",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "f1c403d670cac9ceff544d632c1b27b33b5a4b37df168deca91f183f935c8ae7",
+      "asm_sha256": "4a557261ef75d01c28cc587b2453960fbcbc45a893c77f23c58a485aa227457d",
+      "c_bytes": 67,
+      "warnings": []
+    },
+    {
+      "address": 2148527244,
+      "name": "__muldf3",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1220,
+      "c_sha256": "ad0b8f3cf501409265650ac17fee5553d9490263f063f72db5df3858b4e89c65",
+      "asm_sha256": "af41f25d2079322eb93f1c96616d6bbe90ae71e7aa2c95cc7b199dbfe0cef8c4",
+      "c_bytes": 5508,
+      "warnings": []
+    },
+    {
+      "address": 2148528464,
+      "name": "__floatsidf",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 172,
+      "c_sha256": "341ef055e071f71dd493a5f3a7329947d0ff87da2c74f11e9eb4629d873b8dfd",
+      "asm_sha256": "b41171b28bfa3129efe1a217023887a6f4e817b59db770faf9c93550be4252ec",
+      "c_bytes": 635,
+      "warnings": []
+    },
+    {
+      "address": 2148529272,
+      "name": "__ltdf2",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 104,
+      "c_sha256": "f18aeea486f13690cab90cf1b5a408c750a2f70576781c13bee888e259414658",
+      "asm_sha256": "34474dd496da11600b587388e7af58cb0f07fb4b3e59c3245093e801c44ffb9d",
+      "c_bytes": 787,
+      "warnings": []
+    },
+    {
+      "address": 2148529376,
+      "name": "__divdf3",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1216,
+      "c_sha256": "99575aad111c6b7b17db93162803fd2debde557f97423d50e13cd9a37f23c90c",
+      "asm_sha256": "4d2ace367ba0259c5365fec29a2bfe1b8ea2309cc4abe962cbcf1abe05519293",
+      "c_bytes": 6402,
+      "warnings": []
+    },
+    {
+      "address": 2148531888,
+      "name": "__fixdfsi",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 228,
+      "c_sha256": "f6b8b0e96d7346703a3b99cdbd7f24a07c01574d1e0b166e41dd1506a51bd002",
+      "asm_sha256": "b53f8bdc9293d199a19954a5b7e2a7a5f48045c1dadd14668cc4e8192ab570c9",
+      "c_bytes": 986,
+      "warnings": []
+    },
+    {
+      "address": 2148556304,
+      "name": "GpioDriver_EnableEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 52,
+      "c_sha256": "9bd122724ee555e87bb30faa068fafe6b66ecb4b85bb4bd8ed6f7e49cbd65a6f",
+      "asm_sha256": "30fe0ce933efae8bd110664a34eacb12afa3031500a362e10fbc54224bd09f46",
+      "c_bytes": 226,
+      "warnings": []
+    },
+    {
+      "address": 2148556356,
+      "name": "GpioDriver_DisableEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 52,
+      "c_sha256": "64c60eebf99eb319870da372e209d1435bcc8bb702f49ccada5186ba16693286",
+      "asm_sha256": "f40f61ac1b98134900fdf338fd6056313c043d89db1750dc96a2b7a82f2c3a25",
+      "c_bytes": 227,
+      "warnings": []
+    },
+    {
+      "address": 2148565492,
+      "name": "PwmTimerDriver_UnRegisterCallBack",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "60edfe237ffc6d09faaba9032a450c2d6d51099825dff2e64baf5746c49550e9",
+      "asm_sha256": "60e369afb50e9afc0a669023455ceee72bf2fa4609aa93965de39f633aa00704",
+      "c_bytes": 135,
+      "warnings": []
+    },
+    {
+      "address": 2148565580,
+      "name": "PwmTimerDriver_RegisterCallBack",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "615c752f5c623e0f5c853266611298349b640786cdd3ba7a64fa1864f2ea2a06",
+      "asm_sha256": "38c787fe79cf9aa3ce2b45e44765f27d7526812e911a39582bc1ba5a779f8a34",
+      "c_bytes": 245,
+      "warnings": []
+    },
+    {
+      "address": 2148565624,
+      "name": "PwmTimerDriver_Start",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 204,
+      "c_sha256": "8eb812c0d99c4dfc4a93bf141a97c66b2acaedae63bde99c69ad31f2a600b4cc",
+      "asm_sha256": "f0988aaf09f68afaaeb73f8d770bc1e0105665b9e40c045ea1f6f4a0cd6fcb6a",
+      "c_bytes": 434,
+      "warnings": []
+    },
+    {
+      "address": 2148566084,
+      "name": "PwmTimerDriver_Kill",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 40,
+      "c_sha256": "b59cde4dc47f6a160f0d7ff547725fc08747acf3ac57fb7b09e20ede1f4282b4",
+      "asm_sha256": "306a017b1423ad9c76d7e54f1011c2b5d4c5409c9041963a1d099abb3cbbefa8",
+      "c_bytes": 131,
+      "warnings": []
+    },
+    {
+      "address": 2148568528,
+      "name": "SioDriver_ReceiveMulti",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 84,
+      "c_sha256": "1b083961bf095add4243dd08d255079ff4c62ed3d744ddea2ceca0ff7325b068",
+      "asm_sha256": "2447be932eb5c7aca4d12d047f0fa045efb5713ba02ae76c25b77f1208bb0e7d",
+      "c_bytes": 274,
+      "warnings": []
+    },
+    {
+      "address": 2148568992,
+      "name": "SioDriver_ReceiveMultiAndWait",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 104,
+      "c_sha256": "b2d69b0a06fa752ce9162c65c56f185acde3594b9eb1fa84589c24f8c8064107",
+      "asm_sha256": "20015512f95509a5a50a613e4f6d196a021da7c6b68f7fb2e0336454aa8768f4",
+      "c_bytes": 348,
+      "warnings": []
+    },
+    {
+      "address": 2148594928,
+      "name": "LensService_LensProcessWait",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "cbf55c63c710edf4c5baf36212f619e2d4117fab06dd189e4f7c29273b6884f7",
+      "asm_sha256": "ab6d5ccd35e8be7117b57b394f766b1f5170790191fd61d641434b9442d3c7da",
+      "c_bytes": 1015,
+      "warnings": []
+    },
+    {
+      "address": 2148594936,
+      "name": "LensService_WaitUs",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 112,
+      "c_sha256": "9b42702dd06263f84c96ac37d5e3e4c061687b958b4bad27e077841deb4f5855",
+      "asm_sha256": "5cecd19b98ebfc12af519a200b3a44f33e3d54fa1dc3128e530c6852e2a58d17",
+      "c_bytes": 386,
+      "warnings": []
+    },
+    {
+      "address": 2148595096,
+      "name": "LensService_LensCommunicationControlValueInitialize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 484,
+      "c_sha256": "05687bf1a2e7cd1f9898284977aae2203776ca70361796c942da5a8d2b5cc721",
+      "asm_sha256": "29851e64f62033a32c051d5b53b10607c258727ec8bb961bd73b7efbb6698cfe",
+      "c_bytes": 2635,
+      "warnings": []
+    },
+    {
+      "address": 2148595580,
+      "name": "LensService_SetMountPortMoVd",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "988255ff0aa9962a2f326a8dec77829a570e19b513c8bf2b8587b9c91b9eb91d",
+      "asm_sha256": "d8728ae5847e0870855cb4417625ef37c9b08132997326b18bf603283da5e25b",
+      "c_bytes": 297,
+      "warnings": [
+        "Removing unreachable block (ram,0x8010506c)"
+      ]
+    },
+    {
+      "address": 2148595596,
+      "name": "LensService_SetMountPortLensPowerEnable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 52,
+      "c_sha256": "a5caa2c4c5e1cbaee9cc5517b82d47e2da62a6c8d3f6ed92aa6f4fdfd05a760d",
+      "asm_sha256": "122f157b9d48fb687a9678f03bb345869125f11ba654a078a8a721e16ec85321",
+      "c_bytes": 555,
+      "warnings": [
+        "Possible PIC construction at 0x8010f7a0: Changing call to branch",
+        "Removing unreachable block (ram,0x8010f7a8)",
+        "Removing unreachable block (ram,0x8010506c)"
+      ]
+    },
+    {
+      "address": 2148595648,
+      "name": "LensService_SetMountPortBtoL",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "4d69b86c9d2b86d49b43b3d4ebd5f668f37b2562209f975ee3487da5876fbe6a",
+      "asm_sha256": "0c4f4ba3d4bd7cdaf0135c6475d1eddec0450d4b8a0cc187856c29088f9849d7",
+      "c_bytes": 297,
+      "warnings": [
+        "Removing unreachable block (ram,0x8010506c)"
+      ]
+    },
+    {
+      "address": 2148595664,
+      "name": "LensService_LensCommunicationSequenceInitialize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 56,
+      "c_sha256": "c6bbd80a527fb78b72aebd366693cc3a248624a7ac6eac61d7ed5d45801636e2",
+      "asm_sha256": "f552c770bb76990f2af4321d4c505a465e5fc4d0b776203fa8bbfaaf46237082",
+      "c_bytes": 421,
+      "warnings": [
+        "Removing unreachable block (ram,0x8010506c)"
+      ]
+    },
+    {
+      "address": 2148595720,
+      "name": "LensService_SetLensComPort",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 220,
+      "c_sha256": "221391f2eb4891c653d33acf80d903849bc0dfc2e1b815a3f2af88e604d2e8e0",
+      "asm_sha256": "fa1a7066f06b8d0dab96a5cd616e0957823811cb57a7f58a96ef8b1945faa3e2",
+      "c_bytes": 1431,
+      "warnings": [
+        "Possible PIC construction at 0x8010f828: Changing call to branch",
+        "Possible PIC construction at 0x8010f894: Changing call to branch",
+        "Possible PIC construction at 0x8010f8c4: Changing call to branch",
+        "Removing unreachable block (ram,0x8010f89c)",
+        "Removing unreachable block (ram,0x8010f830)",
+        "Removing unreachable block (ram,0x8010f8cc)",
+        "Removing unreachable block (ram,0x80105044)",
+        "Removing unreachable block (ram,0x8010507c)",
+        "Removing unreachable block (ram,0x8010506c)",
+        "Removing unreachable block (ram,0x80105180)"
+      ]
+    },
+    {
+      "address": 2148596316,
+      "name": "LensService_SetLensState",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "4e19f1df0d2fb66f0fc0512d919f2942c6f2bce08876c51908065a269a4855e4",
+      "asm_sha256": "e8d56e2252b8ff6661ad102c1d7335c9439cba4970f55a15e0deedc9b9458054",
+      "c_bytes": 101,
+      "warnings": []
+    },
+    {
+      "address": 2148596328,
+      "name": "LensService_GetLensCommunicationCompleteState",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "4eb4e3cfb2aa21e2c1bad3e8ed49160c8322fff46fa1e435acfcc6041bfe23d7",
+      "asm_sha256": "ba025b6e864d6567399d81d426175c4272342df10dda110e92b9da120e4fe4d4",
+      "c_bytes": 100,
+      "warnings": []
+    },
+    {
+      "address": 2148597232,
+      "name": "LensService_GetLensFunctionMapEnableOperation",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 64,
+      "c_sha256": "1e11f8fe97400a8442476186cbdd6ac89c7d7845731cbafe0f8e9e267162964c",
+      "asm_sha256": "70d18888288227afb099949ac0ec43bab2d8079fb715f02f2459418b1db69230",
+      "c_bytes": 244,
+      "warnings": []
+    },
+    {
+      "address": 2148598516,
+      "name": "LensService_GetMountPortBtoL",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "c6dcd7ed36ef26b196c307b4872ed5446a7d7b0dccb44ae8818ac4ac24a018d3",
+      "asm_sha256": "bb0b7ae2ea7972fc58abc2148ed78c899e0297c3aef2e3c27307d78ec646c911",
+      "c_bytes": 90,
+      "warnings": []
+    },
+    {
+      "address": 2148598544,
+      "name": "LensService_GetMountPortMoVd",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "408212de017b777d8b3f982aec5f515c5ae3d68420d7a2bac8a5bdca0d653e34",
+      "asm_sha256": "a9eff5a8fa93dbabaa50e5301700b6bb79f4bbce643a1322aeb287e337dbf7ef",
+      "c_bytes": 90,
+      "warnings": []
+    },
+    {
+      "address": 2148598600,
+      "name": "LensService_GetMountPortLensDet",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "42c30de444c831838fdfb5e0a589f15ccb7f319f0b1fb5c6ac0dddf9f4eca28d",
+      "asm_sha256": "ea12fb5a3343f82af29a1cc659d1e760d41bb13aa3d3efe95fc86e639428efc0",
+      "c_bytes": 93,
+      "warnings": []
+    },
+    {
+      "address": 2148598980,
+      "name": "LensService_GetMountPortLtoB",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "c1778244e5f6f58ec7fd959717e3fbcecb1d96f12c24583bad7a8825b3a36e27",
+      "asm_sha256": "543818b266ffd8154ecc6dd654c09d6b3c83836103194c86811576a4cce373da",
+      "c_bytes": 90,
+      "warnings": []
+    },
+    {
+      "address": 2148599956,
+      "name": "LensService_GetMountPortLensPowerEnable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 52,
+      "c_sha256": "c21f13baab4a2174c6f6b0aa753daae120853d24c0f58baeeb024c48367a888a",
+      "asm_sha256": "0151f52fe990cf00b5dd6d023fd97f87ab0114e20b254c9d82368e0aa3f2596f",
+      "c_bytes": 195,
+      "warnings": []
+    },
+    {
+      "address": 2148600188,
+      "name": "LensService_LensInitializeSequence",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 440,
+      "c_sha256": "bb767f2469abe1111cc19fea10c63a612a7a1d68c53d1b6301bd88dcdad6e2d0",
+      "asm_sha256": "124f668442a84960ceb97569239e8b21a9fc8e7a9d22e563f4ddabde187efc5c",
+      "c_bytes": 2557,
+      "warnings": [
+        "Possible PIC construction at 0x8010f828: Changing call to branch",
+        "Possible PIC construction at 0x8010f894: Changing call to branch",
+        "Possible PIC construction at 0x8010f8c4: Changing call to branch",
+        "Removing unreachable block (ram,0x8010f89c)",
+        "Removing unreachable block (ram,0x8010f830)",
+        "Removing unreachable block (ram,0x8010f8cc)",
+        "Removing unreachable block (ram,0x80105044)",
+        "Removing unreachable block (ram,0x8010507c)",
+        "Removing unreachable block (ram,0x8010506c)",
+        "Removing unreachable block (ram,0x801051a4)",
+        "Removing unreachable block (ram,0x8010f828)",
+        "Removing unreachable block (ram,0x80105180)"
+      ]
+    },
+    {
+      "address": 2148600912,
+      "name": "LensService_LensCommunicationBase",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 992,
+      "c_sha256": "593c211a6cb3a2ae97ac37a21ad05b11cbba3da99e2128fd2bf4707dc2409582",
+      "asm_sha256": "dc0b7d4f56c48467ffd5485a0f6ceb91100ee37cb41e72435b77d4c4c9a3b1a4",
+      "c_bytes": 4424,
+      "warnings": []
+    },
+    {
+      "address": 2148602216,
+      "name": "LensService_LensCommunicationInterface",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 172,
+      "c_sha256": "0e55b6b801d784acd9613ab0427f3f18eba9e8656ee56f68f797f811110e9f64",
+      "asm_sha256": "71e6413083cf367dd45dab936cbb4a6ecf14e64e5d15db55dfe108536d98bf09",
+      "c_bytes": 968,
+      "warnings": []
+    },
+    {
+      "address": 2148602388,
+      "name": "LensService_LensCommunication",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 320,
+      "c_sha256": "40357702a9d8dbd84a15997690860e8c7b567f956174ed908f9c60468dcf497f",
+      "asm_sha256": "7ae25c2307e6172885c3171cb12dfbc312c79699111e0eed09fcae90e27776fa",
+      "c_bytes": 1336,
+      "warnings": []
+    },
+    {
+      "address": 2148606680,
+      "name": "LensDataServer_GetLensIdPLC",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "205365ee76caf677b492c24a8ddedb343e75e2f2d6e7e84d765ab3d225ac7808",
+      "asm_sha256": "2dbcbf280e76b1a55472a29c68b2258d56243c2f1e25a31443255fcf41ecadbf",
+      "c_bytes": 129,
+      "warnings": []
+    },
+    {
+      "address": 2148607168,
+      "name": "LensDataServer_GetLensLocationVDRC",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 84,
+      "c_sha256": "9fd1f49b57aa3c80b53e8fb69f025114bc2a2aab65b7801236276186c253597d",
+      "asm_sha256": "523c794dc903cbcca6b6b162762bc279b8195ba3e0c0a6327d4cad9a4601e31a",
+      "c_bytes": 396,
+      "warnings": []
+    },
+    {
+      "address": 2148607276,
+      "name": "LensDataServer_GetMinimumShotFocusLocation",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 76,
+      "c_sha256": "ff88ff935e00d9f91e1f196185910565db3fba175a8abb4bebda5747e2a81d7f",
+      "asm_sha256": "d3129f7e88492f97767cc30624d32966a2b8eaf997a1519e7a306ec09afabb9d",
+      "c_bytes": 401,
+      "warnings": []
+    },
+    {
+      "address": 2148607452,
+      "name": "LensDataServer_GetOverInfiniteDistanceFocusTravelLimit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "37289a96778410115f787d454e099330f44dda805ab4d3be8038f3cba70ecee2",
+      "asm_sha256": "6e6d0cc201f23b09778665d3e4dea47fe844fea066bd522013366ee78671a543",
+      "c_bytes": 159,
+      "warnings": []
+    },
+    {
+      "address": 2148608772,
+      "name": "LensDataServer_GetReleaseShutterDelayTable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 48,
+      "c_sha256": "8fe6a42032343aca306d62e2ae1e5434b51f98b26fd6145efb1574aeae4b0bc7",
+      "asm_sha256": "ea42522121b186908c2bfb440bff590757130070c38c36aceab0aa16ec406745",
+      "c_bytes": 345,
+      "warnings": []
+    },
+    {
+      "address": 2148608820,
+      "name": "LensDataServer_GetShutterMoveStatus",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 24,
+      "c_sha256": "f7dc8bffac3cdf96d9bbcca51888e908ae24586b1b27d638f098f0ca64739316",
+      "asm_sha256": "4bd9723f2e078b419679329441122547d4020006e262c52cc96b42964a204182",
+      "c_bytes": 133,
+      "warnings": []
+    },
+    {
+      "address": 2148608844,
+      "name": "LensDataServer_GetShutterStatus",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 24,
+      "c_sha256": "9d4c740909ca087518ffc6368f4799ae05e03e6922363396d1ae9e88b2dc40b3",
+      "asm_sha256": "f2aac294fbe07a138fb04c210787e162a19a29e6e6300bde0c8fccbbc3ffddc1",
+      "c_bytes": 129,
+      "warnings": []
+    },
+    {
+      "address": 2148609384,
+      "name": "LensDataServer_ToolReceiveDataConverterPRISTD_WORD",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 68,
+      "c_sha256": "ac850a67fff3b1082a6255f38c54116b33efa88a8a153ebf5d1ec59c4a1b0a12",
+      "asm_sha256": "cda963aef5bb3fc842e169b589db8cd6c76a3ffc816ccd0d68b84342b9485214",
+      "c_bytes": 444,
+      "warnings": []
+    },
+    {
+      "address": 2148610636,
+      "name": "LensDataServer_GetMaxShutterSpeedTimeValue",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "607a859a58c3b44f1b7a550db7db765bef918f3c8b830974c6efcfb767bd9baa",
+      "asm_sha256": "8026efc864a73a926d1a8b9ad2cf625a77cf3a07277d36af18beed73e21a4c1e",
+      "c_bytes": 182,
+      "warnings": []
+    },
+    {
+      "address": 2148612092,
+      "name": "LensDataServer_SetReleaseShutterClose",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "a19db5b3794bfe03cf21ed6c5dc16e7563ae1b7d9fe10a71f09788923a35a084",
+      "asm_sha256": "91aa62a882a801e2fb22af84f7c80a96fdd0feee33066b436ee73f7fc11ac1b6",
+      "c_bytes": 94,
+      "warnings": []
+    },
+    {
+      "address": 2148612192,
+      "name": "LensDataServer_SetReleaseShutterOpen",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 100,
+      "c_sha256": "d7e18b434991ec5f233f406e64ab3a5da18aecb528ae0a891533ec1e8a781c54",
+      "asm_sha256": "2c508cb54e98d3105a001eb21aafa4882f56b47a8a468be383d4082746311a54",
+      "c_bytes": 321,
+      "warnings": []
+    },
+    {
+      "address": 2148612292,
+      "name": "LensDataServer_SetReleaseShutterOpenMoveOnly",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 152,
+      "c_sha256": "a88e18cc7832d1c825d8a9c79b3d25a72586ac406ffc68e393d48854efcdcdbf",
+      "asm_sha256": "f8616faabb10aa6d24886b33cc4d8afd89c935cb08b8aaf8c978c4aaa18d9275",
+      "c_bytes": 393,
+      "warnings": []
+    },
+    {
+      "address": 2148612444,
+      "name": "LensDataServer_SetReleaseShutterCloseMoveOnly",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 152,
+      "c_sha256": "b64d50e7332a4b64ef2d167f924adc8e03cac3315b84ff9089f1bc13d62e16fc",
+      "asm_sha256": "d26ef5221a9babf9380b628a7296e3a670fc034dc709edd732243b8165879afd",
+      "c_bytes": 394,
+      "warnings": []
+    },
+    {
+      "address": 2148612596,
+      "name": "LensDataServer_ComSetReleaseShutterOpen",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 76,
+      "c_sha256": "fce4624242b45c6f765086b5a63d0b479809bda97b80e7f947093bc838601a82",
+      "asm_sha256": "d7dc1616cc37e9bd3035c3380755c1aa886d4c3e1a7c94e511b8b3dca65b004c",
+      "c_bytes": 251,
+      "warnings": []
+    },
+    {
+      "address": 2148612672,
+      "name": "LensDataServer_ComSetReleaseShutterClose",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 76,
+      "c_sha256": "789d7bc32e43d5cbaa8e4b339966d6fc1d89416e954155ec56c6b6279b7a7155",
+      "asm_sha256": "9ced0afbeb24cd64ca0b5acde9f2a4a7167585b40ee84f53a54f6e1f70c987b1",
+      "c_bytes": 252,
+      "warnings": []
+    },
+    {
+      "address": 2148612748,
+      "name": "LensDataServer_ComSetReleaseDummyShutterCloseOpen",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 148,
+      "c_sha256": "e9c88fe334580f9deb725ee4a71c994c39be5f20febac11eed00408322dfcbdc",
+      "asm_sha256": "0053ff8c6b175a2e137e3362cecc113f6af1addbf7f4b7da8a957dbf4e7fba4c",
+      "c_bytes": 452,
+      "warnings": []
+    },
+    {
+      "address": 2148613668,
+      "name": "LensDataServer_ComGetReleaseShutterDelayTable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 136,
+      "c_sha256": "49e0a422289df0e75d94c38be799aaedd9065fb6f03575b9e9f35618686ce7b8",
+      "asm_sha256": "a86d76d652d464df2ec1da76aa54ad2a7d10ee6a71fa5255ff4fc9a0d099d15b",
+      "c_bytes": 526,
+      "warnings": []
+    },
+    {
+      "address": 2148615772,
+      "name": "LensDataServer_SetShutterInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 60,
+      "c_sha256": "bc60fa5b0936c1e5190be564e937cac2b842b4d13236917dc30da69d917cdb52",
+      "asm_sha256": "77dec457259e61ffaf82f61c997da98e21b8c12cc5ff33d2d863d2b46e96b561",
+      "c_bytes": 205,
+      "warnings": []
+    },
+    {
+      "address": 2148616340,
+      "name": "LensDataServer_ExGetLensAttached",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 36,
+      "c_sha256": "d45e0e3416ef79e68d26c5349b28cb4de2db8e94232db886da2e99802431517e",
+      "asm_sha256": "ca5d325fbdb24da95e605491c09827df84f233f7a2972464d619553decd9d82a",
+      "c_bytes": 164,
+      "warnings": []
+    },
+    {
+      "address": 2148623448,
+      "name": "LensDataServer_ExGetShutterEnable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 80,
+      "c_sha256": "6c3a3f20d283bb39d7239e0b70d38a16054ace0cbb5976d1f3d3903b150559c2",
+      "asm_sha256": "83f79cdbcb10c2c720169b4eda2bc214d42f6b12dd619b2af074422e17a184c9",
+      "c_bytes": 255,
+      "warnings": []
+    },
+    {
+      "address": 2148624556,
+      "name": "LensComThreadService_GetVdrcMsgState",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "6f7108471c5088d66dc58555f412415f8745755aa07247235257805b7219264f",
+      "asm_sha256": "e1fe5da332a239f59aa02adba5816060851d027f473dd90f87dfc790e011979b",
+      "c_bytes": 91,
+      "warnings": []
+    },
+    {
+      "address": 2148624568,
+      "name": "LensComThreadService_SetVdrcMsgState",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "374dc59f6571c4e94e35f8f72381e7aec0bf4c0c8a8f2fb2b2c551512415081d",
+      "asm_sha256": "141b1a3206a1f3df2d628aab06b9f8c37993869884ff91d04b1bd510ed2e136f",
+      "c_bytes": 113,
+      "warnings": []
+    },
+    {
+      "address": 2148625144,
+      "name": "LensComThreadService_LensCommunicationSendMessage",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 44,
+      "c_sha256": "1e2bb35446c41f6db794fcd389782fca9f626a3374ef126faf47c69879af1110",
+      "asm_sha256": "42fa98dcb309018f767d49760ab4aba92a025e1bfe6f9234977735dacbea4642",
+      "c_bytes": 210,
+      "warnings": []
+    },
+    {
+      "address": 2148627868,
+      "name": "LensService_SetLensMapCommunicationSendDataSize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 68,
+      "c_sha256": "667e93632e3bbb239dce5f1bbc469f7e8c33a7d460986209649ece8288e000a5",
+      "asm_sha256": "110140fe4bb9947fe49d57f25d2bdd644e7cfdd25ea4fbe4311c6fb078d899d6",
+      "c_bytes": 302,
+      "warnings": []
+    },
+    {
+      "address": 2148627936,
+      "name": "LensService_SetLensMapCommunicationReceiveDataSize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 68,
+      "c_sha256": "914af1835b0b97a61d89216d0929888ba2917e142f4996eaa25a86786afbb5ee",
+      "asm_sha256": "06697c4788c8ba18679cd434869d8654d1bcfd73257b06718b9ad0e4905f0a61",
+      "c_bytes": 308,
+      "warnings": []
+    },
+    {
+      "address": 2148628004,
+      "name": "LensService_SetLensMapCommunicationComMode",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 64,
+      "c_sha256": "bd30bd4eac618ab896699fde1be536a3cda9d7e4ad16ff493567e489288214c5",
+      "asm_sha256": "fa1aa9fbd696b19d56f46f359ad8007dc383bea3e0814db05b591921b78e5566",
+      "c_bytes": 245,
+      "warnings": []
+    },
+    {
+      "address": 2148644140,
+      "name": "ShutterEventCallBack",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "7a437fe8cb88224ce23a983ae972824d8187de1f60049548c74e25fee5047b0c",
+      "asm_sha256": "587705e280a3a1dbc7ea8317e3209d7aaaab0eaf7847843b0f6739b2318746d4",
+      "c_bytes": 7019,
+      "warnings": [
+        "Removing unreachable block (ram,0x800d8f24)",
+        "Removing unreachable block (ram,0x800d8f30)",
+        "Removing unreachable block (ram,0x800d8f3c)",
+        "Removing unreachable block (ram,0x800d8f34)",
+        "Removing unreachable block (ram,0x800d8f28)",
+        "Removing unreachable block (ram,0x800d90b4)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148645128,
+      "name": "StillSensor_ShutterCancel",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 140,
+      "c_sha256": "c4b99836d8b4477cfcb2f6747b4b855b748b8752c869f4441ce3f91ba3feeb28",
+      "asm_sha256": "05495efc83bb6e5c9ea07b4bf9d70250f51da26f3e56d5aeb002d210445b5680",
+      "c_bytes": 8245,
+      "warnings": [
+        "Removing unreachable block (ram,0x800d8f24)",
+        "Removing unreachable block (ram,0x800d8f30)",
+        "Removing unreachable block (ram,0x800d8f3c)",
+        "Removing unreachable block (ram,0x800d8f34)",
+        "Removing unreachable block (ram,0x800d8f28)",
+        "Removing unreachable block (ram,0x800d90b4)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148686816,
+      "name": "EventFlag_Wait",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 68,
+      "c_sha256": "fbddfd9981586a21ff237637a893fdc19d8c2902ed1bf2124287f29affce78c9",
+      "asm_sha256": "c54dc1b84ae87814d1bcfcd09a5f99e4a37b843d7c00855a53a153e961516af8",
+      "c_bytes": 344,
+      "warnings": []
+    },
+    {
+      "address": 2148686884,
+      "name": "EventFlag_Set",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "0f2bfc0a93c325718c64d68d2463f5d6159f6272e4ab5d7413a92b265f21cd51",
+      "asm_sha256": "500f1a03a1f8b9dc99214468721ad4c4e5787f7bd5e3035feee1ef1f0cf8dbb0",
+      "c_bytes": 6979,
+      "warnings": [
+        "Removing unreachable block (ram,0x800d8f24)",
+        "Removing unreachable block (ram,0x800d8f30)",
+        "Removing unreachable block (ram,0x800d8f3c)",
+        "Removing unreachable block (ram,0x800d8f34)",
+        "Removing unreachable block (ram,0x800d8f28)",
+        "Removing unreachable block (ram,0x800d90b4)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148686892,
+      "name": "EventFlag_Clear",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "57e1c29c4638e09e91e41898032e3de41459bd2abb5a73330265a2a55350998a",
+      "asm_sha256": "6a69c0dfbdf23c69d894e1bd730ea5b7c67d2be34f11aa9ffe32026f74298df5",
+      "c_bytes": 4339,
+      "warnings": [
+        "Removing unreachable block (ram,0x800d8f1c)",
+        "Removing unreachable block (ram,0x800d8f94)",
+        "Removing unreachable block (ram,0x800d9174)",
+        "Removing unreachable block (ram,0x800d9184)",
+        "Removing unreachable block (ram,0x800d9194)",
+        "Removing unreachable block (ram,0x800d917c)",
+        "Removing unreachable block (ram,0x800d9334)",
+        "Removing unreachable block (ram,0x800d9198)",
+        "Removing unreachable block (ram,0x800d91a4)",
+        "Removing unreachable block (ram,0x800d91b8)",
+        "Removing unreachable block (ram,0x800d933c)",
+        "Removing unreachable block (ram,0x800d91e4)",
+        "Removing unreachable block (ram,0x800d91ec)",
+        "Removing unreachable block (ram,0x800d91f4)",
+        "Removing unreachable block (ram,0x800d8fa4)",
+        "Removing unreachable block (ram,0x800d9058)",
+        "Removing unreachable block (ram,0x800d9074)",
+        "Removing unreachable block (ram,0x800d908c)",
+        "Removing unreachable block (ram,0x800d909c)",
+        "Removing unreachable block (ram,0x800d90a8)",
+        "Removing unreachable block (ram,0x800d90ac)",
+        "Removing unreachable block (ram,0x800d8fcc)",
+        "Removing unreachable block (ram,0x800d8fdc)",
+        "Removing unreachable block (ram,0x800d8fe0)",
+        "Removing unreachable block (ram,0x800d8fe8)",
+        "Removing unreachable block (ram,0x800d8ff8)",
+        "Removing unreachable block (ram,0x800d900c)",
+        "Removing unreachable block (ram,0x800d9320)",
+        "Removing unreachable block (ram,0x800d9014)",
+        "Removing unreachable block (ram,0x800d9020)",
+        "Removing unreachable block (ram,0x800d9024)",
+        "Removing unreachable block (ram,0x800d9028)",
+        "Removing unreachable block (ram,0x800d9040)",
+        "Removing unreachable block (ram,0x800d920c)",
+        "Removing unreachable block (ram,0x800d904c)",
+        "Removing unreachable block (ram,0x800d9224)",
+        "Removing unreachable block (ram,0x800d9234)",
+        "Removing unreachable block (ram,0x800d9244)",
+        "Removing unreachable block (ram,0x800d9250)",
+        "Removing unreachable block (ram,0x800d9294)",
+        "Removing unreachable block (ram,0x800d9260)",
+        "Removing unreachable block (ram,0x800d92a0)",
+        "Removing unreachable block (ram,0x800d9290)",
+        "Removing unreachable block (ram,0x800d9258)",
+        "Removing unreachable block (ram,0x800d92d4)",
+        "Removing unreachable block (ram,0x800d9304)",
+        "Removing unreachable block (ram,0x800d930c)",
+        "Removing unreachable block (ram,0x800d9318)",
+        "Removing unreachable block (ram,0x800d91fc)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148687116,
+      "name": "MessageQueue_Send",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "e21a0043760aaf82ad4e6cb143805de728c9e39c625350f61883ca006b1af702",
+      "asm_sha256": "858170b6555b9e3555dd9c6c46a326de53d92f7162c977fbd3310537d2397dca",
+      "c_bytes": 5817,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address",
+        "Could not recover jumptable at 0x800d7f7c. Too many branches",
+        "Treating indirect jump as call"
+      ]
+    },
+    {
+      "address": 2148688124,
+      "name": "Thread_Delay",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "4b4115e98bd64c5515686370c3a4176f6123c8d25bcea04978dfb95f974d8d19",
+      "asm_sha256": "7b462043629745abd76a04726b4802cdebe8b0f901b804dbbef4de4190e43434",
+      "c_bytes": 1000,
+      "warnings": []
+    },
+    {
+      "address": 2148722868,
+      "name": "CopPrimaryBoot",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 708,
+      "c_sha256": "15c18a1c4a8c8a4a5a0e5539cd3e9fef3c95b05fe433f2289e3f77f7c32892da",
+      "asm_sha256": "76f068dad21dfc8524f5f71ae8540c7a929db59674c3739cb0331ca98c530050",
+      "c_bytes": 4179,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148839972,
+      "name": "ApsCmpRecalcDqt",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 252,
+      "c_sha256": "0b3be3bf968f38d8b80df1cb54a3ab4d868f1cef29091e41e2014ea1121a1062",
+      "asm_sha256": "fab5a754505491236da25187dde36a3d412046823156b6cbbe2a323067b504b6",
+      "c_bytes": 1346,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2148841360,
+      "name": "ApsCmpGetCodeSizeBySf",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 388,
+      "c_sha256": "6050ecdd5c8bf401c71e7f6e375ab7b32e7c8781a0eca200dbf88a50f6651813",
+      "asm_sha256": "aaead87426f9f2a3d7c06901f981fa5170c34d19e23f03d4b1b9999cb20a2b40",
+      "c_bytes": 1426,
+      "warnings": []
+    },
+    {
+      "address": 2148842748,
+      "name": "ApsCmpGetScaleFactor",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 512,
+      "c_sha256": "624ef397b58107d5d91891342227f788a3f0803acb08106d7c788c636b509581",
+      "asm_sha256": "4e8f9e45e5628a8ad0550a6afbfe34fe669421431aff5c154d1d52d74c2e1f9b",
+      "c_bytes": 1985,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149290644,
+      "name": "PathCreate",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 232,
+      "c_sha256": "b08f534b533aec2931c887c8127a05f7695ff9a16117bdfe956ec5184d4cfe4d",
+      "asm_sha256": "577ea3d968dc8b4215ec0436325b37498c67d78f440c9d6c0ed8d75c1f92ef57",
+      "c_bytes": 1349,
+      "warnings": []
+    },
+    {
+      "address": 2149291016,
+      "name": "PathDestroy",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 216,
+      "c_sha256": "c1886430553e0cdf84fdaae1fae622a389da649d409cfc3723659f425214a5e5",
+      "asm_sha256": "384aa330b73e728c21bc135edba7d7a757ca516afe65d630cdf1d9c863c4454e",
+      "c_bytes": 691,
+      "warnings": []
+    },
+    {
+      "address": 2149352392,
+      "name": "PathSubmit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 276,
+      "c_sha256": "ed13a288bb3b7dbb6350594db7c6fbf496a8e13aef56520f4d28eb4b09148db9",
+      "asm_sha256": "6bb03e017f53665d76468a247539417794955a22c4a69656c1773cd40bb95c39",
+      "c_bytes": 1181,
+      "warnings": []
+    },
+    {
+      "address": 2149361488,
+      "name": "PathGo",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 420,
+      "c_sha256": "296cd03a238a4c1e752bb612a8bb5b7973c863249d52d8311a2fe81bad0ea421",
+      "asm_sha256": "4748d124a057841f8efea1accc5874193e0103f98c5de12bafda92d4ee56cc29",
+      "c_bytes": 1488,
+      "warnings": []
+    },
+    {
+      "address": 2149361960,
+      "name": "PathWait",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 404,
+      "c_sha256": "4e90aaa7fb63b92a7ed3ca08a2c2ae8e84986b74d4c0f2c90791d372de119b20",
+      "asm_sha256": "7d674acf18d371010cb06f35a75df92dc7f0179fe2934c22fc74bc638e2f8d2f",
+      "c_bytes": 2744,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149363904,
+      "name": "IcaPathSubmit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1048,
+      "c_sha256": "c42ae69ef0a7729abe2691bc60280fdcf32a8e2d8adb1accfb38b32884eb08e2",
+      "asm_sha256": "a731918a0f4b03d0bb1f361c71dff7ce5b801935625bd7740fa5450b8322cf26",
+      "c_bytes": 4452,
+      "warnings": []
+    },
+    {
+      "address": 2149408104,
+      "name": "QtConvert",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 156,
+      "c_sha256": "8475838921e94ca2c2d05d2a3bd0dd9672d69a9c8305bb88d6ff57be2c2de07a",
+      "asm_sha256": "e0145d4ac3cbc37ef6463e54fc2f2b9cff4fd8a8c00accf33c15dd3cc2a5e857",
+      "c_bytes": 945,
+      "warnings": []
+    },
+    {
+      "address": 2149443996,
+      "name": "PathSetJpeg",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 100,
+      "c_sha256": "3c4fbfe0c078265775ebba10a647ed666fffa27256c96b9f7dd445de83083027",
+      "asm_sha256": "79192b96dad69e0e7ce6e735f1d5d661066390e1d6a5eae9e6d00ea049da01c8",
+      "c_bytes": 328,
+      "warnings": []
+    },
+    {
+      "address": 2149445120,
+      "name": "PathJpegSetCodeBuffer",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 40,
+      "c_sha256": "b562301e5314c2a9298880eb004738210818d771a2e8ed1abf0234bad411e15a",
+      "asm_sha256": "bc45523bbddc91d0616cfb04ef101b1dec4e0afc699574161f251cdcbf9ce29d",
+      "c_bytes": 293,
+      "warnings": []
+    },
+    {
+      "address": 2149445160,
+      "name": "PathJpegSetImageBuffer",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 108,
+      "c_sha256": "a3e2ef9f331ad53b9d83fd692e5563c58b5dd6421c3cc21010354b1401a01462",
+      "asm_sha256": "262fe74df45adea7a981c77ccec62e366caa132a6d2615c35fa734c04b9f6f62",
+      "c_bytes": 842,
+      "warnings": []
+    },
+    {
+      "address": 2149447040,
+      "name": "JpegPathSubmit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 60,
+      "c_sha256": "5bdb4d997499156525e324147c4678ed18f83542e46005171cdc404e73621f30",
+      "asm_sha256": "539571595dd36a8d1ec85a804b818b2b06f6df91c1c335817eef6320aa31000d",
+      "c_bytes": 156,
+      "warnings": []
+    },
+    {
+      "address": 2149447100,
+      "name": "IsrJpegDone",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 144,
+      "c_sha256": "12f0290da1508ba33bb51f6649d7f34a823e8d93c6f077563ff9564405f48c96",
+      "asm_sha256": "f4e33ae04d6f0b8fd9651d9359702d623c34aad21565d2aec67cd8d721fdb58f",
+      "c_bytes": 438,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149447244,
+      "name": "IsrJpegFreeze",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 88,
+      "c_sha256": "5905fac4dfb80f826de01c2dd483675804bc8ffcdfb4d7553867e727f3180a8f",
+      "asm_sha256": "e76466682e0e2d94406876bf7313a9ce335f4c4634b21f59cc9632414cff6353",
+      "c_bytes": 360,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149447504,
+      "name": "JpegPathInit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 316,
+      "c_sha256": "57ca31a9cfe03a65f18ae1fddb70b2ffd5a00f686fa73c62d775d966d93ad465",
+      "asm_sha256": "1a1c4a6b68338ee195576733518a801bce14c4f7e2ddd8ff3063819e13d27f77",
+      "c_bytes": 974,
+      "warnings": []
+    },
+    {
+      "address": 2149452356,
+      "name": "JpegCodecReset",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 468,
+      "c_sha256": "c25df503044d3082c1ac7e741af1398bcbacee8da886cd9332c91f3629f5a3ff",
+      "asm_sha256": "fa27b99e971658ffd78a1b07d64f70755833ef9b6cd46a53f3e3b9bd2fca838b",
+      "c_bytes": 1793,
+      "warnings": []
+    },
+    {
+      "address": 2149543320,
+      "name": "SensorGammaAllocate",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 160,
+      "c_sha256": "1bb697f4c72d1325eb10dae5acfc6cfd2359aa162871c4392aa7bde08a2410db",
+      "asm_sha256": "85cebf5a1150bbe20cfb55219ad33492a8f8bcac46a174adf97a067f07e4cf92",
+      "c_bytes": 353,
+      "warnings": []
+    },
+    {
+      "address": 2149543480,
+      "name": "SensorGammaFree",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 124,
+      "c_sha256": "452b998f82d36006e3c725c72848895cc2cf46d88b9b56219feb4d002499c69d",
+      "asm_sha256": "64e54a3cf1f35bfd59a74d9aad581ebb1f61beb21e59daae03741d40d1d3427e",
+      "c_bytes": 1425,
+      "warnings": []
+    },
+    {
+      "address": 2149543604,
+      "name": "SensorGammaRunConvertTable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 292,
+      "c_sha256": "e12a1dbe8a79fc8eea0d8ca0b4e879fc737eee4a5e441eb1fea9f1ea36e05c61",
+      "asm_sha256": "b2b2152bca12ef466bfa7220ea217a77c35db789e9a556c5ae14e055f7b11f5a",
+      "c_bytes": 781,
+      "warnings": []
+    },
+    {
+      "address": 2149544516,
+      "name": "SensorUpdateIppIpsGamma",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 332,
+      "c_sha256": "f0688b17ffe7616f7b35a45b77081cf9be03311d6f91f80dc4c35fa170aabc35",
+      "asm_sha256": "7c687014cb91e1c568d8568a567387c9faf6de08890df2a3fc03a3b173d16527",
+      "c_bytes": 1020,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149544848,
+      "name": "SensorSetGammaWithId",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 428,
+      "c_sha256": "8ec4ecae3b21cc8d8fa72ea2d24458796ac34470c51ebb2335bc32af11b6274e",
+      "asm_sha256": "ac0314c9b1b4bb07b4ab096defe3e53503d897279839c71847d93090bcc0970c",
+      "c_bytes": 1364,
+      "warnings": []
+    },
+    {
+      "address": 2149550272,
+      "name": "SensorShutterConfig",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 52,
+      "c_sha256": "4834c97e2f92bfd2cd0a9171cd3f337875aeebd707ace00aa37563efa5fa41f1",
+      "asm_sha256": "8a5fbc57503310f0dc2f301a5f09bdc134664686cf2614d1905e8a8c5f86442b",
+      "c_bytes": 385,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149583620,
+      "name": "SensorGetCurrentSubModeNumber",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 32,
+      "c_sha256": "5e2483450a0da62bc8b644e7ce5354559829cbfdecc10e341ce4d8c931cb46e7",
+      "asm_sha256": "6074f08991760d03d089948c9d6f3263916507b3966c73c2dd2a0140f16f497c",
+      "c_bytes": 167,
+      "warnings": []
+    },
+    {
+      "address": 2149584752,
+      "name": "SensorIppUpdateRequest",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 632,
+      "c_sha256": "95c9867f5c3d495dbdf62c0a8c75e782f555b9ba72a8edb98237c6b0a6cca4c9",
+      "asm_sha256": "aa418900af8353b58800be3e9fa81e8b57485544ddf18d42b2437ebf535c30f2",
+      "c_bytes": 5904,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149592052,
+      "name": "SensorUpdateCurrentSubModeNumber",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 36,
+      "c_sha256": "32f81f523f0f838117f0bb3eac25f557458a0a04c6a61562fb6a23927854f597",
+      "asm_sha256": "bb63af575d503f4b72c012b7fbf153998a3db361ae57e9e184a93bac322ec6c8",
+      "c_bytes": 213,
+      "warnings": []
+    },
+    {
+      "address": 2149593016,
+      "name": "SensorSetFilter",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 384,
+      "c_sha256": "83ebfc180d0ce44a1381204bd06e42cab6ab7076975a0f04e2187dab178e8cfc",
+      "asm_sha256": "0d4cac9adb98343b47a0aac7ca7399c490eb223643691e65e90c87bfa00d265c",
+      "c_bytes": 1887,
+      "warnings": []
+    },
+    {
+      "address": 2149931360,
+      "name": "AppImageProcessingStillModeToGammaTableIndex",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 108,
+      "c_sha256": "a66467b6815b2b5709295ed2f6479baca1bc28fed8d70aeac02102af4c71cde5",
+      "asm_sha256": "10447b200c9d6832f8e3f30f3d627e363ce4dcf1f5c13ecbbd790478b050822a",
+      "c_bytes": 403,
+      "warnings": []
+    },
+    {
+      "address": 2149931468,
+      "name": "AppImageProcessingGetGammaTable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 36,
+      "c_sha256": "ed43c0d2c234f4c64cbcb67524be33838ed828141937ba58715c08ff86980ec9",
+      "asm_sha256": "bd742cc09ddae33fbe6f4bea72a7e6c2ae4df36fa7538e212e8f3ededca9bedc",
+      "c_bytes": 163,
+      "warnings": []
+    },
+    {
+      "address": 2149931504,
+      "name": "AppImageProcessingSetIppGammaContext",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 884,
+      "c_sha256": "2f659229dbee57cd5a15d2aa9de7fe51ba38248c4fcf25c0847176df4e37d0d4",
+      "asm_sha256": "d72d7c7e2dd16ead56b425f87f6be059ff18279998325b68e05b7a1e8aba0467",
+      "c_bytes": 3170,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2149932388,
+      "name": "AppImageSetGammaTable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 56,
+      "c_sha256": "0aba8e6d3e1fbf1f875b5a827b9ad8ed8cd4c90c494fc71b6ca4377908ffa2a5",
+      "asm_sha256": "da070e64062de5de1def766fbbab897b58fb8f5e92fae747830e94676c1aef84",
+      "c_bytes": 204,
+      "warnings": []
+    },
+    {
+      "address": 2150022632,
+      "name": "HostPostMessage",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 380,
+      "c_sha256": "b2e6e5a025efe3aa20a08b5690c0a63a47bc72893621eb916bb03fd80f402e30",
+      "asm_sha256": "96ed3fbeff94083eaf51d0927d094db8fe4771ee4a6f25a0fd4c2487fb10a541",
+      "c_bytes": 1655,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2150072104,
+      "name": "AppConvertIppGc2IpsGc",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 520,
+      "c_sha256": "2d73c9842ceb5accabc2cdcb3568cb5397b818319d89e8e3eabcb073952074c8",
+      "asm_sha256": "dbe8e73de4534b633fc7c11110ff2f5dd47c893d21a756d7d1d97bca202ef853",
+      "c_bytes": 2114,
+      "warnings": []
+    },
+    {
+      "address": 2150102372,
+      "name": "I43_SetImageProcessing",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 32,
+      "c_sha256": "7a05505fab965632dacbc5435f7b1de4e3f8188da5722370b6bf322a51f71a0f",
+      "asm_sha256": "c90c534d75e3857ecc89cfa90fb82bf2f6dbeedacf3ed6a144b0af09cd35c814",
+      "c_bytes": 88,
+      "warnings": []
+    },
+    {
+      "address": 2150321268,
+      "name": "CaptureSetCaps",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 3664,
+      "c_sha256": "cb7b35360f035b2d3e1cb6cc5426cb697b5d6efa6aebba07960b7ea07a725643",
+      "asm_sha256": "ee2916d28a569b48ada5fed60d9f5153d023f63cd7b844b631a7e5ddbec4527f",
+      "c_bytes": 16023,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2150324932,
+      "name": "CaptureGetCaps",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 3316,
+      "c_sha256": "00df63a37f762c25a74d377f6aa8170799578e68a8545ece332a56a6ee4d50b6",
+      "asm_sha256": "405977a6742fc4816da78bc08b401c006aee40ed1f6b7824aeeea0eabe1b60d5",
+      "c_bytes": 8566,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2150348464,
+      "name": "ApsJpegCreate",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 536,
+      "c_sha256": "15e392b22658b001cf6b613d988f8398c0349deb07efb5eb04b1452322a2652c",
+      "asm_sha256": "015061aa4c121ff1fea7cdd123860fa54473c4b2ac4020594ab62cbd4e64e2eb",
+      "c_bytes": 2962,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2150491104,
+      "name": "StillCaptureImageTuneJpegEnc",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 856,
+      "c_sha256": "9c5861bbeecc9bc95e868bba9c048e999cc70820d52482ed7b2e22b11f02575a",
+      "asm_sha256": "b41f12bb8aac3e2e3099720e6e943f5d744a95674997fad4200be08a81a56a55",
+      "c_bytes": 2543,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151002556,
+      "name": "__fixunsdfsi",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 124,
+      "c_sha256": "600172cf56c106fbfae38372e8c2eda8c48822b7e1129432261c12349b5c4a44",
+      "asm_sha256": "b404433973bdfb74bb198b4c2a62fa29380cc7e23b217b340ca503901042534f",
+      "c_bytes": 1254,
+      "warnings": []
+    },
+    {
+      "address": 2151002772,
+      "name": "__floatsisf",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 392,
+      "c_sha256": "805659d34c713a6e6abe41e883eb032e70361b2f9e817cefc020b2f543620bb2",
+      "asm_sha256": "a410dedb3d5c332d7bb48aeb61e99dfe14b8993743163f349ed10e0ce3ac7b0f",
+      "c_bytes": 1618,
+      "warnings": []
+    },
+    {
+      "address": 2151004496,
+      "name": "__truncdfsf2",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 320,
+      "c_sha256": "6dcc4bfe404236a898baa198aa82bb7d33bc05a4387cceedb2cb99b9230e9bea",
+      "asm_sha256": "d44289c545225b40440d0727313e1cb4ca789ed87e68de7875a9be5ec0e4b1cf",
+      "c_bytes": 1274,
+      "warnings": []
+    },
+    {
+      "address": 2151004816,
+      "name": "__extendsfdf2",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 208,
+      "c_sha256": "ebaa72ca9733b290623e7b1624d976edb90a2b8a1e0d426a6995e1189a80cdac",
+      "asm_sha256": "2f17b1fe159b0c87daf37dfecf102d201907f5ae69b776c19b88f147a753053a",
+      "c_bytes": 845,
+      "warnings": []
+    },
+    {
+      "address": 2151005024,
+      "name": "__addsf3",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 736,
+      "c_sha256": "11eff05127d0fe39db7e5507baafe97e6252ad061423c37de630a6dba5f60426",
+      "asm_sha256": "31d3de3f30c0d65bf2ff2b51f2c127edc566d53f8d7fb73c060326d4972ba24c",
+      "c_bytes": 3453,
+      "warnings": []
+    },
+    {
+      "address": 2151005760,
+      "name": "__subsf3",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "32506a8af06f17548f4c6ee5f7d271f1ccb286685d317895a607af9639817772",
+      "asm_sha256": "26551c1dcd7c785e459056262a69d41d22e0d0aa22a0100fa42b75790f70ff04",
+      "c_bytes": 3488,
+      "warnings": []
+    },
+    {
+      "address": 2151005772,
+      "name": "__mulsf3",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 636,
+      "c_sha256": "4c300208812c830ee3e97b6465f7a58d9a8355e97dad4654e56ee4df40a46a26",
+      "asm_sha256": "5c1c228bd86f68c66a413a207fbbd528057a50b5e846d95a90d059cff5db9cb4",
+      "c_bytes": 2889,
+      "warnings": []
+    },
+    {
+      "address": 2151006408,
+      "name": "__divsf3",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 668,
+      "c_sha256": "15aabbed1da1afcc73729fd901ce7feabbb36772d6784444fba38c0eff915204",
+      "asm_sha256": "ab942c97e12db4a86aa614b6865d8c15838037116a70d00e2ca8ae9294fa5eb7",
+      "c_bytes": 3131,
+      "warnings": []
+    },
+    {
+      "address": 2151007360,
+      "name": "__eqsf2",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 48,
+      "c_sha256": "bf5cc59cbabbf88232379154ab7d233e0e7d6775e703848effb6ce311a3fd3ae",
+      "asm_sha256": "e9e25851c6d9d67aace90f520d2c59766e2c6309f74cecd85afd8656cd83f495",
+      "c_bytes": 470,
+      "warnings": []
+    },
+    {
+      "address": 2151007456,
+      "name": "__gtsf2",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 48,
+      "c_sha256": "fe5c2598e99f484a9f4e570a26b2d4afd5d31162aeedaae7708f3f27b1025ad3",
+      "asm_sha256": "8e490187c779af4918994d2dade96d284141d39472f08f1455c88928a2bc1a87",
+      "c_bytes": 479,
+      "warnings": []
+    },
+    {
+      "address": 2151007552,
+      "name": "__ltsf2",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 48,
+      "c_sha256": "2a3df11e436f87840ec2f571db9d83ba85fd580fec6ebcb564c36e661ebc1c70",
+      "asm_sha256": "9971cb5ab2f3dc9fb7ec0b64f15e517af71c895012f5a48fa42178b0e9f9553d",
+      "c_bytes": 470,
+      "warnings": []
+    },
+    {
+      "address": 2151112152,
+      "name": "CWhiteBalanceAlgorithm_FineTune",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 212,
+      "c_sha256": "e73b6b9df991c502a31ec84e4e755f07744fbec507c18e89dc4a7e059bf8f3f1",
+      "asm_sha256": "a3b3586bc7b57256aba72ef3b610342d641f6043ba50023b32ae2e759b3528b1",
+      "c_bytes": 1087,
+      "warnings": []
+    },
+    {
+      "address": 2151120912,
+      "name": "CWhiteBalanceAlgorithm_SetDevelopPreGain",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 148,
+      "c_sha256": "4afd53d726947c7a8c46144a23f11ce07c1b33380bb02b8910944a616bf8fd0d",
+      "asm_sha256": "3730644e518e4efe00ae605cea3059f3e23dfd3437a74e832aed2b037222f6ae",
+      "c_bytes": 792,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151121060,
+      "name": "CWhiteBalanceAlgorithm_SetDivelopGainList",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 468,
+      "c_sha256": "c233b009d5c7c0770e12affda146432f89193299c1a098b706b86ae5e69e86ac",
+      "asm_sha256": "5446db365975efaac4334e750f2051be74249971fd1481928fa02016bad3bc54",
+      "c_bytes": 2422,
+      "warnings": []
+    },
+    {
+      "address": 2151121596,
+      "name": "CAutoFocusService_DataBufferCleaner",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 552,
+      "c_sha256": "3871b8f83ebbf75c373692d867f625b508636ef6e0625450f6d0ed572eae12fb",
+      "asm_sha256": "527a9c8ec4f44c353f5d8cfb776360b34579c67639c8f6dbc26cf104ebc6b988",
+      "c_bytes": 2586,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151122148,
+      "name": "CAutoFocusService_AFBufferClear",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 104,
+      "c_sha256": "acda433bff77dd63631b6f129f3d6550790b2e0854c35a808d8c590d7af68114",
+      "asm_sha256": "e6e6212459b8e8b2973bf3360baf63e42f4bd93f02df5ffe6459e919db090a57",
+      "c_bytes": 673,
+      "warnings": []
+    },
+    {
+      "address": 2151122368,
+      "name": "CAutoFocusService_StopAF",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 192,
+      "c_sha256": "798772e70e3e76b889d0b446aa8586e542d3c8949b8916b084d6d231360a38ed",
+      "asm_sha256": "cd92f8632023f1027fbbea9aad4f67b7d520fdc7a781f3c69eaa43a032c42710",
+      "c_bytes": 596,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151122676,
+      "name": "CAutoFocusService_GetEndPointSpeed",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 144,
+      "c_sha256": "98132c47cc9717eeba969dfd0711ff71f744664adae6b8719c06db5acbcdaa42",
+      "asm_sha256": "bad5f2c81069627c2fc41f12275f2a9e28ea35dc5bde282007703a433ff4f65c",
+      "c_bytes": 630,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151122820,
+      "name": "CAutoFocusService_StopCheck",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 88,
+      "c_sha256": "ce38754ebb8d791e96dce3301895c7659af122d2caa90a40e425d214ad95a62c",
+      "asm_sha256": "f9605588589edea59cb1cdc202de6dd60c31d9c41496d10d971d7fdfd59cb8a3",
+      "c_bytes": 399,
+      "warnings": []
+    },
+    {
+      "address": 2151124800,
+      "name": "CAutoFocusService_CalcNGDistance",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 692,
+      "c_sha256": "56a5133141d0770494e571c43b7abb4e4dcd019ef6ca01de231dd8957f5f10ac",
+      "asm_sha256": "66a0b5e56c9cbb0129d99243f566014befbd0486f49ac393cc892039a99354ad",
+      "c_bytes": 2589,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151125492,
+      "name": "CAutoFocusService_LensCorrect_cm",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 492,
+      "c_sha256": "acca09cc1067dbc7927aea6f6daabe2e56e6ce5e5429e29ebc000d4a2dc570ce",
+      "asm_sha256": "df90f630869b863c61cb5d9585ca75efe5bfe287445d6ab61122f8a4d87faca4",
+      "c_bytes": 2214,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151125984,
+      "name": "CAutoFocusService_CalcMultipointInitPosition",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 352,
+      "c_sha256": "6d355fd0b7cc779525962de4cae2472b16aab42882b2535227d5ed0a299f1af9",
+      "asm_sha256": "358c26ad51bd8af43847eb54713bb13127cc108dbfff9809fdd8f66287ec172a",
+      "c_bytes": 1367,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151128900,
+      "name": "CAutoFocusService_SendJudge",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 288,
+      "c_sha256": "0d6d21191e422d9b7cd060cd3b5e0616e5c3b50b449fa67d25a641580f592b4a",
+      "asm_sha256": "da24fd35ed0679a10dcc0e35a2769db81f3b7aa973abaaa676d8b78d4b58c313",
+      "c_bytes": 857,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151132004,
+      "name": "CAutoFocusService_CalcFocusSpeed",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1332,
+      "c_sha256": "46da27551aed6be5500832355f66c0690399cf52248954831909bb43a7cf4df1",
+      "asm_sha256": "f9c8682d2ca82d9de0e94107090d8e7965399046bb933d4f0a30aabafb2603cd",
+      "c_bytes": 5044,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151133336,
+      "name": "CAutoFocusService_CalcMinBackPosition",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 360,
+      "c_sha256": "c072609aee9d433f0d4dee2a223da653062eba2335632c77f6477355eb565ae7",
+      "asm_sha256": "6d89a8b9a64518e4dffe822d34b2fae77023d91b91c03a6ba7f1cb8824e21f01",
+      "c_bytes": 1216,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151134076,
+      "name": "CAutoFocusService_PeakCheck_1Area",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1548,
+      "c_sha256": "9916f9bde0da2f3dceca4d2ef84b552d4079b62060f19cfa062d98009f4d083a",
+      "asm_sha256": "f9db025d82edcfc6e48d5e1e83e1ed149d25c27a214c823c7941e634ed3c9b25",
+      "c_bytes": 5278,
+      "warnings": [
+        "Removing unreachable block (ram,0x8037b840)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151135624,
+      "name": "CAutoFocusService_PeakCheck",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1648,
+      "c_sha256": "90d4706d80bc5ceaae3a4cf31f926c50fd25bba0e75298c7cb7089c881b98cde",
+      "asm_sha256": "1b6feff921d4de8f990cc32841c00ca2cdf4f116e200c1b48d838481c49d87da",
+      "c_bytes": 9063,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address",
+        "Restarted to delay deadcode elimination for space: ram"
+      ]
+    },
+    {
+      "address": 2151138448,
+      "name": "CAutoFocusService_LastPeakCheck",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 2028,
+      "c_sha256": "d661f2b195533a9d5f6a9f3588025bcdf1b8ad9af5e9e9664f9ef6b453f55885",
+      "asm_sha256": "e8bed01d7142093251c4aa708e38f61d0ad64eede4bbf7d190fafbc43143f062",
+      "c_bytes": 10534,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151143496,
+      "name": "CAutoFocusService_CalcFocus",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 2016,
+      "c_sha256": "75b0eaa602b18b712964ebc3cce83551aa0538457d8e2becffdef0a8e5bf6e8c",
+      "asm_sha256": "0eb3e8e1b552dab84bd0007c17ab20f961f3a2e24eca6d55a162e40e8c8cab00",
+      "c_bytes": 7451,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151145876,
+      "name": "CAutoFocusService_CAFSequenceStart",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 100,
+      "c_sha256": "6add2265491ece89254a4d3df809dfd12ea5da89def1b2f02a1ab7858827e8d9",
+      "asm_sha256": "b991e9fb46ef1e3da375d4374ed3c1c222474f3f1194603f2733811fa7944d31",
+      "c_bytes": 355,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151145976,
+      "name": "CAutoFocusService_AfMain",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 32,
+      "c_sha256": "4069d90b2336f6a5a43dedd13988941219ba184f5269a7b542c82d3eabbc7c2f",
+      "asm_sha256": "58e842616450ff03fc599d5a57051ae6124611299c83d087e7520143f931d6a1",
+      "c_bytes": 109,
+      "warnings": []
+    },
+    {
+      "address": 2151147292,
+      "name": "CAutoFocusService_UpdateShootingInfo",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 480,
+      "c_sha256": "f3431da5d0195db64d6e101e070134fcae729c44535889a4ae11ee680d7a295d",
+      "asm_sha256": "45132a7112ee3593c78f071e39b24e12848e9f187d46d3c6a84d4a18b16c1a8e",
+      "c_bytes": 1709,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151147772,
+      "name": "CAutoFocusService_SetCaputureAFResult",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 636,
+      "c_sha256": "e0412f779c3db05fa988124623e78be7ef44a2a5ad2ce00d155143f259ac9126",
+      "asm_sha256": "eece62dbdcdfc89791cf43ccd65b98ed920e4e17167718dc6a7321e030fed722",
+      "c_bytes": 5004,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151148408,
+      "name": "CAutoFocusService_LensDriveControl",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 436,
+      "c_sha256": "c99a9c72f024d3b37b6b292f3b2d51bc399030030541eb01bcd545d1779f0c80",
+      "asm_sha256": "2eb3d1bb3c75aa35d9796b8326ddc13f15435eeb10805898328cae281160a3fc",
+      "c_bytes": 1964,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address",
+        "Could not recover jumptable at 0x8037ec60. Too many branches",
+        "Treating indirect jump as call",
+        "Could not recover jumptable at 0x8037ecc4. Too many branches",
+        "Treating indirect jump as call",
+        "Could not recover jumptable at 0x8037ed24. Too many branches",
+        "Treating indirect jump as call",
+        "Could not recover jumptable at 0x8037ec14. Too many branches",
+        "Treating indirect jump as call"
+      ]
+    },
+    {
+      "address": 2151148844,
+      "name": "CAutoFocusService_EndPointSpeedDown",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1156,
+      "c_sha256": "9ca04ca0693a5b13a3db10bf71e0ee4b923e122407e144f379830bbb5ed8ba12",
+      "asm_sha256": "786bc6c0e0f21e6b1cc743860fb98fc96168a413dee007266cd42bba07465aa2",
+      "c_bytes": 3985,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151160880,
+      "name": "CAutoFocusService_WobbAfMain_Thread",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8652,
+      "c_sha256": "2d77daec54d5567368ce130724c18bab3ad470baa5c45a6aaaaa6960ac6ceaec",
+      "asm_sha256": "a6b9b4919e2802f799fdf26381971d7cd24ecd60b213bf493aa6b40f453db570",
+      "c_bytes": 36449,
+      "warnings": [
+        "Removing unreachable block (ram,0x80382728)",
+        "Removing unreachable block (ram,0x803825b4)",
+        "Removing unreachable block (ram,0x803828ac)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151169532,
+      "name": "CAutoFocusService_AfMain_Thread_sub",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 5412,
+      "c_sha256": "75c89806123e6687da84bf4566c3bcb0ab3089f5735b18e0ef278a4ee81a2b7e",
+      "asm_sha256": "53e21531b0d58934ebd303247c2ef8bfaed0332031b153cc24f7f87818b1803a",
+      "c_bytes": 23604,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151178016,
+      "name": "t_sqrtF",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 208,
+      "c_sha256": "446f25c52979743e6fd10cc96bc8ee9958b733168bbc46b4a3fef758ec20c9a3",
+      "asm_sha256": "68bb7b127bfcda713f8e0341aa56c6d2906a06f8203eeb4abecb8a575fe2e3d5",
+      "c_bytes": 616,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151185936,
+      "name": "CDigitalFilterService_RetroToning",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 144,
+      "c_sha256": "501ee084497a6d73a56bccade41eaa0c0d9a7d699e25a52bb7d0b9f183c45b0a",
+      "asm_sha256": "a4d895c1154af3f303fd28c5d25f16d7770b5702cd84ead880bb25c06bb290eb",
+      "c_bytes": 729,
+      "warnings": []
+    },
+    {
+      "address": 2151191184,
+      "name": "CDigitalFilterService_ColorOffset",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 156,
+      "c_sha256": "f5a79720bbad0ffa692311d250c36ca6e3c833b3ff58149deaa2dc55809adc22",
+      "asm_sha256": "72c811bd0103a8d6be76b47e3c26b07d1f524dbad2172432c7e4429865ed8d9a",
+      "c_bytes": 964,
+      "warnings": []
+    },
+    {
+      "address": 2151545792,
+      "name": "SerserDriver_ForseSetSsBreak",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "fca7c2b9816118713fd4ca3e7013fd4175568b752e9945413389d4d21ece2a4b",
+      "asm_sha256": "21406d1b982b9c133bf35f2351aa5ce13be8732853766eae409b4acf0a804505",
+      "c_bytes": 833,
+      "warnings": []
+    },
+    {
+      "address": 2151557040,
+      "name": "Imx144Driver_GetSHRMinimumLimit",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 24,
+      "c_sha256": "ef08d25163dee6150bb374b23aa3a3377a1a82ce101ba00fc2779ce159fd648b",
+      "asm_sha256": "43f464dcd7ae859a7a16aa72c56db76cdd4297181a1120902b3dada8c3820ab5",
+      "c_bytes": 123,
+      "warnings": []
+    },
+    {
+      "address": 2151739048,
+      "name": "CaptureSystemService_SetShutterCompleteEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "48ba9c7396d562da9661e0bb8606cc81d5c51b508a9fdb370a1818a8e3bab8ee",
+      "asm_sha256": "5dabfb2c0987ecace8371fb53302ae4d5d26b78e26b0784e104d325698406ebd",
+      "c_bytes": 7015,
+      "warnings": [
+        "Removing unreachable block (ram,0x800d8f24)",
+        "Removing unreachable block (ram,0x800d8f30)",
+        "Removing unreachable block (ram,0x800d8f3c)",
+        "Removing unreachable block (ram,0x800d8f34)",
+        "Removing unreachable block (ram,0x800d8f28)",
+        "Removing unreachable block (ram,0x800d90b4)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151739064,
+      "name": "CaptureSystemService_SetShutterCancelEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "4fa7fd896eba096d0089a23c3cb48b48028dcde8bb0aab094b698e0187b491b2",
+      "asm_sha256": "070db070b893e694b4547c871c005fbcff0927429a46d9c0e05570131e6b6f9a",
+      "c_bytes": 7013,
+      "warnings": [
+        "Removing unreachable block (ram,0x800d8f24)",
+        "Removing unreachable block (ram,0x800d8f30)",
+        "Removing unreachable block (ram,0x800d8f3c)",
+        "Removing unreachable block (ram,0x800d8f34)",
+        "Removing unreachable block (ram,0x800d8f28)",
+        "Removing unreachable block (ram,0x800d90b4)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151746800,
+      "name": "GetAutoExposureConfig",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "d51fcc1c4fe2ce02316225bcb12da638769dca200dfcb28e0c38f334e62fed1f",
+      "asm_sha256": "1e32538979630fb4c4dbeb3158f829da2bed0512c6177e1bb3f90f7a3da569bd",
+      "c_bytes": 74,
+      "warnings": []
+    },
+    {
+      "address": 2151748292,
+      "name": "CAFDataServer_AFStart",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "6e1f0d3ae0239ede8d8c505b1c9768ea2ebcbd98d56a67e2cabaf83c1afbb1fa",
+      "asm_sha256": "12e07f7cbf10fd163af5aa979d0b90465990a215d49e58331c1d30fc59a40331",
+      "c_bytes": 65,
+      "warnings": []
+    },
+    {
+      "address": 2151748300,
+      "name": "CAFDataServer_AFStop",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "4aa32d514f2e63dd4d93dd8cc9d2447f30a1f91aaec9851e3ae7d9b9df0227d8",
+      "asm_sha256": "29ed1b660262671afdbdb572870b15e3133d7587b40a6adb4979eee981cd14d5",
+      "c_bytes": 64,
+      "warnings": []
+    },
+    {
+      "address": 2151748784,
+      "name": "CAutoFocusService_AfMain_Thread",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 136,
+      "c_sha256": "ac4d2c6b7cdad333ad8b8e5ada6b3b0f044da6e50e3bdf1a6ca7d55ded1a5926",
+      "asm_sha256": "625e9b76ef728aee11172407a4d2ddc9f7996c7adaed85af27bb1812362680a6",
+      "c_bytes": 364,
+      "warnings": []
+    },
+    {
+      "address": 2151758044,
+      "name": "CaptureAutoFocusConfig_GetCaptureAutoFocusConfig",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "7edc41839f863389029d012f9a55eaa42562c2f19d438482102f422611e7019c",
+      "asm_sha256": "3a371cdaf2f9b6406d6c1124ff98afc7524e3e3b7bca6872c98ed4e2e5b066e0",
+      "c_bytes": 101,
+      "warnings": []
+    },
+    {
+      "address": 2151791500,
+      "name": "ColorMatchingService_SetupColorMatrixParam",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "277ec1d595faf692de6681424d93e52ad8427ddc980595cae1e4caa5df69b81f",
+      "asm_sha256": "06e9e4b960fd152b72191530bff7ee913bf31fb44e3007252437b7eaf5e9a090",
+      "c_bytes": 78,
+      "warnings": []
+    },
+    {
+      "address": 2151791760,
+      "name": "ColorMatchingService_MatrixMultiplication",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 236,
+      "c_sha256": "044fc4ca20996256d001f7031eecb3cc8f8fca8e5d8ef43d12a1188b8d6f02e3",
+      "asm_sha256": "a8628fe3c719b553f9611a081fe7cce446f5e9dbac9f54893fd185534a2272c4",
+      "c_bytes": 1131,
+      "warnings": []
+    },
+    {
+      "address": 2151791996,
+      "name": "ColorMatchingService_MatrixMultiplicationForWBGain",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 280,
+      "c_sha256": "c9424ec854501099c67644a73401c19ce1d6619b987b0a5f970b1060a1090de4",
+      "asm_sha256": "e006932afb9f1338a5b9f08df0aef9c806d0cbc49887c0da9c1fbccc2557cf5c",
+      "c_bytes": 1370,
+      "warnings": []
+    },
+    {
+      "address": 2151792276,
+      "name": "ColorMatchingService_HueShift",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 280,
+      "c_sha256": "15015b0003a9199b99d58943c62056ebf33a1a3de764916db113dcf457653988",
+      "asm_sha256": "0941d7a400556e9d9e93e0effa0b153c3012af0ae0a2a1ce143e8749e672e033",
+      "c_bytes": 1360,
+      "warnings": []
+    },
+    {
+      "address": 2151792556,
+      "name": "ColorMatchingService_GetMakeUpMatrix",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 172,
+      "c_sha256": "712daf5ae89a84545a3b61cb9b4bc0e524f4889c8e408d78baea3e0421023ac4",
+      "asm_sha256": "fbca362fd616ea09024c0d3eb88bb6168442bf78c5fb397ea6be2621e741f2e0",
+      "c_bytes": 699,
+      "warnings": []
+    },
+    {
+      "address": 2151792728,
+      "name": "ColorMatchingService_GetMakeUpMatrix6",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 172,
+      "c_sha256": "e57e3519444b8d73e2ccba5211c6e3edebb7eea44ffc6f9b8c538dff23a850fd",
+      "asm_sha256": "ad34e9fede3b2fe6bb4f8c007053d7593192d5728f1b743c0dcff0f6a5f3c3b3",
+      "c_bytes": 711,
+      "warnings": []
+    },
+    {
+      "address": 2151792900,
+      "name": "ColorMatchingService_IsAdobeRGB",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 24,
+      "c_sha256": "27050bbf003f8d9420d8a2e5eb79b2d2946ac000536d7d8142053e330e1a7376",
+      "asm_sha256": "7bef92981b4875cf4e7710270f2e5165cfa4538d6a108f908ee2c0d59ddbc5c0",
+      "c_bytes": 87,
+      "warnings": []
+    },
+    {
+      "address": 2151792924,
+      "name": "ColorMatchingService_ConvetDevelopmentSensitivity",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 100,
+      "c_sha256": "3cd2042d8df4687cbed5f772deb6277fa4cb58635b745424fec5f24991c2a1d2",
+      "asm_sha256": "194488c738d6c606f7db7bf8968ffaea264ebee3f9505398cdb0e2fe308e0900",
+      "c_bytes": 329,
+      "warnings": []
+    },
+    {
+      "address": 2151793024,
+      "name": "ColorMatchingService_MakeColorMatrix",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1628,
+      "c_sha256": "420cb2f997260c87944ca356bd5ff502c40f8bbc9ef67b2042f0592d57ed4935",
+      "asm_sha256": "48b45e1aba77aa2996efea547754dbbeee315d28302364d821c631b8056fe916",
+      "c_bytes": 7254,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151841304,
+      "name": "ImageQualityService_SetImageProcessingEnable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 172,
+      "c_sha256": "99b37ae7216d8ddcf4c4d388845945823c6d2d455fad4cd5e090f72ef2563247",
+      "asm_sha256": "30f31645f77a527e2298dc0c91e387809fe9467774ce9f9bbb372330b70bac75",
+      "c_bytes": 1005,
+      "warnings": [
+        "Possible PIC construction at 0x80427e5c: Changing call to branch",
+        "Possible PIC construction at 0x80427e9c: Changing call to branch",
+        "Removing unreachable block (ram,0x80427e64)",
+        "Removing unreachable block (ram,0x80427ea4)",
+        "Removing unreachable block (ram,0x80427e80)"
+      ]
+    },
+    {
+      "address": 2151843412,
+      "name": "ImageQualityService_SetupColorMatrix",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 392,
+      "c_sha256": "c77b6ab0854927b4a6848e3d39fd9dda6cf5e16c748d258c46fdbf61bff10283",
+      "asm_sha256": "62989af99ed9f73b428ed48495a564d570030741a2a2e6070060e117c7d82d8f",
+      "c_bytes": 1967,
+      "warnings": [
+        "Possible PIC construction at 0x80427e5c: Changing call to branch",
+        "Possible PIC construction at 0x80427e9c: Changing call to branch",
+        "Removing unreachable block (ram,0x80427e64)",
+        "Removing unreachable block (ram,0x80427ea4)",
+        "Removing unreachable block (ram,0x80427e80)",
+        "Removing unreachable block (ram,0x80427e9c)",
+        "Removing unreachable block (ram,0x80427e88)"
+      ]
+    },
+    {
+      "address": 2151875928,
+      "name": "DataHelper_GetDisplayState",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 80,
+      "c_sha256": "b795d6af812d1a2f7aa513bed86e49667c5bfd740314757995125fbbcad84b08",
+      "asm_sha256": "5023ff1bee665f2a6912d65fb53a4c9b1215e7d129541a8ea706c6fd24251070",
+      "c_bytes": 366,
+      "warnings": []
+    },
+    {
+      "address": 2151877140,
+      "name": "DataHelper_GetShootingMode",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 72,
+      "c_sha256": "e9fd0e93ce59bf4f72e239c7049188476f81306b000904218f5c0f0d8b96248e",
+      "asm_sha256": "d597281dd3f13cc38d24ff311ea101e5e2aa97077c5008852191453f78866d23",
+      "c_bytes": 258,
+      "warnings": []
+    },
+    {
+      "address": 2151877812,
+      "name": "DataHelper_GetUserData",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "19c72a988ecaf204ca26b0b6e7f15c2eac81ff3ac6f965c525e080de812a4e07",
+      "asm_sha256": "16b16614be4250ae04ba5ad594c3a9b405313b8032d130faa3ea0bac2bfaed24",
+      "c_bytes": 80,
+      "warnings": []
+    },
+    {
+      "address": 2151877896,
+      "name": "DataHelper_SetUserData",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "83b4ba5aa9c5d5d6d6da83d3cbbed874421b4c92b76d005a93ac74512d6c1bd6",
+      "asm_sha256": "448b23bd7f10d409dfeddf1ba7ae0890ee66e25cf6be20115ddfc9e403939d4d",
+      "c_bytes": 235,
+      "warnings": []
+    },
+    {
+      "address": 2151888716,
+      "name": "DataHelper_GetColorSpace",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 28,
+      "c_sha256": "8fc96014bc76df889d68df10b962598fea7ef13065ed95e63c8b620f934e76b3",
+      "asm_sha256": "a8c15681a707ae15b989aaecc1245995603ec679fd797194a67358c87fc9719f",
+      "c_bytes": 93,
+      "warnings": []
+    },
+    {
+      "address": 2151888744,
+      "name": "DataHelper_SetColorSpace",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 16,
+      "c_sha256": "8889c18b9881466a791a2a55e6c4740db65d2d437185ee23e0db364e3b4c6740",
+      "asm_sha256": "516845acfd78667f59e8aae56ea7e90855622311503ee099db7dbd55ebcc6e3f",
+      "c_bytes": 163,
+      "warnings": [
+        "Removing unreachable block (ram,0x8010ec18)"
+      ]
+    },
+    {
+      "address": 2151901688,
+      "name": "DataHelper_IsReleasePriorityAfS",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 36,
+      "c_sha256": "65ce14ad438b9c93d8555964926f7c5d43d53908c699ba887b6ac542e9cbd02f",
+      "asm_sha256": "739f55c4dc41616165a8de27af50d5c1a4e846e6dd79abc559d9fa2fcedf08a2",
+      "c_bytes": 137,
+      "warnings": []
+    },
+    {
+      "address": 2152674380,
+      "name": "__register_frame",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 80,
+      "c_sha256": "0dcbd71514f2fd5cb2c61178bd716585a709f40d4d2b6c89bcd974b850fa98ee",
+      "asm_sha256": "1c01e9e6113ef5e95f7e002e01812b5df89b6c2ee7d4ed70712fb9b609b12b24",
+      "c_bytes": 196,
+      "warnings": []
+    },
+    {
+      "address": 2150288860,
+      "name": "StillPrepareJpegCompProp",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 356,
+      "c_sha256": "44100ff015dbbd4c039a9d733a193452a8aeb7f1ee7857028069e9f2b9f4eab4",
+      "asm_sha256": "67d183efb9f81964a8b6930a62429e8089fb1e8b64db6d9f71ec33b10ebe1383",
+      "c_bytes": 1115,
+      "warnings": []
+    },
+    {
+      "address": 2150446032,
+      "name": "StillCaptureSaveJpegImage",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 480,
+      "c_sha256": "5fbd3b97d8720d67c28e8f32fc26bba8b5165748c281fc0827fac298c799a41d",
+      "asm_sha256": "c7f1336bb0e636eed1f9dc1c087a2801906ac91de0889ff1b186eccc4f7b85ff",
+      "c_bytes": 1534,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151115092,
+      "name": "CWhiteBalanceAlgorithm_bGainCalclationAwb",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 2548,
+      "c_sha256": "640388313c8df0ad316357e961013d14041495a08bb960bef9cb39088dbe24ba",
+      "asm_sha256": "e54c1e0954bb96429db6424deef7d362bbe5229f2b2c50ad51a365c3581c2afd",
+      "c_bytes": 10802,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151121528,
+      "name": "CWhiteBalanceAlgorithm_CorrectionGain",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 68,
+      "c_sha256": "53a5c78e67cf4638cc2bca2aea599cc8534cf4512f4510a3ddec2192841c55d0",
+      "asm_sha256": "521f899ed7002408d5ae9312a48fce591f16a562dbd72d9a29a9d08b372b2658",
+      "c_bytes": 432,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151122652,
+      "name": "CAutoFocusService_GetOnNotifyCommand",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "da8929b7b623fe7d0a0e9a73e0a2f22e9ffcb58e06f74013708726b1fa4cf4c3",
+      "asm_sha256": "74e5520b0ad1044ba8d0a5678427a804c08672d771fca69af6085cfa1482dcf0",
+      "c_bytes": 108,
+      "warnings": []
+    },
+    {
+      "address": 2151122664,
+      "name": "CAutoFocusService_GetOnNotifyComplete",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 12,
+      "c_sha256": "85518036c228a20f6f4158017099f2261cdd00ba41e98f22c0dc1a530808d125",
+      "asm_sha256": "cc6c0d5c9d1a02a77ac0ffad79be4af84e525471824da40d3fb3c1a9e438e3cf",
+      "c_bytes": 116,
+      "warnings": []
+    },
+    {
+      "address": 2151130076,
+      "name": "CAutoFocusService_FocusMakeAreaContrastDataForHardAf",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1376,
+      "c_sha256": "0d766bfb4f367dce951da484859383c14acfa290e712f4200959191e37338790",
+      "asm_sha256": "3cc9e0b407a2408a16d0085b4f6e693ab05e17526478f69001893c968b968832",
+      "c_bytes": 5070,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address",
+        "Restarted to delay deadcode elimination for space: ram"
+      ]
+    },
+    {
+      "address": 2151145560,
+      "name": "CAutoFocusService_Initialize",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 316,
+      "c_sha256": "2405498cf175b73872124b5019671b14c9a4d292beba37c5a0c987760948b4ab",
+      "asm_sha256": "85913e1f29d083e2bc1f7c92b30be2baf918e213ca926cd510a919773eeabd5e",
+      "c_bytes": 1038,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151146008,
+      "name": "CAutoFocusService_OnNotifyCommand",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 212,
+      "c_sha256": "fb68db20dcea1126354b1722d79fd0e64c67099949bc96c10e1fa4c1f65d6d74",
+      "asm_sha256": "21ef95e845a98b0bea2b8ccb39125770293472598ba20269d9368db569d5aaeb",
+      "c_bytes": 677,
+      "warnings": []
+    },
+    {
+      "address": 2151182100,
+      "name": "MakeToneForContrastControl",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 248,
+      "c_sha256": "79ccfd1bb1a22a7209d640b23294b941ef22bbe5985467d4732cb7f30a6fba73",
+      "asm_sha256": "fc6021c452588bbbed5ccecc35d3d51bb96d696a6996e339e0437c719b5bec48",
+      "c_bytes": 882,
+      "warnings": [
+        "Removing unreachable block (ram,0x80386fc0)",
+        "Removing unreachable block (ram,0x80386f6c)",
+        "Removing unreachable block (ram,0x80386fcc)"
+      ]
+    },
+    {
+      "address": 2151738912,
+      "name": "CaptureSystemService_WaitShutterCompleteEvent",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 136,
+      "c_sha256": "d5150d65cee8b16200bc2eab25592ff0b1ae1d1cc43408bdde5dfa932399d09c",
+      "asm_sha256": "0896391cb88fd41a5ed5a0cc96acb4f0c598a7771c6b67af0aee99568e40234b",
+      "c_bytes": 413,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151739684,
+      "name": "CaptureSystemService_CreateCaptureThread",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 268,
+      "c_sha256": "77ed0630f2aa52c5cd169c4959e23a286b3c8d483b8d9dc87193175b301b587a",
+      "asm_sha256": "8ed14e33bceb418952c7a7e211b1234e042856dc849bd4edf0667dc806558f3e",
+      "c_bytes": 659,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151744440,
+      "name": "CWhiteBalanceService_vCalclation",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 584,
+      "c_sha256": "190216415f890c6363df4108b0c17f45a3230c44d18187cd57bcbaef67da7636",
+      "asm_sha256": "b374a6b70916a275e1dc86a8bed10f5e19f2755e29eb55fd04baeeac311ac443",
+      "c_bytes": 2782,
+      "warnings": [
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151791516,
+      "name": "ColorMatchingService_SRGBtoAdobeRGB",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 244,
+      "c_sha256": "0e0b53a5394986070fe0f0b105e78b29de129c42518ad1bc80663c6a9aef12d6",
+      "asm_sha256": "eaf1e2b0f223d2ed37e910c3f0ec7e7662e2ecc4cfe70f4116095c324f9dcba0",
+      "c_bytes": 1078,
+      "warnings": []
+    },
+    {
+      "address": 2151796008,
+      "name": "GammaCorrectionService_CalcGammaCorrectionTableReversal",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 816,
+      "c_sha256": "6c0019c9c322d9e1c5f2dc0f2f122c3b6d7c6e8271b93bd49b93f961cb31672f",
+      "asm_sha256": "34a4909d42ac629ec6993a21481b204f1e3b588f52fc5e6d2781f550de0b200c",
+      "c_bytes": 4188,
+      "warnings": [
+        "Removing unreachable block (ram,0x8041cf08)",
+        "Removing unreachable block (ram,0x8041ce8c)",
+        "Removing unreachable block (ram,0x8041d008)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151796824,
+      "name": "GammaCorrectionService_CalcGammaCorrectionTable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 1936,
+      "c_sha256": "66f8577f43d1417c8f7c653a65f4130d3b0b1e88f33b259cac14919e56dd276b",
+      "asm_sha256": "270ccdf8a594b2ced613d5a28632e08cd63bcc02855f07539cfa40ee21c872c4",
+      "c_bytes": 10579,
+      "warnings": [
+        "Removing unreachable block (ram,0x8041d580)",
+        "Removing unreachable block (ram,0x8041d330)",
+        "Removing unreachable block (ram,0x8041d75c)",
+        "Globals starting with '_' overlap smaller symbols at the same address"
+      ]
+    },
+    {
+      "address": 2151801244,
+      "name": "GammaCorrectionService_CalcGammaCorrectionTableCrossProcess",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 224,
+      "c_sha256": "1a7632e6c3454780931a601ae9b069d77d71cd313720deb2d34aea48a9346c9e",
+      "asm_sha256": "965696ef58acc4d3cc224b52ab3f93750f401cd47ae139d22d56812de95bc625",
+      "c_bytes": 1010,
+      "warnings": []
+    },
+    {
+      "address": 2151802728,
+      "name": "GammaCorrectionService_CalcLumaCorrectionTable",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "06b776f1ecda66e17d817c4e51ca14bc835b0cca57503032845af4375332ec9f",
+      "asm_sha256": "2eb1810865624504d3ec328848464d8bd3b8bd0cb0bf27ef1b49c04f969dfc31",
+      "c_bytes": 82,
+      "warnings": []
+    },
+    {
+      "address": 2151803096,
+      "name": "GammaCorrectionService_MakeHistogram",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 52,
+      "c_sha256": "971442a704b37ba5dbec308adffdd5432a56f6612d07714c571598932cd70a6a",
+      "asm_sha256": "4265a5a96d6a1ba320368265fd4dee15b5d1698a7cec491ad5dae72f0ebded35",
+      "c_bytes": 341,
+      "warnings": []
+    },
+    {
+      "address": 2151851568,
+      "name": "ImageQualityService_UpdataImageParameterRgb2YuvPassEx",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 428,
+      "c_sha256": "ae8b8f7ec187d980e2a11f16241c2eba1bcdc679e9534d85cc2fcaac6beca0d2",
+      "asm_sha256": "b080db44ff991865fc829081875dbaaf111b1eddcebe59b4ef045b9278a1c900",
+      "c_bytes": 1687,
+      "warnings": []
+    },
+    {
+      "address": 2151866236,
+      "name": "CaptureLensControlService_RequestReleaseShutterClose",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 20,
+      "c_sha256": "e6ca129a8bf6382ca6f2754fde45e6a4947f857665b68b3b93eb995e55243705",
+      "asm_sha256": "5201d2d9d3b0794656dea6f92012572e0c7096565ad04e648df842b466cab68e",
+      "c_bytes": 109,
+      "warnings": []
+    },
+    {
+      "address": 2151866256,
+      "name": "CaptureLensControlService_ReqestReleaseShutterOpen",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 96,
+      "c_sha256": "365019179d86b35a499e77446744136e4592e39a648caad841bbfd0770f031e8",
+      "asm_sha256": "5074b699bce2c9208ff4cfcf9a59f853001cca24e6177ca308ba11ccdb99a341",
+      "c_bytes": 682,
+      "warnings": []
+    },
+    {
+      "address": 2151866788,
+      "name": "CaptureLensControlService_ReqestShutterOpen",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "be4894cd2b70b36db3d4f64512baad685c245ccdbb22a9280eb8f2d05b5bfbc0",
+      "asm_sha256": "565dc974236174f0c7accf3c3f57b9d3bd8be6d1318ba9a0ebc2587195e33a63",
+      "c_bytes": 392,
+      "warnings": []
+    },
+    {
+      "address": 2151866796,
+      "name": "CaptureLensControlService_RequestShutterClose",
+      "completed": true,
+      "timed_out": false,
+      "candidate_body_bytes": 8,
+      "c_sha256": "3770ba9b551501ca8d8e3394fc0d9ac899e3bb3e45d2ce80427f9fb2d4c801e1",
+      "asm_sha256": "13bed1c1ca4792ceda895ab6b57f293cfddb64eb82d0c5a22a84c512af0d2ffb",
+      "c_bytes": 394,
+      "warnings": []
+    }
+  ],
+  "limitations": [
+    "C output is a decompiler reconstruction, not original source. Completion is not proof of recovered indirect targets or types.",
+    "Raw C and assembly stay private; hashes and selected address evidence are public.",
+    "Function extents are inferred from the next distinct address/name record.",
+    "Earlier angr decompilation stopped at CP0 EBase; Ghidra was used for final C. REA MCP remained unconfigured; portable Ghidra ran directly."
+  ],
+  "run": "Clean import; all 300 candidate functions created before a single decompilation pass.",
+  "ghidra_distribution_sha256": "aa5cbcbbf48f41ca185fce900e19592f1ade4cd5994eb6e0ede468dac8a6f302",
+  "functions_with_unrecovered_indirect_warnings": [
+    "_tx_queue_send",
+    "MessageQueue_Send",
+    "CAutoFocusService_LensDriveControl"
+  ],
+  "indirect_warning_scope": "Only functions carrying a Could not recover decompiler warning. This is not an exhaustive census of register-indirect transfers."
+}

@@ -1,0 +1,4577 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "input_size": 18743520,
+  "format": "Q7 v1.01 type-2 hardware-inflate blocks",
+  "coordinate_system": "File offsets refer to the original update; decoded VAs are from ELF PT_LOAD. Ranges are half-open.",
+  "firmware_evidence": [
+    {
+      "virtual_address": "0x800faf08",
+      "file_offset": "0x1fd1f0",
+      "observation": "InflateStreamData buffers a 16-byte block header."
+    },
+    {
+      "virtual_address": "0x800faf78",
+      "file_offset": "0x1fd260",
+      "observation": "Stream reader loads table byte counts as u16 at +0xc/+0xe."
+    },
+    {
+      "virtual_address": "0x800fb00c",
+      "file_offset": "0x1fd2f4",
+      "observation": "Stream reader includes the u32 at +0x8 in the input bound and transfers the payload in 128-byte units."
+    },
+    {
+      "virtual_address": "0x800f9ff4",
+      "file_offset": "0x1fc2dc",
+      "observation": "InflateProcessor writes table data and metadata to the 0xb9800000 MMIO range."
+    }
+  ],
+  "validation": [
+    "All blocks consume their declared file ranges and reach the end marker at the declared decoded size.",
+    "Only zero padding follows each block's end marker.",
+    "Each decoded segment length equals p_memsz."
+  ],
+  "limitations": [
+    "The Huffman/LZ behavior is inferred from the table and bitstream, and checked by software decoding.",
+    "No execution on the camera, hardware byte comparison, or signature verification was performed.",
+    "E06-text is a filename for the RX PT_LOAD; the recovered bytes contain data as well as code."
+  ],
+  "segments": [
+    {
+      "name": "E04",
+      "elf_offset": 2360000,
+      "segment_index": 0,
+      "file_offset": 2360084,
+      "file_end": 4506116,
+      "compressed_sha256": "27095f709e6e14af15ffd1f60d06155dfbe795918bb5d003738041a1acba7c50",
+      "virtual_address": 2148719232,
+      "decoded_size": 4137728,
+      "decoded_sha256": "e7d06ec99f6e95025721b62d42f39845a2f2277991f4dfcabc3e3f930ff5bd5b",
+      "block_count": 178,
+      "blocks": [
+        {
+          "file_offset": 2360084,
+          "file_end": 2371636,
+          "virtual_address": 2148719232,
+          "virtual_end": 2148737068,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2361652,
+          "used_bits": 79225
+        },
+        {
+          "file_offset": 2371636,
+          "file_end": 2383976,
+          "virtual_address": 2148737068,
+          "virtual_end": 2148757008,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 2373224,
+          "used_bits": 85642
+        },
+        {
+          "file_offset": 2383976,
+          "file_end": 2395844,
+          "virtual_address": 2148757008,
+          "virtual_end": 2148773140,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2385604,
+          "used_bits": 81592
+        },
+        {
+          "file_offset": 2395844,
+          "file_end": 2407760,
+          "virtual_address": 2148773140,
+          "virtual_end": 2148789348,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2397392,
+          "used_bits": 82448
+        },
+        {
+          "file_offset": 2407760,
+          "file_end": 2419936,
+          "virtual_address": 2148789348,
+          "virtual_end": 2148806552,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2409312,
+          "used_bits": 84633
+        },
+        {
+          "file_offset": 2419936,
+          "file_end": 2432124,
+          "virtual_address": 2148806552,
+          "virtual_end": 2148823904,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2421500,
+          "used_bits": 84178
+        },
+        {
+          "file_offset": 2432124,
+          "file_end": 2444340,
+          "virtual_address": 2148823904,
+          "virtual_end": 2148841224,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2433716,
+          "used_bits": 84611
+        },
+        {
+          "file_offset": 2444340,
+          "file_end": 2456040,
+          "virtual_address": 2148841224,
+          "virtual_end": 2148856160,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 2445928,
+          "used_bits": 80025
+        },
+        {
+          "file_offset": 2456040,
+          "file_end": 2468116,
+          "virtual_address": 2148856160,
+          "virtual_end": 2148873628,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2457620,
+          "used_bits": 83306
+        },
+        {
+          "file_offset": 2468116,
+          "file_end": 2480336,
+          "virtual_address": 2148873628,
+          "virtual_end": 2148890488,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2469712,
+          "used_bits": 84126
+        },
+        {
+          "file_offset": 2480336,
+          "file_end": 2493464,
+          "virtual_address": 2148890488,
+          "virtual_end": 2148915412,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 2481944,
+          "used_bits": 91380
+        },
+        {
+          "file_offset": 2493464,
+          "file_end": 2505148,
+          "virtual_address": 2148915412,
+          "virtual_end": 2148931292,
+          "literal_table_bytes": 1424,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2495036,
+          "used_bits": 80222
+        },
+        {
+          "file_offset": 2505148,
+          "file_end": 2517072,
+          "virtual_address": 2148931292,
+          "virtual_end": 2148947012,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 2506704,
+          "used_bits": 81883
+        },
+        {
+          "file_offset": 2517072,
+          "file_end": 2529660,
+          "virtual_address": 2148947012,
+          "virtual_end": 2148967132,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2518652,
+          "used_bits": 87447
+        },
+        {
+          "file_offset": 2529660,
+          "file_end": 2542504,
+          "virtual_address": 2148967132,
+          "virtual_end": 2148986292,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2531240,
+          "used_bits": 89487
+        },
+        {
+          "file_offset": 2542504,
+          "file_end": 2554212,
+          "virtual_address": 2148986292,
+          "virtual_end": 2149002788,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2544100,
+          "used_bits": 80008
+        },
+        {
+          "file_offset": 2554212,
+          "file_end": 2566224,
+          "virtual_address": 2149002788,
+          "virtual_end": 2149022348,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 2555856,
+          "used_bits": 82317
+        },
+        {
+          "file_offset": 2566224,
+          "file_end": 2578280,
+          "virtual_address": 2149022348,
+          "virtual_end": 2149040112,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2567784,
+          "used_bits": 83186
+        },
+        {
+          "file_offset": 2578280,
+          "file_end": 2589984,
+          "virtual_address": 2149040112,
+          "virtual_end": 2149055464,
+          "literal_table_bytes": 1572,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2580000,
+          "used_bits": 79394
+        },
+        {
+          "file_offset": 2589984,
+          "file_end": 2599328,
+          "virtual_address": 2149055464,
+          "virtual_end": 2149065608,
+          "literal_table_bytes": 1328,
+          "distance_table_bytes": 64,
+          "bitstream_offset": 2591392,
+          "used_bits": 62757
+        },
+        {
+          "file_offset": 2599328,
+          "file_end": 2611444,
+          "virtual_address": 2149065608,
+          "virtual_end": 2149086304,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 164,
+          "bitstream_offset": 2600948,
+          "used_bits": 83806
+        },
+        {
+          "file_offset": 2611444,
+          "file_end": 2621872,
+          "virtual_address": 2149086304,
+          "virtual_end": 2149097176,
+          "literal_table_bytes": 1460,
+          "distance_table_bytes": 120,
+          "bitstream_offset": 2613040,
+          "used_bits": 70268
+        },
+        {
+          "file_offset": 2621872,
+          "file_end": 2632420,
+          "virtual_address": 2149097176,
+          "virtual_end": 2149108800,
+          "literal_table_bytes": 1576,
+          "distance_table_bytes": 124,
+          "bitstream_offset": 2623588,
+          "used_bits": 70160
+        },
+        {
+          "file_offset": 2632420,
+          "file_end": 2643088,
+          "virtual_address": 2149108800,
+          "virtual_end": 2149120080,
+          "literal_table_bytes": 1556,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2634128,
+          "used_bits": 71019
+        },
+        {
+          "file_offset": 2643088,
+          "file_end": 2653820,
+          "virtual_address": 2149120080,
+          "virtual_end": 2149131536,
+          "literal_table_bytes": 1488,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 2644732,
+          "used_bits": 71956
+        },
+        {
+          "file_offset": 2653820,
+          "file_end": 2664728,
+          "virtual_address": 2149131536,
+          "virtual_end": 2149143064,
+          "literal_table_bytes": 1544,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2655512,
+          "used_bits": 73127
+        },
+        {
+          "file_offset": 2664728,
+          "file_end": 2675852,
+          "virtual_address": 2149143064,
+          "virtual_end": 2149154928,
+          "literal_table_bytes": 1508,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 2666380,
+          "used_bits": 75121
+        },
+        {
+          "file_offset": 2675852,
+          "file_end": 2687388,
+          "virtual_address": 2149154928,
+          "virtual_end": 2149167580,
+          "literal_table_bytes": 1540,
+          "distance_table_bytes": 124,
+          "bitstream_offset": 2677532,
+          "used_bits": 78010
+        },
+        {
+          "file_offset": 2687388,
+          "file_end": 2699200,
+          "virtual_address": 2149167580,
+          "virtual_end": 2149180956,
+          "literal_table_bytes": 1556,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 2689088,
+          "used_bits": 80090
+        },
+        {
+          "file_offset": 2699200,
+          "file_end": 2710492,
+          "virtual_address": 2149180956,
+          "virtual_end": 2149193208,
+          "literal_table_bytes": 1548,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 2700892,
+          "used_bits": 76325
+        },
+        {
+          "file_offset": 2710492,
+          "file_end": 2721808,
+          "virtual_address": 2149193208,
+          "virtual_end": 2149214368,
+          "literal_table_bytes": 1560,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 2712208,
+          "used_bits": 75972
+        },
+        {
+          "file_offset": 2721808,
+          "file_end": 2731016,
+          "virtual_address": 2149214368,
+          "virtual_end": 2149230720,
+          "literal_table_bytes": 1260,
+          "distance_table_bytes": 124,
+          "bitstream_offset": 2723208,
+          "used_bits": 61678
+        },
+        {
+          "file_offset": 2731016,
+          "file_end": 2745864,
+          "virtual_address": 2149230720,
+          "virtual_end": 2149266852,
+          "literal_table_bytes": 1632,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 2732808,
+          "used_bits": 103375
+        },
+        {
+          "file_offset": 2745864,
+          "file_end": 2757792,
+          "virtual_address": 2149266852,
+          "virtual_end": 2149287148,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 2747424,
+          "used_bits": 82009
+        },
+        {
+          "file_offset": 2757792,
+          "file_end": 2769748,
+          "virtual_address": 2149287148,
+          "virtual_end": 2149304268,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 2759380,
+          "used_bits": 82064
+        },
+        {
+          "file_offset": 2769748,
+          "file_end": 2781180,
+          "virtual_address": 2149304268,
+          "virtual_end": 2149318872,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 2771324,
+          "used_bits": 78597
+        },
+        {
+          "file_offset": 2781180,
+          "file_end": 2793208,
+          "virtual_address": 2149318872,
+          "virtual_end": 2149336308,
+          "literal_table_bytes": 1384,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2782712,
+          "used_bits": 83757
+        },
+        {
+          "file_offset": 2793208,
+          "file_end": 2805244,
+          "virtual_address": 2149336308,
+          "virtual_end": 2149355676,
+          "literal_table_bytes": 1648,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2795004,
+          "used_bits": 81330
+        },
+        {
+          "file_offset": 2805244,
+          "file_end": 2817304,
+          "virtual_address": 2149355676,
+          "virtual_end": 2149373452,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2806808,
+          "used_bits": 83493
+        },
+        {
+          "file_offset": 2817304,
+          "file_end": 2829544,
+          "virtual_address": 2149373452,
+          "virtual_end": 2149392820,
+          "literal_table_bytes": 1332,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 2818792,
+          "used_bits": 85546
+        },
+        {
+          "file_offset": 2829544,
+          "file_end": 2841616,
+          "virtual_address": 2149392820,
+          "virtual_end": 2149414344,
+          "literal_table_bytes": 1416,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 2831120,
+          "used_bits": 82939
+        },
+        {
+          "file_offset": 2841616,
+          "file_end": 2853020,
+          "virtual_address": 2149414344,
+          "virtual_end": 2149429076,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2843164,
+          "used_bits": 78082
+        },
+        {
+          "file_offset": 2853020,
+          "file_end": 2864552,
+          "virtual_address": 2149429076,
+          "virtual_end": 2149443464,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 2854568,
+          "used_bits": 79225
+        },
+        {
+          "file_offset": 2864552,
+          "file_end": 2876348,
+          "virtual_address": 2149443464,
+          "virtual_end": 2149459796,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 2866108,
+          "used_bits": 81405
+        },
+        {
+          "file_offset": 2876348,
+          "file_end": 2888068,
+          "virtual_address": 2149459796,
+          "virtual_end": 2149478468,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 2877956,
+          "used_bits": 79911
+        },
+        {
+          "file_offset": 2888068,
+          "file_end": 2900000,
+          "virtual_address": 2149478468,
+          "virtual_end": 2149496588,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 2889632,
+          "used_bits": 81928
+        },
+        {
+          "file_offset": 2900000,
+          "file_end": 2912588,
+          "virtual_address": 2149496588,
+          "virtual_end": 2149516332,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2901580,
+          "used_bits": 87544
+        },
+        {
+          "file_offset": 2912588,
+          "file_end": 2924648,
+          "virtual_address": 2149516332,
+          "virtual_end": 2149533164,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2914152,
+          "used_bits": 83809
+        },
+        {
+          "file_offset": 2924648,
+          "file_end": 2936684,
+          "virtual_address": 2149533164,
+          "virtual_end": 2149549372,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2926188,
+          "used_bits": 83089
+        },
+        {
+          "file_offset": 2936684,
+          "file_end": 2948116,
+          "virtual_address": 2149549372,
+          "virtual_end": 2149563292,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2938260,
+          "used_bits": 78293
+        },
+        {
+          "file_offset": 2948116,
+          "file_end": 2960328,
+          "virtual_address": 2149563292,
+          "virtual_end": 2149580612,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2949704,
+          "used_bits": 84537
+        },
+        {
+          "file_offset": 2960328,
+          "file_end": 2972492,
+          "virtual_address": 2149580612,
+          "virtual_end": 2149599832,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 2961868,
+          "used_bits": 84609
+        },
+        {
+          "file_offset": 2972492,
+          "file_end": 2984732,
+          "virtual_address": 2149599832,
+          "virtual_end": 2149627176,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 2974108,
+          "used_bits": 84920
+        },
+        {
+          "file_offset": 2984732,
+          "file_end": 2996472,
+          "virtual_address": 2149627176,
+          "virtual_end": 2149643024,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2986360,
+          "used_bits": 80415
+        },
+        {
+          "file_offset": 2996472,
+          "file_end": 3009028,
+          "virtual_address": 2149643024,
+          "virtual_end": 2149663696,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 2998020,
+          "used_bits": 87205
+        },
+        {
+          "file_offset": 3009028,
+          "file_end": 3021388,
+          "virtual_address": 2149663696,
+          "virtual_end": 2149682644,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 156,
+          "bitstream_offset": 3010636,
+          "used_bits": 85864
+        },
+        {
+          "file_offset": 3021388,
+          "file_end": 3033192,
+          "virtual_address": 2149682644,
+          "virtual_end": 2149697640,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3022952,
+          "used_bits": 81587
+        },
+        {
+          "file_offset": 3033192,
+          "file_end": 3045292,
+          "virtual_address": 2149697640,
+          "virtual_end": 2149713668,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 3034796,
+          "used_bits": 83380
+        },
+        {
+          "file_offset": 3045292,
+          "file_end": 3057500,
+          "virtual_address": 2149713668,
+          "virtual_end": 2149731652,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3046876,
+          "used_bits": 84731
+        },
+        {
+          "file_offset": 3057500,
+          "file_end": 3069412,
+          "virtual_address": 2149731652,
+          "virtual_end": 2149748340,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 3059044,
+          "used_bits": 82227
+        },
+        {
+          "file_offset": 3069412,
+          "file_end": 3081712,
+          "virtual_address": 2149748340,
+          "virtual_end": 2149766540,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3070960,
+          "used_bits": 85489
+        },
+        {
+          "file_offset": 3081712,
+          "file_end": 3093804,
+          "virtual_address": 2149766540,
+          "virtual_end": 2149783280,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3083308,
+          "used_bits": 83033
+        },
+        {
+          "file_offset": 3093804,
+          "file_end": 3105632,
+          "virtual_address": 2149783280,
+          "virtual_end": 2149815468,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3095392,
+          "used_bits": 81138
+        },
+        {
+          "file_offset": 3105632,
+          "file_end": 3117592,
+          "virtual_address": 2149815468,
+          "virtual_end": 2149831400,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3107224,
+          "used_bits": 82224
+        },
+        {
+          "file_offset": 3117592,
+          "file_end": 3129536,
+          "virtual_address": 2149831400,
+          "virtual_end": 2149847424,
+          "literal_table_bytes": 1424,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3119168,
+          "used_bits": 82793
+        },
+        {
+          "file_offset": 3129536,
+          "file_end": 3141936,
+          "virtual_address": 2149847424,
+          "virtual_end": 2149866148,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 3131056,
+          "used_bits": 86819
+        },
+        {
+          "file_offset": 3141936,
+          "file_end": 3155164,
+          "virtual_address": 2149866148,
+          "virtual_end": 2149889500,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3143516,
+          "used_bits": 92310
+        },
+        {
+          "file_offset": 3155164,
+          "file_end": 3168396,
+          "virtual_address": 2149889500,
+          "virtual_end": 2149911604,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3156748,
+          "used_bits": 92524
+        },
+        {
+          "file_offset": 3168396,
+          "file_end": 3181220,
+          "virtual_address": 2149911604,
+          "virtual_end": 2149931780,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3169956,
+          "used_bits": 89267
+        },
+        {
+          "file_offset": 3181220,
+          "file_end": 3193812,
+          "virtual_address": 2149931780,
+          "virtual_end": 2149953056,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3182804,
+          "used_bits": 87874
+        },
+        {
+          "file_offset": 3193812,
+          "file_end": 3206388,
+          "virtual_address": 2149953056,
+          "virtual_end": 2149971564,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3195380,
+          "used_bits": 87441
+        },
+        {
+          "file_offset": 3206388,
+          "file_end": 3219364,
+          "virtual_address": 2149971564,
+          "virtual_end": 2149992368,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3207972,
+          "used_bits": 90056
+        },
+        {
+          "file_offset": 3219364,
+          "file_end": 3231936,
+          "virtual_address": 2149992368,
+          "virtual_end": 2150011788,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3220928,
+          "used_bits": 87398
+        },
+        {
+          "file_offset": 3231936,
+          "file_end": 3243908,
+          "virtual_address": 2150011788,
+          "virtual_end": 2150027832,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 3233540,
+          "used_bits": 81891
+        },
+        {
+          "file_offset": 3243908,
+          "file_end": 3256144,
+          "virtual_address": 2150027832,
+          "virtual_end": 2150044400,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 3245520,
+          "used_bits": 84215
+        },
+        {
+          "file_offset": 3256144,
+          "file_end": 3268964,
+          "virtual_address": 2150044400,
+          "virtual_end": 2150064928,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 3257700,
+          "used_bits": 89594
+        },
+        {
+          "file_offset": 3268964,
+          "file_end": 3281512,
+          "virtual_address": 2150064928,
+          "virtual_end": 2150084312,
+          "literal_table_bytes": 1380,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 3270504,
+          "used_bits": 87216
+        },
+        {
+          "file_offset": 3281512,
+          "file_end": 3294584,
+          "virtual_address": 2150084312,
+          "virtual_end": 2150106476,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3283064,
+          "used_bits": 91251
+        },
+        {
+          "file_offset": 3294584,
+          "file_end": 3307048,
+          "virtual_address": 2150106476,
+          "virtual_end": 2150125224,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3296168,
+          "used_bits": 86580
+        },
+        {
+          "file_offset": 3307048,
+          "file_end": 3319860,
+          "virtual_address": 2150125224,
+          "virtual_end": 2150146844,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3308596,
+          "used_bits": 89773
+        },
+        {
+          "file_offset": 3319860,
+          "file_end": 3332804,
+          "virtual_address": 2150146844,
+          "virtual_end": 2150167280,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3321412,
+          "used_bits": 90098
+        },
+        {
+          "file_offset": 3332804,
+          "file_end": 3345376,
+          "virtual_address": 2150167280,
+          "virtual_end": 2150187232,
+          "literal_table_bytes": 1408,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3334368,
+          "used_bits": 87985
+        },
+        {
+          "file_offset": 3345376,
+          "file_end": 3357920,
+          "virtual_address": 2150187232,
+          "virtual_end": 2150208284,
+          "literal_table_bytes": 1380,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3346912,
+          "used_bits": 87580
+        },
+        {
+          "file_offset": 3357920,
+          "file_end": 3370224,
+          "virtual_address": 2150208284,
+          "virtual_end": 2150226964,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3359472,
+          "used_bits": 84956
+        },
+        {
+          "file_offset": 3370224,
+          "file_end": 3383320,
+          "virtual_address": 2150226964,
+          "virtual_end": 2150258124,
+          "literal_table_bytes": 1540,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3371928,
+          "used_bits": 90572
+        },
+        {
+          "file_offset": 3383320,
+          "file_end": 3395680,
+          "virtual_address": 2150258124,
+          "virtual_end": 2150279476,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3384928,
+          "used_bits": 85561
+        },
+        {
+          "file_offset": 3395680,
+          "file_end": 3407600,
+          "virtual_address": 2150279476,
+          "virtual_end": 2150295952,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3397232,
+          "used_bits": 82361
+        },
+        {
+          "file_offset": 3407600,
+          "file_end": 3420416,
+          "virtual_address": 2150295952,
+          "virtual_end": 2150317064,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3409152,
+          "used_bits": 89913
+        },
+        {
+          "file_offset": 3420416,
+          "file_end": 3433096,
+          "virtual_address": 2150317064,
+          "virtual_end": 2150341716,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 3421960,
+          "used_bits": 88221
+        },
+        {
+          "file_offset": 3433096,
+          "file_end": 3445160,
+          "virtual_address": 2150341716,
+          "virtual_end": 2150358088,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 3434664,
+          "used_bits": 83875
+        },
+        {
+          "file_offset": 3445160,
+          "file_end": 3457444,
+          "virtual_address": 2150358088,
+          "virtual_end": 2150375244,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 3446692,
+          "used_bits": 85206
+        },
+        {
+          "file_offset": 3457444,
+          "file_end": 3470408,
+          "virtual_address": 2150375244,
+          "virtual_end": 2150395040,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 124,
+          "bitstream_offset": 3459016,
+          "used_bits": 90871
+        },
+        {
+          "file_offset": 3470408,
+          "file_end": 3482872,
+          "virtual_address": 2150395040,
+          "virtual_end": 2150414824,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3471992,
+          "used_bits": 86791
+        },
+        {
+          "file_offset": 3482872,
+          "file_end": 3495452,
+          "virtual_address": 2150414824,
+          "virtual_end": 2150433648,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 3484444,
+          "used_bits": 87247
+        },
+        {
+          "file_offset": 3495452,
+          "file_end": 3507928,
+          "virtual_address": 2150433648,
+          "virtual_end": 2150451144,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3497048,
+          "used_bits": 86268
+        },
+        {
+          "file_offset": 3507928,
+          "file_end": 3520356,
+          "virtual_address": 2150451144,
+          "virtual_end": 2150469080,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3509476,
+          "used_bits": 86394
+        },
+        {
+          "file_offset": 3520356,
+          "file_end": 3533056,
+          "virtual_address": 2150469080,
+          "virtual_end": 2150489172,
+          "literal_table_bytes": 1416,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3521920,
+          "used_bits": 88511
+        },
+        {
+          "file_offset": 3533056,
+          "file_end": 3546000,
+          "virtual_address": 2150489172,
+          "virtual_end": 2150510816,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3534608,
+          "used_bits": 90213
+        },
+        {
+          "file_offset": 3546000,
+          "file_end": 3559608,
+          "virtual_address": 2150510816,
+          "virtual_end": 2150536888,
+          "literal_table_bytes": 1556,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3547704,
+          "used_bits": 95002
+        },
+        {
+          "file_offset": 3559608,
+          "file_end": 3572744,
+          "virtual_address": 2150536888,
+          "virtual_end": 2150566504,
+          "literal_table_bytes": 1580,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3561352,
+          "used_bits": 90125
+        },
+        {
+          "file_offset": 3572744,
+          "file_end": 3584668,
+          "virtual_address": 2150566504,
+          "virtual_end": 2150584472,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3574300,
+          "used_bits": 82056
+        },
+        {
+          "file_offset": 3584668,
+          "file_end": 3596504,
+          "virtual_address": 2150584472,
+          "virtual_end": 2150601600,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 3586264,
+          "used_bits": 81847
+        },
+        {
+          "file_offset": 3596504,
+          "file_end": 3609320,
+          "virtual_address": 2150601600,
+          "virtual_end": 2150622112,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3598056,
+          "used_bits": 89764
+        },
+        {
+          "file_offset": 3609320,
+          "file_end": 3621160,
+          "virtual_address": 2150622112,
+          "virtual_end": 2150641440,
+          "literal_table_bytes": 1312,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 3610792,
+          "used_bits": 82341
+        },
+        {
+          "file_offset": 3621160,
+          "file_end": 3632232,
+          "virtual_address": 2150641440,
+          "virtual_end": 2150654348,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3622760,
+          "used_bits": 75355
+        },
+        {
+          "file_offset": 3632232,
+          "file_end": 3645184,
+          "virtual_address": 2150654348,
+          "virtual_end": 2150679584,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3633792,
+          "used_bits": 90696
+        },
+        {
+          "file_offset": 3645184,
+          "file_end": 3656348,
+          "virtual_address": 2150679584,
+          "virtual_end": 2150694232,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3646748,
+          "used_bits": 76715
+        },
+        {
+          "file_offset": 3656348,
+          "file_end": 3669044,
+          "virtual_address": 2150694232,
+          "virtual_end": 2150728416,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3657908,
+          "used_bits": 88146
+        },
+        {
+          "file_offset": 3669044,
+          "file_end": 3681404,
+          "virtual_address": 2150728416,
+          "virtual_end": 2150761608,
+          "literal_table_bytes": 1560,
+          "distance_table_bytes": 160,
+          "bitstream_offset": 3670780,
+          "used_bits": 84511
+        },
+        {
+          "file_offset": 3681404,
+          "file_end": 3693532,
+          "virtual_address": 2150761608,
+          "virtual_end": 2150781692,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3683036,
+          "used_bits": 83542
+        },
+        {
+          "file_offset": 3693532,
+          "file_end": 3705104,
+          "virtual_address": 2150781692,
+          "virtual_end": 2150796768,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3695120,
+          "used_bits": 79256
+        },
+        {
+          "file_offset": 3705104,
+          "file_end": 3716508,
+          "virtual_address": 2150796768,
+          "virtual_end": 2150811344,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3706652,
+          "used_bits": 78440
+        },
+        {
+          "file_offset": 3716508,
+          "file_end": 3728420,
+          "virtual_address": 2150811344,
+          "virtual_end": 2150829196,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3718052,
+          "used_bits": 82595
+        },
+        {
+          "file_offset": 3728420,
+          "file_end": 3740592,
+          "virtual_address": 2150829196,
+          "virtual_end": 2150850644,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3729968,
+          "used_bits": 84531
+        },
+        {
+          "file_offset": 3740592,
+          "file_end": 3752756,
+          "virtual_address": 2150850644,
+          "virtual_end": 2150870300,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3742132,
+          "used_bits": 84712
+        },
+        {
+          "file_offset": 3752756,
+          "file_end": 3764444,
+          "virtual_address": 2150870300,
+          "virtual_end": 2150886708,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3754332,
+          "used_bits": 80036
+        },
+        {
+          "file_offset": 3764444,
+          "file_end": 3775976,
+          "virtual_address": 2150886708,
+          "virtual_end": 2150902492,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3765992,
+          "used_bits": 78981
+        },
+        {
+          "file_offset": 3775976,
+          "file_end": 3788292,
+          "virtual_address": 2150902492,
+          "virtual_end": 2150921256,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3777540,
+          "used_bits": 85126
+        },
+        {
+          "file_offset": 3788292,
+          "file_end": 3800384,
+          "virtual_address": 2150921256,
+          "virtual_end": 2150939072,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3789888,
+          "used_bits": 83066
+        },
+        {
+          "file_offset": 3800384,
+          "file_end": 3812048,
+          "virtual_address": 2150939072,
+          "virtual_end": 2150955796,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3801936,
+          "used_bits": 79985
+        },
+        {
+          "file_offset": 3812048,
+          "file_end": 3824528,
+          "virtual_address": 2150955796,
+          "virtual_end": 2150978232,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3813648,
+          "used_bits": 86495
+        },
+        {
+          "file_offset": 3824528,
+          "file_end": 3836960,
+          "virtual_address": 2150978232,
+          "virtual_end": 2151002636,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3826080,
+          "used_bits": 86632
+        },
+        {
+          "file_offset": 3836960,
+          "file_end": 3849656,
+          "virtual_address": 2151002636,
+          "virtual_end": 2151026848,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 3838520,
+          "used_bits": 88543
+        },
+        {
+          "file_offset": 3849656,
+          "file_end": 3861360,
+          "virtual_address": 2151026848,
+          "virtual_end": 2151042748,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3851248,
+          "used_bits": 80213
+        },
+        {
+          "file_offset": 3861360,
+          "file_end": 3873420,
+          "virtual_address": 2151042748,
+          "virtual_end": 2151060816,
+          "literal_table_bytes": 1408,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3862924,
+          "used_bits": 83774
+        },
+        {
+          "file_offset": 3873420,
+          "file_end": 3885408,
+          "virtual_address": 2151060816,
+          "virtual_end": 2151079088,
+          "literal_table_bytes": 1348,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 3874912,
+          "used_bits": 83734
+        },
+        {
+          "file_offset": 3885408,
+          "file_end": 3897736,
+          "virtual_address": 2151079088,
+          "virtual_end": 2151097944,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 124,
+          "bitstream_offset": 3886984,
+          "used_bits": 85868
+        },
+        {
+          "file_offset": 3897736,
+          "file_end": 3909304,
+          "virtual_address": 2151097944,
+          "virtual_end": 2151113080,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3899320,
+          "used_bits": 79229
+        },
+        {
+          "file_offset": 3909304,
+          "file_end": 3921100,
+          "virtual_address": 2151113080,
+          "virtual_end": 2151128880,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3910860,
+          "used_bits": 81298
+        },
+        {
+          "file_offset": 3921100,
+          "file_end": 3933544,
+          "virtual_address": 2151128880,
+          "virtual_end": 2151147072,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3922664,
+          "used_bits": 86484
+        },
+        {
+          "file_offset": 3933544,
+          "file_end": 3945848,
+          "virtual_address": 2151147072,
+          "virtual_end": 2151165548,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3935096,
+          "used_bits": 85351
+        },
+        {
+          "file_offset": 3945848,
+          "file_end": 3958160,
+          "virtual_address": 2151165548,
+          "virtual_end": 2151184864,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 3947408,
+          "used_bits": 85924
+        },
+        {
+          "file_offset": 3958160,
+          "file_end": 3969992,
+          "virtual_address": 2151184864,
+          "virtual_end": 2151201252,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3959752,
+          "used_bits": 81081
+        },
+        {
+          "file_offset": 3969992,
+          "file_end": 3982036,
+          "virtual_address": 2151201252,
+          "virtual_end": 2151218688,
+          "literal_table_bytes": 1524,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 3971668,
+          "used_bits": 82417
+        },
+        {
+          "file_offset": 3982036,
+          "file_end": 3993748,
+          "virtual_address": 2151218688,
+          "virtual_end": 2151236540,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 3983636,
+          "used_bits": 79830
+        },
+        {
+          "file_offset": 3993748,
+          "file_end": 4004920,
+          "virtual_address": 2151236540,
+          "virtual_end": 2151297416,
+          "literal_table_bytes": 1520,
+          "distance_table_bytes": 164,
+          "bitstream_offset": 3995448,
+          "used_bits": 75077
+        },
+        {
+          "file_offset": 4004920,
+          "file_end": 4016188,
+          "virtual_address": 2151297416,
+          "virtual_end": 2151325012,
+          "literal_table_bytes": 1496,
+          "distance_table_bytes": 156,
+          "bitstream_offset": 4006588,
+          "used_bits": 76061
+        },
+        {
+          "file_offset": 4016188,
+          "file_end": 4025400,
+          "virtual_address": 2151325012,
+          "virtual_end": 2151336500,
+          "literal_table_bytes": 1172,
+          "distance_table_bytes": 88,
+          "bitstream_offset": 4017464,
+          "used_bits": 63268
+        },
+        {
+          "file_offset": 4025400,
+          "file_end": 4037180,
+          "virtual_address": 2151336500,
+          "virtual_end": 2151365688,
+          "literal_table_bytes": 1632,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4027196,
+          "used_bits": 79383
+        },
+        {
+          "file_offset": 4037180,
+          "file_end": 4050132,
+          "virtual_address": 2151365688,
+          "virtual_end": 2151440168,
+          "literal_table_bytes": 1508,
+          "distance_table_bytes": 164,
+          "bitstream_offset": 4038868,
+          "used_bits": 89051
+        },
+        {
+          "file_offset": 4050132,
+          "file_end": 4062676,
+          "virtual_address": 2151440168,
+          "virtual_end": 2151465536,
+          "literal_table_bytes": 1380,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4051668,
+          "used_bits": 87689
+        },
+        {
+          "file_offset": 4062676,
+          "file_end": 4075884,
+          "virtual_address": 2151465536,
+          "virtual_end": 2151490920,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4064236,
+          "used_bits": 93046
+        },
+        {
+          "file_offset": 4075884,
+          "file_end": 4089132,
+          "virtual_address": 2151490920,
+          "virtual_end": 2151516360,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4077484,
+          "used_bits": 92619
+        },
+        {
+          "file_offset": 4089132,
+          "file_end": 4101444,
+          "virtual_address": 2151516360,
+          "virtual_end": 2151538008,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4090692,
+          "used_bits": 85629
+        },
+        {
+          "file_offset": 4101444,
+          "file_end": 4114256,
+          "virtual_address": 2151538008,
+          "virtual_end": 2151566236,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4102992,
+          "used_bits": 89625
+        },
+        {
+          "file_offset": 4114256,
+          "file_end": 4127132,
+          "virtual_address": 2151566236,
+          "virtual_end": 2151594256,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4115868,
+          "used_bits": 89902
+        },
+        {
+          "file_offset": 4127132,
+          "file_end": 4139448,
+          "virtual_address": 2151594256,
+          "virtual_end": 2151646228,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4128696,
+          "used_bits": 85277
+        },
+        {
+          "file_offset": 4139448,
+          "file_end": 4151920,
+          "virtual_address": 2151646228,
+          "virtual_end": 2151668868,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4141040,
+          "used_bits": 86603
+        },
+        {
+          "file_offset": 4151920,
+          "file_end": 4164876,
+          "virtual_address": 2151668868,
+          "virtual_end": 2151690284,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4153484,
+          "used_bits": 90474
+        },
+        {
+          "file_offset": 4164876,
+          "file_end": 4177460,
+          "virtual_address": 2151690284,
+          "virtual_end": 2151710240,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4166452,
+          "used_bits": 87923
+        },
+        {
+          "file_offset": 4177460,
+          "file_end": 4190412,
+          "virtual_address": 2151710240,
+          "virtual_end": 2151732732,
+          "literal_table_bytes": 1408,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4179020,
+          "used_bits": 90437
+        },
+        {
+          "file_offset": 4190412,
+          "file_end": 4202444,
+          "virtual_address": 2151732732,
+          "virtual_end": 2151750592,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4191948,
+          "used_bits": 83559
+        },
+        {
+          "file_offset": 4202444,
+          "file_end": 4215040,
+          "virtual_address": 2151750592,
+          "virtual_end": 2151770840,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4204032,
+          "used_bits": 87424
+        },
+        {
+          "file_offset": 4215040,
+          "file_end": 4226808,
+          "virtual_address": 2151770840,
+          "virtual_end": 2151790400,
+          "literal_table_bytes": 1380,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4216568,
+          "used_bits": 81602
+        },
+        {
+          "file_offset": 4226808,
+          "file_end": 4238260,
+          "virtual_address": 2151790400,
+          "virtual_end": 2151805292,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4228404,
+          "used_bits": 77993
+        },
+        {
+          "file_offset": 4238260,
+          "file_end": 4249680,
+          "virtual_address": 2151805292,
+          "virtual_end": 2151822208,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4239824,
+          "used_bits": 78770
+        },
+        {
+          "file_offset": 4249680,
+          "file_end": 4261344,
+          "virtual_address": 2151822208,
+          "virtual_end": 2151839108,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4251232,
+          "used_bits": 80600
+        },
+        {
+          "file_offset": 4261344,
+          "file_end": 4273900,
+          "virtual_address": 2151839108,
+          "virtual_end": 2151860464,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4262892,
+          "used_bits": 87601
+        },
+        {
+          "file_offset": 4273900,
+          "file_end": 4286820,
+          "virtual_address": 2151860464,
+          "virtual_end": 2151886152,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4275428,
+          "used_bits": 90897
+        },
+        {
+          "file_offset": 4286820,
+          "file_end": 4300528,
+          "virtual_address": 2151886152,
+          "virtual_end": 2151917964,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4288368,
+          "used_bits": 96226
+        },
+        {
+          "file_offset": 4300528,
+          "file_end": 4313132,
+          "virtual_address": 2151917964,
+          "virtual_end": 2151939112,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 4302124,
+          "used_bits": 87956
+        },
+        {
+          "file_offset": 4313132,
+          "file_end": 4324960,
+          "virtual_address": 2151939112,
+          "virtual_end": 2152343552,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4314720,
+          "used_bits": 80983
+        },
+        {
+          "file_offset": 4324960,
+          "file_end": 4335012,
+          "virtual_address": 2152343552,
+          "virtual_end": 2152368616,
+          "literal_table_bytes": 1456,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4326564,
+          "used_bits": 66584
+        },
+        {
+          "file_offset": 4335012,
+          "file_end": 4343836,
+          "virtual_address": 2152368616,
+          "virtual_end": 2152385612,
+          "literal_table_bytes": 1204,
+          "distance_table_bytes": 52,
+          "bitstream_offset": 4336284,
+          "used_bits": 59577
+        },
+        {
+          "file_offset": 4343836,
+          "file_end": 4354900,
+          "virtual_address": 2152385612,
+          "virtual_end": 2152410232,
+          "literal_table_bytes": 1416,
+          "distance_table_bytes": 160,
+          "bitstream_offset": 4345428,
+          "used_bits": 74983
+        },
+        {
+          "file_offset": 4354900,
+          "file_end": 4366056,
+          "virtual_address": 2152410232,
+          "virtual_end": 2152432452,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 96,
+          "bitstream_offset": 4356456,
+          "used_bits": 76458
+        },
+        {
+          "file_offset": 4366056,
+          "file_end": 4377708,
+          "virtual_address": 2152432452,
+          "virtual_end": 2152563208,
+          "literal_table_bytes": 1364,
+          "distance_table_bytes": 160,
+          "bitstream_offset": 4367596,
+          "used_bits": 79898
+        },
+        {
+          "file_offset": 4377708,
+          "file_end": 4388092,
+          "virtual_address": 2152563208,
+          "virtual_end": 2152586620,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4379260,
+          "used_bits": 69879
+        },
+        {
+          "file_offset": 4388092,
+          "file_end": 4399116,
+          "virtual_address": 2152586620,
+          "virtual_end": 2152607956,
+          "literal_table_bytes": 1516,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4389772,
+          "used_bits": 73758
+        },
+        {
+          "file_offset": 4399116,
+          "file_end": 4409504,
+          "virtual_address": 2152607956,
+          "virtual_end": 2152633628,
+          "literal_table_bytes": 1508,
+          "distance_table_bytes": 160,
+          "bitstream_offset": 4400800,
+          "used_bits": 69498
+        },
+        {
+          "file_offset": 4409504,
+          "file_end": 4422248,
+          "virtual_address": 2152633628,
+          "virtual_end": 2152661052,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4411112,
+          "used_bits": 88173
+        },
+        {
+          "file_offset": 4422248,
+          "file_end": 4434284,
+          "virtual_address": 2152661052,
+          "virtual_end": 2152683156,
+          "literal_table_bytes": 1380,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4423788,
+          "used_bits": 83156
+        },
+        {
+          "file_offset": 4434284,
+          "file_end": 4447140,
+          "virtual_address": 2152683156,
+          "virtual_end": 2152703432,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4435876,
+          "used_bits": 89465
+        },
+        {
+          "file_offset": 4447140,
+          "file_end": 4459956,
+          "virtual_address": 2152703432,
+          "virtual_end": 2152732048,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4448692,
+          "used_bits": 89524
+        },
+        {
+          "file_offset": 4459956,
+          "file_end": 4473584,
+          "virtual_address": 2152732048,
+          "virtual_end": 2152776692,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4461552,
+          "used_bits": 95678
+        },
+        {
+          "file_offset": 4473584,
+          "file_end": 4486744,
+          "virtual_address": 2152776692,
+          "virtual_end": 2152809776,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4475224,
+          "used_bits": 92001
+        },
+        {
+          "file_offset": 4486744,
+          "file_end": 4501140,
+          "virtual_address": 2152809776,
+          "virtual_end": 2152848020,
+          "literal_table_bytes": 1572,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4488468,
+          "used_bits": 100723
+        },
+        {
+          "file_offset": 4501140,
+          "file_end": 4506116,
+          "virtual_address": 2152848020,
+          "virtual_end": 2152856960,
+          "literal_table_bytes": 1236,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4502532,
+          "used_bits": 27979
+        }
+      ]
+    },
+    {
+      "name": "E05",
+      "elf_offset": 4506116,
+      "segment_index": 0,
+      "file_offset": 4506200,
+      "file_end": 6088288,
+      "compressed_sha256": "5b09cdb0bded374b97d9808a404442986bafe07c18f978386fbecd0859698249",
+      "virtual_address": 2152857088,
+      "decoded_size": 2960896,
+      "decoded_sha256": "a411eecc87e46c88cd58548fdd677a20419494110b2c1b19bf1852ad4bfa78b2",
+      "block_count": 126,
+      "blocks": [
+        {
+          "file_offset": 4506200,
+          "file_end": 4517984,
+          "virtual_address": 2152857088,
+          "virtual_end": 2152875104,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4507744,
+          "used_bits": 81632
+        },
+        {
+          "file_offset": 4517984,
+          "file_end": 4530684,
+          "virtual_address": 2152875104,
+          "virtual_end": 2152895224,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4519548,
+          "used_bits": 88592
+        },
+        {
+          "file_offset": 4530684,
+          "file_end": 4543368,
+          "virtual_address": 2152895224,
+          "virtual_end": 2152914468,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4532232,
+          "used_bits": 88281
+        },
+        {
+          "file_offset": 4543368,
+          "file_end": 4555952,
+          "virtual_address": 2152914468,
+          "virtual_end": 2152934120,
+          "literal_table_bytes": 1424,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4544944,
+          "used_bits": 87998
+        },
+        {
+          "file_offset": 4555952,
+          "file_end": 4568384,
+          "virtual_address": 2152934120,
+          "virtual_end": 2152953364,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4557504,
+          "used_bits": 86427
+        },
+        {
+          "file_offset": 4568384,
+          "file_end": 4580680,
+          "virtual_address": 2152953364,
+          "virtual_end": 2152971400,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4569928,
+          "used_bits": 85100
+        },
+        {
+          "file_offset": 4580680,
+          "file_end": 4593652,
+          "virtual_address": 2152971400,
+          "virtual_end": 2152992972,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4582260,
+          "used_bits": 91004
+        },
+        {
+          "file_offset": 4593652,
+          "file_end": 4605704,
+          "virtual_address": 2152992972,
+          "virtual_end": 2153010192,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4595208,
+          "used_bits": 83141
+        },
+        {
+          "file_offset": 4605704,
+          "file_end": 4619024,
+          "virtual_address": 2153010192,
+          "virtual_end": 2153034040,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4607248,
+          "used_bits": 93199
+        },
+        {
+          "file_offset": 4619024,
+          "file_end": 4631600,
+          "virtual_address": 2153034040,
+          "virtual_end": 2153055248,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4620592,
+          "used_bits": 87594
+        },
+        {
+          "file_offset": 4631600,
+          "file_end": 4644804,
+          "virtual_address": 2153055248,
+          "virtual_end": 2153080624,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4633156,
+          "used_bits": 92778
+        },
+        {
+          "file_offset": 4644804,
+          "file_end": 4658224,
+          "virtual_address": 2153080624,
+          "virtual_end": 2153112772,
+          "literal_table_bytes": 1480,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4646448,
+          "used_bits": 93473
+        },
+        {
+          "file_offset": 4658224,
+          "file_end": 4670724,
+          "virtual_address": 2153112772,
+          "virtual_end": 2153131852,
+          "literal_table_bytes": 1348,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 4659716,
+          "used_bits": 87022
+        },
+        {
+          "file_offset": 4670724,
+          "file_end": 4683544,
+          "virtual_address": 2153131852,
+          "virtual_end": 2153154812,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4672280,
+          "used_bits": 89148
+        },
+        {
+          "file_offset": 4683544,
+          "file_end": 4696012,
+          "virtual_address": 2153154812,
+          "virtual_end": 2153178748,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4685132,
+          "used_bits": 86199
+        },
+        {
+          "file_offset": 4696012,
+          "file_end": 4708368,
+          "virtual_address": 2153178748,
+          "virtual_end": 2153198768,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4697616,
+          "used_bits": 85629
+        },
+        {
+          "file_offset": 4708368,
+          "file_end": 4720804,
+          "virtual_address": 2153198768,
+          "virtual_end": 2153222740,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4709924,
+          "used_bits": 86311
+        },
+        {
+          "file_offset": 4720804,
+          "file_end": 4733376,
+          "virtual_address": 2153222740,
+          "virtual_end": 2153243520,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 4722368,
+          "used_bits": 87001
+        },
+        {
+          "file_offset": 4733376,
+          "file_end": 4745344,
+          "virtual_address": 2153243520,
+          "virtual_end": 2153261860,
+          "literal_table_bytes": 1456,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 4734976,
+          "used_bits": 82518
+        },
+        {
+          "file_offset": 4745344,
+          "file_end": 4757316,
+          "virtual_address": 2153261860,
+          "virtual_end": 2153278836,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4746948,
+          "used_bits": 82313
+        },
+        {
+          "file_offset": 4757316,
+          "file_end": 4769644,
+          "virtual_address": 2153278836,
+          "virtual_end": 2153297812,
+          "literal_table_bytes": 1424,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4758892,
+          "used_bits": 85179
+        },
+        {
+          "file_offset": 4769644,
+          "file_end": 4782328,
+          "virtual_address": 2153297812,
+          "virtual_end": 2153317292,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4771192,
+          "used_bits": 88606
+        },
+        {
+          "file_offset": 4782328,
+          "file_end": 4795080,
+          "virtual_address": 2153317292,
+          "virtual_end": 2153342624,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4783944,
+          "used_bits": 88603
+        },
+        {
+          "file_offset": 4795080,
+          "file_end": 4807300,
+          "virtual_address": 2153342624,
+          "virtual_end": 2153360464,
+          "literal_table_bytes": 1448,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4796676,
+          "used_bits": 84083
+        },
+        {
+          "file_offset": 4807300,
+          "file_end": 4819348,
+          "virtual_address": 2153360464,
+          "virtual_end": 2153377860,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4808852,
+          "used_bits": 83160
+        },
+        {
+          "file_offset": 4819348,
+          "file_end": 4830532,
+          "virtual_address": 2153377860,
+          "virtual_end": 2153391960,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4820932,
+          "used_bits": 76213
+        },
+        {
+          "file_offset": 4830532,
+          "file_end": 4842328,
+          "virtual_address": 2153391960,
+          "virtual_end": 2153410736,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4832088,
+          "used_bits": 81523
+        },
+        {
+          "file_offset": 4842328,
+          "file_end": 4853876,
+          "virtual_address": 2153410736,
+          "virtual_end": 2153426512,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 4843892,
+          "used_bits": 79073
+        },
+        {
+          "file_offset": 4853876,
+          "file_end": 4865960,
+          "virtual_address": 2153426512,
+          "virtual_end": 2153447640,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4855464,
+          "used_bits": 83327
+        },
+        {
+          "file_offset": 4865960,
+          "file_end": 4877740,
+          "virtual_address": 2153447640,
+          "virtual_end": 2153468840,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4867500,
+          "used_bits": 81305
+        },
+        {
+          "file_offset": 4877740,
+          "file_end": 4889780,
+          "virtual_address": 2153468840,
+          "virtual_end": 2153487244,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 4879284,
+          "used_bits": 83347
+        },
+        {
+          "file_offset": 4889780,
+          "file_end": 4902076,
+          "virtual_address": 2153487244,
+          "virtual_end": 2153504848,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4891324,
+          "used_bits": 85175
+        },
+        {
+          "file_offset": 4902076,
+          "file_end": 4914412,
+          "virtual_address": 2153504848,
+          "virtual_end": 2153524336,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4903660,
+          "used_bits": 85365
+        },
+        {
+          "file_offset": 4914412,
+          "file_end": 4927128,
+          "virtual_address": 2153524336,
+          "virtual_end": 2153552656,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4915992,
+          "used_bits": 88828
+        },
+        {
+          "file_offset": 4927128,
+          "file_end": 4940228,
+          "virtual_address": 2153552656,
+          "virtual_end": 2153575704,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 4928708,
+          "used_bits": 92046
+        },
+        {
+          "file_offset": 4940228,
+          "file_end": 4952288,
+          "virtual_address": 2153575704,
+          "virtual_end": 2153594356,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 4941792,
+          "used_bits": 83240
+        },
+        {
+          "file_offset": 4952288,
+          "file_end": 4964636,
+          "virtual_address": 2153594356,
+          "virtual_end": 2153613372,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4953884,
+          "used_bits": 85436
+        },
+        {
+          "file_offset": 4964636,
+          "file_end": 4976960,
+          "virtual_address": 2153613372,
+          "virtual_end": 2153632460,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 4966208,
+          "used_bits": 85255
+        },
+        {
+          "file_offset": 4976960,
+          "file_end": 4989252,
+          "virtual_address": 2153632460,
+          "virtual_end": 2153649812,
+          "literal_table_bytes": 1384,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 4978500,
+          "used_bits": 85548
+        },
+        {
+          "file_offset": 4989252,
+          "file_end": 5002000,
+          "virtual_address": 2153649812,
+          "virtual_end": 2153669868,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 4990864,
+          "used_bits": 88610
+        },
+        {
+          "file_offset": 5002000,
+          "file_end": 5015244,
+          "virtual_address": 2153669868,
+          "virtual_end": 2153695380,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5003596,
+          "used_bits": 92459
+        },
+        {
+          "file_offset": 5015244,
+          "file_end": 5027568,
+          "virtual_address": 2153695380,
+          "virtual_end": 2153715204,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5016816,
+          "used_bits": 85497
+        },
+        {
+          "file_offset": 5027568,
+          "file_end": 5039876,
+          "virtual_address": 2153715204,
+          "virtual_end": 2153734244,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5029124,
+          "used_bits": 85705
+        },
+        {
+          "file_offset": 5039876,
+          "file_end": 5052940,
+          "virtual_address": 2153734244,
+          "virtual_end": 2153757092,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5041420,
+          "used_bits": 91245
+        },
+        {
+          "file_offset": 5052940,
+          "file_end": 5066944,
+          "virtual_address": 2153757092,
+          "virtual_end": 2153788068,
+          "literal_table_bytes": 1576,
+          "distance_table_bytes": 124,
+          "bitstream_offset": 5054656,
+          "used_bits": 97272
+        },
+        {
+          "file_offset": 5066944,
+          "file_end": 5080908,
+          "virtual_address": 2153788068,
+          "virtual_end": 2153822512,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5068492,
+          "used_bits": 98354
+        },
+        {
+          "file_offset": 5080908,
+          "file_end": 5093636,
+          "virtual_address": 2153822512,
+          "virtual_end": 2153843808,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5082500,
+          "used_bits": 88981
+        },
+        {
+          "file_offset": 5093636,
+          "file_end": 5106464,
+          "virtual_address": 2153843808,
+          "virtual_end": 2153864736,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5095200,
+          "used_bits": 89170
+        },
+        {
+          "file_offset": 5106464,
+          "file_end": 5119840,
+          "virtual_address": 2153864736,
+          "virtual_end": 2153889532,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5108064,
+          "used_bits": 93907
+        },
+        {
+          "file_offset": 5119840,
+          "file_end": 5132392,
+          "virtual_address": 2153889532,
+          "virtual_end": 2153909276,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5121384,
+          "used_bits": 87392
+        },
+        {
+          "file_offset": 5132392,
+          "file_end": 5144736,
+          "virtual_address": 2153909276,
+          "virtual_end": 2153931476,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5133984,
+          "used_bits": 85449
+        },
+        {
+          "file_offset": 5144736,
+          "file_end": 5157612,
+          "virtual_address": 2153931476,
+          "virtual_end": 2153954720,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 5146348,
+          "used_bits": 89302
+        },
+        {
+          "file_offset": 5157612,
+          "file_end": 5170608,
+          "virtual_address": 2153954720,
+          "virtual_end": 2153976200,
+          "literal_table_bytes": 1448,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5159216,
+          "used_bits": 90298
+        },
+        {
+          "file_offset": 5170608,
+          "file_end": 5183612,
+          "virtual_address": 2153976200,
+          "virtual_end": 2153998064,
+          "literal_table_bytes": 1448,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 5172220,
+          "used_bits": 90540
+        },
+        {
+          "file_offset": 5183612,
+          "file_end": 5196716,
+          "virtual_address": 2153998064,
+          "virtual_end": 2154018604,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5185196,
+          "used_bits": 91539
+        },
+        {
+          "file_offset": 5196716,
+          "file_end": 5209704,
+          "virtual_address": 2154018604,
+          "virtual_end": 2154041144,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5198312,
+          "used_bits": 90324
+        },
+        {
+          "file_offset": 5209704,
+          "file_end": 5222772,
+          "virtual_address": 2154041144,
+          "virtual_end": 2154062020,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5211252,
+          "used_bits": 91246
+        },
+        {
+          "file_offset": 5222772,
+          "file_end": 5235892,
+          "virtual_address": 2154062020,
+          "virtual_end": 2154082880,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5224372,
+          "used_bits": 91489
+        },
+        {
+          "file_offset": 5235892,
+          "file_end": 5248764,
+          "virtual_address": 2154082880,
+          "virtual_end": 2154105016,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5237500,
+          "used_bits": 89290
+        },
+        {
+          "file_offset": 5248764,
+          "file_end": 5261360,
+          "virtual_address": 2154105016,
+          "virtual_end": 2154124136,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 5250352,
+          "used_bits": 87392
+        },
+        {
+          "file_offset": 5261360,
+          "file_end": 5274336,
+          "virtual_address": 2154124136,
+          "virtual_end": 2154144852,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5262944,
+          "used_bits": 90073
+        },
+        {
+          "file_offset": 5274336,
+          "file_end": 5287680,
+          "virtual_address": 2154144852,
+          "virtual_end": 2154167248,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5275904,
+          "used_bits": 93571
+        },
+        {
+          "file_offset": 5287680,
+          "file_end": 5301320,
+          "virtual_address": 2154167248,
+          "virtual_end": 2154203536,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5289288,
+          "used_bits": 95341
+        },
+        {
+          "file_offset": 5301320,
+          "file_end": 5313776,
+          "virtual_address": 2154203536,
+          "virtual_end": 2154221740,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 5302896,
+          "used_bits": 86296
+        },
+        {
+          "file_offset": 5313776,
+          "file_end": 5325328,
+          "virtual_address": 2154221740,
+          "virtual_end": 2154236028,
+          "literal_table_bytes": 1668,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5315600,
+          "used_bits": 77220
+        },
+        {
+          "file_offset": 5325328,
+          "file_end": 5335872,
+          "virtual_address": 2154236028,
+          "virtual_end": 2154271092,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 5326912,
+          "used_bits": 70856
+        },
+        {
+          "file_offset": 5335872,
+          "file_end": 5349096,
+          "virtual_address": 2154271092,
+          "virtual_end": 2154302704,
+          "literal_table_bytes": 1156,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 5337192,
+          "used_bits": 95060
+        },
+        {
+          "file_offset": 5349096,
+          "file_end": 5359312,
+          "virtual_address": 2154302704,
+          "virtual_end": 2154325984,
+          "literal_table_bytes": 1480,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5350736,
+          "used_bits": 67698
+        },
+        {
+          "file_offset": 5359312,
+          "file_end": 5369084,
+          "virtual_address": 2154325984,
+          "virtual_end": 2154345616,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 124,
+          "bitstream_offset": 5360892,
+          "used_bits": 65138
+        },
+        {
+          "file_offset": 5369084,
+          "file_end": 5380080,
+          "virtual_address": 2154345616,
+          "virtual_end": 2154360692,
+          "literal_table_bytes": 1516,
+          "distance_table_bytes": 120,
+          "bitstream_offset": 5370736,
+          "used_bits": 73902
+        },
+        {
+          "file_offset": 5380080,
+          "file_end": 5394204,
+          "virtual_address": 2154360692,
+          "virtual_end": 2154397460,
+          "literal_table_bytes": 1156,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 5381404,
+          "used_bits": 102248
+        },
+        {
+          "file_offset": 5394204,
+          "file_end": 5407332,
+          "virtual_address": 2154397460,
+          "virtual_end": 2154422400,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 5395812,
+          "used_bits": 91358
+        },
+        {
+          "file_offset": 5407332,
+          "file_end": 5419740,
+          "virtual_address": 2154422400,
+          "virtual_end": 2154441120,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5408860,
+          "used_bits": 86877
+        },
+        {
+          "file_offset": 5419740,
+          "file_end": 5432600,
+          "virtual_address": 2154441120,
+          "virtual_end": 2154461500,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5421336,
+          "used_bits": 89456
+        },
+        {
+          "file_offset": 5432600,
+          "file_end": 5445568,
+          "virtual_address": 2154461500,
+          "virtual_end": 2154482688,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5434176,
+          "used_bits": 91012
+        },
+        {
+          "file_offset": 5445568,
+          "file_end": 5458160,
+          "virtual_address": 2154482688,
+          "virtual_end": 2154502572,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5447152,
+          "used_bits": 87822
+        },
+        {
+          "file_offset": 5458160,
+          "file_end": 5470716,
+          "virtual_address": 2154502572,
+          "virtual_end": 2154520812,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5459708,
+          "used_bits": 87178
+        },
+        {
+          "file_offset": 5470716,
+          "file_end": 5483028,
+          "virtual_address": 2154520812,
+          "virtual_end": 2154539656,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5472276,
+          "used_bits": 85692
+        },
+        {
+          "file_offset": 5483028,
+          "file_end": 5495576,
+          "virtual_address": 2154539656,
+          "virtual_end": 2154558584,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5484568,
+          "used_bits": 87129
+        },
+        {
+          "file_offset": 5495576,
+          "file_end": 5508708,
+          "virtual_address": 2154558584,
+          "virtual_end": 2154589000,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 5497188,
+          "used_bits": 91926
+        },
+        {
+          "file_offset": 5508708,
+          "file_end": 5520540,
+          "virtual_address": 2154589000,
+          "virtual_end": 2154607720,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5510300,
+          "used_bits": 81314
+        },
+        {
+          "file_offset": 5520540,
+          "file_end": 5532384,
+          "virtual_address": 2154607720,
+          "virtual_end": 2154624132,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5522144,
+          "used_bits": 81749
+        },
+        {
+          "file_offset": 5532384,
+          "file_end": 5544684,
+          "virtual_address": 2154624132,
+          "virtual_end": 2154644320,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5533932,
+          "used_bits": 85790
+        },
+        {
+          "file_offset": 5544684,
+          "file_end": 5556472,
+          "virtual_address": 2154644320,
+          "virtual_end": 2154661112,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5546232,
+          "used_bits": 81409
+        },
+        {
+          "file_offset": 5556472,
+          "file_end": 5568344,
+          "virtual_address": 2154661112,
+          "virtual_end": 2154678516,
+          "literal_table_bytes": 1468,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 5558104,
+          "used_bits": 81382
+        },
+        {
+          "file_offset": 5568344,
+          "file_end": 5578868,
+          "virtual_address": 2154678516,
+          "virtual_end": 2154690004,
+          "literal_table_bytes": 1284,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5569780,
+          "used_bits": 72282
+        },
+        {
+          "file_offset": 5578868,
+          "file_end": 5589808,
+          "virtual_address": 2154690004,
+          "virtual_end": 2154702940,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5580464,
+          "used_bits": 74146
+        },
+        {
+          "file_offset": 5589808,
+          "file_end": 5601004,
+          "virtual_address": 2154702940,
+          "virtual_end": 2154716612,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5591404,
+          "used_bits": 76566
+        },
+        {
+          "file_offset": 5601004,
+          "file_end": 5612420,
+          "virtual_address": 2154716612,
+          "virtual_end": 2154730332,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5602564,
+          "used_bits": 78359
+        },
+        {
+          "file_offset": 5612420,
+          "file_end": 5624080,
+          "virtual_address": 2154730332,
+          "virtual_end": 2154744544,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5613968,
+          "used_bits": 80267
+        },
+        {
+          "file_offset": 5624080,
+          "file_end": 5635244,
+          "virtual_address": 2154744544,
+          "virtual_end": 2154758844,
+          "literal_table_bytes": 1532,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5625772,
+          "used_bits": 74856
+        },
+        {
+          "file_offset": 5635244,
+          "file_end": 5646176,
+          "virtual_address": 2154758844,
+          "virtual_end": 2154775568,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5636832,
+          "used_bits": 74565
+        },
+        {
+          "file_offset": 5646176,
+          "file_end": 5659364,
+          "virtual_address": 2154775568,
+          "virtual_end": 2154804016,
+          "literal_table_bytes": 1392,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5647716,
+          "used_bits": 92660
+        },
+        {
+          "file_offset": 5659364,
+          "file_end": 5671956,
+          "virtual_address": 2154804016,
+          "virtual_end": 2154826904,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5660948,
+          "used_bits": 87828
+        },
+        {
+          "file_offset": 5671956,
+          "file_end": 5684684,
+          "virtual_address": 2154826904,
+          "virtual_end": 2154849816,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5673548,
+          "used_bits": 88857
+        },
+        {
+          "file_offset": 5684684,
+          "file_end": 5697556,
+          "virtual_address": 2154849816,
+          "virtual_end": 2154877264,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5686292,
+          "used_bits": 89783
+        },
+        {
+          "file_offset": 5697556,
+          "file_end": 5711192,
+          "virtual_address": 2154877264,
+          "virtual_end": 2154917132,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5699160,
+          "used_bits": 96188
+        },
+        {
+          "file_offset": 5711192,
+          "file_end": 5724676,
+          "virtual_address": 2154917132,
+          "virtual_end": 2154959000,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 5712772,
+          "used_bits": 94966
+        },
+        {
+          "file_offset": 5724676,
+          "file_end": 5738292,
+          "virtual_address": 2154959000,
+          "virtual_end": 2154998480,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5726260,
+          "used_bits": 95709
+        },
+        {
+          "file_offset": 5738292,
+          "file_end": 5752168,
+          "virtual_address": 2154998480,
+          "virtual_end": 2155038004,
+          "literal_table_bytes": 1564,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5740008,
+          "used_bits": 96529
+        },
+        {
+          "file_offset": 5752168,
+          "file_end": 5765768,
+          "virtual_address": 2155038004,
+          "virtual_end": 2155077120,
+          "literal_table_bytes": 1548,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5753864,
+          "used_bits": 94836
+        },
+        {
+          "file_offset": 5765768,
+          "file_end": 5779916,
+          "virtual_address": 2155077120,
+          "virtual_end": 2155121272,
+          "literal_table_bytes": 1580,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5767500,
+          "used_bits": 99140
+        },
+        {
+          "file_offset": 5779916,
+          "file_end": 5793908,
+          "virtual_address": 2155121272,
+          "virtual_end": 2155163732,
+          "literal_table_bytes": 1424,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5781492,
+          "used_bits": 99159
+        },
+        {
+          "file_offset": 5793908,
+          "file_end": 5807856,
+          "virtual_address": 2155163732,
+          "virtual_end": 2155202552,
+          "literal_table_bytes": 1512,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5795568,
+          "used_bits": 97231
+        },
+        {
+          "file_offset": 5807856,
+          "file_end": 5821972,
+          "virtual_address": 2155202552,
+          "virtual_end": 2155247032,
+          "literal_table_bytes": 1548,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5809556,
+          "used_bits": 98305
+        },
+        {
+          "file_offset": 5821972,
+          "file_end": 5836032,
+          "virtual_address": 2155247032,
+          "virtual_end": 2155291472,
+          "literal_table_bytes": 1492,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5823616,
+          "used_bits": 98799
+        },
+        {
+          "file_offset": 5836032,
+          "file_end": 5849616,
+          "virtual_address": 2155291472,
+          "virtual_end": 2155330384,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5837584,
+          "used_bits": 95581
+        },
+        {
+          "file_offset": 5849616,
+          "file_end": 5862844,
+          "virtual_address": 2155330384,
+          "virtual_end": 2155358252,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 5851196,
+          "used_bits": 92544
+        },
+        {
+          "file_offset": 5862844,
+          "file_end": 5875920,
+          "virtual_address": 2155358252,
+          "virtual_end": 2155383604,
+          "literal_table_bytes": 1408,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5864400,
+          "used_bits": 91178
+        },
+        {
+          "file_offset": 5875920,
+          "file_end": 5888532,
+          "virtual_address": 2155383604,
+          "virtual_end": 2155403900,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5877524,
+          "used_bits": 87685
+        },
+        {
+          "file_offset": 5888532,
+          "file_end": 5901708,
+          "virtual_address": 2155403900,
+          "virtual_end": 2155427516,
+          "literal_table_bytes": 1372,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5890060,
+          "used_bits": 92713
+        },
+        {
+          "file_offset": 5901708,
+          "file_end": 5914500,
+          "virtual_address": 2155427516,
+          "virtual_end": 2155450180,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 5903236,
+          "used_bits": 89914
+        },
+        {
+          "file_offset": 5914500,
+          "file_end": 5927316,
+          "virtual_address": 2155450180,
+          "virtual_end": 2155471680,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5916052,
+          "used_bits": 89285
+        },
+        {
+          "file_offset": 5927316,
+          "file_end": 5940256,
+          "virtual_address": 2155471680,
+          "virtual_end": 2155492964,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5928864,
+          "used_bits": 90128
+        },
+        {
+          "file_offset": 5940256,
+          "file_end": 5952852,
+          "virtual_address": 2155492964,
+          "virtual_end": 2155513832,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5941844,
+          "used_bits": 87801
+        },
+        {
+          "file_offset": 5952852,
+          "file_end": 5965792,
+          "virtual_address": 2155513832,
+          "virtual_end": 2155536444,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5954400,
+          "used_bits": 90474
+        },
+        {
+          "file_offset": 5965792,
+          "file_end": 5978452,
+          "virtual_address": 2155536444,
+          "virtual_end": 2155557072,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 5967316,
+          "used_bits": 88797
+        },
+        {
+          "file_offset": 5978452,
+          "file_end": 5991248,
+          "virtual_address": 2155557072,
+          "virtual_end": 2155579824,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 5979984,
+          "used_bits": 89827
+        },
+        {
+          "file_offset": 5991248,
+          "file_end": 6004112,
+          "virtual_address": 2155579824,
+          "virtual_end": 2155613848,
+          "literal_table_bytes": 1568,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 5992976,
+          "used_bits": 88782
+        },
+        {
+          "file_offset": 6004112,
+          "file_end": 6017276,
+          "virtual_address": 2155613848,
+          "virtual_end": 2155666584,
+          "literal_table_bytes": 1508,
+          "distance_table_bytes": 120,
+          "bitstream_offset": 6005756,
+          "used_bits": 91306
+        },
+        {
+          "file_offset": 6017276,
+          "file_end": 6028348,
+          "virtual_address": 2155666584,
+          "virtual_end": 2155698816,
+          "literal_table_bytes": 1564,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6019004,
+          "used_bits": 73749
+        },
+        {
+          "file_offset": 6028348,
+          "file_end": 6040588,
+          "virtual_address": 2155698816,
+          "virtual_end": 2155732480,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6029964,
+          "used_bits": 84744
+        },
+        {
+          "file_offset": 6040588,
+          "file_end": 6052760,
+          "virtual_address": 2155732480,
+          "virtual_end": 2155751380,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6042136,
+          "used_bits": 84316
+        },
+        {
+          "file_offset": 6052760,
+          "file_end": 6065440,
+          "virtual_address": 2155751380,
+          "virtual_end": 2155772192,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 6054304,
+          "used_bits": 88032
+        },
+        {
+          "file_offset": 6065440,
+          "file_end": 6078920,
+          "virtual_address": 2155772192,
+          "virtual_end": 2155798436,
+          "literal_table_bytes": 1552,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6067144,
+          "used_bits": 93873
+        },
+        {
+          "file_offset": 6078920,
+          "file_end": 6088288,
+          "virtual_address": 2155798436,
+          "virtual_end": 2155817984,
+          "literal_table_bytes": 1388,
+          "distance_table_bytes": 156,
+          "bitstream_offset": 6080480,
+          "used_bits": 61949
+        }
+      ]
+    },
+    {
+      "name": "E06-text",
+      "elf_offset": 6088288,
+      "segment_index": 0,
+      "file_offset": 6088404,
+      "file_end": 7661472,
+      "compressed_sha256": "6df5f383ba696e5ea5e0f117cea9f2e9050ff5ddd6825748c4749fe0ed0e0fde",
+      "virtual_address": 2155818112,
+      "decoded_size": 3604352,
+      "decoded_sha256": "bd860a234b623260204d7d1013dfec59665367df77fa36e6cd3550b998bf0cac",
+      "block_count": 125,
+      "blocks": [
+        {
+          "file_offset": 6088404,
+          "file_end": 6101708,
+          "virtual_address": 2155818112,
+          "virtual_end": 2155861892,
+          "literal_table_bytes": 1624,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6090188,
+          "used_bits": 91094
+        },
+        {
+          "file_offset": 6101708,
+          "file_end": 6115056,
+          "virtual_address": 2155861892,
+          "virtual_end": 2155909936,
+          "literal_table_bytes": 1548,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6103408,
+          "used_bits": 92208
+        },
+        {
+          "file_offset": 6115056,
+          "file_end": 6126520,
+          "virtual_address": 2155909936,
+          "virtual_end": 2155948748,
+          "literal_table_bytes": 1564,
+          "distance_table_bytes": 156,
+          "bitstream_offset": 6116792,
+          "used_bits": 77475
+        },
+        {
+          "file_offset": 6126520,
+          "file_end": 6137392,
+          "virtual_address": 2155948748,
+          "virtual_end": 2156369632,
+          "literal_table_bytes": 1352,
+          "distance_table_bytes": 160,
+          "bitstream_offset": 6128048,
+          "used_bits": 74163
+        },
+        {
+          "file_offset": 6137392,
+          "file_end": 6147288,
+          "virtual_address": 2156369632,
+          "virtual_end": 2156378560,
+          "literal_table_bytes": 1312,
+          "distance_table_bytes": 120,
+          "bitstream_offset": 6138840,
+          "used_bits": 66505
+        },
+        {
+          "file_offset": 6147288,
+          "file_end": 6157188,
+          "virtual_address": 2156378560,
+          "virtual_end": 2156387392,
+          "literal_table_bytes": 1300,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6148740,
+          "used_bits": 66870
+        },
+        {
+          "file_offset": 6157188,
+          "file_end": 6166800,
+          "virtual_address": 2156387392,
+          "virtual_end": 2156395772,
+          "literal_table_bytes": 1172,
+          "distance_table_bytes": 104,
+          "bitstream_offset": 6158480,
+          "used_bits": 65812
+        },
+        {
+          "file_offset": 6166800,
+          "file_end": 6176528,
+          "virtual_address": 2156395772,
+          "virtual_end": 2156404464,
+          "literal_table_bytes": 1304,
+          "distance_table_bytes": 88,
+          "bitstream_offset": 6168208,
+          "used_bits": 65731
+        },
+        {
+          "file_offset": 6176528,
+          "file_end": 6185976,
+          "virtual_address": 2156404464,
+          "virtual_end": 2156412732,
+          "literal_table_bytes": 1168,
+          "distance_table_bytes": 72,
+          "bitstream_offset": 6177784,
+          "used_bits": 65422
+        },
+        {
+          "file_offset": 6185976,
+          "file_end": 6195888,
+          "virtual_address": 2156412732,
+          "virtual_end": 2156421832,
+          "literal_table_bytes": 1320,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6187440,
+          "used_bits": 66586
+        },
+        {
+          "file_offset": 6195888,
+          "file_end": 6205648,
+          "virtual_address": 2156421832,
+          "virtual_end": 2156430588,
+          "literal_table_bytes": 1280,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6197328,
+          "used_bits": 65912
+        },
+        {
+          "file_offset": 6205648,
+          "file_end": 6215688,
+          "virtual_address": 2156430588,
+          "virtual_end": 2156439792,
+          "literal_table_bytes": 1304,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6207112,
+          "used_bits": 67767
+        },
+        {
+          "file_offset": 6215688,
+          "file_end": 6225864,
+          "virtual_address": 2156439792,
+          "virtual_end": 2156450508,
+          "literal_table_bytes": 1320,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6217160,
+          "used_bits": 69380
+        },
+        {
+          "file_offset": 6225864,
+          "file_end": 6235448,
+          "virtual_address": 2156450508,
+          "virtual_end": 2156458808,
+          "literal_table_bytes": 1160,
+          "distance_table_bytes": 88,
+          "bitstream_offset": 6227128,
+          "used_bits": 65705
+        },
+        {
+          "file_offset": 6235448,
+          "file_end": 6245368,
+          "virtual_address": 2156458808,
+          "virtual_end": 2156468300,
+          "literal_table_bytes": 1308,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6236920,
+          "used_bits": 67243
+        },
+        {
+          "file_offset": 6245368,
+          "file_end": 6254812,
+          "virtual_address": 2156468300,
+          "virtual_end": 2156476552,
+          "literal_table_bytes": 1172,
+          "distance_table_bytes": 64,
+          "bitstream_offset": 6246620,
+          "used_bits": 65376
+        },
+        {
+          "file_offset": 6254812,
+          "file_end": 6264576,
+          "virtual_address": 2156476552,
+          "virtual_end": 2156485344,
+          "literal_table_bytes": 1300,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6256256,
+          "used_bits": 66012
+        },
+        {
+          "file_offset": 6264576,
+          "file_end": 6274084,
+          "virtual_address": 2156485344,
+          "virtual_end": 2156493884,
+          "literal_table_bytes": 1200,
+          "distance_table_bytes": 100,
+          "bitstream_offset": 6265892,
+          "used_bits": 65145
+        },
+        {
+          "file_offset": 6274084,
+          "file_end": 6283624,
+          "virtual_address": 2156493884,
+          "virtual_end": 2156502588,
+          "literal_table_bytes": 1212,
+          "distance_table_bytes": 120,
+          "bitstream_offset": 6275432,
+          "used_bits": 65132
+        },
+        {
+          "file_offset": 6283624,
+          "file_end": 6293432,
+          "virtual_address": 2156502588,
+          "virtual_end": 2156511640,
+          "literal_table_bytes": 1216,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6284984,
+          "used_bits": 66579
+        },
+        {
+          "file_offset": 6293432,
+          "file_end": 6302836,
+          "virtual_address": 2156511640,
+          "virtual_end": 2156519868,
+          "literal_table_bytes": 1136,
+          "distance_table_bytes": 60,
+          "bitstream_offset": 6294644,
+          "used_bits": 65358
+        },
+        {
+          "file_offset": 6302836,
+          "file_end": 6312612,
+          "virtual_address": 2156519868,
+          "virtual_end": 2156528800,
+          "literal_table_bytes": 1324,
+          "distance_table_bytes": 116,
+          "bitstream_offset": 6304292,
+          "used_bits": 66248
+        },
+        {
+          "file_offset": 6312612,
+          "file_end": 6322336,
+          "virtual_address": 2156528800,
+          "virtual_end": 2156538144,
+          "literal_table_bytes": 1268,
+          "distance_table_bytes": 120,
+          "bitstream_offset": 6314016,
+          "used_bits": 65937
+        },
+        {
+          "file_offset": 6322336,
+          "file_end": 6331952,
+          "virtual_address": 2156538144,
+          "virtual_end": 2156546744,
+          "literal_table_bytes": 1176,
+          "distance_table_bytes": 104,
+          "bitstream_offset": 6323632,
+          "used_bits": 66397
+        },
+        {
+          "file_offset": 6331952,
+          "file_end": 6341400,
+          "virtual_address": 2156546744,
+          "virtual_end": 2156555020,
+          "literal_table_bytes": 1164,
+          "distance_table_bytes": 76,
+          "bitstream_offset": 6333208,
+          "used_bits": 65424
+        },
+        {
+          "file_offset": 6341400,
+          "file_end": 6353340,
+          "virtual_address": 2156555020,
+          "virtual_end": 2156587072,
+          "literal_table_bytes": 1540,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6343100,
+          "used_bits": 80976
+        },
+        {
+          "file_offset": 6353340,
+          "file_end": 6366288,
+          "virtual_address": 2156587072,
+          "virtual_end": 2156624304,
+          "literal_table_bytes": 636,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6354128,
+          "used_bits": 96591
+        },
+        {
+          "file_offset": 6366288,
+          "file_end": 6379820,
+          "virtual_address": 2156624304,
+          "virtual_end": 2156661824,
+          "literal_table_bytes": 572,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6367020,
+          "used_bits": 101696
+        },
+        {
+          "file_offset": 6379820,
+          "file_end": 6393796,
+          "virtual_address": 2156661824,
+          "virtual_end": 2156724336,
+          "literal_table_bytes": 888,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6380868,
+          "used_bits": 102594
+        },
+        {
+          "file_offset": 6393796,
+          "file_end": 6407748,
+          "virtual_address": 2156724336,
+          "virtual_end": 2156787504,
+          "literal_table_bytes": 988,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6394948,
+          "used_bits": 101988
+        },
+        {
+          "file_offset": 6407748,
+          "file_end": 6421920,
+          "virtual_address": 2156787504,
+          "virtual_end": 2156825324,
+          "literal_table_bytes": 1336,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6409248,
+          "used_bits": 101286
+        },
+        {
+          "file_offset": 6421920,
+          "file_end": 6437628,
+          "virtual_address": 2156825324,
+          "virtual_end": 2156866288,
+          "literal_table_bytes": 1588,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 6423676,
+          "used_bits": 111414
+        },
+        {
+          "file_offset": 6437628,
+          "file_end": 6453344,
+          "virtual_address": 2156866288,
+          "virtual_end": 2156910948,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6439264,
+          "used_bits": 111948
+        },
+        {
+          "file_offset": 6453344,
+          "file_end": 6468660,
+          "virtual_address": 2156910948,
+          "virtual_end": 2156958856,
+          "literal_table_bytes": 1588,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6455092,
+          "used_bits": 108251
+        },
+        {
+          "file_offset": 6468660,
+          "file_end": 6484348,
+          "virtual_address": 2156958856,
+          "virtual_end": 2156997368,
+          "literal_table_bytes": 1572,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6470396,
+          "used_bits": 111381
+        },
+        {
+          "file_offset": 6484348,
+          "file_end": 6499924,
+          "virtual_address": 2156997368,
+          "virtual_end": 2157035800,
+          "literal_table_bytes": 1596,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6486100,
+          "used_bits": 109507
+        },
+        {
+          "file_offset": 6499924,
+          "file_end": 6515368,
+          "virtual_address": 2157035800,
+          "virtual_end": 2157075580,
+          "literal_table_bytes": 1592,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6501672,
+          "used_bits": 109205
+        },
+        {
+          "file_offset": 6515368,
+          "file_end": 6530968,
+          "virtual_address": 2157075580,
+          "virtual_end": 2157118504,
+          "literal_table_bytes": 1604,
+          "distance_table_bytes": 156,
+          "bitstream_offset": 6517144,
+          "used_bits": 110490
+        },
+        {
+          "file_offset": 6530968,
+          "file_end": 6546304,
+          "virtual_address": 2157118504,
+          "virtual_end": 2157164804,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6532608,
+          "used_bits": 109374
+        },
+        {
+          "file_offset": 6546304,
+          "file_end": 6561644,
+          "virtual_address": 2157164804,
+          "virtual_end": 2157205556,
+          "literal_table_bytes": 1604,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 6548076,
+          "used_bits": 108448
+        },
+        {
+          "file_offset": 6561644,
+          "file_end": 6576064,
+          "virtual_address": 2157205556,
+          "virtual_end": 2157243024,
+          "literal_table_bytes": 1464,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6563264,
+          "used_bits": 102224
+        },
+        {
+          "file_offset": 6576064,
+          "file_end": 6590560,
+          "virtual_address": 2157243024,
+          "virtual_end": 2157276652,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6577632,
+          "used_bits": 102884
+        },
+        {
+          "file_offset": 6590560,
+          "file_end": 6606020,
+          "virtual_address": 2157276652,
+          "virtual_end": 2157315856,
+          "literal_table_bytes": 1604,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6592324,
+          "used_bits": 109089
+        },
+        {
+          "file_offset": 6606020,
+          "file_end": 6620904,
+          "virtual_address": 2157315856,
+          "virtual_end": 2157356472,
+          "literal_table_bytes": 1540,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6607720,
+          "used_bits": 104990
+        },
+        {
+          "file_offset": 6620904,
+          "file_end": 6635328,
+          "virtual_address": 2157356472,
+          "virtual_end": 2157392540,
+          "literal_table_bytes": 1464,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6622528,
+          "used_bits": 101867
+        },
+        {
+          "file_offset": 6635328,
+          "file_end": 6649520,
+          "virtual_address": 2157392540,
+          "virtual_end": 2157427268,
+          "literal_table_bytes": 1496,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6636976,
+          "used_bits": 99722
+        },
+        {
+          "file_offset": 6649520,
+          "file_end": 6664336,
+          "virtual_address": 2157427268,
+          "virtual_end": 2157460128,
+          "literal_table_bytes": 1604,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6651280,
+          "used_bits": 103950
+        },
+        {
+          "file_offset": 6664336,
+          "file_end": 6679964,
+          "virtual_address": 2157460128,
+          "virtual_end": 2157497568,
+          "literal_table_bytes": 1508,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 6666012,
+          "used_bits": 111369
+        },
+        {
+          "file_offset": 6679964,
+          "file_end": 6695072,
+          "virtual_address": 2157497568,
+          "virtual_end": 2157536156,
+          "literal_table_bytes": 1508,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6681632,
+          "used_bits": 107297
+        },
+        {
+          "file_offset": 6695072,
+          "file_end": 6709952,
+          "virtual_address": 2157536156,
+          "virtual_end": 2157575820,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6696640,
+          "used_bits": 105622
+        },
+        {
+          "file_offset": 6709952,
+          "file_end": 6723348,
+          "virtual_address": 2157575820,
+          "virtual_end": 2157615540,
+          "literal_table_bytes": 1464,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6711572,
+          "used_bits": 93768
+        },
+        {
+          "file_offset": 6723348,
+          "file_end": 6736744,
+          "virtual_address": 2157615540,
+          "virtual_end": 2157651340,
+          "literal_table_bytes": 1464,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6724968,
+          "used_bits": 93753
+        },
+        {
+          "file_offset": 6736744,
+          "file_end": 6750108,
+          "virtual_address": 2157651340,
+          "virtual_end": 2157687460,
+          "literal_table_bytes": 1176,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6738076,
+          "used_bits": 95189
+        },
+        {
+          "file_offset": 6750108,
+          "file_end": 6763392,
+          "virtual_address": 2157687460,
+          "virtual_end": 2157721416,
+          "literal_table_bytes": 1472,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 6751744,
+          "used_bits": 92520
+        },
+        {
+          "file_offset": 6763392,
+          "file_end": 6777256,
+          "virtual_address": 2157721416,
+          "virtual_end": 2157759976,
+          "literal_table_bytes": 1160,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6764712,
+          "used_bits": 100174
+        },
+        {
+          "file_offset": 6777256,
+          "file_end": 6789804,
+          "virtual_address": 2157759976,
+          "virtual_end": 2157782648,
+          "literal_table_bytes": 1508,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 6778924,
+          "used_bits": 86652
+        },
+        {
+          "file_offset": 6789804,
+          "file_end": 6799936,
+          "virtual_address": 2157782648,
+          "virtual_end": 2157793904,
+          "literal_table_bytes": 1256,
+          "distance_table_bytes": 156,
+          "bitstream_offset": 6791232,
+          "used_bits": 68758
+        },
+        {
+          "file_offset": 6799936,
+          "file_end": 6810220,
+          "virtual_address": 2157793904,
+          "virtual_end": 2157805316,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6801516,
+          "used_bits": 68889
+        },
+        {
+          "file_offset": 6810220,
+          "file_end": 6820028,
+          "virtual_address": 2157805316,
+          "virtual_end": 2157816020,
+          "literal_table_bytes": 1204,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6811580,
+          "used_bits": 67420
+        },
+        {
+          "file_offset": 6820028,
+          "file_end": 6831188,
+          "virtual_address": 2157816020,
+          "virtual_end": 2157829792,
+          "literal_table_bytes": 1532,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6821716,
+          "used_bits": 75439
+        },
+        {
+          "file_offset": 6831188,
+          "file_end": 6843852,
+          "virtual_address": 2157829792,
+          "virtual_end": 2157853472,
+          "literal_table_bytes": 1384,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6832716,
+          "used_bits": 88955
+        },
+        {
+          "file_offset": 6843852,
+          "file_end": 6856924,
+          "virtual_address": 2157853472,
+          "virtual_end": 2157885604,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6845404,
+          "used_bits": 91268
+        },
+        {
+          "file_offset": 6856924,
+          "file_end": 6869828,
+          "virtual_address": 2157885604,
+          "virtual_end": 2157907652,
+          "literal_table_bytes": 1364,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 6858436,
+          "used_bits": 90494
+        },
+        {
+          "file_offset": 6869828,
+          "file_end": 6882940,
+          "virtual_address": 2157907652,
+          "virtual_end": 2157935988,
+          "literal_table_bytes": 1576,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6871548,
+          "used_bits": 90880
+        },
+        {
+          "file_offset": 6882940,
+          "file_end": 6895280,
+          "virtual_address": 2157935988,
+          "virtual_end": 2157956360,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 6884528,
+          "used_bits": 85587
+        },
+        {
+          "file_offset": 6895280,
+          "file_end": 6908780,
+          "virtual_address": 2157956360,
+          "virtual_end": 2157984476,
+          "literal_table_bytes": 1448,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 6896876,
+          "used_bits": 94656
+        },
+        {
+          "file_offset": 6908780,
+          "file_end": 6922668,
+          "virtual_address": 2157984476,
+          "virtual_end": 2158019548,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 6910380,
+          "used_bits": 97386
+        },
+        {
+          "file_offset": 6922668,
+          "file_end": 6936280,
+          "virtual_address": 2158019548,
+          "virtual_end": 2158058088,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6924248,
+          "used_bits": 96137
+        },
+        {
+          "file_offset": 6936280,
+          "file_end": 6949400,
+          "virtual_address": 2158058088,
+          "virtual_end": 2158081324,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6937880,
+          "used_bits": 91218
+        },
+        {
+          "file_offset": 6949400,
+          "file_end": 6962888,
+          "virtual_address": 2158081324,
+          "virtual_end": 2158112048,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 6950984,
+          "used_bits": 94583
+        },
+        {
+          "file_offset": 6962888,
+          "file_end": 6977448,
+          "virtual_address": 2158112048,
+          "virtual_end": 2158160084,
+          "literal_table_bytes": 1488,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 6964520,
+          "used_bits": 102872
+        },
+        {
+          "file_offset": 6977448,
+          "file_end": 6990748,
+          "virtual_address": 2158160084,
+          "virtual_end": 2158192084,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 6978972,
+          "used_bits": 93955
+        },
+        {
+          "file_offset": 6990748,
+          "file_end": 7004808,
+          "virtual_address": 2158192084,
+          "virtual_end": 2158227336,
+          "literal_table_bytes": 1488,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 6992392,
+          "used_bits": 98854
+        },
+        {
+          "file_offset": 7004808,
+          "file_end": 7018792,
+          "virtual_address": 2158227336,
+          "virtual_end": 2158264128,
+          "literal_table_bytes": 1548,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7006504,
+          "used_bits": 97536
+        },
+        {
+          "file_offset": 7018792,
+          "file_end": 7033028,
+          "virtual_address": 2158264128,
+          "virtual_end": 2158300112,
+          "literal_table_bytes": 1544,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7020484,
+          "used_bits": 99946
+        },
+        {
+          "file_offset": 7033028,
+          "file_end": 7046652,
+          "virtual_address": 2158300112,
+          "virtual_end": 2158334780,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7034620,
+          "used_bits": 95745
+        },
+        {
+          "file_offset": 7046652,
+          "file_end": 7059908,
+          "virtual_address": 2158334780,
+          "virtual_end": 2158364428,
+          "literal_table_bytes": 1452,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7048260,
+          "used_bits": 92792
+        },
+        {
+          "file_offset": 7059908,
+          "file_end": 7073760,
+          "virtual_address": 2158364428,
+          "virtual_end": 2158399072,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7061472,
+          "used_bits": 97348
+        },
+        {
+          "file_offset": 7073760,
+          "file_end": 7086140,
+          "virtual_address": 2158399072,
+          "virtual_end": 2158419772,
+          "literal_table_bytes": 1480,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7075388,
+          "used_bits": 85280
+        },
+        {
+          "file_offset": 7086140,
+          "file_end": 7100320,
+          "virtual_address": 2158419772,
+          "virtual_end": 2158453084,
+          "literal_table_bytes": 1484,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7087776,
+          "used_bits": 99363
+        },
+        {
+          "file_offset": 7100320,
+          "file_end": 7115204,
+          "virtual_address": 2158453084,
+          "virtual_end": 2158506524,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7101892,
+          "used_bits": 105827
+        },
+        {
+          "file_offset": 7115204,
+          "file_end": 7127180,
+          "virtual_address": 2158506524,
+          "virtual_end": 2158539500,
+          "literal_table_bytes": 1448,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 7116812,
+          "used_bits": 82871
+        },
+        {
+          "file_offset": 7127180,
+          "file_end": 7138508,
+          "virtual_address": 2158539500,
+          "virtual_end": 2158554732,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7128780,
+          "used_bits": 77639
+        },
+        {
+          "file_offset": 7138508,
+          "file_end": 7150428,
+          "virtual_address": 2158554732,
+          "virtual_end": 2158575092,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7140060,
+          "used_bits": 82831
+        },
+        {
+          "file_offset": 7150428,
+          "file_end": 7162856,
+          "virtual_address": 2158575092,
+          "virtual_end": 2158595872,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7151976,
+          "used_bits": 86201
+        },
+        {
+          "file_offset": 7162856,
+          "file_end": 7175964,
+          "virtual_address": 2158595872,
+          "virtual_end": 2158623884,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7164444,
+          "used_bits": 91267
+        },
+        {
+          "file_offset": 7175964,
+          "file_end": 7188360,
+          "virtual_address": 2158623884,
+          "virtual_end": 2158645148,
+          "literal_table_bytes": 1364,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7177480,
+          "used_bits": 86006
+        },
+        {
+          "file_offset": 7188360,
+          "file_end": 7200404,
+          "virtual_address": 2158645148,
+          "virtual_end": 2158663860,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7189908,
+          "used_bits": 83824
+        },
+        {
+          "file_offset": 7200404,
+          "file_end": 7212664,
+          "virtual_address": 2158663860,
+          "virtual_end": 2158684360,
+          "literal_table_bytes": 1232,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7201784,
+          "used_bits": 86688
+        },
+        {
+          "file_offset": 7212664,
+          "file_end": 7225892,
+          "virtual_address": 2158684360,
+          "virtual_end": 2158707140,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 7214244,
+          "used_bits": 92812
+        },
+        {
+          "file_offset": 7225892,
+          "file_end": 7238600,
+          "virtual_address": 2158707140,
+          "virtual_end": 2158728260,
+          "literal_table_bytes": 1424,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7227464,
+          "used_bits": 88594
+        },
+        {
+          "file_offset": 7238600,
+          "file_end": 7251840,
+          "virtual_address": 2158728260,
+          "virtual_end": 2158752476,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7240192,
+          "used_bits": 92439
+        },
+        {
+          "file_offset": 7251840,
+          "file_end": 7264672,
+          "virtual_address": 2158752476,
+          "virtual_end": 2158773804,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7253408,
+          "used_bits": 89842
+        },
+        {
+          "file_offset": 7264672,
+          "file_end": 7277648,
+          "virtual_address": 2158773804,
+          "virtual_end": 2158799372,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7266256,
+          "used_bits": 90986
+        },
+        {
+          "file_offset": 7277648,
+          "file_end": 7291152,
+          "virtual_address": 2158799372,
+          "virtual_end": 2158846796,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 7279248,
+          "used_bits": 94916
+        },
+        {
+          "file_offset": 7291152,
+          "file_end": 7303360,
+          "virtual_address": 2158846796,
+          "virtual_end": 2158873916,
+          "literal_table_bytes": 1420,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 7292736,
+          "used_bits": 84190
+        },
+        {
+          "file_offset": 7303360,
+          "file_end": 7315944,
+          "virtual_address": 2158873916,
+          "virtual_end": 2158895048,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7304936,
+          "used_bits": 87638
+        },
+        {
+          "file_offset": 7315944,
+          "file_end": 7328768,
+          "virtual_address": 2158895048,
+          "virtual_end": 2158916412,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7317504,
+          "used_bits": 89819
+        },
+        {
+          "file_offset": 7328768,
+          "file_end": 7340316,
+          "virtual_address": 2158916412,
+          "virtual_end": 2158931012,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7330332,
+          "used_bits": 78906
+        },
+        {
+          "file_offset": 7340316,
+          "file_end": 7352644,
+          "virtual_address": 2158931012,
+          "virtual_end": 2158949332,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 7341892,
+          "used_bits": 85688
+        },
+        {
+          "file_offset": 7352644,
+          "file_end": 7364816,
+          "virtual_address": 2158949332,
+          "virtual_end": 2158966704,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7354192,
+          "used_bits": 84334
+        },
+        {
+          "file_offset": 7364816,
+          "file_end": 7376900,
+          "virtual_address": 2158966704,
+          "virtual_end": 2158982584,
+          "literal_table_bytes": 1428,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 7366404,
+          "used_bits": 83299
+        },
+        {
+          "file_offset": 7376900,
+          "file_end": 7389592,
+          "virtual_address": 2158982584,
+          "virtual_end": 2159003228,
+          "literal_table_bytes": 1404,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7378456,
+          "used_bits": 88736
+        },
+        {
+          "file_offset": 7389592,
+          "file_end": 7401540,
+          "virtual_address": 2159003228,
+          "virtual_end": 2159021240,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7391172,
+          "used_bits": 82674
+        },
+        {
+          "file_offset": 7401540,
+          "file_end": 7414944,
+          "virtual_address": 2159021240,
+          "virtual_end": 2159051424,
+          "literal_table_bytes": 1476,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7403168,
+          "used_bits": 93433
+        },
+        {
+          "file_offset": 7414944,
+          "file_end": 7427420,
+          "virtual_address": 2159051424,
+          "virtual_end": 2159071436,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7416540,
+          "used_bits": 86001
+        },
+        {
+          "file_offset": 7427420,
+          "file_end": 7439736,
+          "virtual_address": 2159071436,
+          "virtual_end": 2159089360,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7428984,
+          "used_bits": 85197
+        },
+        {
+          "file_offset": 7439736,
+          "file_end": 7452416,
+          "virtual_address": 2159089360,
+          "virtual_end": 2159109196,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7441280,
+          "used_bits": 88085
+        },
+        {
+          "file_offset": 7452416,
+          "file_end": 7465232,
+          "virtual_address": 2159109196,
+          "virtual_end": 2159130428,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7453968,
+          "used_bits": 89538
+        },
+        {
+          "file_offset": 7465232,
+          "file_end": 7478096,
+          "virtual_address": 2159130428,
+          "virtual_end": 2159151844,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7466832,
+          "used_bits": 89791
+        },
+        {
+          "file_offset": 7478096,
+          "file_end": 7490420,
+          "virtual_address": 2159151844,
+          "virtual_end": 2159170752,
+          "literal_table_bytes": 1408,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 7479668,
+          "used_bits": 85392
+        },
+        {
+          "file_offset": 7490420,
+          "file_end": 7501988,
+          "virtual_address": 2159170752,
+          "virtual_end": 2159185328,
+          "literal_table_bytes": 1424,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 7492004,
+          "used_bits": 79204
+        },
+        {
+          "file_offset": 7501988,
+          "file_end": 7514460,
+          "virtual_address": 2159185328,
+          "virtual_end": 2159203924,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 7503580,
+          "used_bits": 86519
+        },
+        {
+          "file_offset": 7514460,
+          "file_end": 7526688,
+          "virtual_address": 2159203924,
+          "virtual_end": 2159222128,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 7516064,
+          "used_bits": 84653
+        },
+        {
+          "file_offset": 7526688,
+          "file_end": 7538892,
+          "virtual_address": 2159222128,
+          "virtual_end": 2159239404,
+          "literal_table_bytes": 1432,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7528268,
+          "used_bits": 84341
+        },
+        {
+          "file_offset": 7538892,
+          "file_end": 7551340,
+          "virtual_address": 2159239404,
+          "virtual_end": 2159259316,
+          "literal_table_bytes": 1412,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7540460,
+          "used_bits": 86217
+        },
+        {
+          "file_offset": 7551340,
+          "file_end": 7564060,
+          "virtual_address": 2159259316,
+          "virtual_end": 2159277772,
+          "literal_table_bytes": 1564,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7553052,
+          "used_bits": 87020
+        },
+        {
+          "file_offset": 7564060,
+          "file_end": 7576360,
+          "virtual_address": 2159277772,
+          "virtual_end": 2159294748,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7565608,
+          "used_bits": 85092
+        },
+        {
+          "file_offset": 7576360,
+          "file_end": 7588968,
+          "virtual_address": 2159294748,
+          "virtual_end": 2159314068,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7577960,
+          "used_bits": 87501
+        },
+        {
+          "file_offset": 7588968,
+          "file_end": 7600988,
+          "virtual_address": 2159314068,
+          "virtual_end": 2159331256,
+          "literal_table_bytes": 1372,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7590492,
+          "used_bits": 83825
+        },
+        {
+          "file_offset": 7600988,
+          "file_end": 7613688,
+          "virtual_address": 2159331256,
+          "virtual_end": 2159352528,
+          "literal_table_bytes": 1400,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 7602552,
+          "used_bits": 88993
+        },
+        {
+          "file_offset": 7613688,
+          "file_end": 7625608,
+          "virtual_address": 2159352528,
+          "virtual_end": 2159368364,
+          "literal_table_bytes": 1396,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7615240,
+          "used_bits": 81869
+        },
+        {
+          "file_offset": 7625608,
+          "file_end": 7637648,
+          "virtual_address": 2159368364,
+          "virtual_end": 2159385744,
+          "literal_table_bytes": 1380,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 7627152,
+          "used_bits": 83526
+        },
+        {
+          "file_offset": 7637648,
+          "file_end": 7649496,
+          "virtual_address": 2159385744,
+          "virtual_end": 2159401340,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 7639256,
+          "used_bits": 81524
+        },
+        {
+          "file_offset": 7649496,
+          "file_end": 7661472,
+          "virtual_address": 2159401340,
+          "virtual_end": 2159422464,
+          "literal_table_bytes": 1444,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 7651104,
+          "used_bits": 82696
+        }
+      ]
+    },
+    {
+      "name": "E06-data",
+      "elf_offset": 6088288,
+      "segment_index": 1,
+      "file_offset": 7661472,
+      "file_end": 7847884,
+      "compressed_sha256": "bc91c98a28a6b4c3c05135904025876a3448f4b0cdeece261eedb7f24ba60723",
+      "virtual_address": 2159422464,
+      "decoded_size": 563072,
+      "decoded_sha256": "2099de2e6615c0c6a8a9362f228eaeb696ebb1645cb6d11e0d93e938bf606ecb",
+      "block_count": 19,
+      "blocks": [
+        {
+          "file_offset": 7661472,
+          "file_end": 7669988,
+          "virtual_address": 2159422464,
+          "virtual_end": 2159461740,
+          "literal_table_bytes": 1588,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 7663204,
+          "used_bits": 53521
+        },
+        {
+          "file_offset": 7669988,
+          "file_end": 7677876,
+          "virtual_address": 2159461740,
+          "virtual_end": 2159477996,
+          "literal_table_bytes": 1380,
+          "distance_table_bytes": 92,
+          "bitstream_offset": 7671476,
+          "used_bits": 50586
+        },
+        {
+          "file_offset": 7677876,
+          "file_end": 7685460,
+          "virtual_address": 2159477996,
+          "virtual_end": 2159494284,
+          "literal_table_bytes": 1328,
+          "distance_table_bytes": 96,
+          "bitstream_offset": 7679316,
+          "used_bits": 48853
+        },
+        {
+          "file_offset": 7685460,
+          "file_end": 7693108,
+          "virtual_address": 2159494284,
+          "virtual_end": 2159510584,
+          "literal_table_bytes": 1376,
+          "distance_table_bytes": 112,
+          "bitstream_offset": 7686964,
+          "used_bits": 48892
+        },
+        {
+          "file_offset": 7693108,
+          "file_end": 7701260,
+          "virtual_address": 2159510584,
+          "virtual_end": 2159526872,
+          "literal_table_bytes": 1364,
+          "distance_table_bytes": 116,
+          "bitstream_offset": 7694604,
+          "used_bits": 52495
+        },
+        {
+          "file_offset": 7701260,
+          "file_end": 7712680,
+          "virtual_address": 2159526872,
+          "virtual_end": 2159540596,
+          "literal_table_bytes": 1564,
+          "distance_table_bytes": 112,
+          "bitstream_offset": 7702952,
+          "used_bits": 77323
+        },
+        {
+          "file_offset": 7712680,
+          "file_end": 7725076,
+          "virtual_address": 2159540596,
+          "virtual_end": 2159557168,
+          "literal_table_bytes": 1624,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7714452,
+          "used_bits": 84303
+        },
+        {
+          "file_offset": 7725076,
+          "file_end": 7736460,
+          "virtual_address": 2159557168,
+          "virtual_end": 2159569728,
+          "literal_table_bytes": 1504,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7726732,
+          "used_bits": 77072
+        },
+        {
+          "file_offset": 7736460,
+          "file_end": 7747268,
+          "virtual_address": 2159569728,
+          "virtual_end": 2159581356,
+          "literal_table_bytes": 1572,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7738180,
+          "used_bits": 71656
+        },
+        {
+          "file_offset": 7747268,
+          "file_end": 7759720,
+          "virtual_address": 2159581356,
+          "virtual_end": 2159602824,
+          "literal_table_bytes": 1416,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7748840,
+          "used_bits": 86573
+        },
+        {
+          "file_offset": 7759720,
+          "file_end": 7770160,
+          "virtual_address": 2159602824,
+          "virtual_end": 2159613944,
+          "literal_table_bytes": 1208,
+          "distance_table_bytes": 128,
+          "bitstream_offset": 7761072,
+          "used_bits": 72250
+        },
+        {
+          "file_offset": 7770160,
+          "file_end": 7781684,
+          "virtual_address": 2159613944,
+          "virtual_end": 2159850048,
+          "literal_table_bytes": 1504,
+          "distance_table_bytes": 148,
+          "bitstream_offset": 7771828,
+          "used_bits": 78478
+        },
+        {
+          "file_offset": 7781684,
+          "file_end": 7791880,
+          "virtual_address": 2159850048,
+          "virtual_end": 2159861992,
+          "literal_table_bytes": 1344,
+          "distance_table_bytes": 132,
+          "bitstream_offset": 7783176,
+          "used_bits": 69404
+        },
+        {
+          "file_offset": 7791880,
+          "file_end": 7802688,
+          "virtual_address": 2159861992,
+          "virtual_end": 2159875240,
+          "literal_table_bytes": 1436,
+          "distance_table_bytes": 140,
+          "bitstream_offset": 7793472,
+          "used_bits": 73180
+        },
+        {
+          "file_offset": 7802688,
+          "file_end": 7814172,
+          "virtual_address": 2159875240,
+          "virtual_end": 2159892440,
+          "literal_table_bytes": 1332,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 7804188,
+          "used_bits": 79345
+        },
+        {
+          "file_offset": 7814172,
+          "file_end": 7824852,
+          "virtual_address": 2159892440,
+          "virtual_end": 2159928012,
+          "literal_table_bytes": 1440,
+          "distance_table_bytes": 136,
+          "bitstream_offset": 7815764,
+          "used_bits": 71768
+        },
+        {
+          "file_offset": 7824852,
+          "file_end": 7835764,
+          "virtual_address": 2159928012,
+          "virtual_end": 2159941644,
+          "literal_table_bytes": 1408,
+          "distance_table_bytes": 144,
+          "bitstream_offset": 7826420,
+          "used_bits": 74420
+        },
+        {
+          "file_offset": 7835764,
+          "file_end": 7847256,
+          "virtual_address": 2159941644,
+          "virtual_end": 2159984560,
+          "literal_table_bytes": 1340,
+          "distance_table_bytes": 152,
+          "bitstream_offset": 7837272,
+          "used_bits": 79741
+        },
+        {
+          "file_offset": 7847256,
+          "file_end": 7847884,
+          "virtual_address": 2159984560,
+          "virtual_end": 2159985536,
+          "literal_table_bytes": 256,
+          "distance_table_bytes": 100,
+          "bitstream_offset": 7847628,
+          "used_bits": 1750
+        }
+      ]
+    }
+  ]
+}
