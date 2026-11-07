@@ -1,0 +1,5038 @@
+{
+  "firmware": {
+    "path": ".private/main-expanded.elf",
+    "sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "source_original_member": "fwdc603p.bin",
+    "source_original_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "synthetic_analysis_image_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "architecture": "MIPS:LE:32 (Ghidra import metadata)",
+    "scope": "Static decompilation and callsite inspection; firmware was not executed."
+  },
+  "jpeg_output_routing": {
+    "capture_entry": {
+      "function": "StillCaptureSaveJpegImage",
+      "address": "0x802d33d0",
+      "calls": [
+        {
+          "target": "ApsExifCreateJpeg",
+          "address": "0x802c3454",
+          "callsite": "0x802d349c",
+          "arguments": "a0=0; a1=the 0x38-byte context allocated at 0x802d343c; a2=param3; a3=param6; stack +0x10=param5, +0x14=param4, +0x18=allocated marker buffer, +0x1c..+0x2c=0, +0x30=param2, +0x34=byScreennailCreate",
+          "evidence": ".private/output/802d33d0.c and .private/output/802d33d0.asm"
+        },
+        {
+          "target": "StillAddExtraDataToJpeg",
+          "address": "0x802acbb0",
+          "callsite": "0x802d34a8",
+          "arguments": "a0=context; a1=0",
+          "evidence": ".private/output/802d33d0.asm"
+        },
+        {
+          "target": "ApsPipePost",
+          "address": "0x8024ce34",
+          "callsite": "0x802d3570",
+          "arguments": "(0, 0x1005, context, 1)",
+          "evidence": ".private/output/802d33d0.asm"
+        }
+      ],
+      "caller_condition": "Direct references to 0x802d33d0 in the ELF are at 0x802d38c0, 0x802d3a24, and 0x802d4124, all within StillCaptureHdrImageSave (0x802d35b0) or StillCaptureHdrRunProcessing (0x802d3b0c). This establishes an HDR route; a non-HDR normal-capture caller was not established."
+    },
+    "jpeg_code_path": {
+      "wrapper": "ApsExifCreateJpeg",
+      "address": "0x802c3454",
+      "code_go": {
+        "target": "ApsJpegCreateCodeGo",
+        "address": "0x802bb250",
+        "callsite": "0x802c3bc0",
+        "condition": "When **param3 is nonzero, the wrapper builds the code job, calls ApsJpegCreateCodeGo, then passes its returned handle directly to ApsJpegCreateCodeWait. When **param3 is zero, it uses param3[4] as the existing code size. There is no intervening nonzero-handle test at this callsite.",
+        "descriptor_mapping": "The local ApsJpegCreateCodeGo context receives image descriptor=*param3, code buffer=param3[3], code-buffer capacity=param3[4], control field=0x7ff (semantics not assigned), and the descriptor handle from param3[2]. These are descriptor-level roles from argument construction; image-format semantics are not inferred.",
+        "evidence": ".private/output/802c3454.c, .private/output/802c3454.asm, .private/output/802bb250.c"
+      },
+      "path_setup": [
+        {
+          "target": "PathSetJpeg",
+          "address": "0x801de99c",
+          "callsite": "0x802bb514"
+        },
+        {
+          "target": "PathJpegSetImageBuffer",
+          "address": "0x801dee28",
+          "callsite": "0x802bb520"
+        },
+        {
+          "target": "PathJpegSetCodeBuffer",
+          "address": "0x801dee00",
+          "callsite": "0x802bb530"
+        },
+        {
+          "descriptor_fields": "PathJpegSetCodeBuffer(path,buffer,capacity) ignores a null buffer; otherwise stores capacity at path+0x3ac, sets path+0x68 bit 0x08000000, and stores the buffer pointer at path+0x28. PathJpegSetImageBuffer selects path+8 when u16(path+0xb8)==1 and path+0x28 otherwise; with a non-null descriptor it copies words 0..6 to selected-object offsets 0..0x18 and sets path+0x68 bit 0.",
+          "evidence": ".private/ghidra/release/801dee00.c/.asm and 801dee28.c/.asm",
+          "range": [
+            "0x801dee00",
+            "0x801dee94"
+          ]
+        }
+      ],
+      "completion_size": {
+        "target": "ApsJpegCreateCodeWait",
+        "address": "0x802bb1ec",
+        "callsite": "0x802c3bd0",
+        "detail": "Wait calls PathWait (0x801ca928), then reads PathGetCodeSize (0x801dea00, selector 0) as its return value; when its optional third argument is non-null it also stores PathGetCodeSize(path,1) through that pointer. If PathWait returns zero or the supplied capacity is less than the measured code size, it calls PathJpegCondense and rereads the size. The wrapper supplies param3[4] as capacity and null as the optional size-output pointer. PathGo is 0x801ca750.",
+        "evidence": ".private/output/802bb1ec.c/.asm and .private/output/802c3454.c/.asm"
+      },
+      "path_execution": {
+        "condition": "The existing-path branch updates JPEG settings and image/code buffers; the alternative creates a path. Both reach the common submit/go sequence.",
+        "calls": [
+          {
+            "name": "PathSubmit",
+            "address": "0x801c83c8",
+            "site": "0x802bb550"
+          },
+          {
+            "name": "PathGo",
+            "address": "0x801ca750",
+            "site": "0x802bb558"
+          }
+        ]
+      }
+    },
+    "optional_auxiliary_encoding": {
+      "target": "ApsJpegCreate",
+      "address": "0x802bb6b0",
+      "callsite": "0x802c37d0",
+      "condition": "ApsExifCreateJpeg reaches this branch only when its param4-backed descriptor flags and non-null pointer checks set bit 0 of the local descriptor mask.",
+      "observed_arguments": "input pointer=*param4; destination=param7+header_offset; destination capacity=0xffec-header_offset; mode=3; dimensions are passed from param4[7] and param4[8]. The call's returned byte count is consumed locally.",
+      "classification": "Optional descriptor path. Evidence does not establish this buffer as the main captured image or as a thumbnail by itself.",
+      "evidence": ".private/output/802c3454.c/.asm"
+    },
+    "partition_chunks": {
+      "allocator_append": "ApsFilePropPartitionAllocAndAdd at 0x802e3950 allocates a partition item, stores its data pointer at item+0x8 and byte size at item+0xc, then calls ApsFilePropPartitionAddObject at 0x802e38f8 to append it to the list rooted at partition+0x28.",
+      "observed_callsite": "ApsExifCreateJpeg calls ApsFilePropPartitionAllocAndAdd at 0x802c3cec after marker creation; additional branches allocate and append separate objects.",
+      "boundary": "The selected evidence connects the partition list to ApsSaveWrite and _fx_file_write when the StillServer-to-StoreOnSave success path is taken. The exact semantic identity of each partition item as main image versus auxiliary/metadata chunk is not fully assigned.",
+      "evidence": ".private/output/802e3950.c, .private/output/802e38f8.c, .private/output/802c3454.c/.asm"
+    }
+  },
+  "filesystem_boundary": {
+    "status": "conditionally_connected",
+    "detail": "The observed path is StillCaptureSaveJpegImage -> ApsPipePost(pipe 0, 0x1005, context, 1) -> StillServer command 0x1005 -> StillOnFileReady(0x1002, same context and flag) -> ApsPipePost(pipe 3, 0x1002, same context and flag) -> StillStoreMain command 0x1002 -> StoreOnSave -> ApsSaveFile -> ApsSaveWrite -> ApsSaveWritePartitionObjectCB -> _fx_file_write. Each partition item is written from item+0x8 for item+0xc bytes. StoreOnSave requires HceCaptureStoreDcfDelay() != 0, mode query != 1, and StoreOnSaveGetResource (0x802b10ac) returning 0; ApsSaveFile also proceeds only when ApsSaveOpen (0x802e3c5c) returns 0. This is conditional static routing evidence; camera execution is not observed.",
+    "additional_write": "ApsSaveWrite also writes the separate tail/data region when its descriptor fields and count permit; callsite 0x802e4124 passes the computed source offset and size to _fx_file_write.",
+    "evidence": [
+      "0x802d3570",
+      "0x8029abf8",
+      "0x8029ba74",
+      "0x802956f4",
+      "0x802b1428",
+      "0x802b15b4",
+      "0x802b1318",
+      "0x802e4460",
+      "0x802e40d4",
+      "0x802e3eac",
+      "0x802e4124"
+    ]
+  },
+  "comparison_note": {
+    "k3_reference": "Public K-3 commit 1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470, analysis/pipeline-report.html and analysis/dispatch-af.html; see routing-comparison.json for file hashes.",
+    "distinction": "The K-3 evidence describes its own pipe, output descriptor and file-related path. No K-3 address, descriptor layout or semantics were transferred to Q7. Q7 source/size roles above are limited to the observed Q7 decompiler arguments and stores."
+  },
+  "evidence": [
+    {
+      "label": "Path Jpeg code buffer and image descriptor field stores",
+      "words": [
+        {
+          "va": "0x801dee08",
+          "u32le_word": "0x8c870068",
+          "segment": "E04",
+          "decoded_offset": "0xb1388"
+        },
+        {
+          "va": "0x801dee14",
+          "u32le_word": "0xac8603ac",
+          "segment": "E04",
+          "decoded_offset": "0xb1394"
+        },
+        {
+          "va": "0x801dee18",
+          "u32le_word": "0xac830068",
+          "segment": "E04",
+          "decoded_offset": "0xb1398"
+        },
+        {
+          "va": "0x801dee1c",
+          "u32le_word": "0xac850028",
+          "segment": "E04",
+          "decoded_offset": "0xb139c"
+        },
+        {
+          "va": "0x801dee2c",
+          "u32le_word": "0x948400b8",
+          "segment": "E04",
+          "decoded_offset": "0xb13ac"
+        },
+        {
+          "va": "0x801dee40",
+          "u32le_word": "0x10a00012",
+          "segment": "E04",
+          "decoded_offset": "0xb13c0"
+        },
+        {
+          "va": "0x801dee4c",
+          "u32le_word": "0x8cae0018",
+          "segment": "E04",
+          "decoded_offset": "0xb13cc"
+        },
+        {
+          "va": "0x801dee54",
+          "u32le_word": "0x8d260008",
+          "segment": "E04",
+          "decoded_offset": "0xb13d4"
+        },
+        {
+          "va": "0x801dee60",
+          "u32le_word": "0x8ca50004",
+          "segment": "E04",
+          "decoded_offset": "0xb13e0"
+        },
+        {
+          "va": "0x801dee68",
+          "u32le_word": "0x35ed0001",
+          "segment": "E04",
+          "decoded_offset": "0xb13e8"
+        },
+        {
+          "va": "0x801dee70",
+          "u32le_word": "0xad6d0068",
+          "segment": "E04",
+          "decoded_offset": "0xb13f0"
+        },
+        {
+          "va": "0x801dee74",
+          "u32le_word": "0xad4c0000",
+          "segment": "E04",
+          "decoded_offset": "0xb13f4"
+        },
+        {
+          "va": "0x801dee88",
+          "u32le_word": "0xad490014",
+          "segment": "E04",
+          "decoded_offset": "0xb1408"
+        }
+      ]
+    },
+    {
+      "label": "JPEG message 0x1005 forwarded to StillOnFileReady as 0x1002 then posted on pipe 3",
+      "words": [
+        {
+          "va": "0x802d3570",
+          "u32le_word": "0x0c09338d",
+          "segment": "E04",
+          "decoded_offset": "0x1a5af0"
+        },
+        {
+          "va": "0x8029abf8",
+          "u32le_word": "0x240f1005",
+          "segment": "E04",
+          "decoded_offset": "0x16d178"
+        },
+        {
+          "va": "0x8029ba74",
+          "u32le_word": "0x0c0a55b7",
+          "segment": "E04",
+          "decoded_offset": "0x16dff4"
+        },
+        {
+          "va": "0x8029ba78",
+          "u32le_word": "0x24041002",
+          "segment": "E04",
+          "decoded_offset": "0x16dff8"
+        },
+        {
+          "va": "0x802956f4",
+          "u32le_word": "0x0c09338d",
+          "segment": "E04",
+          "decoded_offset": "0x167c74"
+        },
+        {
+          "va": "0x802956f8",
+          "u32le_word": "0x24040003",
+          "segment": "E04",
+          "decoded_offset": "0x167c78"
+        }
+      ]
+    },
+    {
+      "label": "Pipe 3 store path reaches file writer through ApsSaveFile and ApsSaveWrite",
+      "words": [
+        {
+          "va": "0x802b1418",
+          "u32le_word": "0x24040003",
+          "segment": "E04",
+          "decoded_offset": "0x183998"
+        },
+        {
+          "va": "0x802b1428",
+          "u32le_word": "0x0c0933ba",
+          "segment": "E04",
+          "decoded_offset": "0x1839a8"
+        },
+        {
+          "va": "0x802b15b4",
+          "u32le_word": "0x0c0ac485",
+          "segment": "E04",
+          "decoded_offset": "0x183b34"
+        },
+        {
+          "va": "0x802b1318",
+          "u32le_word": "0x0c0b90f1",
+          "segment": "E04",
+          "decoded_offset": "0x183898"
+        },
+        {
+          "va": "0x802e4460",
+          "u32le_word": "0x0c0b9014",
+          "segment": "E04",
+          "decoded_offset": "0x1b69e0"
+        },
+        {
+          "va": "0x802e40d4",
+          "u32le_word": "0x0c02629b",
+          "segment": "E04",
+          "decoded_offset": "0x1b6654"
+        },
+        {
+          "va": "0x802e3eac",
+          "u32le_word": "0x0c021c0d",
+          "segment": "E04",
+          "decoded_offset": "0x1b642c"
+        },
+        {
+          "va": "0x802e4124",
+          "u32le_word": "0x0c021c0d",
+          "segment": "E04",
+          "decoded_offset": "0x1b66a4"
+        }
+      ]
+    },
+    {
+      "label": "HDR callsites, descriptor compression branch, direct Go/Wait sequence and pipe forwarding argument moves",
+      "words": [
+        {
+          "va": "0x802d38c0",
+          "u32le_word": "0xc0b4cf4",
+          "segment": "E04",
+          "decoded_offset": "0x1a5e40"
+        },
+        {
+          "va": "0x802d3a24",
+          "u32le_word": "0xc0b4cf4",
+          "segment": "E04",
+          "decoded_offset": "0x1a5fa4"
+        },
+        {
+          "va": "0x802d4124",
+          "u32le_word": "0xc0b4cf4",
+          "segment": "E04",
+          "decoded_offset": "0x1a66a4"
+        },
+        {
+          "va": "0x802bb550",
+          "u32le_word": "0xc0720f2",
+          "segment": "E04",
+          "decoded_offset": "0x18dad0"
+        },
+        {
+          "va": "0x802bb554",
+          "u32le_word": "0x2202021",
+          "segment": "E04",
+          "decoded_offset": "0x18dad4"
+        },
+        {
+          "va": "0x802bb558",
+          "u32le_word": "0xc0729d4",
+          "segment": "E04",
+          "decoded_offset": "0x18dad8"
+        },
+        {
+          "va": "0x802bb55c",
+          "u32le_word": "0x2202021",
+          "segment": "E04",
+          "decoded_offset": "0x18dadc"
+        },
+        {
+          "va": "0x802c3b20",
+          "u32le_word": "0x8fc60000",
+          "segment": "E04",
+          "decoded_offset": "0x1960a0"
+        },
+        {
+          "va": "0x802c3b24",
+          "u32le_word": "0x8cd00000",
+          "segment": "E04",
+          "decoded_offset": "0x1960a4"
+        },
+        {
+          "va": "0x802c3b28",
+          "u32le_word": "0x52000060",
+          "segment": "E04",
+          "decoded_offset": "0x1960a8"
+        },
+        {
+          "va": "0x802c3b2c",
+          "u32le_word": "0x8fd20010",
+          "segment": "E04",
+          "decoded_offset": "0x1960ac"
+        },
+        {
+          "va": "0x802c3b94",
+          "u32le_word": "0xafa300c0",
+          "segment": "E04",
+          "decoded_offset": "0x196114"
+        },
+        {
+          "va": "0x802c3b98",
+          "u32le_word": "0xafab00c4",
+          "segment": "E04",
+          "decoded_offset": "0x196118"
+        },
+        {
+          "va": "0x802c3b9c",
+          "u32le_word": "0xafa700c8",
+          "segment": "E04",
+          "decoded_offset": "0x19611c"
+        },
+        {
+          "va": "0x802c3ba0",
+          "u32le_word": "0xafaa00d0",
+          "segment": "E04",
+          "decoded_offset": "0x196120"
+        },
+        {
+          "va": "0x802c3bc0",
+          "u32le_word": "0xc0aec94",
+          "segment": "E04",
+          "decoded_offset": "0x196140"
+        },
+        {
+          "va": "0x802c3bc4",
+          "u32le_word": "0xafb400bc",
+          "segment": "E04",
+          "decoded_offset": "0x196144"
+        },
+        {
+          "va": "0x802c3bc8",
+          "u32le_word": "0x8fc50010",
+          "segment": "E04",
+          "decoded_offset": "0x196148"
+        },
+        {
+          "va": "0x802c3bcc",
+          "u32le_word": "0x402021",
+          "segment": "E04",
+          "decoded_offset": "0x19614c"
+        },
+        {
+          "va": "0x802c3bd0",
+          "u32le_word": "0xc0aec7b",
+          "segment": "E04",
+          "decoded_offset": "0x196150"
+        },
+        {
+          "va": "0x802c3bd4",
+          "u32le_word": "0x3021",
+          "segment": "E04",
+          "decoded_offset": "0x196154"
+        },
+        {
+          "va": "0x802956dc",
+          "u32le_word": "0xa01021",
+          "segment": "E04",
+          "decoded_offset": "0x167c5c"
+        },
+        {
+          "va": "0x802956e0",
+          "u32le_word": "0x27bdffe8",
+          "segment": "E04",
+          "decoded_offset": "0x167c60"
+        },
+        {
+          "va": "0x802956e4",
+          "u32le_word": "0xc03821",
+          "segment": "E04",
+          "decoded_offset": "0x167c64"
+        },
+        {
+          "va": "0x802956e8",
+          "u32le_word": "0x802821",
+          "segment": "E04",
+          "decoded_offset": "0x167c68"
+        },
+        {
+          "va": "0x802956ec",
+          "u32le_word": "0x403021",
+          "segment": "E04",
+          "decoded_offset": "0x167c6c"
+        },
+        {
+          "va": "0x802956f0",
+          "u32le_word": "0xafbf0010",
+          "segment": "E04",
+          "decoded_offset": "0x167c70"
+        },
+        {
+          "va": "0x802956fc",
+          "u32le_word": "0x8fbf0010",
+          "segment": "E04",
+          "decoded_offset": "0x167c7c"
+        },
+        {
+          "va": "0x80295700",
+          "u32le_word": "0x24020001",
+          "segment": "E04",
+          "decoded_offset": "0x167c80"
+        },
+        {
+          "va": "0x80295704",
+          "u32le_word": "0x3e00008",
+          "segment": "E04",
+          "decoded_offset": "0x167c84"
+        },
+        {
+          "va": "0x80295708",
+          "u32le_word": "0x27bd0018",
+          "segment": "E04",
+          "decoded_offset": "0x167c88"
+        }
+      ]
+    }
+  ],
+  "selected_functions": [
+    {
+      "name": "PathJpegSetCodeBuffer",
+      "address": 2149445120,
+      "candidate_end": 2149445160,
+      "segment": "E04",
+      "decoded_offset": 725888,
+      "size": 40,
+      "sha256": "7cdb084e4695e0d6aa06128661991b339601cbe0a9e105e2ca42b1fc175929c2",
+      "transfers": []
+    },
+    {
+      "name": "PathJpegSetImageBuffer",
+      "address": 2149445160,
+      "candidate_end": 2149445268,
+      "segment": "E04",
+      "decoded_offset": 725928,
+      "size": 108,
+      "sha256": "44c2982d38f9e90ab275c7480b59793a49973e76f6db351d79e7b5910249bf5c",
+      "transfers": []
+    },
+    {
+      "name": "StillCaptureSaveJpegImage",
+      "address": 2150446032,
+      "candidate_end": 2150446512,
+      "segment": "E04",
+      "decoded_offset": 1726800,
+      "size": 480,
+      "sha256": "1acf9dd2500c2e6cac50d9b6889f623db41b49edfab9284c02dad2a2ce7452a6",
+      "transfers": [
+        {
+          "site": 2150446108,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150446144,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2150446164,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150446236,
+          "word": "0c0b0d15",
+          "kind": "call",
+          "target": 2150380628,
+          "target_names": [
+            "ApsExifCreateJpeg"
+          ]
+        },
+        {
+          "site": 2150446248,
+          "word": "0c0ab2ec",
+          "kind": "call",
+          "target": 2150288304,
+          "target_names": [
+            "StillAddExtraDataToJpeg"
+          ]
+        },
+        {
+          "site": 2150446264,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150446428,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150446448,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        },
+        {
+          "site": 2150446472,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "StillServer",
+      "address": 2150214492,
+      "candidate_end": 2150218468,
+      "segment": "E04",
+      "decoded_offset": 1495260,
+      "size": 3976,
+      "sha256": "0be33c23d5991f730003ad42f29587536d87c091b437915384c0fe74b2e1e7f6",
+      "transfers": [
+        {
+          "site": 2150214536,
+          "word": "0c0933ba",
+          "kind": "call",
+          "target": 2149895912,
+          "target_names": [
+            "ApsPipeReceive"
+          ]
+        },
+        {
+          "site": 2150214672,
+          "word": "0c0a5528",
+          "kind": "call",
+          "target": 2150192288,
+          "target_names": [
+            "StillOnStoreExit"
+          ]
+        },
+        {
+          "site": 2150214808,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150214900,
+          "word": "0c0a5da8",
+          "kind": "call",
+          "target": 2150200992,
+          "target_names": [
+            "StillOnSetMpegParam"
+          ]
+        },
+        {
+          "site": 2150215000,
+          "word": "0c0a5680",
+          "kind": "call",
+          "target": 2150193664,
+          "target_names": [
+            "StillOnSetCtcPoints"
+          ]
+        },
+        {
+          "site": 2150215084,
+          "word": "0c0a58ef",
+          "kind": "call",
+          "target": 2150196156,
+          "target_names": [
+            "StillOnSetVideoRate"
+          ]
+        },
+        {
+          "site": 2150215172,
+          "word": "0c0a5984",
+          "kind": "call",
+          "target": 2150196752,
+          "target_names": [
+            "StillOnLdcBasicTransparency2Config"
+          ]
+        },
+        {
+          "site": 2150215252,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150215336,
+          "word": "0c0a6a08",
+          "kind": "call",
+          "target": 2150213664,
+          "target_names": [
+            "StillSetVideoInterleavingRule"
+          ]
+        },
+        {
+          "site": 2150215388,
+          "word": "0c0a5918",
+          "kind": "call",
+          "target": 2150196320,
+          "target_names": [
+            "StillOnSetRecordingFrames"
+          ]
+        },
+        {
+          "site": 2150215440,
+          "word": "0c0a5764",
+          "kind": "call",
+          "target": 2150194576,
+          "target_names": [
+            "StillOnGetSensorWindow"
+          ]
+        },
+        {
+          "site": 2150215508,
+          "word": "0c0a51b8",
+          "kind": "call",
+          "target": 2150188768,
+          "target_names": [
+            "StillOnIsActive"
+          ]
+        },
+        {
+          "site": 2150215560,
+          "word": "0c0a5a24",
+          "kind": "call",
+          "target": 2150197392,
+          "target_names": [
+            "StillOnSetStrobePins"
+          ]
+        },
+        {
+          "site": 2150215628,
+          "word": "0c0a5a56",
+          "kind": "call",
+          "target": 2150197592,
+          "target_names": [
+            "StillOnDisplayWindow"
+          ]
+        },
+        {
+          "site": 2150215696,
+          "word": "0c0a59a6",
+          "kind": "call",
+          "target": 2150196888,
+          "target_names": [
+            "StillOnSetCsprFilter"
+          ]
+        },
+        {
+          "site": 2150215748,
+          "word": "0c1aeb1e",
+          "kind": "call",
+          "target": 2154540152,
+          "target_names": [
+            "StillMpeg4SetDisplayBufferKeep"
+          ]
+        },
+        {
+          "site": 2150215768,
+          "word": "0c0a5941",
+          "kind": "call",
+          "target": 2150196484,
+          "target_names": [
+            "StillOnCaptureDisplayReady"
+          ]
+        },
+        {
+          "site": 2150215800,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        },
+        {
+          "site": 2150215852,
+          "word": "0c0a588f",
+          "kind": "call",
+          "target": 2150195772,
+          "target_names": [
+            "StillOnSetKeepYuvBuffer"
+          ]
+        },
+        {
+          "site": 2150215872,
+          "word": "0c0a5660",
+          "kind": "call",
+          "target": 2150193536,
+          "target_names": [
+            "StillOnGetEvStep"
+          ]
+        },
+        {
+          "site": 2150215892,
+          "word": "0c0a4f7d",
+          "kind": "call",
+          "target": 2150186484,
+          "target_names": [
+            "StillOnConvetAppSrModeToSensorMode"
+          ]
+        },
+        {
+          "site": 2150215912,
+          "word": "0c080232",
+          "kind": "call",
+          "target": 2149583048,
+          "target_names": [
+            "SensorSetBlcEnable"
+          ]
+        },
+        {
+          "site": 2150215920,
+          "word": "0c0802c1",
+          "kind": "call",
+          "target": 2149583620,
+          "target_names": [
+            "SensorGetCurrentSubModeNumber"
+          ]
+        },
+        {
+          "site": 2150215940,
+          "word": "0c080c4e",
+          "kind": "call",
+          "target": 2149593400,
+          "target_names": [
+            "SensorSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2150215948,
+          "word": "0c0802c1",
+          "kind": "call",
+          "target": 2149583620,
+          "target_names": [
+            "SensorGetCurrentSubModeNumber"
+          ]
+        },
+        {
+          "site": 2150215968,
+          "word": "0c0a5b96",
+          "kind": "call",
+          "target": 2150198872,
+          "target_names": [
+            "StillOnSetBle"
+          ]
+        },
+        {
+          "site": 2150216032,
+          "word": "0c0a583e",
+          "kind": "call",
+          "target": 2150195448,
+          "target_names": [
+            "StillOnSetCaptureDelay"
+          ]
+        },
+        {
+          "site": 2150216052,
+          "word": "0c0a5816",
+          "kind": "call",
+          "target": 2150195288,
+          "target_names": [
+            "StillOnSetStillCompressionFormat"
+          ]
+        },
+        {
+          "site": 2150216072,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150216100,
+          "word": "0c0a5976",
+          "kind": "call",
+          "target": 2150196696,
+          "target_names": [
+            "StillOnLdcBasicTransparency1Config"
+          ]
+        },
+        {
+          "site": 2150216120,
+          "word": "0c0a5869",
+          "kind": "call",
+          "target": 2150195620,
+          "target_names": [
+            "StillOnSetShowQuickPreview"
+          ]
+        },
+        {
+          "site": 2150216156,
+          "word": "0c0a58b5",
+          "kind": "call",
+          "target": 2150195924,
+          "target_names": [
+            "StillOnSetBufferAllocation"
+          ]
+        },
+        {
+          "site": 2150216192,
+          "word": "0c0a5d7d",
+          "kind": "call",
+          "target": 2150200820,
+          "target_names": [
+            "StillOnConfigDramCapture"
+          ]
+        },
+        {
+          "site": 2150216224,
+          "word": "0c0a5928",
+          "kind": "call",
+          "target": 2150196384,
+          "target_names": [
+            "StillOnSetTruncateTime"
+          ]
+        },
+        {
+          "site": 2150216260,
+          "word": "0c0a5580",
+          "kind": "call",
+          "target": 2150192640,
+          "target_names": [
+            "StillOnAaaExit"
+          ]
+        },
+        {
+          "site": 2150216304,
+          "word": "0c0a5b13",
+          "kind": "call",
+          "target": 2150198348,
+          "target_names": [
+            "StillOnFlipUd"
+          ]
+        },
+        {
+          "site": 2150216344,
+          "word": "0c0a6abe",
+          "kind": "call",
+          "target": 2150214392,
+          "target_names": [
+            "StillOnDisableSensorVsync"
+          ]
+        },
+        {
+          "site": 2150216380,
+          "word": "0c0a566e",
+          "kind": "call",
+          "target": 2150193592,
+          "target_names": [
+            "StillOnGetWall"
+          ]
+        },
+        {
+          "site": 2150216428,
+          "word": "0c0a5d79",
+          "kind": "call",
+          "target": 2150200804,
+          "target_names": [
+            "StillOnSetQvgaKeepAspectRatio"
+          ]
+        },
+        {
+          "site": 2150216460,
+          "word": "0c0a5612",
+          "kind": "call",
+          "target": 2150193224,
+          "target_names": [
+            "StillOnSetAeMode"
+          ]
+        },
+        {
+          "site": 2150216496,
+          "word": "0c0a587c",
+          "kind": "call",
+          "target": 2150195696,
+          "target_names": [
+            "StillOnForceCreateQuickPreviewBuffer"
+          ]
+        },
+        {
+          "site": 2150216520,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150216580,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150216628,
+          "word": "0c0a531f",
+          "kind": "call",
+          "target": 2150190204,
+          "target_names": [
+            "StillOnModeStart"
+          ]
+        },
+        {
+          "site": 2150216660,
+          "word": "0c1aebb7",
+          "kind": "call",
+          "target": 2154540764,
+          "target_names": [
+            "StillMpeg4SensorSkipPowerMode"
+          ]
+        },
+        {
+          "site": 2150216696,
+          "word": "0c0a5504",
+          "kind": "call",
+          "target": 2150192144,
+          "target_names": [
+            "StillOnGetCaptureSequence"
+          ]
+        },
+        {
+          "site": 2150216740,
+          "word": "0c0a553e",
+          "kind": "call",
+          "target": 2150192376,
+          "target_names": [
+            "StillOnFileCreateExit"
+          ]
+        },
+        {
+          "site": 2150216756,
+          "word": "0c0a6a98",
+          "kind": "call",
+          "target": 2150214240,
+          "target_names": [
+            "StillOnSetDisplayBufferKeep"
+          ]
+        },
+        {
+          "site": 2150216776,
+          "word": "0c0a56f6",
+          "kind": "call",
+          "target": 2150194136,
+          "target_names": [
+            "StillOnGetWbScalers"
+          ]
+        },
+        {
+          "site": 2150216796,
+          "word": "0c0a57d4",
+          "kind": "call",
+          "target": 2150195024,
+          "target_names": [
+            "StillOnGetImageSize"
+          ]
+        },
+        {
+          "site": 2150216816,
+          "word": "0c0a5dbf",
+          "kind": "call",
+          "target": 2150201084,
+          "target_names": [
+            "StillOnSetAudioRecordChannels"
+          ]
+        },
+        {
+          "site": 2150216836,
+          "word": "0c0a5905",
+          "kind": "call",
+          "target": 2150196244,
+          "target_names": [
+            "StillOnSetRecordingTime"
+          ]
+        },
+        {
+          "site": 2150216856,
+          "word": "0c0a54db",
+          "kind": "call",
+          "target": 2150191980,
+          "target_names": [
+            "StillOnLayerFreeze"
+          ]
+        },
+        {
+          "site": 2150216876,
+          "word": "0c0a56fe",
+          "kind": "call",
+          "target": 2150194168,
+          "target_names": [
+            "StillOnSetSensorWindow"
+          ]
+        },
+        {
+          "site": 2150216952,
+          "word": "0c0a54ae",
+          "kind": "call",
+          "target": 2150191800,
+          "target_names": [
+            "StillOnExit"
+          ]
+        },
+        {
+          "site": 2150216976,
+          "word": "0c0a6acc",
+          "kind": "call",
+          "target": 2150214448,
+          "target_names": [
+            "StillOnEnableSensorNfs"
+          ]
+        },
+        {
+          "site": 2150217004,
+          "word": "0c0a55ac",
+          "kind": "call",
+          "target": 2150192816,
+          "target_names": [
+            "StillOnYuvReady"
+          ]
+        },
+        {
+          "site": 2150217032,
+          "word": "0c0a5554",
+          "kind": "call",
+          "target": 2150192464,
+          "target_names": [
+            "StillOnStatisticsBurstExit"
+          ]
+        },
+        {
+          "site": 2150217064,
+          "word": "0c0a55c3",
+          "kind": "call",
+          "target": 2150192908,
+          "target_names": [
+            "StillOnSetCompressionRatio"
+          ]
+        },
+        {
+          "site": 2150217084,
+          "word": "0c0a5a07",
+          "kind": "call",
+          "target": 2150197276,
+          "target_names": [
+            "StillOnSetMbnManual"
+          ]
+        },
+        {
+          "site": 2150217100,
+          "word": "0c0a5dc8",
+          "kind": "call",
+          "target": 2150201120,
+          "target_names": [
+            "StillOnSetSecondsBeforeCapture"
+          ]
+        },
+        {
+          "site": 2150217116,
+          "word": "0c0a65ab",
+          "kind": "call",
+          "target": 2150209196,
+          "target_names": [
+            "StillOnSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2150217136,
+          "word": "0c0a5d7f",
+          "kind": "call",
+          "target": 2150200828,
+          "target_names": [
+            "StillOnSetCcd"
+          ]
+        },
+        {
+          "site": 2150217156,
+          "word": "0c0a6ab7",
+          "kind": "call",
+          "target": 2150214364,
+          "target_names": [
+            "StillOnSetPreviewParam"
+          ]
+        },
+        {
+          "site": 2150217184,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150217204,
+          "word": "0c0a58dc",
+          "kind": "call",
+          "target": 2150196080,
+          "target_names": [
+            "StillOnSetHighPrecisionBrcMaxPixelSize"
+          ]
+        },
+        {
+          "site": 2150217224,
+          "word": "0c0a5670",
+          "kind": "call",
+          "target": 2150193600,
+          "target_names": [
+            "StillOnSetExposureDeviation"
+          ]
+        },
+        {
+          "site": 2150217244,
+          "word": "0c0a5a4c",
+          "kind": "call",
+          "target": 2150197552,
+          "target_names": [
+            "StillOnSetRerMode"
+          ]
+        },
+        {
+          "site": 2150217264,
+          "word": "0c0a5607",
+          "kind": "call",
+          "target": 2150193180,
+          "target_names": [
+            "StillOnSetAeParams"
+          ]
+        },
+        {
+          "site": 2150217280,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150217300,
+          "word": "0c0a53b0",
+          "kind": "call",
+          "target": 2150190784,
+          "target_names": [
+            "StillOnModeEnd"
+          ]
+        },
+        {
+          "site": 2150217320,
+          "word": "0c0a69fe",
+          "kind": "call",
+          "target": 2150213624,
+          "target_names": [
+            "StillOnSetScreennail"
+          ]
+        },
+        {
+          "site": 2150217340,
+          "word": "0c0a55b7",
+          "kind": "call",
+          "target": 2150192860,
+          "target_names": [
+            "StillOnFileReady"
+          ]
+        },
+        {
+          "site": 2150217360,
+          "word": "0c0a5506",
+          "kind": "call",
+          "target": 2150192152,
+          "target_names": [
+            "StillOnStoreEnd"
+          ]
+        },
+        {
+          "site": 2150217380,
+          "word": "0c0a5943",
+          "kind": "call",
+          "target": 2150196492,
+          "target_names": [
+            "StillOnSetDateStamping"
+          ]
+        },
+        {
+          "site": 2150217408,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150217452,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150217488,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150217508,
+          "word": "0c0a59eb",
+          "kind": "call",
+          "target": 2150197164,
+          "target_names": [
+            "StillOnSetMbnAuto"
+          ]
+        },
+        {
+          "site": 2150217524,
+          "word": "0c0a5db6",
+          "kind": "call",
+          "target": 2150201048,
+          "target_names": [
+            "StillOnSetAudioSampleRate"
+          ]
+        },
+        {
+          "site": 2150217544,
+          "word": "0c0a6a08",
+          "kind": "call",
+          "target": 2150213664,
+          "target_names": [
+            "StillSetVideoInterleavingRule"
+          ]
+        },
+        {
+          "site": 2150217564,
+          "word": "0c0a58e4",
+          "kind": "call",
+          "target": 2150196112,
+          "target_names": [
+            "StillOnConfirmStore"
+          ]
+        },
+        {
+          "site": 2150217584,
+          "word": "0c0a5b7d",
+          "kind": "call",
+          "target": 2150198772,
+          "target_names": [
+            "StillOnSetStrobeMode"
+          ]
+        },
+        {
+          "site": 2150217600,
+          "word": "0c0a56c6",
+          "kind": "call",
+          "target": 2150193944,
+          "target_names": [
+            "StillOnSetWbScalers"
+          ]
+        },
+        {
+          "site": 2150217616,
+          "word": "0c0a54b7",
+          "kind": "call",
+          "target": 2150191836,
+          "target_names": [
+            "StillOnLayerShow"
+          ]
+        },
+        {
+          "site": 2150217632,
+          "word": "0c0a55df",
+          "kind": "call",
+          "target": 2150193020,
+          "target_names": [
+            "StillOnSetExposure"
+          ]
+        },
+        {
+          "site": 2150217648,
+          "word": "0c0a5ea3",
+          "kind": "call",
+          "target": 2150201996,
+          "target_names": [
+            "StillOnGetImageProcessing"
+          ]
+        },
+        {
+          "site": 2150217664,
+          "word": "0c0a5630",
+          "kind": "call",
+          "target": 2150193344,
+          "target_names": [
+            "StillOnSetExposureLimits"
+          ]
+        },
+        {
+          "site": 2150217680,
+          "word": "0c0a6aad",
+          "kind": "call",
+          "target": 2150214324,
+          "target_names": [
+            "StillOnCfgExpCntl"
+          ]
+        },
+        {
+          "site": 2150217696,
+          "word": "0c0a5dcb",
+          "kind": "call",
+          "target": 2150201132,
+          "target_names": [
+            "StillOnSetSecondsAfterCapture"
+          ]
+        },
+        {
+          "site": 2150217712,
+          "word": "0c0a5a36",
+          "kind": "call",
+          "target": 2150197464,
+          "target_names": [
+            "StillOnCfgRer"
+          ]
+        },
+        {
+          "site": 2150217728,
+          "word": "0c0a5595",
+          "kind": "call",
+          "target": 2150192724,
+          "target_names": [
+            "StillOnRawReady"
+          ]
+        },
+        {
+          "site": 2150217748,
+          "word": "0c0a5992",
+          "kind": "call",
+          "target": 2150196808,
+          "target_names": [
+            "StillOnGetCaptureFileSize"
+          ]
+        },
+        {
+          "site": 2150217764,
+          "word": "0c0a6ad3",
+          "kind": "call",
+          "target": 2150214476,
+          "target_names": [
+            "StillOnSetMPJpegKeepFormat"
+          ]
+        },
+        {
+          "site": 2150217784,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150217812,
+          "word": "0c0a5836",
+          "kind": "call",
+          "target": 2150195416,
+          "target_names": [
+            "StillOnSetCaptureSensorMode"
+          ]
+        },
+        {
+          "site": 2150217856,
+          "word": "0c0a5693",
+          "kind": "call",
+          "target": 2150193740,
+          "target_names": [
+            "StillOnSetWbMode"
+          ]
+        },
+        {
+          "site": 2150217876,
+          "word": "0c1ae6e9",
+          "kind": "call",
+          "target": 2154535844,
+          "target_names": [
+            "StillMpeg4SetParam"
+          ]
+        },
+        {
+          "site": 2150217904,
+          "word": "0c0a521a",
+          "kind": "call",
+          "target": 2150189160,
+          "target_names": [
+            "StillOnActive"
+          ]
+        },
+        {
+          "site": 2150217924,
+          "word": "0c0a6a08",
+          "kind": "call",
+          "target": 2150213664,
+          "target_names": [
+            "StillSetVideoInterleavingRule"
+          ]
+        },
+        {
+          "site": 2150217944,
+          "word": "0c0a5142",
+          "kind": "call",
+          "target": 2150188296,
+          "target_names": [
+            "StillOnInit"
+          ]
+        },
+        {
+          "site": 2150217964,
+          "word": "0c0a58c9",
+          "kind": "call",
+          "target": 2150196004,
+          "target_names": [
+            "StillOnSetMemoryVideoMode"
+          ]
+        },
+        {
+          "site": 2150217984,
+          "word": "0c0a59db",
+          "kind": "call",
+          "target": 2150197100,
+          "target_names": [
+            "StillOnLoadLscLut"
+          ]
+        },
+        {
+          "site": 2150218000,
+          "word": "0c0a5688",
+          "kind": "call",
+          "target": 2150193696,
+          "target_names": [
+            "StillOnSetCtLut"
+          ]
+        },
+        {
+          "site": 2150218020,
+          "word": "0c0a55a0",
+          "kind": "call",
+          "target": 2150192768,
+          "target_names": [
+            "StillOnRawReadyBurst"
+          ]
+        },
+        {
+          "site": 2150218040,
+          "word": "0c0a5ac8",
+          "kind": "call",
+          "target": 2150198048,
+          "target_names": [
+            "StillOnFlipLr"
+          ]
+        },
+        {
+          "site": 2150218060,
+          "word": "0c0a5667",
+          "kind": "call",
+          "target": 2150193564,
+          "target_names": [
+            "StillOnGetHistogram"
+          ]
+        },
+        {
+          "site": 2150218080,
+          "word": "0c0a6aa3",
+          "kind": "call",
+          "target": 2150214284,
+          "target_names": [
+            "StillOnCfgSubCntl"
+          ]
+        },
+        {
+          "site": 2150218096,
+          "word": "0c0a6ac5",
+          "kind": "call",
+          "target": 2150214420,
+          "target_names": [
+            "StillOnEnableSensorVsync"
+          ]
+        },
+        {
+          "site": 2150218116,
+          "word": "0c0a5a2e",
+          "kind": "call",
+          "target": 2150197432,
+          "target_names": [
+            "StillOnCfgStrobe"
+          ]
+        },
+        {
+          "site": 2150218136,
+          "word": "0c0a5847",
+          "kind": "call",
+          "target": 2150195484,
+          "target_names": [
+            "StillOnSetCaptureHoldTime"
+          ]
+        },
+        {
+          "site": 2150218156,
+          "word": "0c0a5d57",
+          "kind": "call",
+          "target": 2150200668,
+          "target_names": [
+            "StillOnSetQvga"
+          ]
+        },
+        {
+          "site": 2150218176,
+          "word": "0c0a556a",
+          "kind": "call",
+          "target": 2150192552,
+          "target_names": [
+            "StillOnFileCompressExit"
+          ]
+        },
+        {
+          "site": 2150218196,
+          "word": "0c0a55d3",
+          "kind": "call",
+          "target": 2150192972,
+          "target_names": [
+            "StillOnGetExposure"
+          ]
+        },
+        {
+          "site": 2150218216,
+          "word": "0c0a5621",
+          "kind": "call",
+          "target": 2150193284,
+          "target_names": [
+            "StillOnSetAgcMode"
+          ]
+        },
+        {
+          "site": 2150218232,
+          "word": "0c0a5de6",
+          "kind": "call",
+          "target": 2150201240,
+          "target_names": [
+            "StillOnSetAudioAnnotationEnabled"
+          ]
+        },
+        {
+          "site": 2150218252,
+          "word": "0c0a5938",
+          "kind": "call",
+          "target": 2150196448,
+          "target_names": [
+            "StillOnSetDateStampEnable"
+          ]
+        },
+        {
+          "site": 2150218272,
+          "word": "0c0a5daf",
+          "kind": "call",
+          "target": 2150201020,
+          "target_names": [
+            "StillOnSetMJPEGParam"
+          ]
+        },
+        {
+          "site": 2150218292,
+          "word": "0c0a58a2",
+          "kind": "call",
+          "target": 2150195848,
+          "target_names": [
+            "StillOnSetCustomYuvBuffer"
+          ]
+        },
+        {
+          "site": 2150218316,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150218336,
+          "word": "0c0a54e7",
+          "kind": "call",
+          "target": 2150192028,
+          "target_names": [
+            "StillOnSetCaptureSequence"
+          ]
+        },
+        {
+          "site": 2150218356,
+          "word": "0c0a55b7",
+          "kind": "call",
+          "target": 2150192860,
+          "target_names": [
+            "StillOnFileReady"
+          ]
+        },
+        {
+          "site": 2150218376,
+          "word": "0c0a57bb",
+          "kind": "call",
+          "target": 2150194924,
+          "target_names": [
+            "StillOnSetSecondaryImageSize"
+          ]
+        },
+        {
+          "site": 2150218396,
+          "word": "0c0a580e",
+          "kind": "call",
+          "target": 2150195256,
+          "target_names": [
+            "StillOnSetImageFormat"
+          ]
+        },
+        {
+          "site": 2150218416,
+          "word": "0c0a577a",
+          "kind": "call",
+          "target": 2150194664,
+          "target_names": [
+            "StillOnSetImageSize"
+          ]
+        },
+        {
+          "site": 2150218436,
+          "word": "0c0a5859",
+          "kind": "call",
+          "target": 2150195556,
+          "target_names": [
+            "StillOnSetEnableMjpegMovThumbnail"
+          ]
+        },
+        {
+          "site": 2150218452,
+          "word": "0c0a573a",
+          "kind": "call",
+          "target": 2150194408,
+          "target_names": [
+            "StillOnSetImageProcessingInputWindow"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StillOnFileReady",
+      "address": 2150192860,
+      "candidate_end": 2150192908,
+      "segment": "E04",
+      "decoded_offset": 1473628,
+      "size": 48,
+      "sha256": "8002669994dd32861159ddc3a9e3d7438e91bec2e507e99302d2f5dbe6484c68",
+      "transfers": [
+        {
+          "site": 2150192884,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StillStoreMain",
+      "address": 2150306756,
+      "candidate_end": 2150307732,
+      "segment": "E04",
+      "decoded_offset": 1587524,
+      "size": 976,
+      "sha256": "7a4376a29024a31e2c786586bb20e75ee47ef952fb9b5bdc72b1fbb5e6c18e95",
+      "transfers": [
+        {
+          "site": 2150306784,
+          "word": "0c0b9127",
+          "kind": "call",
+          "target": 2150515868,
+          "target_names": [
+            "ApsMultiSaveInit"
+          ]
+        },
+        {
+          "site": 2150306856,
+          "word": "0c0933ba",
+          "kind": "call",
+          "target": 2149895912,
+          "target_names": [
+            "ApsPipeReceive"
+          ]
+        },
+        {
+          "site": 2150306928,
+          "word": "0c0b9174",
+          "kind": "call",
+          "target": 2150516176,
+          "target_names": [
+            "ApsMultiSaveWrite"
+          ]
+        },
+        {
+          "site": 2150306960,
+          "word": "0c0b9276",
+          "kind": "call",
+          "target": 2150517208,
+          "target_names": [
+            "ApsMultiSaveGetError"
+          ]
+        },
+        {
+          "site": 2150306980,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        },
+        {
+          "site": 2150306992,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150307012,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150307020,
+          "word": "0c0b3c43",
+          "kind": "call",
+          "target": 2150428940,
+          "target_names": [
+            "UpdateNumOfPendingImages"
+          ]
+        },
+        {
+          "site": 2150307036,
+          "word": "0c0299d5",
+          "kind": "call",
+          "target": 2148165460,
+          "target_names": [
+            "PerfLogTime"
+          ]
+        },
+        {
+          "site": 2150307072,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        },
+        {
+          "site": 2150307124,
+          "word": "0c0b9174",
+          "kind": "call",
+          "target": 2150516176,
+          "target_names": [
+            "ApsMultiSaveWrite"
+          ]
+        },
+        {
+          "site": 2150307144,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150307168,
+          "word": "0c0b9174",
+          "kind": "call",
+          "target": 2150516176,
+          "target_names": [
+            "ApsMultiSaveWrite"
+          ]
+        },
+        {
+          "site": 2150307188,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150307204,
+          "word": "0c0b9249",
+          "kind": "call",
+          "target": 2150517028,
+          "target_names": [
+            "ApsMultiSaveSeek"
+          ]
+        },
+        {
+          "site": 2150307228,
+          "word": "0c0299d5",
+          "kind": "call",
+          "target": 2148165460,
+          "target_names": [
+            "PerfLogTime"
+          ]
+        },
+        {
+          "site": 2150307240,
+          "word": "0c09af7a",
+          "kind": "call",
+          "target": 2150022632,
+          "target_names": [
+            "HostPostMessage"
+          ]
+        },
+        {
+          "site": 2150307252,
+          "word": "0c0ac485",
+          "kind": "call",
+          "target": 2150306324,
+          "target_names": [
+            "StoreOnSave"
+          ]
+        },
+        {
+          "site": 2150307260,
+          "word": "0c0b3c43",
+          "kind": "call",
+          "target": 2150428940,
+          "target_names": [
+            "UpdateNumOfPendingImages"
+          ]
+        },
+        {
+          "site": 2150307276,
+          "word": "0c0299d5",
+          "kind": "call",
+          "target": 2148165460,
+          "target_names": [
+            "PerfLogTime"
+          ]
+        },
+        {
+          "site": 2150307296,
+          "word": "0c0299d5",
+          "kind": "call",
+          "target": 2148165460,
+          "target_names": [
+            "PerfLogTime"
+          ]
+        },
+        {
+          "site": 2150307308,
+          "word": "0c09af7a",
+          "kind": "call",
+          "target": 2150022632,
+          "target_names": [
+            "HostPostMessage"
+          ]
+        },
+        {
+          "site": 2150307332,
+          "word": "0c0b8e8d",
+          "kind": "call",
+          "target": 2150513204,
+          "target_names": [
+            "ApsFilePropPartitionFindByIndex"
+          ]
+        },
+        {
+          "site": 2150307348,
+          "word": "02a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150307364,
+          "word": "0c090647",
+          "kind": "call",
+          "target": 2149849372,
+          "target_names": [
+            "AppMediaGetCurrentHandle"
+          ]
+        },
+        {
+          "site": 2150307376,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150307400,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150307428,
+          "word": "0c0ac42b",
+          "kind": "call",
+          "target": 2150305964,
+          "target_names": [
+            "StoreOnSaveGetResource"
+          ]
+        },
+        {
+          "site": 2150307456,
+          "word": "0c0b9140",
+          "kind": "call",
+          "target": 2150515968,
+          "target_names": [
+            "ApsMultiSaveCreateFile"
+          ]
+        },
+        {
+          "site": 2150307472,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150307492,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150307508,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150307528,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150307536,
+          "word": "0c0b9270",
+          "kind": "call",
+          "target": 2150517184,
+          "target_names": [
+            "ApsMultiSaveSetError"
+          ]
+        },
+        {
+          "site": 2150307552,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150307564,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150307584,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150307592,
+          "word": "0c0b9270",
+          "kind": "call",
+          "target": 2150517184,
+          "target_names": [
+            "ApsMultiSaveSetError"
+          ]
+        },
+        {
+          "site": 2150307608,
+          "word": "0c0b91f2",
+          "kind": "call",
+          "target": 2150516680,
+          "target_names": [
+            "ApsMultiSaveCloseFile"
+          ]
+        },
+        {
+          "site": 2150307628,
+          "word": "0c0b9174",
+          "kind": "call",
+          "target": 2150516176,
+          "target_names": [
+            "ApsMultiSaveWrite"
+          ]
+        },
+        {
+          "site": 2150307644,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150307664,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150307680,
+          "word": "0c0b927d",
+          "kind": "call",
+          "target": 2150517236,
+          "target_names": [
+            "ApsMultiSaveDeleteFile"
+          ]
+        },
+        {
+          "site": 2150307696,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150307724,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StoreOnSave",
+      "address": 2150306324,
+      "candidate_end": 2150306756,
+      "segment": "E04",
+      "decoded_offset": 1587092,
+      "size": 432,
+      "sha256": "31a6dbca099b370798ef8a0e491886fe2609a1a056d7e7e3c40b99286f21173f",
+      "transfers": [
+        {
+          "site": 2150306368,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150306388,
+          "word": "0c090647",
+          "kind": "call",
+          "target": 2149849372,
+          "target_names": [
+            "AppMediaGetCurrentHandle"
+          ]
+        },
+        {
+          "site": 2150306400,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150306428,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150306456,
+          "word": "0c0ac42b",
+          "kind": "call",
+          "target": 2150305964,
+          "target_names": [
+            "StoreOnSaveGetResource"
+          ]
+        },
+        {
+          "site": 2150306484,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150306508,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150306528,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        },
+        {
+          "site": 2150306544,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150306584,
+          "word": "0c0b90f1",
+          "kind": "call",
+          "target": 2150515652,
+          "target_names": [
+            "ApsSaveFile"
+          ]
+        },
+        {
+          "site": 2150306600,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150306608,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150306632,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150306652,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        },
+        {
+          "site": 2150306684,
+          "word": "0c0ac3e0",
+          "kind": "call",
+          "target": 2150305664,
+          "target_names": [
+            "PrepareFileForUsb"
+          ]
+        },
+        {
+          "site": 2150306696,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150306720,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150306740,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsSaveWritePartitionObjectCB",
+      "address": 2150514244,
+      "candidate_end": 2150514768,
+      "segment": "E04",
+      "decoded_offset": 1795012,
+      "size": 524,
+      "sha256": "5d0b7aca208a143cc058e413904acf0b427150a0b1da853c501c958332bb07c2",
+      "transfers": [
+        {
+          "site": 2150514348,
+          "word": "0c021c0d",
+          "kind": "call",
+          "target": 2148036660,
+          "target_names": [
+            "_fx_file_write"
+          ]
+        },
+        {
+          "site": 2150514484,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150514508,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150514524,
+          "word": "0c02622a",
+          "kind": "call",
+          "target": 2148108456,
+          "target_names": [
+            "ListRemove"
+          ]
+        },
+        {
+          "site": 2150514540,
+          "word": "0c0b8e6c",
+          "kind": "call",
+          "target": 2150513072,
+          "target_names": [
+            "ApsFilePropPartitionGetCount"
+          ]
+        },
+        {
+          "site": 2150514560,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150514568,
+          "word": "0c0b8f08",
+          "kind": "call",
+          "target": 2150513696,
+          "target_names": [
+            "ApsFileSetSizeZero"
+          ]
+        },
+        {
+          "site": 2150514576,
+          "word": "0c01f096",
+          "kind": "call",
+          "target": 2147992152,
+          "target_names": [
+            "_fx_file_close"
+          ]
+        },
+        {
+          "site": 2150514600,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150514616,
+          "word": "0c01aca6",
+          "kind": "call",
+          "target": 2147922584,
+          "target_names": [
+            "_fx_file_delete"
+          ]
+        },
+        {
+          "site": 2150514636,
+          "word": "0c01f3ef",
+          "kind": "call",
+          "target": 2147995580,
+          "target_names": [
+            "_fx_media_flush"
+          ]
+        },
+        {
+          "site": 2150514708,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsSaveWrite",
+      "address": 2150514768,
+      "candidate_end": 2150515296,
+      "segment": "E04",
+      "decoded_offset": 1795536,
+      "size": 528,
+      "sha256": "66999a9423010235afd3c28efe9b8718343b2e4ec6dc39c3ba0dd3e0389b34e1",
+      "transfers": [
+        {
+          "site": 2150514900,
+          "word": "0c02629b",
+          "kind": "call",
+          "target": 2148108908,
+          "target_names": [
+            "ListIterate"
+          ]
+        },
+        {
+          "site": 2150514980,
+          "word": "0c021c0d",
+          "kind": "call",
+          "target": 2148036660,
+          "target_names": [
+            "_fx_file_write"
+          ]
+        },
+        {
+          "site": 2150515116,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150515156,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150515164,
+          "word": "0c0b8f08",
+          "kind": "call",
+          "target": 2150513696,
+          "target_names": [
+            "ApsFileSetSizeZero"
+          ]
+        },
+        {
+          "site": 2150515172,
+          "word": "0c01f096",
+          "kind": "call",
+          "target": 2147992152,
+          "target_names": [
+            "_fx_file_close"
+          ]
+        },
+        {
+          "site": 2150515196,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150515212,
+          "word": "0c01aca6",
+          "kind": "call",
+          "target": 2147922584,
+          "target_names": [
+            "_fx_file_delete"
+          ]
+        },
+        {
+          "site": 2150515236,
+          "word": "0c01f3ef",
+          "kind": "call",
+          "target": 2147995580,
+          "target_names": [
+            "_fx_media_flush"
+          ]
+        },
+        {
+          "site": 2150515260,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsSaveFile",
+      "address": 2150515652,
+      "candidate_end": 2150515868,
+      "segment": "E04",
+      "decoded_offset": 1796420,
+      "size": 216,
+      "sha256": "af87913edccba2b61e9e5eb5f58d9eb1e97bc3d9f65fef1aff9b8598b54aabda",
+      "transfers": [
+        {
+          "site": 2150515712,
+          "word": "0c0b8f17",
+          "kind": "call",
+          "target": 2150513756,
+          "target_names": [
+            "ApsSaveOpen"
+          ]
+        },
+        {
+          "site": 2150515768,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2150515808,
+          "word": "0c0b9014",
+          "kind": "call",
+          "target": 2150514768,
+          "target_names": [
+            "ApsSaveWrite"
+          ]
+        },
+        {
+          "site": 2150515828,
+          "word": "0c0b9098",
+          "kind": "call",
+          "target": 2150515296,
+          "target_names": [
+            "ApsSaveClose"
+          ]
+        },
+        {
+          "site": 2150515836,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2150515852,
+          "word": "0c0b90bb",
+          "kind": "call",
+          "target": 2150515436,
+          "target_names": [
+            "ApsSaveUpdateStat"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsJpegCreateCodeGo",
+      "address": 2150347344,
+      "candidate_end": 2150348464,
+      "segment": "E04",
+      "decoded_offset": 1628112,
+      "size": 1120,
+      "sha256": "f08ab698acf726628c9e30e3c3d18ca35adb95194852ffdd701b2e830e6ecc16",
+      "transfers": [
+        {
+          "site": 2150347388,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150347640,
+          "word": "0c052ceb",
+          "kind": "call",
+          "target": 2148840364,
+          "target_names": [
+            "ApsCmpGetDqt"
+          ]
+        },
+        {
+          "site": 2150347656,
+          "word": "0c052ceb",
+          "kind": "call",
+          "target": 2148840364,
+          "target_names": [
+            "ApsCmpGetDqt"
+          ]
+        },
+        {
+          "site": 2150347748,
+          "word": "0c06e4a5",
+          "kind": "call",
+          "target": 2149290644,
+          "target_names": [
+            "PathCreate"
+          ]
+        },
+        {
+          "site": 2150347812,
+          "word": "0c077a8e",
+          "kind": "call",
+          "target": 2149444152,
+          "target_names": [
+            "PathSetJpegFlags"
+          ]
+        },
+        {
+          "site": 2150347824,
+          "word": "0c077b21",
+          "kind": "call",
+          "target": 2149444740,
+          "target_names": [
+            "PathSetJpegMinTime"
+          ]
+        },
+        {
+          "site": 2150347952,
+          "word": "0c0b62d9",
+          "kind": "call",
+          "target": 2150468452,
+          "target_names": [
+            "StillCaptureGetTimeStampLdc"
+          ]
+        },
+        {
+          "site": 2150347980,
+          "word": "0c073143",
+          "kind": "call",
+          "target": 2149369100,
+          "target_names": [
+            "PathSetLdcTimeStampCfg"
+          ]
+        },
+        {
+          "site": 2150347992,
+          "word": "0c073141",
+          "kind": "call",
+          "target": 2149369092,
+          "target_names": [
+            "PathSetLdcTimeStampEnable"
+          ]
+        },
+        {
+          "site": 2150348016,
+          "word": "0c052ceb",
+          "kind": "call",
+          "target": 2148840364,
+          "target_names": [
+            "ApsCmpGetDqt"
+          ]
+        },
+        {
+          "site": 2150348032,
+          "word": "0c052ceb",
+          "kind": "call",
+          "target": 2148840364,
+          "target_names": [
+            "ApsCmpGetDqt"
+          ]
+        },
+        {
+          "site": 2150348052,
+          "word": "0c077a67",
+          "kind": "call",
+          "target": 2149443996,
+          "target_names": [
+            "PathSetJpeg"
+          ]
+        },
+        {
+          "site": 2150348064,
+          "word": "0c077b8a",
+          "kind": "call",
+          "target": 2149445160,
+          "target_names": [
+            "PathJpegSetImageBuffer"
+          ]
+        },
+        {
+          "site": 2150348080,
+          "word": "0c077b80",
+          "kind": "call",
+          "target": 2149445120,
+          "target_names": [
+            "PathJpegSetCodeBuffer"
+          ]
+        },
+        {
+          "site": 2150348112,
+          "word": "0c0720f2",
+          "kind": "call",
+          "target": 2149352392,
+          "target_names": [
+            "PathSubmit"
+          ]
+        },
+        {
+          "site": 2150348120,
+          "word": "0c0729d4",
+          "kind": "call",
+          "target": 2149361488,
+          "target_names": [
+            "PathGo"
+          ]
+        },
+        {
+          "site": 2150348184,
+          "word": "0c0733a4",
+          "kind": "call",
+          "target": 2149371536,
+          "target_names": [
+            "PathSetLdcInputFrame"
+          ]
+        },
+        {
+          "site": 2150348204,
+          "word": "0c072f93",
+          "kind": "call",
+          "target": 2149367372,
+          "target_names": [
+            "PathSetLdcScaledBlockBuffer"
+          ]
+        },
+        {
+          "site": 2150348296,
+          "word": "0c072d99",
+          "kind": "call",
+          "target": 2149365348,
+          "target_names": [
+            "PathSetLdcDistortionFunction"
+          ]
+        },
+        {
+          "site": 2150348312,
+          "word": "0c072f57",
+          "kind": "call",
+          "target": 2149367132,
+          "target_names": [
+            "PathSetLdcUndistortedDigitalZoomWindow"
+          ]
+        },
+        {
+          "site": 2150348324,
+          "word": "0c072f23",
+          "kind": "call",
+          "target": 2149366924,
+          "target_names": [
+            "PathSetLdcDistortedDigitalZoomWindow"
+          ]
+        },
+        {
+          "site": 2150348344,
+          "word": "0c072f93",
+          "kind": "call",
+          "target": 2149367372,
+          "target_names": [
+            "PathSetLdcScaledBlockBuffer"
+          ]
+        },
+        {
+          "site": 2150348364,
+          "word": "0c0732f5",
+          "kind": "call",
+          "target": 2149370836,
+          "target_names": [
+            "PathSetLdcRotation"
+          ]
+        },
+        {
+          "site": 2150348392,
+          "word": "0c077ba5",
+          "kind": "call",
+          "target": 2149445268,
+          "target_names": [
+            "PathSetHuffmanTables"
+          ]
+        },
+        {
+          "site": 2150348416,
+          "word": "0c072d99",
+          "kind": "call",
+          "target": 2149365348,
+          "target_names": [
+            "PathSetLdcDistortionFunction"
+          ]
+        },
+        {
+          "site": 2150348432,
+          "word": "0c072f93",
+          "kind": "call",
+          "target": 2149367372,
+          "target_names": [
+            "PathSetLdcScaledBlockBuffer"
+          ]
+        },
+        {
+          "site": 2150348448,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsJpegCreateCodeWait",
+      "address": 2150347244,
+      "candidate_end": 2150347336,
+      "segment": "E04",
+      "decoded_offset": 1628012,
+      "size": 92,
+      "sha256": "49ed6310b8173a3a5ec56d21dc32d6a2cec5bbc73c7bec31c53371402e1d90df",
+      "transfers": [
+        {
+          "site": 2150347268,
+          "word": "0c0aec50",
+          "kind": "call",
+          "target": 2150347072,
+          "target_names": [
+            "ApsJpegCreateCodeWaitEx"
+          ]
+        },
+        {
+          "site": 2150347280,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        },
+        {
+          "site": 2150347328,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsExifCreateJpeg",
+      "address": 2150380628,
+      "candidate_end": 2150385916,
+      "segment": "E04",
+      "decoded_offset": 1661396,
+      "size": 5288,
+      "sha256": "6f697ce55dfe4edc1e25479b4be620821bfd623cf9c94b89f80bb253a8ef3190",
+      "transfers": [
+        {
+          "site": 2150380952,
+          "word": "0c026267",
+          "kind": "call",
+          "target": 2148108700,
+          "target_names": [
+            "ListReset"
+          ]
+        },
+        {
+          "site": 2150381024,
+          "word": "0c2cd35e",
+          "kind": "call",
+          "target": 2159234424,
+          "target_names": [
+            "JpegOpen"
+          ]
+        },
+        {
+          "site": 2150381056,
+          "word": "0c2cd3c9",
+          "kind": "call",
+          "target": 2159234852,
+          "target_names": [
+            "JpegAddMarker"
+          ]
+        },
+        {
+          "site": 2150381076,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150381092,
+          "word": "0c2cdc3d",
+          "kind": "call",
+          "target": 2159243508,
+          "target_names": [
+            "TiffDbLock"
+          ]
+        },
+        {
+          "site": 2150381116,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150381136,
+          "word": "0c2cda76",
+          "kind": "call",
+          "target": 2159241688,
+          "target_names": [
+            "TiffDbToTagOffset"
+          ]
+        },
+        {
+          "site": 2150381228,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150381256,
+          "word": "0c2cd3c9",
+          "kind": "call",
+          "target": 2159234852,
+          "target_names": [
+            "JpegAddMarker"
+          ]
+        },
+        {
+          "site": 2150381264,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150381284,
+          "word": "0c2cda59",
+          "kind": "call",
+          "target": 2159241572,
+          "target_names": [
+            "TiffDbToFile"
+          ]
+        },
+        {
+          "site": 2150381292,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150381300,
+          "word": "0c2cdc40",
+          "kind": "call",
+          "target": 2159243520,
+          "target_names": [
+            "TiffDbUnlock"
+          ]
+        },
+        {
+          "site": 2150381320,
+          "word": "0c0ac965",
+          "kind": "call",
+          "target": 2150311316,
+          "target_names": [
+            "StillGetDqt"
+          ]
+        },
+        {
+          "site": 2150381360,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150381408,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150381520,
+          "word": "0c0aedac",
+          "kind": "call",
+          "target": 2150348464,
+          "target_names": [
+            "ApsJpegCreate"
+          ]
+        },
+        {
+          "site": 2150381548,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150381580,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150381628,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150381652,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150381660,
+          "word": "0c2beafd",
+          "kind": "call",
+          "target": 2158996468,
+          "target_names": [
+            "TiffClose"
+          ]
+        },
+        {
+          "site": 2150381668,
+          "word": "0c2cd390",
+          "kind": "call",
+          "target": 2159234624,
+          "target_names": [
+            "JpegClose"
+          ]
+        },
+        {
+          "site": 2150381768,
+          "word": "0c2cd413",
+          "kind": "call",
+          "target": 2159235148,
+          "target_names": [
+            "JpegAppendMarker"
+          ]
+        },
+        {
+          "site": 2150381808,
+          "word": "0c03b12a",
+          "kind": "call",
+          "target": 2148451496,
+          "target_names": [
+            "AppGetClock"
+          ]
+        },
+        {
+          "site": 2150381848,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150381908,
+          "word": "0c03f9ea",
+          "kind": "call",
+          "target": 2148525992,
+          "target_names": [
+            "sprintf"
+          ]
+        },
+        {
+          "site": 2150381940,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150382028,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150382072,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150382152,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2150382200,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150382252,
+          "word": "0c2cd3c9",
+          "kind": "call",
+          "target": 2159234852,
+          "target_names": [
+            "JpegAddMarker"
+          ]
+        },
+        {
+          "site": 2150382288,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150382328,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150382400,
+          "word": "0c0ac965",
+          "kind": "call",
+          "target": 2150311316,
+          "target_names": [
+            "StillGetDqt"
+          ]
+        },
+        {
+          "site": 2150382424,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150382528,
+          "word": "0c0aec94",
+          "kind": "call",
+          "target": 2150347344,
+          "target_names": [
+            "ApsJpegCreateCodeGo"
+          ]
+        },
+        {
+          "site": 2150382544,
+          "word": "0c0aec7b",
+          "kind": "call",
+          "target": 2150347244,
+          "target_names": [
+            "ApsJpegCreateCodeWait"
+          ]
+        },
+        {
+          "site": 2150382640,
+          "word": "0c0aeb28",
+          "kind": "call",
+          "target": 2150345888,
+          "target_names": [
+            "ApsJpegCreateMarkers"
+          ]
+        },
+        {
+          "site": 2150382668,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150382748,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150382796,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150382828,
+          "word": "0c0b8e54",
+          "kind": "call",
+          "target": 2150512976,
+          "target_names": [
+            "ApsFilePropPartitionAllocAndAdd"
+          ]
+        },
+        {
+          "site": 2150382904,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150382932,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150382940,
+          "word": "0c0b8e2f",
+          "kind": "call",
+          "target": 2150512828,
+          "target_names": [
+            "ApsFilePropPartitionAlloc"
+          ]
+        },
+        {
+          "site": 2150382988,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150383044,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150383052,
+          "word": "0c2beafd",
+          "kind": "call",
+          "target": 2158996468,
+          "target_names": [
+            "TiffClose"
+          ]
+        },
+        {
+          "site": 2150383060,
+          "word": "0c2beafd",
+          "kind": "call",
+          "target": 2158996468,
+          "target_names": [
+            "TiffClose"
+          ]
+        },
+        {
+          "site": 2150383068,
+          "word": "0c2cd390",
+          "kind": "call",
+          "target": 2159234624,
+          "target_names": [
+            "JpegClose"
+          ]
+        },
+        {
+          "site": 2150383108,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150383120,
+          "word": "0c0b8e8d",
+          "kind": "call",
+          "target": 2150513204,
+          "target_names": [
+            "ApsFilePropPartitionFindByIndex"
+          ]
+        },
+        {
+          "site": 2150383148,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150383160,
+          "word": "0c0b8e3e",
+          "kind": "call",
+          "target": 2150512888,
+          "target_names": [
+            "ApsFilePropPartitionAddObject"
+          ]
+        },
+        {
+          "site": 2150383252,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150383324,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150383364,
+          "word": "0c0b0cac",
+          "kind": "call",
+          "target": 2150380208,
+          "target_names": [
+            "QvgaMakerNoteCreate"
+          ]
+        },
+        {
+          "site": 2150383400,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150383440,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150383460,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150383468,
+          "word": "0c2cd390",
+          "kind": "call",
+          "target": 2159234624,
+          "target_names": [
+            "JpegClose"
+          ]
+        },
+        {
+          "site": 2150383476,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150383484,
+          "word": "0c2cdc40",
+          "kind": "call",
+          "target": 2159243520,
+          "target_names": [
+            "TiffDbUnlock"
+          ]
+        },
+        {
+          "site": 2150383536,
+          "word": "0c2cd3c9",
+          "kind": "call",
+          "target": 2159234852,
+          "target_names": [
+            "JpegAddMarker"
+          ]
+        },
+        {
+          "site": 2150383584,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150383592,
+          "word": "0c2cdc3d",
+          "kind": "call",
+          "target": 2159243508,
+          "target_names": [
+            "TiffDbLock"
+          ]
+        },
+        {
+          "site": 2150383616,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150383632,
+          "word": "0c2cdb8d",
+          "kind": "call",
+          "target": 2159242804,
+          "target_names": [
+            "TiffDbDeleteTag"
+          ]
+        },
+        {
+          "site": 2150383640,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150383656,
+          "word": "0c2cdb8d",
+          "kind": "call",
+          "target": 2159242804,
+          "target_names": [
+            "TiffDbDeleteTag"
+          ]
+        },
+        {
+          "site": 2150383664,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150383688,
+          "word": "0c2cda59",
+          "kind": "call",
+          "target": 2159241572,
+          "target_names": [
+            "TiffDbToFile"
+          ]
+        },
+        {
+          "site": 2150383708,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150383716,
+          "word": "0c0b9df6",
+          "kind": "call",
+          "target": 2150528984,
+          "target_names": [
+            "ApsTiffCreateMPF"
+          ]
+        },
+        {
+          "site": 2150383724,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150383732,
+          "word": "0c2cdc40",
+          "kind": "call",
+          "target": 2159243520,
+          "target_names": [
+            "TiffDbUnlock"
+          ]
+        },
+        {
+          "site": 2150383752,
+          "word": "0c2cd413",
+          "kind": "call",
+          "target": 2159235148,
+          "target_names": [
+            "JpegAppendMarker"
+          ]
+        },
+        {
+          "site": 2150383780,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150383804,
+          "word": "0c0ac965",
+          "kind": "call",
+          "target": 2150311316,
+          "target_names": [
+            "StillGetDqt"
+          ]
+        },
+        {
+          "site": 2150383920,
+          "word": "0c0aedac",
+          "kind": "call",
+          "target": 2150348464,
+          "target_names": [
+            "ApsJpegCreate"
+          ]
+        },
+        {
+          "site": 2150383952,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150384000,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150384052,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150384076,
+          "word": "0c0ac965",
+          "kind": "call",
+          "target": 2150311316,
+          "target_names": [
+            "StillGetDqt"
+          ]
+        },
+        {
+          "site": 2150384216,
+          "word": "0c0aedac",
+          "kind": "call",
+          "target": 2150348464,
+          "target_names": [
+            "ApsJpegCreate"
+          ]
+        },
+        {
+          "site": 2150384252,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150384332,
+          "word": "0c0b8e8d",
+          "kind": "call",
+          "target": 2150513204,
+          "target_names": [
+            "ApsFilePropPartitionFindByIndex"
+          ]
+        },
+        {
+          "site": 2150384404,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150384432,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150384448,
+          "word": "0c026258",
+          "kind": "call",
+          "target": 2148108640,
+          "target_names": [
+            "ListGetHead"
+          ]
+        },
+        {
+          "site": 2150384468,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150384480,
+          "word": "0c0b8e8d",
+          "kind": "call",
+          "target": 2150513204,
+          "target_names": [
+            "ApsFilePropPartitionFindByIndex"
+          ]
+        },
+        {
+          "site": 2150384508,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150384524,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150384556,
+          "word": "0c0b8e54",
+          "kind": "call",
+          "target": 2150512976,
+          "target_names": [
+            "ApsFilePropPartitionAllocAndAdd"
+          ]
+        },
+        {
+          "site": 2150384564,
+          "word": "0c02625d",
+          "kind": "call",
+          "target": 2148108660,
+          "target_names": [
+            "ListGetNext"
+          ]
+        },
+        {
+          "site": 2150384600,
+          "word": "0c0b8e54",
+          "kind": "call",
+          "target": 2150512976,
+          "target_names": [
+            "ApsFilePropPartitionAllocAndAdd"
+          ]
+        },
+        {
+          "site": 2150384608,
+          "word": "0c02625d",
+          "kind": "call",
+          "target": 2148108660,
+          "target_names": [
+            "ListGetNext"
+          ]
+        },
+        {
+          "site": 2150384640,
+          "word": "0c0b8e54",
+          "kind": "call",
+          "target": 2150512976,
+          "target_names": [
+            "ApsFilePropPartitionAllocAndAdd"
+          ]
+        },
+        {
+          "site": 2150384688,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2150384704,
+          "word": "0c2cd466",
+          "kind": "call",
+          "target": 2159235480,
+          "target_names": [
+            "JpegGetCurrPos"
+          ]
+        },
+        {
+          "site": 2150384864,
+          "word": "0c2bedb9",
+          "kind": "call",
+          "target": 2158999268,
+          "target_names": [
+            "TiffGetByteOrder"
+          ]
+        },
+        {
+          "site": 2150384908,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150384944,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150384968,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150384992,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385016,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385044,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385120,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150385152,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150385188,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150385196,
+          "word": "0c2cd390",
+          "kind": "call",
+          "target": 2159234624,
+          "target_names": [
+            "JpegClose"
+          ]
+        },
+        {
+          "site": 2150385204,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150385212,
+          "word": "0c2cdc40",
+          "kind": "call",
+          "target": 2159243520,
+          "target_names": [
+            "TiffDbUnlock"
+          ]
+        },
+        {
+          "site": 2150385256,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150385296,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2150385312,
+          "word": "0c2cd466",
+          "kind": "call",
+          "target": 2159235480,
+          "target_names": [
+            "JpegGetCurrPos"
+          ]
+        },
+        {
+          "site": 2150385356,
+          "word": "0c2bedb9",
+          "kind": "call",
+          "target": 2158999268,
+          "target_names": [
+            "TiffGetByteOrder"
+          ]
+        },
+        {
+          "site": 2150385404,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150385428,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385452,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385476,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385500,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385524,
+          "word": "0c2be9f0",
+          "kind": "call",
+          "target": 2158995392,
+          "target_names": [
+            "TiffSwap"
+          ]
+        },
+        {
+          "site": 2150385592,
+          "word": "0c2cd35e",
+          "kind": "call",
+          "target": 2159234424,
+          "target_names": [
+            "JpegOpen"
+          ]
+        },
+        {
+          "site": 2150385620,
+          "word": "0c2cd3c9",
+          "kind": "call",
+          "target": 2159234852,
+          "target_names": [
+            "JpegAddMarker"
+          ]
+        },
+        {
+          "site": 2150385668,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150385676,
+          "word": "0c2cdc3d",
+          "kind": "call",
+          "target": 2159243508,
+          "target_names": [
+            "TiffDbLock"
+          ]
+        },
+        {
+          "site": 2150385704,
+          "word": "0c2cd3c9",
+          "kind": "call",
+          "target": 2159234852,
+          "target_names": [
+            "JpegAddMarker"
+          ]
+        },
+        {
+          "site": 2150385712,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150385732,
+          "word": "0c2cda59",
+          "kind": "call",
+          "target": 2159241572,
+          "target_names": [
+            "TiffDbToFile"
+          ]
+        },
+        {
+          "site": 2150385740,
+          "word": "0c0b32f9",
+          "kind": "call",
+          "target": 2150419428,
+          "target_names": [
+            "AppTiffGetDbHandle"
+          ]
+        },
+        {
+          "site": 2150385748,
+          "word": "0c2cdc40",
+          "kind": "call",
+          "target": 2159243520,
+          "target_names": [
+            "TiffDbUnlock"
+          ]
+        },
+        {
+          "site": 2150385768,
+          "word": "0c2cd413",
+          "kind": "call",
+          "target": 2159235148,
+          "target_names": [
+            "JpegAppendMarker"
+          ]
+        },
+        {
+          "site": 2150385812,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150385852,
+          "word": "0c2becb7",
+          "kind": "call",
+          "target": 2158998236,
+          "target_names": [
+            "TiffSetTag"
+          ]
+        },
+        {
+          "site": 2150385864,
+          "word": "0c2beafd",
+          "kind": "call",
+          "target": 2158996468,
+          "target_names": [
+            "TiffClose"
+          ]
+        },
+        {
+          "site": 2150385872,
+          "word": "0c2cd390",
+          "kind": "call",
+          "target": 2159234624,
+          "target_names": [
+            "JpegClose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsFilePropPartitionAllocAndAdd",
+      "address": 2150512976,
+      "candidate_end": 2150513072,
+      "segment": "E04",
+      "decoded_offset": 1793744,
+      "size": 96,
+      "sha256": "58258a01a156372bc80071834526ee1521564d6b3d294495a10d19cbb23f9b58",
+      "transfers": [
+        {
+          "site": 2150513008,
+          "word": "0c0b8e2f",
+          "kind": "call",
+          "target": 2150512828,
+          "target_names": [
+            "ApsFilePropPartitionAlloc"
+          ]
+        },
+        {
+          "site": 2150513032,
+          "word": "0c0b8e3e",
+          "kind": "call",
+          "target": 2150512888,
+          "target_names": [
+            "ApsFilePropPartitionAddObject"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApsFilePropPartitionAddObject",
+      "address": 2150512888,
+      "candidate_end": 2150512976,
+      "segment": "E04",
+      "decoded_offset": 1793656,
+      "size": 88,
+      "sha256": "6460126b4e23f73f76b23b32f8f305f421b975aeb3be534f8a74206e3479a1ff",
+      "transfers": [
+        {
+          "site": 2150512948,
+          "word": "0c026227",
+          "kind": "call",
+          "target": 2148108444,
+          "target_names": [
+            "ListAddTail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StillCaptureHdrImageSave",
+      "address": 2150446512,
+      "candidate_end": 2150447884,
+      "segment": "E04",
+      "decoded_offset": 1727280,
+      "size": 1372,
+      "sha256": "7dcdb4710ba0f18baf28cb1b8185b0730e01da926f8db97fe5064abf6c815bd9",
+      "transfers": [
+        {
+          "site": 2150446572,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150447040,
+          "word": "0c0b4a9e",
+          "kind": "call",
+          "target": 2150443640,
+          "target_names": [
+            "StillCaptureSavePrepareThumbnailFrames"
+          ]
+        },
+        {
+          "site": 2150447132,
+          "word": "0c0b4a7b",
+          "kind": "call",
+          "target": 2150443500,
+          "target_names": [
+            "StillCaptureSaveApplyPhotoframe"
+          ]
+        },
+        {
+          "site": 2150447168,
+          "word": "0c0b4a4d",
+          "kind": "call",
+          "target": 2150443316,
+          "target_names": [
+            "StillCaptureSaveIcaCreateThumbnail"
+          ]
+        },
+        {
+          "site": 2150447264,
+          "word": "0c0b4bcd",
+          "kind": "call",
+          "target": 2150444852,
+          "target_names": [
+            "StillCaptureSavePrepareThumbnails"
+          ]
+        },
+        {
+          "site": 2150447296,
+          "word": "0c0b4cf4",
+          "kind": "call",
+          "target": 2150446032,
+          "target_names": [
+            "StillCaptureSaveJpegImage"
+          ]
+        },
+        {
+          "site": 2150447312,
+          "word": "0c0b396b",
+          "kind": "call",
+          "target": 2150426028,
+          "target_names": [
+            "StillCaptureFreeThumbnails"
+          ]
+        },
+        {
+          "site": 2150447400,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150447440,
+          "word": "0c0aef9f",
+          "kind": "call",
+          "target": 2150350460,
+          "target_names": [
+            "ApsJpegDirectDecompress"
+          ]
+        },
+        {
+          "site": 2150447464,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150447476,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150447492,
+          "word": "0c052d3f",
+          "kind": "call",
+          "target": 2148840700,
+          "target_names": [
+            "ApsCmpGetCodeSizeByCr"
+          ]
+        },
+        {
+          "site": 2150447508,
+          "word": "0c0b2519",
+          "kind": "call",
+          "target": 2150405220,
+          "target_names": [
+            "CProfileGetExtraCodeBufferPercent"
+          ]
+        },
+        {
+          "site": 2150447596,
+          "word": "0c0b49d6",
+          "kind": "call",
+          "target": 2150442840,
+          "target_names": [
+            "StillCaptureSaveCompressImage"
+          ]
+        },
+        {
+          "site": 2150447620,
+          "word": "0c0b4bcd",
+          "kind": "call",
+          "target": 2150444852,
+          "target_names": [
+            "StillCaptureSavePrepareThumbnails"
+          ]
+        },
+        {
+          "site": 2150447652,
+          "word": "0c0b4cf4",
+          "kind": "call",
+          "target": 2150446032,
+          "target_names": [
+            "StillCaptureSaveJpegImage"
+          ]
+        },
+        {
+          "site": 2150447668,
+          "word": "0c0b396b",
+          "kind": "call",
+          "target": 2150426028,
+          "target_names": [
+            "StillCaptureFreeThumbnails"
+          ]
+        },
+        {
+          "site": 2150447752,
+          "word": "0c0031d6",
+          "kind": "call",
+          "target": 2147534680,
+          "target_names": [
+            "PoolReallocEx"
+          ]
+        },
+        {
+          "site": 2150447812,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150447848,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        },
+        {
+          "site": 2150447876,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StillCaptureHdrRunProcessing",
+      "address": 2150447884,
+      "candidate_end": 2150450300,
+      "segment": "E04",
+      "decoded_offset": 1728652,
+      "size": 2416,
+      "sha256": "2306042bdb87185bb57a7098457425b9b279e7b1c8f1764b924c974098b49319",
+      "transfers": [
+        {
+          "site": 2150447988,
+          "word": "0c095775",
+          "kind": "call",
+          "target": 2149932500,
+          "target_names": [
+            "AppGetImageProcessingFilterIndex"
+          ]
+        },
+        {
+          "site": 2150448028,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448092,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150448108,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448140,
+          "word": "0c0085a4",
+          "kind": "call",
+          "target": 2147620496,
+          "target_names": [
+            "SmdbSwitchToModeAndRequestService"
+          ]
+        },
+        {
+          "site": 2150448148,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448196,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150448208,
+          "word": "0c2c598e",
+          "kind": "call",
+          "target": 2159109688,
+          "target_names": [
+            "HdrRun"
+          ]
+        },
+        {
+          "site": 2150448216,
+          "word": "0c2c4bf0",
+          "kind": "call",
+          "target": 2159095744,
+          "target_names": [
+            "HdrGetLastError"
+          ]
+        },
+        {
+          "site": 2150448300,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150448308,
+          "word": "0c0ac5e5",
+          "kind": "call",
+          "target": 2150307732,
+          "target_names": [
+            "StillStoreStart"
+          ]
+        },
+        {
+          "site": 2150448328,
+          "word": "0c09338d",
+          "kind": "call",
+          "target": 2149895732,
+          "target_names": [
+            "ApsPipePost"
+          ]
+        },
+        {
+          "site": 2150448344,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448392,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448408,
+          "word": "0c0b3917",
+          "kind": "call",
+          "target": 2150425692,
+          "target_names": [
+            "StillCaptureSetHdrCaps"
+          ]
+        },
+        {
+          "site": 2150448420,
+          "word": "0c0ad31d",
+          "kind": "call",
+          "target": 2150321268,
+          "target_names": [
+            "CaptureSetCaps"
+          ]
+        },
+        {
+          "site": 2150448444,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448472,
+          "word": "0c2c49b3",
+          "kind": "call",
+          "target": 2159093452,
+          "target_names": [
+            "HdrCloseContext"
+          ]
+        },
+        {
+          "site": 2150448504,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150448512,
+          "word": "0c002ec5",
+          "kind": "call",
+          "target": 2147531540,
+          "target_names": [
+            "PoolDestroy"
+          ]
+        },
+        {
+          "site": 2150448524,
+          "word": "0c0ad31d",
+          "kind": "call",
+          "target": 2150321268,
+          "target_names": [
+            "CaptureSetCaps"
+          ]
+        },
+        {
+          "site": 2150448536,
+          "word": "0c0ad31d",
+          "kind": "call",
+          "target": 2150321268,
+          "target_names": [
+            "CaptureSetCaps"
+          ]
+        },
+        {
+          "site": 2150448592,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448640,
+          "word": "0c0085a4",
+          "kind": "call",
+          "target": 2147620496,
+          "target_names": [
+            "SmdbSwitchToModeAndRequestService"
+          ]
+        },
+        {
+          "site": 2150448656,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448680,
+          "word": "0c0ad6b1",
+          "kind": "call",
+          "target": 2150324932,
+          "target_names": [
+            "CaptureGetCaps"
+          ]
+        },
+        {
+          "site": 2150448760,
+          "word": "0c0b393c",
+          "kind": "call",
+          "target": 2150425840,
+          "target_names": [
+            "StillCaptureGetFileSizeEx"
+          ]
+        },
+        {
+          "site": 2150448816,
+          "word": "0c002e5d",
+          "kind": "call",
+          "target": 2147531124,
+          "target_names": [
+            "PoolCreateEx"
+          ]
+        },
+        {
+          "site": 2150449252,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150449316,
+          "word": "0c0b4a9e",
+          "kind": "call",
+          "target": 2150443640,
+          "target_names": [
+            "StillCaptureSavePrepareThumbnailFrames"
+          ]
+        },
+        {
+          "site": 2150449328,
+          "word": "0c0b4a7b",
+          "kind": "call",
+          "target": 2150443500,
+          "target_names": [
+            "StillCaptureSaveApplyPhotoframe"
+          ]
+        },
+        {
+          "site": 2150449352,
+          "word": "0c0b4a4d",
+          "kind": "call",
+          "target": 2150443316,
+          "target_names": [
+            "StillCaptureSaveIcaCreateThumbnail"
+          ]
+        },
+        {
+          "site": 2150449380,
+          "word": "0c0b49d6",
+          "kind": "call",
+          "target": 2150442840,
+          "target_names": [
+            "StillCaptureSaveCompressImage"
+          ]
+        },
+        {
+          "site": 2150449408,
+          "word": "0c0b4bcd",
+          "kind": "call",
+          "target": 2150444852,
+          "target_names": [
+            "StillCaptureSavePrepareThumbnails"
+          ]
+        },
+        {
+          "site": 2150449444,
+          "word": "0c0b4cf4",
+          "kind": "call",
+          "target": 2150446032,
+          "target_names": [
+            "StillCaptureSaveJpegImage"
+          ]
+        },
+        {
+          "site": 2150449472,
+          "word": "0c0b396b",
+          "kind": "call",
+          "target": 2150426028,
+          "target_names": [
+            "StillCaptureFreeThumbnails"
+          ]
+        },
+        {
+          "site": 2150449520,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150449548,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150449556,
+          "word": "0c002ec5",
+          "kind": "call",
+          "target": 2147531540,
+          "target_names": [
+            "PoolDestroy"
+          ]
+        },
+        {
+          "site": 2150449572,
+          "word": "0c0b8eb5",
+          "kind": "call",
+          "target": 2150513364,
+          "target_names": [
+            "ApsFreeFileProp"
+          ]
+        },
+        {
+          "site": 2150449604,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2150449620,
+          "word": "00a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150449636,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2150449672,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150449688,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150449788,
+          "word": "0c07a6b7",
+          "kind": "call",
+          "target": 2149489372,
+          "target_names": [
+            "SensorGetExposure"
+          ]
+        },
+        {
+          "site": 2150449800,
+          "word": "0c07db57",
+          "kind": "call",
+          "target": 2149543260,
+          "target_names": [
+            "SensorGetGain"
+          ]
+        },
+        {
+          "site": 2150449904,
+          "word": "0c07a6b7",
+          "kind": "call",
+          "target": 2149489372,
+          "target_names": [
+            "SensorGetExposure"
+          ]
+        },
+        {
+          "site": 2150449916,
+          "word": "0c07db57",
+          "kind": "call",
+          "target": 2149543260,
+          "target_names": [
+            "SensorGetGain"
+          ]
+        },
+        {
+          "site": 2150449932,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150449972,
+          "word": "0c0b3c43",
+          "kind": "call",
+          "target": 2150428940,
+          "target_names": [
+            "UpdateNumOfPendingImages"
+          ]
+        },
+        {
+          "site": 2150449992,
+          "word": "0c0b4d6c",
+          "kind": "call",
+          "target": 2150446512,
+          "target_names": [
+            "StillCaptureHdrImageSave"
+          ]
+        },
+        {
+          "site": 2150450016,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150450028,
+          "word": "0c0085a4",
+          "kind": "call",
+          "target": 2147620496,
+          "target_names": [
+            "SmdbSwitchToModeAndRequestService"
+          ]
+        },
+        {
+          "site": 2150450044,
+          "word": "0c0b3c43",
+          "kind": "call",
+          "target": 2150428940,
+          "target_names": [
+            "UpdateNumOfPendingImages"
+          ]
+        },
+        {
+          "site": 2150450064,
+          "word": "0c0b4d6c",
+          "kind": "call",
+          "target": 2150446512,
+          "target_names": [
+            "StillCaptureHdrImageSave"
+          ]
+        },
+        {
+          "site": 2150450088,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150450140,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150450160,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150450208,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150450228,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150450268,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        },
+        {
+          "site": 2150450292,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "evidence_scope": "Selected original instruction words and trace metadata are public; private C/ASM paths identify local review artifacts that are not redistributed. Trace extents use the next distinct sidecar address and do not assert a typed function boundary."
+}

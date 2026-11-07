@@ -9,6 +9,8 @@ from inspect_q7 import inspect
 from build_report import main as build
 from build_deep_report import main as build_deep
 from check_color_math import reference
+from build_routing_report import main as build_routing
+from verify_routing import verify as verify_routing
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -97,6 +99,8 @@ def verify_deep(firmware):
         assert case["passed"] and case["actual"] == case["expected"] == reference(case["left"], case["right"], case["shift"])
     assert len(read("comparison.json")["rows"]) == 18
     verify_html(ROOT / "deep-report.html", build_deep)
+    verify_html(ROOT / "routing-report.html", build_routing)
+    verify_routing()
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode
@@ -107,6 +111,7 @@ def verify_deep(firmware):
         assert actual_symbols == symbols, "symbol recovery mismatch"
         actual_decode, outputs = decode(firmware)
         assert actual_decode == decoded, "compressed block recovery mismatch"
+        verify_routing(firmware, outputs)
         assert trace(firmware, read("deep-selected-functions.json"), outputs) == deep, "deep transfer mismatch"
         assert trace(firmware, read("selected-functions.json")) == read("threadx-shutter-transfers.json")
         segments = [(va, firmware[offset:offset+size]) for offset,va,size in PLAIN]

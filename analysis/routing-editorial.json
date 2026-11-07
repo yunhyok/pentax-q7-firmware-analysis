@@ -1,0 +1,15 @@
+{
+  "skill": "humanize-korean 2.3.2",
+  "route": "light",
+  "run_id": "2026-11-08-002-81df",
+  "change_rate_percent": 2.0,
+  "self_checks_passed": 6,
+  "grade": "B",
+  "scope": "Korean narrative paragraphs in routing-copy.json; technical addresses and conditions preserved",
+  "post_review_clarification": "Mode 3 defers search state for an independent VD-sync message; wording does not imply that LensDriveControl blocks waiting.",
+  "final_review_clarifications": [
+    "Separate ISP configuration from JPEG buffer evidence; their shared pixel-buffer identity is unproven.",
+    "Name witnessed SIO branch as reception; align example ELF path with prior reproduction steps.",
+    "Remove pending-state to VD-event edge; VD event has an independent producer."
+  ]
+}

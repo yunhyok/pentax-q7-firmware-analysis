@@ -1,0 +1,250 @@
+{
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "engine": "angr 10.0.5 / VEX",
+  "scope": "Concrete MIPS replay with synthetic RAM MMIO and a clock stub; no hardware, pixels or camera runtime.",
+  "checks": "Trace length, each ordered event, successful return and restored stack; invalid memory accesses trap separately.",
+  "cases": [
+    {
+      "address": 2150971300,
+      "case": "ccm-dirty-0",
+      "input": {
+        "dirty": 0,
+        "signed_i32": [
+          -32768,
+          8192,
+          -17,
+          32767,
+          -1,
+          0,
+          73,
+          -257,
+          1024
+        ],
+        "mode_u16": 65244,
+        "extra_u32": [
+          0,
+          1,
+          3735928559,
+          19088743,
+          2147483648,
+          4294967295
+        ]
+      },
+      "input_sha256": "6d006c8be854dc2a42fd796a5520b7e6d9c14e45687641372ffbc7cd99c728b6",
+      "mmio_writes": 0,
+      "clock_stub_calls": 0,
+      "assertions": 3,
+      "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "passed": true
+    },
+    {
+      "address": 2150971300,
+      "case": "ccm-dirty-1",
+      "input": {
+        "dirty": 1,
+        "signed_i32": [
+          -32768,
+          8192,
+          -17,
+          32767,
+          -1,
+          0,
+          73,
+          -257,
+          1024
+        ],
+        "mode_u16": 65244,
+        "extra_u32": [
+          0,
+          1,
+          3735928559,
+          19088743,
+          2147483648,
+          4294967295
+        ]
+      },
+      "input_sha256": "3960b2af399c3ce554f9d72f8cca67d146a27cb2d763eaf73dcb80214e1a1bdc",
+      "mmio_writes": 16,
+      "clock_stub_calls": 0,
+      "assertions": 19,
+      "trace_sha256": "f6efa5bb44d9d021f9e9eb43bd4734d88eea7a80c0e7153fd51f5482859fd731",
+      "passed": true
+    },
+    {
+      "address": 2150758224,
+      "case": "fc1-dirty-0",
+      "input": {
+        "dirty": 0,
+        "matrix_i16": [
+          -32768,
+          8192,
+          -17,
+          32767,
+          -1,
+          0,
+          73,
+          -257,
+          1024
+        ],
+        "tail_i16": [
+          -129,
+          -32767
+        ],
+        "flags_u32": 4046337189
+      },
+      "input_sha256": "b3779ff3edc1ba4a74fba25c3f7ff62a3bbe3c88ad3022536e6ed7745b77d7f5",
+      "mmio_writes": 0,
+      "clock_stub_calls": 0,
+      "assertions": 3,
+      "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "passed": true
+    },
+    {
+      "address": 2150758224,
+      "case": "fc1-dirty-1",
+      "input": {
+        "dirty": 1,
+        "matrix_i16": [
+          -32768,
+          8192,
+          -17,
+          32767,
+          -1,
+          0,
+          73,
+          -257,
+          1024
+        ],
+        "tail_i16": [
+          -129,
+          -32767
+        ],
+        "flags_u32": 4046337189
+      },
+      "input_sha256": "7226b12d9f03d7c957c376e907fb896ec6eb6f801f398b6c8fe0d4ff6e13ac22",
+      "mmio_writes": 12,
+      "clock_stub_calls": 0,
+      "assertions": 15,
+      "trace_sha256": "a7a0f77869d224f7dd91ff6d71100575e4343310fc3526f2f913582abd9eb5fa",
+      "passed": true
+    },
+    {
+      "address": 2150975856,
+      "case": "fc2-dirty-0",
+      "input": {
+        "dirty": 0,
+        "matrix_i16": [
+          -32768,
+          8192,
+          -17,
+          32767,
+          -1,
+          0,
+          73,
+          -257,
+          1024
+        ],
+        "tail_i16": [
+          -129,
+          -32767
+        ],
+        "flags_u32": 4046337189
+      },
+      "input_sha256": "b3779ff3edc1ba4a74fba25c3f7ff62a3bbe3c88ad3022536e6ed7745b77d7f5",
+      "mmio_writes": 0,
+      "clock_stub_calls": 0,
+      "assertions": 3,
+      "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "passed": true
+    },
+    {
+      "address": 2150975856,
+      "case": "fc2-dirty-1",
+      "input": {
+        "dirty": 1,
+        "matrix_i16": [
+          -32768,
+          8192,
+          -17,
+          32767,
+          -1,
+          0,
+          73,
+          -257,
+          1024
+        ],
+        "tail_i16": [
+          -129,
+          -32767
+        ],
+        "flags_u32": 4046337189
+      },
+      "input_sha256": "7226b12d9f03d7c957c376e907fb896ec6eb6f801f398b6c8fe0d4ff6e13ac22",
+      "mmio_writes": 12,
+      "clock_stub_calls": 0,
+      "assertions": 15,
+      "trace_sha256": "08e7dabee7c1ffd0b5e306a358bdbb7001d85e3122a8b994899693f6da2a4686",
+      "passed": true
+    },
+    {
+      "address": 2149406812,
+      "case": "gamma-77",
+      "input": {
+        "words": 77,
+        "first_u32": 270544960,
+        "step_u32": 118695217
+      },
+      "input_sha256": "31cb6147b78169cc6e0dbf693dd05a560379c7b7eeedd3cc4fe54eb1ec734734",
+      "mmio_writes": 79,
+      "clock_stub_calls": 2,
+      "assertions": 84,
+      "trace_sha256": "308cabf11786b25de8b2543ecc63a36bc7e9e2e56b31c78b067c5204e6dd3fdb",
+      "passed": true
+    },
+    {
+      "address": 2149406916,
+      "case": "dci-0",
+      "input": {
+        "words": 0,
+        "first_u32": 270544960,
+        "step_u32": 118695217
+      },
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mmio_writes": 1,
+      "clock_stub_calls": 2,
+      "assertions": 6,
+      "trace_sha256": "b298039228b101af7df0bb484423132da7a3796466e76b10fd034302783b9f98",
+      "passed": true
+    },
+    {
+      "address": 2149406916,
+      "case": "dci-1",
+      "input": {
+        "words": 1,
+        "first_u32": 270544960,
+        "step_u32": 118695217
+      },
+      "input_sha256": "00e2ec331be5d548287a2cf30919b7438f6b2f90df0c5438fc0503146c824da5",
+      "mmio_writes": 2,
+      "clock_stub_calls": 2,
+      "assertions": 7,
+      "trace_sha256": "078ffb645ae638f4c8c6936f25e756b8de070c786fcb0f06dee42a49c0bfe7fe",
+      "passed": true
+    },
+    {
+      "address": 2149406916,
+      "case": "dci-3",
+      "input": {
+        "words": 3,
+        "first_u32": 270544960,
+        "step_u32": 118695217
+      },
+      "input_sha256": "a561ce4a499ed4ef0a54b18f96ac9bde4911ec8ef8f627f583c053e50b9488f6",
+      "mmio_writes": 4,
+      "clock_stub_calls": 2,
+      "assertions": 9,
+      "trace_sha256": "ceef362fa8d4f919beef7db121d1245deb88bb94f58ba7a1e8ee76a974a1c910",
+      "passed": true
+    }
+  ]
+}

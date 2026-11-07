@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis",
+  "commit": "1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470",
+  "public_commit_verified": true,
+  "files": [
+    {
+      "path": "analysis/pipeline-report.html",
+      "commit_blob_sha256": "c110142fbc223700581e30fd972b2565f3c0808eb061c2f3a69709a731210093",
+      "local_equals_commit_normalized": false
+    },
+    {
+      "path": "analysis/dispatch-af.html",
+      "commit_blob_sha256": "bd86c8776d04c8f545cd64f4c8d324cc6243c7ae39781519c8dcdce5ba4efde3",
+      "local_equals_commit_normalized": false
+    }
+  ],
+  "note": "Comparison by analysis question only; Q7 addresses and behavior independently derived.",
+  "used_source": "git show of the pinned public commit; current K-3 working tree differs and was not used as the citation source"
+}

@@ -1,0 +1,1568 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "coordinates": "VA is MIPS runtime address. Original file offsets are given for E03 only. Decoded offsets are relative to the named PT_LOAD. Function ends are exclusive sidecar candidate bounds.",
+  "scope": "CAutoFocusService_LensDriveControl notification binding, capture dispatch, focus-mode arms and lens communication.",
+  "binding": {
+    "pointer": {
+      "name": "m_pfnOnNotifyCommand",
+      "va": "0x80c17e00",
+      "backing": "runtime RAM outside the synthetic analysis ELF PT_LOAD ranges"
+    },
+    "recipient": {
+      "name": "CaptureProcessService_OnNotifyCommand",
+      "va": "0x8040a008"
+    },
+    "condition": "After CAutoFocusService_Initialize has run and while its stored value remains in the slot. CAFSequenceStart invokes Initialize when its state byte at 0x80445549 is zero.",
+    "initialization": "GetOnNotifyCommand returns 0x8040a008 via its JR delay slot. Initialize stores that return value at 0x8037e14c, the delay slot of the subsequent completion getter call. The subsequent return is stored separately at 0x80c17e04.",
+    "raw_scan": "Scanned every aligned u32 in the eight synthetic PT_LOADs for the literal 0x80c17e00 and memory/address instructions with imm16 0x7e00 within 47 earlier words of a matching-register LUI 0x80c1. Found zero literal words and five same-base candidates: one SW in Initialize and four LW in LensDriveControl. The scan does not rule out different address formation, indirect aliases, or runtime overwrites.",
+    "evidence": [
+      {
+        "role": "CAFSequenceStart conditional and call",
+        "words": [
+          {
+            "va": "0x8037e1a4",
+            "u32le_word": "0x92025549",
+            "segment": "E04",
+            "decoded_offset": "0x250724"
+          },
+          {
+            "va": "0x8037e1a8",
+            "u32le_word": "0x10400006",
+            "segment": "E04",
+            "decoded_offset": "0x250728"
+          },
+          {
+            "va": "0x8037e1c4",
+            "u32le_word": "0x0c0df816",
+            "segment": "E04",
+            "decoded_offset": "0x250744"
+          }
+        ]
+      },
+      {
+        "role": "GetOnNotifyCommand call; pointer SW in next getter delay slot; separate completion slot SW",
+        "words": [
+          {
+            "va": "0x8037e13c",
+            "u32le_word": "0x0c103318",
+            "segment": "E04",
+            "decoded_offset": "0x2506bc"
+          },
+          {
+            "va": "0x8037e144",
+            "u32le_word": "0x3c0480c1",
+            "segment": "E04",
+            "decoded_offset": "0x2506c4"
+          },
+          {
+            "va": "0x8037e148",
+            "u32le_word": "0x0c10331b",
+            "segment": "E04",
+            "decoded_offset": "0x2506c8"
+          },
+          {
+            "va": "0x8037e14c",
+            "u32le_word": "0xac827e00",
+            "segment": "E04",
+            "decoded_offset": "0x2506cc"
+          },
+          {
+            "va": "0x8037e154",
+            "u32le_word": "0x3c0680c1",
+            "segment": "E04",
+            "decoded_offset": "0x2506d4"
+          },
+          {
+            "va": "0x8037e15c",
+            "u32le_word": "0xacc27e04",
+            "segment": "E04",
+            "decoded_offset": "0x2506dc"
+          }
+        ]
+      },
+      {
+        "role": "getter returns the recipient VA",
+        "words": [
+          {
+            "va": "0x8040cc60",
+            "u32le_word": "0x3c028041",
+            "segment": "E04",
+            "decoded_offset": "0x2df1e0"
+          },
+          {
+            "va": "0x8040cc64",
+            "u32le_word": "0x03e00008",
+            "segment": "E04",
+            "decoded_offset": "0x2df1e4"
+          },
+          {
+            "va": "0x8040cc68",
+            "u32le_word": "0x2442a008",
+            "segment": "E04",
+            "decoded_offset": "0x2df1e8"
+          }
+        ]
+      }
+    ]
+  },
+  "notification": {
+    "arguments": [
+      "0x0006003c",
+      "0x00000000"
+    ],
+    "focus_control_info": "0x80c6aad4",
+    "field_layout": [
+      {
+        "offset": 0,
+        "bytes": 1,
+        "value": "arg0 mode"
+      },
+      {
+        "offset": 1,
+        "bytes": 1,
+        "value": "arg1"
+      },
+      {
+        "offset": 2,
+        "bytes": 1,
+        "value": "arg2"
+      },
+      {
+        "offset": 4,
+        "bytes": 2,
+        "value": "arg3"
+      },
+      {
+        "offset": 8,
+        "bytes": 4,
+        "value": "arg4"
+      }
+    ],
+    "evidence": [
+      {
+        "role": "getter VA formation and return",
+        "words": [
+          {
+            "va": "0x8042dd54",
+            "u32le_word": "0x3c0280c7",
+            "segment": "E04",
+            "decoded_offset": "0x3002d4"
+          },
+          {
+            "va": "0x8042dd58",
+            "u32le_word": "0x03e00008",
+            "segment": "E04",
+            "decoded_offset": "0x3002d8"
+          },
+          {
+            "va": "0x8042dd5c",
+            "u32le_word": "0x2442aad4",
+            "segment": "E04",
+            "decoded_offset": "0x3002dc"
+          }
+        ]
+      },
+      {
+        "role": "source loads fifth ABI arg, calls getter, and stores context",
+        "words": [
+          {
+            "va": "0x8037eb80",
+            "u32le_word": "0x8fb20038",
+            "segment": "E04",
+            "decoded_offset": "0x251100"
+          },
+          {
+            "va": "0x8037eba4",
+            "u32le_word": "0x0c10b755",
+            "segment": "E04",
+            "decoded_offset": "0x251124"
+          },
+          {
+            "va": "0x8037ebb4",
+            "u32le_word": "0xa0500001",
+            "segment": "E04",
+            "decoded_offset": "0x251134"
+          },
+          {
+            "va": "0x8037ebb8",
+            "u32le_word": "0xac520008",
+            "segment": "E04",
+            "decoded_offset": "0x251138"
+          },
+          {
+            "va": "0x8037ebbc",
+            "u32le_word": "0xa0510000",
+            "segment": "E04",
+            "decoded_offset": "0x25113c"
+          },
+          {
+            "va": "0x8037ebc0",
+            "u32le_word": "0xa0530002",
+            "segment": "E04",
+            "decoded_offset": "0x251140"
+          },
+          {
+            "va": "0x8037ebc8",
+            "u32le_word": "0xa4540004",
+            "segment": "E04",
+            "decoded_offset": "0x251148"
+          }
+        ]
+      },
+      {
+        "role": "default case reads callback and tail-jumps with code and zero",
+        "words": [
+          {
+            "va": "0x8037ebe0",
+            "u32le_word": "0x3c1280c1",
+            "segment": "E04",
+            "decoded_offset": "0x251160"
+          },
+          {
+            "va": "0x8037ebe8",
+            "u32le_word": "0x8e597e00",
+            "segment": "E04",
+            "decoded_offset": "0x251168"
+          },
+          {
+            "va": "0x8037ebec",
+            "u32le_word": "0x3c0f0006",
+            "segment": "E04",
+            "decoded_offset": "0x25116c"
+          },
+          {
+            "va": "0x8037ec0c",
+            "u32le_word": "0x00002821",
+            "segment": "E04",
+            "decoded_offset": "0x25118c"
+          },
+          {
+            "va": "0x8037ec10",
+            "u32le_word": "0x35e4003c",
+            "segment": "E04",
+            "decoded_offset": "0x251190"
+          },
+          {
+            "va": "0x8037ec14",
+            "u32le_word": "0x03200008",
+            "segment": "E04",
+            "decoded_offset": "0x251194"
+          }
+        ]
+      },
+      {
+        "role": "mode 1 reads callback and tail-jumps with code and zero",
+        "words": [
+          {
+            "va": "0x8037ec1c",
+            "u32le_word": "0x3c1280c1",
+            "segment": "E04",
+            "decoded_offset": "0x25119c"
+          },
+          {
+            "va": "0x8037ec30",
+            "u32le_word": "0x8e597e00",
+            "segment": "E04",
+            "decoded_offset": "0x2511b0"
+          },
+          {
+            "va": "0x8037ec34",
+            "u32le_word": "0x3c0f0006",
+            "segment": "E04",
+            "decoded_offset": "0x2511b4"
+          },
+          {
+            "va": "0x8037ec58",
+            "u32le_word": "0x00002821",
+            "segment": "E04",
+            "decoded_offset": "0x2511d8"
+          },
+          {
+            "va": "0x8037ec5c",
+            "u32le_word": "0x35e4003c",
+            "segment": "E04",
+            "decoded_offset": "0x2511dc"
+          },
+          {
+            "va": "0x8037ec60",
+            "u32le_word": "0x03200008",
+            "segment": "E04",
+            "decoded_offset": "0x2511e0"
+          }
+        ]
+      },
+      {
+        "role": "mode 2 reads callback and tail-jumps with code and zero",
+        "words": [
+          {
+            "va": "0x8037ec70",
+            "u32le_word": "0x3c1280c1",
+            "segment": "E04",
+            "decoded_offset": "0x2511f0"
+          },
+          {
+            "va": "0x8037ec88",
+            "u32le_word": "0x8e597e00",
+            "segment": "E04",
+            "decoded_offset": "0x251208"
+          },
+          {
+            "va": "0x8037ec8c",
+            "u32le_word": "0x3c0f0006",
+            "segment": "E04",
+            "decoded_offset": "0x25120c"
+          },
+          {
+            "va": "0x8037ecbc",
+            "u32le_word": "0x00002821",
+            "segment": "E04",
+            "decoded_offset": "0x25123c"
+          },
+          {
+            "va": "0x8037ecc0",
+            "u32le_word": "0x35e4003c",
+            "segment": "E04",
+            "decoded_offset": "0x251240"
+          },
+          {
+            "va": "0x8037ecc4",
+            "u32le_word": "0x03200008",
+            "segment": "E04",
+            "decoded_offset": "0x251244"
+          }
+        ]
+      },
+      {
+        "role": "modes 0 and 3 read callback and tail-jump with code and zero",
+        "words": [
+          {
+            "va": "0x8037ebe0",
+            "u32le_word": "0x3c1280c1",
+            "segment": "E04",
+            "decoded_offset": "0x251160"
+          },
+          {
+            "va": "0x8037ecd0",
+            "u32le_word": "0x3c1280c1",
+            "segment": "E04",
+            "decoded_offset": "0x251250"
+          },
+          {
+            "va": "0x8037ece8",
+            "u32le_word": "0x8e597e00",
+            "segment": "E04",
+            "decoded_offset": "0x251268"
+          },
+          {
+            "va": "0x8037ecec",
+            "u32le_word": "0x3c0f0006",
+            "segment": "E04",
+            "decoded_offset": "0x25126c"
+          },
+          {
+            "va": "0x8037ed1c",
+            "u32le_word": "0x00002821",
+            "segment": "E04",
+            "decoded_offset": "0x25129c"
+          },
+          {
+            "va": "0x8037ed20",
+            "u32le_word": "0x35e4003c",
+            "segment": "E04",
+            "decoded_offset": "0x2512a0"
+          },
+          {
+            "va": "0x8037ed24",
+            "u32le_word": "0x03200008",
+            "segment": "E04",
+            "decoded_offset": "0x2512a4"
+          }
+        ]
+      }
+    ]
+  },
+  "dispatch": {
+    "calculation": "index = (cmd - 0x60001) mod 2^32; require index < 0x3f.",
+    "index": "0x3b",
+    "table_base": "0x804a2af0",
+    "table_slot": "0x804a2bdc",
+    "table_entry": "0x8040a458",
+    "focus_control": "CaptureLensControlService_ExecuteFocusControl at 0x8042e040.",
+    "evidence": [
+      {
+        "role": "offset, bound, table address calculation, load and indirect jump",
+        "words": [
+          {
+            "va": "0x8040a008",
+            "u32le_word": "0x3c06fff9",
+            "segment": "E04",
+            "decoded_offset": "0x2dc588"
+          },
+          {
+            "va": "0x8040a00c",
+            "u32le_word": "0x34c2ffff",
+            "segment": "E04",
+            "decoded_offset": "0x2dc58c"
+          },
+          {
+            "va": "0x8040a010",
+            "u32le_word": "0x00821021",
+            "segment": "E04",
+            "decoded_offset": "0x2dc590"
+          },
+          {
+            "va": "0x8040a018",
+            "u32le_word": "0x2c43003f",
+            "segment": "E04",
+            "decoded_offset": "0x2dc598"
+          },
+          {
+            "va": "0x8040a02c",
+            "u32le_word": "0x1060001e",
+            "segment": "E04",
+            "decoded_offset": "0x2dc5ac"
+          },
+          {
+            "va": "0x8040a034",
+            "u32le_word": "0x3c09804a",
+            "segment": "E04",
+            "decoded_offset": "0x2dc5b4"
+          },
+          {
+            "va": "0x8040a038",
+            "u32le_word": "0x00023880",
+            "segment": "E04",
+            "decoded_offset": "0x2dc5b8"
+          },
+          {
+            "va": "0x8040a03c",
+            "u32le_word": "0x25282af0",
+            "segment": "E04",
+            "decoded_offset": "0x2dc5bc"
+          },
+          {
+            "va": "0x8040a040",
+            "u32le_word": "0x00e82821",
+            "segment": "E04",
+            "decoded_offset": "0x2dc5c0"
+          },
+          {
+            "va": "0x8040a044",
+            "u32le_word": "0x8ca40000",
+            "segment": "E04",
+            "decoded_offset": "0x2dc5c4"
+          },
+          {
+            "va": "0x8040a048",
+            "u32le_word": "0x00800008",
+            "segment": "E04",
+            "decoded_offset": "0x2dc5c8"
+          }
+        ]
+      },
+      {
+        "role": "table slot (data u32) and resolved case call",
+        "words": [
+          {
+            "va": "0x804a2bdc",
+            "u32le_word": "0x8040a458",
+            "segment": "E04",
+            "decoded_offset": "0x37515c"
+          },
+          {
+            "va": "0x8040a458",
+            "u32le_word": "0x0c10b810",
+            "segment": "E04",
+            "decoded_offset": "0x2dc9d8"
+          }
+        ]
+      },
+      {
+        "role": "focus control reads same mode/argument structure",
+        "words": [
+          {
+            "va": "0x8042e044",
+            "u32le_word": "0x3c0580c7",
+            "segment": "E04",
+            "decoded_offset": "0x3005c4"
+          },
+          {
+            "va": "0x8042e04c",
+            "u32le_word": "0x90b0aad4",
+            "segment": "E04",
+            "decoded_offset": "0x3005cc"
+          },
+          {
+            "va": "0x8042e060",
+            "u32le_word": "0x24a2aad4",
+            "segment": "E04",
+            "decoded_offset": "0x3005e0"
+          },
+          {
+            "va": "0x8042e074",
+            "u32le_word": "0x8c460008",
+            "segment": "E04",
+            "decoded_offset": "0x3005f4"
+          },
+          {
+            "va": "0x8042e080",
+            "u32le_word": "0x90510001",
+            "segment": "E04",
+            "decoded_offset": "0x300600"
+          },
+          {
+            "va": "0x8042e084",
+            "u32le_word": "0x90440002",
+            "segment": "E04",
+            "decoded_offset": "0x300604"
+          },
+          {
+            "va": "0x8042e08c",
+            "u32le_word": "0x94450004",
+            "segment": "E04",
+            "decoded_offset": "0x30060c"
+          }
+        ]
+      }
+    ]
+  },
+  "queue": {
+    "handle": "0x80c2aa88",
+    "table_base": "0x8011f0a8",
+    "allowed_nonzero_id_range": [
+      1,
+      17
+    ],
+    "handoff": "LensComThreadCreate stores the MessageQueue_Create result and passes LensComThreadMain as Thread_Create entry. Sender and receiver use that same handle. The worker waits for lens communication to finish before switch dispatch.",
+    "vd_sync_pending_flag": "0x80c2aa48",
+    "evidence": [
+      {
+        "role": "create queue, store handle, register worker entry",
+        "words": [
+          {
+            "va": "0x80116908",
+            "u32le_word": "0x0c04970e",
+            "segment": "E03",
+            "original_file_offset": "0x218bf0"
+          },
+          {
+            "va": "0x80116910",
+            "u32le_word": "0x3c058011",
+            "segment": "E03",
+            "original_file_offset": "0x218bf8"
+          },
+          {
+            "va": "0x80116928",
+            "u32le_word": "0x24a56980",
+            "segment": "E03",
+            "original_file_offset": "0x218c10"
+          },
+          {
+            "va": "0x80116934",
+            "u32le_word": "0xad62aa88",
+            "segment": "E03",
+            "original_file_offset": "0x218c1c"
+          },
+          {
+            "va": "0x80116940",
+            "u32le_word": "0x0c04982e",
+            "segment": "E03",
+            "original_file_offset": "0x218c28"
+          }
+        ]
+      },
+      {
+        "role": "send one command word using queue handle",
+        "words": [
+          {
+            "va": "0x80116afc",
+            "u32le_word": "0x3c0280c3",
+            "segment": "E03",
+            "original_file_offset": "0x218de4"
+          },
+          {
+            "va": "0x80116b00",
+            "u32le_word": "0xafa40018",
+            "segment": "E03",
+            "original_file_offset": "0x218de8"
+          },
+          {
+            "va": "0x80116b04",
+            "u32le_word": "0x8c44aa88",
+            "segment": "E03",
+            "original_file_offset": "0x218dec"
+          },
+          {
+            "va": "0x80116b08",
+            "u32le_word": "0x27a50018",
+            "segment": "E03",
+            "original_file_offset": "0x218df0"
+          },
+          {
+            "va": "0x80116b10",
+            "u32le_word": "0x0c049743",
+            "segment": "E03",
+            "original_file_offset": "0x218df8"
+          },
+          {
+            "va": "0x80116b14",
+            "u32le_word": "0x00003021",
+            "segment": "E03",
+            "original_file_offset": "0x218dfc"
+          }
+        ]
+      },
+      {
+        "role": "receive on same queue, wait for lens, load ID-indexed case target and jump",
+        "words": [
+          {
+            "va": "0x80116984",
+            "u32le_word": "0x3c028012",
+            "segment": "E03",
+            "original_file_offset": "0x218c6c"
+          },
+          {
+            "va": "0x8011699c",
+            "u32le_word": "0x2452f0a8",
+            "segment": "E03",
+            "original_file_offset": "0x218c84"
+          },
+          {
+            "va": "0x801169a8",
+            "u32le_word": "0x8e24aa88",
+            "segment": "E03",
+            "original_file_offset": "0x218c90"
+          },
+          {
+            "va": "0x801169b0",
+            "u32le_word": "0x0c04973b",
+            "segment": "E03",
+            "original_file_offset": "0x218c98"
+          },
+          {
+            "va": "0x801169b8",
+            "u32le_word": "0x8fb00010",
+            "segment": "E03",
+            "original_file_offset": "0x218ca0"
+          },
+          {
+            "va": "0x801169bc",
+            "u32le_word": "0x1200fffb",
+            "segment": "E03",
+            "original_file_offset": "0x218ca4"
+          },
+          {
+            "va": "0x801169c4",
+            "u32le_word": "0x0c043eb1",
+            "segment": "E03",
+            "original_file_offset": "0x218cac"
+          },
+          {
+            "va": "0x801169cc",
+            "u32le_word": "0x2e030012",
+            "segment": "E03",
+            "original_file_offset": "0x218cb4"
+          },
+          {
+            "va": "0x801169d8",
+            "u32le_word": "0x00103080",
+            "segment": "E03",
+            "original_file_offset": "0x218cc0"
+          },
+          {
+            "va": "0x801169dc",
+            "u32le_word": "0x00d22821",
+            "segment": "E03",
+            "original_file_offset": "0x218cc4"
+          },
+          {
+            "va": "0x801169e0",
+            "u32le_word": "0x8ca40000",
+            "segment": "E03",
+            "original_file_offset": "0x218cc8"
+          },
+          {
+            "va": "0x801169e4",
+            "u32le_word": "0x00800008",
+            "segment": "E03",
+            "original_file_offset": "0x218ccc"
+          }
+        ]
+      },
+      {
+        "role": "drive limit getter loads blEnableLensActuatorDriveLimitMode and arms compare against 1",
+        "words": [
+          {
+            "va": "0x8010f36c",
+            "u32le_word": "0x3c0380c3",
+            "segment": "E03",
+            "original_file_offset": "0x211654"
+          },
+          {
+            "va": "0x8010f374",
+            "u32le_word": "0x9062a2e2",
+            "segment": "E03",
+            "original_file_offset": "0x21165c"
+          },
+          {
+            "va": "0x801134d4",
+            "u32le_word": "0x1052000a",
+            "segment": "E03",
+            "original_file_offset": "0x2157bc"
+          },
+          {
+            "va": "0x801135ac",
+            "u32le_word": "0x1052000a",
+            "segment": "E03",
+            "original_file_offset": "0x215894"
+          },
+          {
+            "va": "0x80113654",
+            "u32le_word": "0x1052000a",
+            "segment": "E03",
+            "original_file_offset": "0x21593c"
+          }
+        ]
+      },
+      {
+        "role": "mode 3 sets pending flag and search params; separate VD-sync trigger requires bVDRCState == 1",
+        "words": [
+          {
+            "va": "0x80113560",
+            "u32le_word": "0xa0c4aa4b",
+            "segment": "E03",
+            "original_file_offset": "0x215848"
+          },
+          {
+            "va": "0x80113570",
+            "u32le_word": "0xa465aa4c",
+            "segment": "E03",
+            "original_file_offset": "0x215858"
+          },
+          {
+            "va": "0x80113578",
+            "u32le_word": "0xa044aa48",
+            "segment": "E03",
+            "original_file_offset": "0x215860"
+          },
+          {
+            "va": "0x80111e84",
+            "u32le_word": "0x91835e4a",
+            "segment": "E03",
+            "original_file_offset": "0x21416c"
+          },
+          {
+            "va": "0x80111e90",
+            "u32le_word": "0x146effcd",
+            "segment": "E03",
+            "original_file_offset": "0x214178"
+          },
+          {
+            "va": "0x80111e98",
+            "u32le_word": "0x0c045abe",
+            "segment": "E03",
+            "original_file_offset": "0x214180"
+          },
+          {
+            "va": "0x80111e9c",
+            "u32le_word": "0x24040002",
+            "segment": "E03",
+            "original_file_offset": "0x214184"
+          }
+        ]
+      },
+      {
+        "role": "VD-sync worker runs regular lens transaction then dispatches pending search",
+        "words": [
+          {
+            "va": "0x80114724",
+            "u32le_word": "0x0c044485",
+            "segment": "E03",
+            "original_file_offset": "0x216a0c"
+          },
+          {
+            "va": "0x80114758",
+            "u32le_word": "0x9164aa48",
+            "segment": "E03",
+            "original_file_offset": "0x216a40"
+          },
+          {
+            "va": "0x80114760",
+            "u32le_word": "0x14800004",
+            "segment": "E03",
+            "original_file_offset": "0x216a48"
+          },
+          {
+            "va": "0x80114774",
+            "u32le_word": "0x0c0451a6",
+            "segment": "E03",
+            "original_file_offset": "0x216a5c"
+          }
+        ]
+      }
+    ],
+    "modes": [
+      {
+        "mode": 0,
+        "role": "search start",
+        "focus_control_call": "0x8042e13c",
+        "mode_entry": "0x801134a4",
+        "queue_message": 6,
+        "queue_send_call": "0x801134e4",
+        "queue_trigger": "Drive-limit flag is not 1.",
+        "queue_table_slot": "0x8011f0c0",
+        "worker_case": "0x80116aac",
+        "worker_target": "0x80114698",
+        "lens_communication_call": "0x801146dc",
+        "arguments_a0_a3": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "local_send_buffer": "arg2_u8 || big_endian(arg3_u16)",
+        "evidence": [
+          {
+            "role": "mode branch call and delay slot",
+            "words": [
+              {
+                "va": "0x8042e13c",
+                "u32le_word": "0x0c044d29",
+                "segment": "E04",
+                "decoded_offset": "0x3006bc"
+              },
+              {
+                "va": "0x8042e140",
+                "u32le_word": "0x00000000",
+                "segment": "E04",
+                "decoded_offset": "0x3006c0"
+              }
+            ]
+          },
+          {
+            "role": "queue sender call and delay slot",
+            "words": [
+              {
+                "va": "0x801134e4",
+                "u32le_word": "0x0c045abe",
+                "segment": "E03",
+                "original_file_offset": "0x2157cc"
+              },
+              {
+                "va": "0x801134e8",
+                "u32le_word": "0xa232aa48",
+                "segment": "E03",
+                "original_file_offset": "0x2157d0"
+              }
+            ]
+          },
+          {
+            "role": "queue jump table word and case instruction",
+            "words": [
+              {
+                "va": "0x8011f0c0",
+                "u32le_word": "0x80116aac",
+                "segment": "E03",
+                "original_file_offset": "0x2213a8"
+              },
+              {
+                "va": "0x80116aac",
+                "u32le_word": "0x0c0451a6",
+                "segment": "E03",
+                "original_file_offset": "0x218d94"
+              }
+            ]
+          },
+          {
+            "role": "fourth LensCommunication argument and call",
+            "words": [
+              {
+                "va": "0x801146c4",
+                "u32le_word": "0x24070004",
+                "segment": "E03",
+                "original_file_offset": "0x2169ac"
+              },
+              {
+                "va": "0x801146dc",
+                "u32le_word": "0x0c044485",
+                "segment": "E03",
+                "original_file_offset": "0x2169c4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "mode": 1,
+        "role": "movement stop",
+        "focus_control_call": "0x8042e164",
+        "mode_entry": "0x80113634",
+        "queue_message": 8,
+        "queue_send_call": "0x80113664",
+        "queue_trigger": "Drive-limit flag is not 1.",
+        "queue_table_slot": "0x8011f0c8",
+        "worker_case": "0x80116a8c",
+        "worker_target": "0x80116280",
+        "lens_communication_call": "0x801162a8",
+        "arguments_a0_a3": [
+          0,
+          1,
+          2,
+          6
+        ],
+        "local_send_buffer": "one zero byte",
+        "evidence": [
+          {
+            "role": "mode branch call and delay slot",
+            "words": [
+              {
+                "va": "0x8042e164",
+                "u32le_word": "0x0c044d8d",
+                "segment": "E04",
+                "decoded_offset": "0x3006e4"
+              },
+              {
+                "va": "0x8042e168",
+                "u32le_word": "0x00000000",
+                "segment": "E04",
+                "decoded_offset": "0x3006e8"
+              }
+            ]
+          },
+          {
+            "role": "queue sender call and delay slot",
+            "words": [
+              {
+                "va": "0x80113664",
+                "u32le_word": "0x0c045abe",
+                "segment": "E03",
+                "original_file_offset": "0x21594c"
+              },
+              {
+                "va": "0x80113668",
+                "u32le_word": "0xa232aa4a",
+                "segment": "E03",
+                "original_file_offset": "0x215950"
+              }
+            ]
+          },
+          {
+            "role": "queue jump table word and case instruction",
+            "words": [
+              {
+                "va": "0x8011f0c8",
+                "u32le_word": "0x80116a8c",
+                "segment": "E03",
+                "original_file_offset": "0x2213b0"
+              },
+              {
+                "va": "0x80116a8c",
+                "u32le_word": "0x0c0458a0",
+                "segment": "E03",
+                "original_file_offset": "0x218d74"
+              }
+            ]
+          },
+          {
+            "role": "fourth LensCommunication argument and call",
+            "words": [
+              {
+                "va": "0x80116298",
+                "u32le_word": "0x24070006",
+                "segment": "E03",
+                "original_file_offset": "0x218580"
+              },
+              {
+                "va": "0x801162a8",
+                "u32le_word": "0x0c044485",
+                "segment": "E03",
+                "original_file_offset": "0x218590"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "mode": 2,
+        "role": "location drive",
+        "focus_control_call": "0x8042e174",
+        "mode_entry": "0x8011357c",
+        "queue_message": 7,
+        "queue_send_call": "0x801135bc",
+        "queue_trigger": "Drive-limit flag is not 1.",
+        "queue_table_slot": "0x8011f0c4",
+        "worker_case": "0x80116a9c",
+        "worker_target": "0x801161a8",
+        "lens_communication_call": "0x80116204",
+        "arguments_a0_a3": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "local_send_buffer": "big_endian(arg4_u32) || big_endian(arg3_u16)",
+        "evidence": [
+          {
+            "role": "mode branch call and delay slot",
+            "words": [
+              {
+                "va": "0x8042e174",
+                "u32le_word": "0x0c044d5f",
+                "segment": "E04",
+                "decoded_offset": "0x3006f4"
+              },
+              {
+                "va": "0x8042e178",
+                "u32le_word": "0x00c02021",
+                "segment": "E04",
+                "decoded_offset": "0x3006f8"
+              }
+            ]
+          },
+          {
+            "role": "queue sender call and delay slot",
+            "words": [
+              {
+                "va": "0x801135bc",
+                "u32le_word": "0x0c045abe",
+                "segment": "E03",
+                "original_file_offset": "0x2158a4"
+              },
+              {
+                "va": "0x801135c0",
+                "u32le_word": "0xa232aa49",
+                "segment": "E03",
+                "original_file_offset": "0x2158a8"
+              }
+            ]
+          },
+          {
+            "role": "queue jump table word and case instruction",
+            "words": [
+              {
+                "va": "0x8011f0c4",
+                "u32le_word": "0x80116a9c",
+                "segment": "E03",
+                "original_file_offset": "0x2213ac"
+              },
+              {
+                "va": "0x80116a9c",
+                "u32le_word": "0x0c04586a",
+                "segment": "E03",
+                "original_file_offset": "0x218d84"
+              }
+            ]
+          },
+          {
+            "role": "fourth LensCommunication argument and call",
+            "words": [
+              {
+                "va": "0x801161e0",
+                "u32le_word": "0x24070003",
+                "segment": "E03",
+                "original_file_offset": "0x2184c8"
+              },
+              {
+                "va": "0x80116204",
+                "u32le_word": "0x0c044485",
+                "segment": "E03",
+                "original_file_offset": "0x2184ec"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "mode": 3,
+        "role": "VD-sync search start",
+        "focus_control_call": "0x8042e124",
+        "mode_entry": "0x8011355c",
+        "queue_message": 2,
+        "queue_send_call": "0x80111e98",
+        "queue_trigger": "Separate LensService_MoVdSyncVd path with bVDRCState == 1 and earlier conditions; mode 3 sets pending state.",
+        "queue_table_slot": "0x8011f0b0",
+        "worker_case": "0x80116ae8",
+        "worker_target": "0x80114700",
+        "lens_communication_call": "0x801146dc",
+        "arguments_a0_a3": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "local_send_buffer": "arg2_u8 || big_endian(arg3_u16)",
+        "evidence": [
+          {
+            "role": "mode branch call and delay slot",
+            "words": [
+              {
+                "va": "0x8042e124",
+                "u32le_word": "0x0c044d57",
+                "segment": "E04",
+                "decoded_offset": "0x3006a4"
+              },
+              {
+                "va": "0x8042e128",
+                "u32le_word": "0x00000000",
+                "segment": "E04",
+                "decoded_offset": "0x3006a8"
+              }
+            ]
+          },
+          {
+            "role": "queue sender call and delay slot",
+            "words": [
+              {
+                "va": "0x80111e98",
+                "u32le_word": "0x0c045abe",
+                "segment": "E03",
+                "original_file_offset": "0x214180"
+              },
+              {
+                "va": "0x80111e9c",
+                "u32le_word": "0x24040002",
+                "segment": "E03",
+                "original_file_offset": "0x214184"
+              }
+            ]
+          },
+          {
+            "role": "queue jump table word and case instruction",
+            "words": [
+              {
+                "va": "0x8011f0b0",
+                "u32le_word": "0x80116ae8",
+                "segment": "E03",
+                "original_file_offset": "0x221398"
+              },
+              {
+                "va": "0x80116ae8",
+                "u32le_word": "0x0c0451c0",
+                "segment": "E03",
+                "original_file_offset": "0x218dd0"
+              }
+            ]
+          },
+          {
+            "role": "fourth LensCommunication argument and call",
+            "words": [
+              {
+                "va": "0x801146c4",
+                "u32le_word": "0x24070004",
+                "segment": "E03",
+                "original_file_offset": "0x2169ac"
+              },
+              {
+                "va": "0x801146dc",
+                "u32le_word": "0x0c044485",
+                "segment": "E03",
+                "original_file_offset": "0x2169c4"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "lens_boundary": {
+    "function": "LensService_LensCommunication at 0x80111214",
+    "behavior": "Uses the last three one-byte arguments to obtain send length, receive length and communication mode from lens maps. When permitted, copies the requested bytes into its send command buffer and calls LensCommunicationBase. The caller-local byte order shown above is observed before this gate and buffer copy.",
+    "driver": "LensCommunicationBase has GPIO handshaking, an event wait and SIO receive calls. The report does not infer a complete lens transaction waveform or a physical lens move.",
+    "evidence": [
+      {
+        "role": "lens-map checks/sizes/mode and call into base",
+        "words": [
+          {
+            "va": "0x80111248",
+            "u32le_word": "0x1062003a",
+            "segment": "E03",
+            "original_file_offset": "0x213530"
+          },
+          {
+            "va": "0x80111270",
+            "u32le_word": "0x0c045d67",
+            "segment": "E03",
+            "original_file_offset": "0x213558"
+          },
+          {
+            "va": "0x80111284",
+            "u32le_word": "0x0c045d78",
+            "segment": "E03",
+            "original_file_offset": "0x21356c"
+          },
+          {
+            "va": "0x80111298",
+            "u32le_word": "0x0c045d89",
+            "segment": "E03",
+            "original_file_offset": "0x213580"
+          },
+          {
+            "va": "0x801112d4",
+            "u32le_word": "0x0c044314",
+            "segment": "E03",
+            "original_file_offset": "0x2135bc"
+          },
+          {
+            "va": "0x8011133c",
+            "u32le_word": "0x0c043f7c",
+            "segment": "E03",
+            "original_file_offset": "0x213624"
+          },
+          {
+            "va": "0x80111344",
+            "u32le_word": "0x1440ffc2",
+            "segment": "E03",
+            "original_file_offset": "0x21362c"
+          }
+        ]
+      },
+      {
+        "role": "GPIO event, event wait and conditional SIO receive calls",
+        "words": [
+          {
+            "va": "0x80110cdc",
+            "u32le_word": "0x0c041784",
+            "segment": "E03",
+            "original_file_offset": "0x212fc4"
+          },
+          {
+            "va": "0x80110e54",
+            "u32le_word": "0x0c0496f8",
+            "segment": "E03",
+            "original_file_offset": "0x21313c"
+          },
+          {
+            "va": "0x80110eec",
+            "u32le_word": "0x0c0423e8",
+            "segment": "E03",
+            "original_file_offset": "0x2131d4"
+          },
+          {
+            "va": "0x80110f08",
+            "u32le_word": "0x0c042374",
+            "segment": "E03",
+            "original_file_offset": "0x2131f0"
+          }
+        ]
+      }
+    ]
+  },
+  "bounded_replay": {
+    "engine": "angr 10.0.5 / VEX",
+    "binding_case": {
+      "start": "0x8037e13c",
+      "stop": "0x8040cc6c",
+      "pointer": "0x80c17e00",
+      "value": "0x8040a008"
+    },
+    "cases": [
+      {
+        "mode": 0,
+        "recipient": "0x8040a008",
+        "callback_arguments": [
+          393276,
+          0
+        ],
+        "focus_entry": "0x8042e040",
+        "mode_entry": "0x801134a4",
+        "queue_message": 6,
+        "message_source": "mode branch",
+        "lens_communication_arguments": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "local_payload_hex": "123456"
+      },
+      {
+        "mode": 1,
+        "recipient": "0x8040a008",
+        "callback_arguments": [
+          393276,
+          0
+        ],
+        "focus_entry": "0x8042e040",
+        "mode_entry": "0x80113634",
+        "queue_message": 8,
+        "message_source": "mode branch",
+        "lens_communication_arguments": [
+          0,
+          1,
+          2,
+          6
+        ],
+        "local_payload_hex": "00"
+      },
+      {
+        "mode": 2,
+        "recipient": "0x8040a008",
+        "callback_arguments": [
+          393276,
+          0
+        ],
+        "focus_entry": "0x8042e040",
+        "mode_entry": "0x8011357c",
+        "queue_message": 7,
+        "message_source": "mode branch",
+        "lens_communication_arguments": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "local_payload_hex": "123456783456"
+      },
+      {
+        "mode": 3,
+        "recipient": "0x8040a008",
+        "callback_arguments": [
+          393276,
+          0
+        ],
+        "focus_entry": "0x8042e040",
+        "mode_entry": "0x8011355c",
+        "queue_message": 2,
+        "message_source": "independent VD-sync trigger",
+        "lens_communication_arguments": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "local_payload_hex": "123456"
+      }
+    ],
+    "command": "python tools/check_lens_routing.py .private/analysis.elf --output .private/lens-replay.json",
+    "limits": [
+      "Synthetic state checks confirm the binding store, message/argument dispatch and caller-local send bytes. Stops before entering LensService_LensCommunication.",
+      "Lens thread queue receipt is supplied as an input; no ThreadX scheduling, MMIO or physical lens behavior is exercised.",
+      "Mode 3 supplies the separate VD-sync queue event and resumes the pending-flag check after the prior periodic communication call."
+    ],
+    "test_inputs": {
+      "arg1": 1,
+      "arg2": "0x12",
+      "arg3": "0x3456",
+      "arg4": "0x12345678"
+    }
+  },
+  "selected_functions": [
+    {
+      "name": "LensService_GetLensActuatorDriveLimitModeEnable",
+      "entry_va": "0x8010f36c",
+      "candidate_end_va": "0x8010f378",
+      "segment": "E03",
+      "original_file_offset": "0x211654"
+    },
+    {
+      "name": "LensService_LensCommunicationBase",
+      "entry_va": "0x80110c50",
+      "candidate_end_va": "0x80111030",
+      "segment": "E03",
+      "original_file_offset": "0x212f38",
+      "c_sha256": "563481042fd599dc1986bedc547ac9a2c519e5fb5a43cdaea3e3430630e7e2a8",
+      "asm_sha256": "dc0b7d4f56c48467ffd5485a0f6ceb91100ee37cb41e72435b77d4c4c9a3b1a4"
+    },
+    {
+      "name": "LensService_LensCommunicationInterface",
+      "entry_va": "0x80111168",
+      "candidate_end_va": "0x80111214",
+      "segment": "E03",
+      "original_file_offset": "0x213450",
+      "c_sha256": "0e55b6b801d784acd9613ab0427f3f18eba9e8656ee56f68f797f811110e9f64",
+      "asm_sha256": "71e6413083cf367dd45dab936cbb4a6ecf14e64e5d15db55dfe108536d98bf09"
+    },
+    {
+      "name": "LensService_LensCommunication",
+      "entry_va": "0x80111214",
+      "candidate_end_va": "0x80111354",
+      "segment": "E03",
+      "original_file_offset": "0x2134fc",
+      "c_sha256": "01e0162620b75fff9dd218415f6864ddedc50faff1bb0521f204321d84176aaa",
+      "asm_sha256": "7ae25c2307e6172885c3171cb12dfbc312c79699111e0eed09fcae90e27776fa"
+    },
+    {
+      "name": "LensService_MoVdSyncVd",
+      "entry_va": "0x80111d58",
+      "candidate_end_va": "0x80111f30",
+      "segment": "E03",
+      "original_file_offset": "0x214040"
+    },
+    {
+      "name": "LensDataServer_SetFocusSerchStart",
+      "entry_va": "0x801134a4",
+      "candidate_end_va": "0x8011355c",
+      "segment": "E03",
+      "original_file_offset": "0x21578c",
+      "c_sha256": "684a0e988cf1c759191a7ca766f755e0cac88cec6eb507149b0a237d99a2b621",
+      "asm_sha256": "4dc6c7990fa4d12a3c03072cb4063c6e10221a123a4013ccb9bf78df8f70ab17"
+    },
+    {
+      "name": "LensDataServer_SetFocusSerchStartVdSync",
+      "entry_va": "0x8011355c",
+      "candidate_end_va": "0x8011357c",
+      "segment": "E03",
+      "original_file_offset": "0x215844",
+      "c_sha256": "da9997c43075433ed3740c7d6cbd3a7b24551d4a571581fd2d2149ce06f80909",
+      "asm_sha256": "2c7805e0b380d73715814d59b46b6cca126f45bf53a60e4dd2bb9e97c2a854cd"
+    },
+    {
+      "name": "LensDataServer_SetFocusLocationDrive",
+      "entry_va": "0x8011357c",
+      "candidate_end_va": "0x80113634",
+      "segment": "E03",
+      "original_file_offset": "0x215864",
+      "c_sha256": "d856e8c298b3c9bcf4cf343dd5d1827c5f0ebb6578c85597e760df012d9b9fb8",
+      "asm_sha256": "94b97a3a04b9270b927e8c87892266accccc2ac33a6cf9cc7b8df872f0b0848e"
+    },
+    {
+      "name": "LensDataServer_SetFocusMovementStop",
+      "entry_va": "0x80113634",
+      "candidate_end_va": "0x801136dc",
+      "segment": "E03",
+      "original_file_offset": "0x21591c",
+      "c_sha256": "e7978f79c60716b3f152a903ba322a80846928e026b3ee3f299f5fade198d1a6",
+      "asm_sha256": "320fa9045ef6375e1c2d60cd1e21d5e3065d8e920232aa91388b27299b892be2"
+    },
+    {
+      "name": "LensDataServer_ComSetFocusSerchStart",
+      "entry_va": "0x80114698",
+      "candidate_end_va": "0x80114700",
+      "segment": "E03",
+      "original_file_offset": "0x216980",
+      "c_sha256": "337f424b67a1bf8501176abdeb1ac42bcc9eeec054576f12b8766c5b6e11be48",
+      "asm_sha256": "89ccd94d6f0e10807939cef86c4ce62f23642be7d8fbb803f35791fbb056d72e"
+    },
+    {
+      "name": "LensDataServer_VdSyncRegularCommunicationAf",
+      "entry_va": "0x80114700",
+      "candidate_end_va": "0x80114798",
+      "segment": "E03",
+      "original_file_offset": "0x2169e8"
+    },
+    {
+      "name": "LensDataServer_VdSyncRegularCommunication",
+      "entry_va": "0x80115c8c",
+      "candidate_end_va": "0x80115f50",
+      "segment": "E03",
+      "original_file_offset": "0x217f74",
+      "c_sha256": "081d1f3a62033af9a2d8dc357642ef698c226c6d17324ed608cd3ac961e530a5",
+      "asm_sha256": "bae69f872b3df23ae61f1a62be1fd2cfe630223b6aa3c571871e5d2dbb8214d0"
+    },
+    {
+      "name": "LensDataServer_ComSetFocusLocationDrive",
+      "entry_va": "0x801161a8",
+      "candidate_end_va": "0x80116228",
+      "segment": "E03",
+      "original_file_offset": "0x218490",
+      "c_sha256": "ebc8dfbbe9892ad7de62e0a1fcbb7ac72f3cd73d9b004293d038ead866365958",
+      "asm_sha256": "78ea032edafd896eb484c3df816d8cf870664a1ff1b76d1f4746509a354c1dbe"
+    },
+    {
+      "name": "LensDataServer_ComSetFocusMovementStop",
+      "entry_va": "0x80116280",
+      "candidate_end_va": "0x801162cc",
+      "segment": "E03",
+      "original_file_offset": "0x218568",
+      "c_sha256": "f746870ef1fd7659b9a92f0f18e6f4943ff383086c0c44e41b231aee344df990",
+      "asm_sha256": "f067e417ba4b4ec0a5811aa118a233657b6777f90f4bb5385fb2db7d946c7400"
+    },
+    {
+      "name": "LensComThreadService_LensComThreadCreate",
+      "entry_va": "0x801168c4",
+      "candidate_end_va": "0x80116974",
+      "segment": "E03",
+      "original_file_offset": "0x218bac",
+      "c_sha256": "de5c32db8479fb9268c5bfa25118dfbac2588f3e4ba8b5aa7699625c8d4f3cba",
+      "asm_sha256": "98344498ec586b0ca62eb661071e6eadd6d7d0ee850bdbb02aa8596ab1dcfb76"
+    },
+    {
+      "name": "LensComThreadService_LensComThreadMain",
+      "entry_va": "0x80116980",
+      "candidate_end_va": "0x80116af8",
+      "segment": "E03",
+      "original_file_offset": "0x218c68",
+      "c_sha256": "b9988cae22db6cb46b3bfa3a486a671bddb14f1c8dde0f9b083f1b111818a72d",
+      "asm_sha256": "bf7ab1feb6fc7378d89c1fb3d42622d6594e763a5c4486f130382160620ff6a2"
+    },
+    {
+      "name": "LensComThreadService_LensCommunicationSendMessage",
+      "entry_va": "0x80116af8",
+      "candidate_end_va": "0x80116b24",
+      "segment": "E03",
+      "original_file_offset": "0x218de0",
+      "c_sha256": "2c2db3ab5e507385fc7de0aff1f113ff86699dce37449ca6534f518fe31d6f1a",
+      "asm_sha256": "42fa98dcb309018f767d49760ab4aba92a025e1bfe6f9234977735dacbea4642"
+    },
+    {
+      "name": "CAutoFocusService_Initialize",
+      "entry_va": "0x8037e058",
+      "candidate_end_va": "0x8037e194",
+      "segment": "E04",
+      "decoded_offset": "0x2505d8",
+      "c_sha256": "c7b43d68d2670edb7f643cd964fac343ffa14f8da0407a6974bb349013f0d499",
+      "asm_sha256": "85913e1f29d083e2bc1f7c92b30be2baf918e213ca926cd510a919773eeabd5e"
+    },
+    {
+      "name": "CAutoFocusService_CAFSequenceStart",
+      "entry_va": "0x8037e194",
+      "candidate_end_va": "0x8037e1f8",
+      "segment": "E04",
+      "decoded_offset": "0x250714",
+      "c_sha256": "8879e4a6e99d318b442151ed24e4da2539b05ab183e4e2b25be9e22b848a4428",
+      "asm_sha256": "b991e9fb46ef1e3da375d4374ed3c1c222474f3f1194603f2733811fa7944d31"
+    },
+    {
+      "name": "CAutoFocusService_LensDriveControl",
+      "entry_va": "0x8037eb78",
+      "candidate_end_va": "0x8037ed2c",
+      "segment": "E04",
+      "decoded_offset": "0x2510f8",
+      "c_sha256": "8f0883d29be628b20119d7ec6185ac8bf81e7f375a2cd56d1159b622198ca011",
+      "asm_sha256": "2eb3d1bb3c75aa35d9796b8326ddc13f15435eeb10805898328cae281160a3fc"
+    },
+    {
+      "name": "CaptureProcessService_OnNotifyCommand",
+      "entry_va": "0x8040a008",
+      "candidate_end_va": "0x8040a81c",
+      "segment": "E04",
+      "decoded_offset": "0x2dc588",
+      "c_sha256": "44fdf421d09c24d05205f539fdeac3cef97c96b65e93200dfb08c7a7bd355700",
+      "asm_sha256": "e81e291f42dc74b4410dc9cce205bf76cce1c63b820cdac4b21f325989b84323"
+    },
+    {
+      "name": "CaptureProcessService_GetOnNotifyCommand",
+      "entry_va": "0x8040cc60",
+      "candidate_end_va": "0x8040cc6c",
+      "segment": "E04",
+      "decoded_offset": "0x2df1e0",
+      "c_sha256": "a87685b3cf3f6af8c8ff817842e2aea4e0812b907eed3e397d118c149d6b31fa",
+      "asm_sha256": "1ca57af67a7e12c9894417b6294ed1341be85d5b513ed088fd8cb4da6324807f"
+    },
+    {
+      "name": "CaptureLensControlService_GetFocusControlInfo",
+      "entry_va": "0x8042dd54",
+      "candidate_end_va": "0x8042dd60",
+      "segment": "E04",
+      "decoded_offset": "0x3002d4",
+      "c_sha256": "d711b160791839474e3630273bdb9a804473a3996d7affa3c59721327a0b260d",
+      "asm_sha256": "f83e29ea6735ec7fe11a820875670a433f153303f7f078c7d9e857f3176e887c"
+    },
+    {
+      "name": "CaptureLensControlService_ExecuteFocusControl",
+      "entry_va": "0x8042e040",
+      "candidate_end_va": "0x8042e184",
+      "segment": "E04",
+      "decoded_offset": "0x3005c0",
+      "c_sha256": "4934305159ac46d7b018aaa562fd281f9fcd032aa0a20fd3ef63dc9fd96a8742",
+      "asm_sha256": "4ad8511faff5dd272535147e4d7214a42f60854538977cd8ca3bc34c6187c12e"
+    }
+  ],
+  "limitations": [
+    "Named static route is conditional on initialization and relevant state/queue conditions.",
+    "No camera or lens execution. Physical travel units, protocol-level pin signaling and hardware responses were not measured.",
+    "Raw decompilation/assembly and extracted firmware stay in private local storage."
+  ]
+}
