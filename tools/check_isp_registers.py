@@ -1,6 +1,7 @@
 """Replay five Q7 ISP writers with VEX and synthetic RAM in place of MMIO."""
 import argparse
 import hashlib
+import io
 import json
 import struct
 from pathlib import Path
@@ -10,6 +11,17 @@ ELF_SHA256 = "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796"
 SCOPE = "Concrete MIPS replay with synthetic RAM MMIO and a clock stub; no hardware, pixels or camera runtime."
 CHECKS = "Trace length, each ordered event, successful return and restored stack; invalid memory accesses trap separately."
 SOURCE, STACK_TOP, RETURN_PC, CLOCK = 0x10001000, 0x70001000, 0x0BADF000, 0x8000F6A4
+
+
+def load_project(path):
+    """Execute exactly the bytes whose identity was checked, without reopening."""
+    if not __debug__:
+        raise RuntimeError('Replay requires assertions')
+    data = path.read_bytes()
+    if hashlib.sha256(data).hexdigest() != ELF_SHA256:
+        raise ValueError('expected SHA-pinned Q7 analysis ELF')
+    import angr
+    return angr.Project(io.BytesIO(data), auto_load_libs=False)
 
 
 def reference_cases():
@@ -134,8 +146,6 @@ def main():
     args = parser.parse_args()
     if args.output.exists():
         parser.error("output must not exist")
-    if hashlib.sha256(args.elf.read_bytes()).hexdigest() != ELF_SHA256:
-        parser.error("input ELF does not match the analyzed firmware SHA-256")
 
     import angr
 
@@ -144,7 +154,7 @@ def main():
             self.state.globals["isp_events"].append(("clock", self.state.solver.eval_one(unit),
                                                     self.state.solver.eval_one(enabled)))
 
-    project = angr.Project(str(args.elf), auto_load_libs=False)
+    project = load_project(args.elf)
     if project.arch.name != "MIPS32" or project.arch.memory_endness != "Iend_LE":
         raise RuntimeError("expected a little-endian MIPS32 ELF")
     project.hook(CLOCK, ClockStub())

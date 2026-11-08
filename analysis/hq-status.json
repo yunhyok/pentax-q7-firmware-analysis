@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "ca3a9ba3bb7bdf77a484b2964b4dd15d8c233ba8",
-  "updated_at": "2026-11-08T14:57:38+09:00",
+  "baseline_commit": "2f850e7f1ef5bd4a4024574f66b035c359bc133d",
+  "updated_at": "2026-11-08T15:19:04+09:00",
   "goals": {
     "rebuild": {
       "status": "offline round-trip and bounded instruction-change replay passed; camera acceptance unverified",
@@ -63,8 +63,8 @@
         "Resource relocation, full-screen redraw and physical display"
       ],
       "next_actions": [
-        "Test authored resource replacement within existing ID/geometry/palette constraints",
-        "Preserve Q7 physical-input and setting interfaces"
+        "Trace the common sRGB/AdobeRGB selector from input to pending/current state, confirmation/cancel, setters and text/focus rendering.",
+        "Use HQ semantic UI contract; do not equate numeric events or ABI across models."
       ]
     }
   },
@@ -73,7 +73,9 @@
     "One MIPS delay-slot instruction can be changed without moving segment or block boundaries; rebuilt analysis code returns 1 instead of 0.",
     "The application update gate checks three footer IDs and an additive byte checksum excluding the last 32 bytes.",
     "The supplied burn header selects NAND and has its optional MD5-worker flag set to zero; later integrity checks remain unexcluded.",
-    "Q7 indexed LCD icon rendering uses one byte per palette index; the internal LCD geometry is distinct from physical panel dot count."
+    "Q7 indexed LCD icon rendering uses one byte per palette index; the internal LCD geometry is distinct from physical panel dot count.",
+    "Review fixes: repacker rolls back owned files on failed or short writes; pinned replay tools execute the verified byte snapshot without reopening the path.",
+    "Further offline research is in progress: original BurnNand prefix to section-map return and lens discovery/policy/completion; public evidence integration pending."
   ],
   "validation": [
     {
@@ -115,6 +117,21 @@
       "command": "Browser rendering of implementation-report.html",
       "result": "Three accessible SVG diagrams; inspected rebuild/UI layout and anchor navigation; no document horizontal overflow at 1265 px",
       "limits": "Desktop viewport only"
+    },
+    {
+      "command": "python -m unittest discover -s tests -p test_repack_q7.py -v",
+      "result": "8 passed including output failure/short-write rollback, retry and foreign-file preservation",
+      "limits": "Handled exceptions; not process-kill or power-loss atomicity"
+    },
+    {
+      "command": "python -m unittest discover -s tests -p test_pinned_elf.py -v",
+      "result": "2 passed; changed pathname does not change the verified executable bytes; wrong digest rejected",
+      "limits": "Synthetic loader-boundary regression"
+    },
+    {
+      "command": "GitHub Actions for 2f850e7",
+      "result": "Validation 42452782255 and Pages 42452781507 completed successfully",
+      "limits": "Published offline metadata, not hardware execution"
     }
   ],
   "artifacts": [

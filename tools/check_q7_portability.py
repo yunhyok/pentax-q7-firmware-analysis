@@ -5,7 +5,7 @@ import json
 import struct
 from pathlib import Path
 
-from check_isp_registers import ELF_SHA256, RETURN_PC, STACK_TOP
+from check_isp_registers import ELF_SHA256, load_project, RETURN_PC, STACK_TOP
 
 
 APPROXIMATION = 0x8037D704
@@ -180,11 +180,9 @@ def draw(project, angr):
 def replay(elf):
     if not __debug__:
         raise RuntimeError('replay requires assertions')
-    if digest(elf.read_bytes()) != ELF_SHA256:
-        raise ValueError('expected SHA-pinned Q7 ELF')
     import angr
 
-    project = angr.Project(str(elf), auto_load_libs=False)
+    project = load_project(elf)
     if project.arch.name != 'MIPS32' or project.arch.memory_endness != 'Iend_LE':
         raise ValueError('expected little-endian MIPS32 ELF')
     cases = list(fit_cases())

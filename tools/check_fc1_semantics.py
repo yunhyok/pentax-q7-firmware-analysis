@@ -1,11 +1,10 @@
 """Replay Q7 topology input classification and alternate FC1 control-word sources."""
 import argparse
-import hashlib
 import json
 import struct
 from pathlib import Path
 
-from check_isp_registers import ELF_SHA256, RETURN_PC, STACK_TOP
+from check_isp_registers import ELF_SHA256, load_project, RETURN_PC, STACK_TOP
 
 
 OBJ, DESCRIPTOR, PAYLOAD = 0x10001000, 0x10002000, 0x10003000
@@ -177,11 +176,9 @@ def replay_case(project, angr, case):
 
 
 def replay(elf):
-    if hashlib.sha256(elf.read_bytes()).hexdigest() != ELF_SHA256:
-        raise ValueError('expected SHA-pinned Q7 ELF')
     import angr
 
-    project = angr.Project(str(elf), auto_load_libs=False)
+    project = load_project(elf)
     if project.arch.name != 'MIPS32' or project.arch.memory_endness != 'Iend_LE':
         raise ValueError('expected little-endian MIPS32 ELF')
     report = reference()

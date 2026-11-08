@@ -1,11 +1,15 @@
-"""Exercise guarded repacking, especially copies that cross block boundaries."""
+"""Exercise guarded repacking and private output rollback."""
+import json
 import struct
 import sys
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import Mock, patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
 from decode_segments import HEADER, decode_segment
-from repack_q7 import PRIVATE, footer_check, pack_bits, patch_plan, private_output, rebuild_stream
+from repack_q7 import PRIVATE, footer_check, pack_bits, patch_plan, private_output, rebuild_stream, write_outputs
 
 
 def fixture(capacity=2):
@@ -59,6 +63,96 @@ class RepackTests(unittest.TestCase):
         self.assertEqual(result['identifiers'],['ORION','KB538','77690'])
         self.assertFalse(footer_check(b'\xff'+data[1:])['sum_matches'])
         self.assertTrue(footer_check(data[:-1]+b'\xff')['sum_matches'])
+
+
+class WriteOutputsTests(unittest.TestCase):
+    def setUp(self):
+        temporary = TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        private = Path(temporary.name)
+        private_patch = patch('repack_q7.PRIVATE', private)
+        private_patch.start()
+        self.addCleanup(private_patch.stop)
+        self.output = private / 'candidate'
+        self.package = b'candidate bytes'
+        self.elf = b'expanded bytes'
+        self.report = {'byte_identical': True}
+
+    def assert_output(self, output):
+        self.assertEqual((output / 'research-update.bin').read_bytes(), self.package)
+        self.assertEqual((output / 'analysis-expanded.elf').read_bytes(), self.elf)
+        self.assertEqual(json.loads((output / 'repack-report.json').read_bytes()), self.report)
+
+    def test_success_and_existing_output_preserved(self):
+        real_open = Path.open
+        opened = []
+
+        def record_open(path, mode, **kwargs):
+            opened.append((path.name, mode))
+            return real_open(path, mode, **kwargs)
+
+        with patch.object(Path, 'open', record_open):
+            write_outputs(self.output, self.package, self.elf, self.report)
+        self.assertEqual(opened, [
+            ('research-update.bin', 'xb'),
+            ('analysis-expanded.elf', 'xb'),
+            ('repack-report.json', 'xb'),
+        ])
+        with self.assertRaisesRegex(ValueError, 'must not exist'):
+            write_outputs(self.output, b'replacement', b'replacement', {})
+        self.assert_output(self.output)
+
+    def test_partial_second_write_rolls_back_and_allows_retry(self):
+        real_open = Path.open
+        failure = OSError('injected write failure')
+
+        for short_write in (False, True):
+            with self.subTest(short_write=short_write):
+                output = self.output.with_name(f'candidate-{short_write}')
+
+                @contextmanager
+                def fail_open(path, mode, **kwargs):
+                    with real_open(path, mode, **kwargs) as stream:
+                        if path.name != 'analysis-expanded.elf':
+                            yield stream
+                            return
+
+                        def incomplete_write(data):
+                            written = stream.write(data[:2])
+                            if not short_write:
+                                raise failure
+                            return written
+
+                        partial = Mock(wraps=stream)
+                        partial.write.side_effect = incomplete_write
+                        yield partial
+
+                with patch.object(Path, 'open', fail_open):
+                    if short_write:
+                        with self.assertRaisesRegex(OSError, 'short write for analysis-expanded.elf'):
+                            write_outputs(output, self.package, self.elf, self.report)
+                    else:
+                        with self.assertRaises(OSError) as caught:
+                            write_outputs(output, self.package, self.elf, self.report)
+                        self.assertIs(caught.exception, failure)
+                self.assertFalse(output.exists())
+                write_outputs(output, self.package, self.elf, self.report)
+                self.assert_output(output)
+
+    def test_exclusive_open_collision_preserves_foreign_file(self):
+        real_open = Path.open
+        foreign = self.output / 'analysis-expanded.elf'
+
+        def collide(path, mode, **kwargs):
+            if path == foreign:
+                with real_open(foreign, 'xb') as stream:
+                    stream.write(b'foreign')
+            return real_open(path, mode, **kwargs)
+
+        with patch.object(Path, 'open', collide), self.assertRaises(FileExistsError):
+            write_outputs(self.output, self.package, self.elf, self.report)
+        self.assertEqual(list(self.output.iterdir()), [foreign])
+        self.assertEqual(foreign.read_bytes(), b'foreign')
 
 
 if __name__=='__main__': unittest.main()

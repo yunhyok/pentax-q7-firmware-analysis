@@ -1,11 +1,10 @@
 """Replay the Q7 AF callback and focus dispatch to the lens API boundary."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
 
-ELF_SHA256 = "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796"
+from check_isp_registers import ELF_SHA256, load_project
 ELF_SIZE = 12504100
 CALLBACK_SLOT = 0x80c17e00
 RECIPIENT = 0x8040a008
@@ -21,12 +20,9 @@ def require(condition, message):
 
 
 def replay(elf):
-    require(elf.stat().st_size == ELF_SIZE
-            and hashlib.sha256(elf.read_bytes()).hexdigest() == ELF_SHA256,
-            "expected the SHA-pinned Q7 v1.01 analysis ELF")
     import angr
 
-    project = angr.Project(str(elf), auto_load_libs=False)
+    project = load_project(elf)
     options = {angr.options.ZERO_FILL_UNCONSTRAINED_MEMORY,
                angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS}
     endness = project.arch.memory_endness

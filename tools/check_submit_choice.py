@@ -1,9 +1,9 @@
 """Replay Q7 HDR output descriptor selection on the pinned analysis ELF."""
 import argparse
-import hashlib
 import json
 import struct
 from pathlib import Path
+from check_isp_registers import ELF_SHA256, load_project
 
 ELF_SHA256 = "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796"
 RETURN, STACK = 0x0BADF000, 0x70002000
@@ -29,10 +29,8 @@ ZERO_STUBS = {
 def replay(elf):
     if not __debug__:
         raise RuntimeError("Replay requires assertions")
-    if hashlib.sha256(elf.read_bytes()).hexdigest() != ELF_SHA256:
-        raise ValueError("expected SHA-pinned Q7 analysis ELF")
     import angr
-    project = angr.Project(str(elf), auto_load_libs=False)
+    project = load_project(elf)
 
     def concrete(state, expression):
         assert not expression.symbolic

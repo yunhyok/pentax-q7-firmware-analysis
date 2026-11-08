@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import struct
+from contextlib import suppress
 from pathlib import Path
 
 from build_analysis_elf import PLAIN, DECODED, assemble
@@ -194,6 +195,33 @@ def rebuild(firmware, patches):
     return bytes(result),elf,report
 
 
+def write_outputs(output_dir, package, elf, report):
+    """Write the report last and roll back files created by this invocation."""
+    output_dir = private_output(output_dir)
+    outputs = (
+        ('research-update.bin', package),
+        ('analysis-expanded.elf', elf),
+        ('repack-report.json', (json.dumps(report, indent=2) + '\n').encode('utf-8')),
+    )
+    created = []
+    output_dir.mkdir(parents=True)
+    try:
+        for name, data in outputs:
+            path = output_dir / name
+            with path.open('xb', buffering=0) as stream:
+                created.append(path)
+                written = stream.write(data)
+                if written != len(data):
+                    raise OSError(f'short write for {name}: expected {len(data)} bytes, wrote {written}')
+    except BaseException:
+        for path in reversed(created):
+            with suppress(OSError):
+                path.unlink()
+        with suppress(OSError):
+            output_dir.rmdir()
+        raise
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('firmware',type=Path)
@@ -205,10 +233,7 @@ def main():
     patches=json.loads(args.patches.read_text(encoding='utf-8')) if args.patches else []
     if not isinstance(patches,list): parser.error('patches must be a JSON array')
     package,elf,report=rebuild(args.firmware.read_bytes(),patches)
-    args.output_dir.mkdir(parents=True)
-    (args.output_dir/'research-update.bin').write_bytes(package)
-    (args.output_dir/'analysis-expanded.elf').write_bytes(elf)
-    (args.output_dir/'repack-report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+    write_outputs(args.output_dir, package, elf, report)
     print(json.dumps({k:report[k] for k in ('input_sha256','output_sha256','byte_identical','analysis_elf_sha256')}))
 
 

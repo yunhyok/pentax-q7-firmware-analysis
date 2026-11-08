@@ -4,7 +4,7 @@ import hashlib
 import json
 import struct
 from pathlib import Path
-from check_isp_registers import ELF_SHA256
+from check_isp_registers import ELF_SHA256, load_project
 
 ENTRY=0x807F1820
 RETURN,STACK,BUFFER=0x0BADF000,0x70008000,0x10000000
@@ -47,10 +47,8 @@ def reference():
 
 def replay(elf):
     if not __debug__: raise RuntimeError('Replay requires assertions')
-    if hashlib.sha256(elf.read_bytes()).hexdigest()!=ELF_SHA256:
-        raise ValueError('expected pinned original Q7 analysis ELF')
     import angr
-    project=angr.Project(str(elf),auto_load_libs=False)
+    project=load_project(elf)
     def value(state,x):
         assert not x.symbolic
         return state.solver.eval(x)

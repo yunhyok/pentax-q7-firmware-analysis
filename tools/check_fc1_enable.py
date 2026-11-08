@@ -1,11 +1,10 @@
 """Replay FC1 enable translation and active-low direct/CBC emission."""
 import argparse
-import hashlib
 import json
 import struct
 from pathlib import Path
 
-from check_isp_registers import ELF_SHA256
+from check_isp_registers import ELF_SHA256, load_project
 from check_color_handoff import OBJECT, WRAPPER, PAYLOAD, RETURN, STACK
 
 CHUNK, DATA = 0x10008000, 0x10009000
@@ -21,9 +20,8 @@ def reference():
 
 def replay(elf):
     if not __debug__: raise RuntimeError('Replay validation requires assertions')
-    if hashlib.sha256(elf.read_bytes()).hexdigest()!=ELF_SHA256: raise ValueError('expected SHA-pinned Q7 ELF')
     import angr
-    project=angr.Project(str(elf),auto_load_libs=False)
+    project=load_project(elf)
     for case in reference()['cases']:
         state=project.factory.blank_state(add_options={angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS})
         state.regs.sp=STACK

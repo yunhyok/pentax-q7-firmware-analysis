@@ -1,11 +1,10 @@
 """Bounded replay of Q7 IPU queue, IRQ, worker and completion callbacks."""
 import argparse
-import hashlib
 import json
 import struct
 from pathlib import Path
 
-from check_isp_registers import ELF_SHA256
+from check_isp_registers import ELF_SHA256, load_project
 
 DRIVER, PROCESSOR, TASK, OBSERVER = 0x10001000, 0x10002000, 0x10003000, 0x10008000
 STACK, RETURN = 0x70008000, 0x0BADF000
@@ -50,10 +49,8 @@ def reference():
 def replay(elf):
     if not __debug__:
         raise RuntimeError('Replay requires assertions')
-    if hashlib.sha256(elf.read_bytes()).hexdigest()!=ELF_SHA256:
-        raise ValueError('expected SHA-pinned Q7 analysis ELF')
     import angr
-    project=angr.Project(str(elf),auto_load_libs=False)
+    project=load_project(elf)
     events=[]
     queue_status=wait_status=0
 

@@ -1,11 +1,10 @@
 """Replay FC configure/export and FC1 setter/writer from pinned Q7 instructions."""
 import argparse
-import hashlib
 import json
 import struct
 from pathlib import Path
 
-from check_isp_registers import ELF_SHA256
+from check_isp_registers import ELF_SHA256, load_project
 from check_color_handoff import OBJECT, WRAPPER, PAYLOAD, RETURN, STACK
 
 BLOCK, PASS_INPUT, MATRIX = 0x10004000,0x10005000,0x10006000
@@ -38,9 +37,8 @@ def reference():
 
 def replay(elf):
     if not __debug__: raise RuntimeError('Replay validation requires assertions; do not use python -O')
-    if hashlib.sha256(elf.read_bytes()).hexdigest()!=ELF_SHA256: raise ValueError('expected SHA-pinned Q7 ELF')
     import angr
-    project=angr.Project(str(elf),auto_load_libs=False)
+    project=load_project(elf)
     for case in fixtures():
         state=project.factory.blank_state(add_options={angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS})
         state.regs.sp=STACK

@@ -23,5 +23,12 @@ class OptimizedReplayTests(unittest.TestCase):
         self.assertNotEqual(result.returncode,0)
         self.assertIn('requires assertions',result.stderr)
 
+        for call in ("from check_isp_registers import load_project; load_project(None)",):
+            result=subprocess.run([sys.executable,'-O','-c',
+                "import sys; sys.path.insert(0,'tools'); " + call],
+                cwd=root,capture_output=True,text=True)
+            self.assertNotEqual(result.returncode,0)
+            self.assertIn('requires assertions',result.stderr)
+
 
 if __name__=='__main__': unittest.main()

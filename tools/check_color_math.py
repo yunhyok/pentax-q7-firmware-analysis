@@ -1,10 +1,10 @@
 """Replay two pure Q7 MIPS matrix routines with angr VEX; no camera/MMIO execution."""
 import argparse
-import hashlib
 import json
 import random
 import struct
 from pathlib import Path
+from check_isp_registers import ELF_SHA256, load_project
 
 
 def reference(left, right, shift):
@@ -25,7 +25,7 @@ def main():
     args = parser.parse_args()
     if args.output.exists():
         parser.error("output must not exist")
-    project = angr.Project(str(args.elf), auto_load_libs=False)
+    project = load_project(args.elf)
     rng = random.Random(7)
     cases = []
     for address, shift in ((0x8041BC90, 13), (0x8041BE94, 8)):
@@ -53,7 +53,7 @@ def main():
             assert actual == expected, (address, actual, expected)
             cases.append(dict(address=address, shift=shift, case=title, left=left, right=right,
                               actual=actual, expected=expected, passed=True))
-    result = dict(analysis_elf_sha256=hashlib.sha256(args.elf.read_bytes()).hexdigest(),
+    result = dict(analysis_elf_sha256=ELF_SHA256,
                   engine=f"angr {angr.__version__} / VEX", cases=cases,
                   scope="Concrete pure-function replay; no peripheral or camera runtime validation.")
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
