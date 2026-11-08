@@ -13,10 +13,39 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'tools'))
 import check_colorspace_glyph as glyph
+import check_colorspace_attributes as attributes
 import verify_glyph
 
 
 class GlyphTests(unittest.TestCase):
+    def test_attribute_linkage_and_scale_observations_reject_drift(self):
+        docs = {n:json.loads((ROOT/'analysis'/n).read_text(encoding='utf-8'))
+                for n in ('colorspace-attributes.json','colorspace-glyph.json','colorspace-render.json')}
+        verify_glyph.verify_attributes()
+        for kind in ('dispatch','source','binding'):
+            changed = deepcopy(docs)
+            doc = changed['colorspace-attributes.json']
+            if kind == 'dispatch':
+                doc['attribute_dispatch'][0]['callee'] = '0x80218544'
+            elif kind == 'source':
+                doc['input_reference']['widget'] = '0x191d00c'
+            else:
+                doc['bounded_replay']['scaled']['binding'] = 'Actual camera context alias'
+            with self.subTest(kind=kind),patch.object(verify_glyph,'read',side_effect=changed.__getitem__),self.assertRaises(AssertionError):
+                verify_glyph.verify_attributes()
+
+    def test_scaled_oracle_uses_half_step_source_samples(self):
+        blob = bytearray(16*48)
+        blob[:2] = bytes((0b01101101,0b10000000))
+        source = dict(raw_source_offset=hex(glyph.FONT_OFFSET),width=5,height=48)
+        with patch.object(glyph,'packed_oracle',return_value=(None,[source])):
+            frame,calls = attributes.scaled_oracle(blob)
+        expected = bytearray([glyph.FILL])*(glyph.WIDTH*glyph.HEIGHT)
+        start = 64*glyph.WIDTH+96
+        expected[start:start+3] = bytes((2,3,1))
+        self.assertEqual(frame,expected)
+        self.assertEqual(calls[0]['args'][5:],[5,48,3,48])
+
     def test_source_links_and_observations_reject_drift(self):
         docs = {n:json.loads((ROOT/'analysis'/n).read_text(encoding='utf-8'))
                 for n in ('colorspace-glyph.json','colorspace-render.json')}
@@ -56,9 +85,9 @@ class GlyphTests(unittest.TestCase):
                 output.symlink_to(target)
             except OSError as error:
                 self.skipTest(str(error))
-            for optimized in (False, True):
+            for script,optimized in ((s,o) for s in ('glyph','attributes') for o in (False,True)):
                 result = subprocess.run([sys.executable,*(['-O'] if optimized else []),
-                                         str(ROOT/'tools/check_colorspace_glyph.py'),
+                                         str(ROOT/f'tools/check_colorspace_{script}.py'),
                                          'missing.bin','missing.elf','--output',str(output)],
                                         capture_output=True,text=True,timeout=15,cwd=ROOT)
                 self.assertEqual(result.returncode, 2, result.stderr)

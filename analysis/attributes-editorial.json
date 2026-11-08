@@ -1,0 +1,18 @@
+{
+  "skill": "humanize-korean2.3.2",
+  "route": "light",
+  "run_id": "2026-11-08-018-58e3",
+  "execution": "Native worker and coordinator finalizer, not Opus",
+  "paragraphs": 8,
+  "change_rate_percent": 2.9,
+  "sentence_touch_rate_percent": 20.7,
+  "golden": "PASS",
+  "modality_lost": 0,
+  "gate": "OK",
+  "grade": "B",
+  "self_check": "6/6",
+  "finalizer": "accept; direct full paragraph comparison",
+  "input_sha256": "756bf4fea171c1ad801df3cd2700dcc7b2f1bb12e7570cfba6088c45fc066994",
+  "output_body_sha256": "5ef91d1dbffe299aa331db65947ad94a7ad3515e1e5591c3903fe9a1566667b2",
+  "published_copy_sha256": "3757b2e59ce2b5792dfa484d0c132715d7ec2e03c01678d676ffafd2fd72c394"
+}

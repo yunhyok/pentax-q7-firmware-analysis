@@ -69,6 +69,49 @@ def verify(firmware=None, decoded=None):
     print('Glyph:62 original words,10 explicit-address ranges/transfers,FAT font chain and prior sRGB text linkage reproduced')
 
 
+def verify_attributes(firmware=None, decoded=None):
+    from check_colorspace_attributes import validate_report as validate_attributes
+    if not __debug__:
+        raise RuntimeError('Validation requires assertions')
+    doc = read('colorspace-attributes.json')
+    validate_attributes(doc['bounded_replay'])
+    keys = ('selected_functions','evidence','input_reference','attribute_dispatch','scale_oracle')
+    assert sha256(json.dumps([doc[k] for k in keys],sort_keys=True,separators=(',',':')).encode()).hexdigest() == 'c94edc98ce21043b0ba7b83adbfb78001f7629052000ab262812af600c0712ba'
+    assert doc['input_sha256'] == SHA and doc['analysis_elf_sha256'] == ELF_SHA256
+    assert len(list(witnesses(doc))) == 71 and len(doc['selected_functions']) == 12
+    source = read('colorspace-glyph.json')['input_reference']
+    assert doc['input_reference']['widget'] == source['widget']
+    assert doc['input_reference']['staged_units_sha256'] == source['line']['sha256']
+    assert doc['bounded_replay']['units'] == source['units']
+    prior = read('colorspace-render.json')['replay']['refresh_cases']
+    assert sha256(json.dumps(prior,sort_keys=True,separators=(',',':')).encode()).hexdigest() == doc['bounded_replay']['refresh']['prior_refresh_sha256']
+    if firmware is None:
+        return
+    read_font(firmware)
+    assert decoded is not None
+    from build_analysis_elf import PLAIN, DECODED
+    segments = [('E03',va,firmware[o:o+n],o) for o,va,n in PLAIN]
+    segments += [(name[:-4],va,decoded[name[:-4]],None) for name,va,_ in DECODED]
+    assert verify_words(doc,segments) == 71
+    _, symbols = recover(firmware)
+    names = {}
+    for symbol in symbols:
+        names.setdefault(symbol['address'],[]).append(symbol['name'])
+    addresses = sorted(names)
+    for fn in doc['selected_functions']:
+        start,end = fn['address'],fn['candidate_end']
+        assert fn['names'] == names[start] and end == addresses[bisect_right(addresses,start)]
+        assert end-start == fn['size'] and (start | end) & 3 == 0
+        segment,base,data,offset = next(s for s in segments if s[1] <= start < end <= s[1]+len(s[2]))
+        assert segment == fn['segment'] and offset is None and fn['decoded_offset'] == start-base
+        assert sha256(data[start-base:end-base]).hexdigest() == fn['sha256']
+    line = source['line']
+    start = int(line['decoded_offset'],16)
+    raw = decoded[line['segment']][start:start+line['length_bytes']]
+    assert raw == struct.pack('<4H',*source['units']) and sha256(raw).hexdigest() == line['sha256']
+    print('Font attributes:71 original words,12 explicit extents,prior refresh and text linkage reproduced')
+
+
 if __name__ == '__main__':
     verify()
     print('Glyph metadata: PASS')

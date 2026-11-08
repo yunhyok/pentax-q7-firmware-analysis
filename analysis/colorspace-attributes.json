@@ -1,0 +1,1348 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Original mode 0x53 refresh attribute operands, separate native context setters and first-renderer controls, and one complete horizontally scaled indexed draw in synthetic RAM.",
+  "input_reference": {
+    "refresh": "analysis/colorspace-render.json",
+    "font_and_text_source": "analysis/colorspace-glyph.json",
+    "widget": "0x191d00b",
+    "staged_unit_count": 4,
+    "staged_units_sha256": "adda92cf5ff02d3e692ef7a992dad973bf629a47d72e710025f1d46efcd15eca"
+  },
+  "bounded_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / VEX",
+    "resource": {
+      "directory_name": "FONTDATA",
+      "directory_root_record": "0x78d800",
+      "directory_first_cluster": 62,
+      "directory_first_cluster_offset": "0x7a02c0",
+      "directory_record": "0x7a05a0",
+      "short_name": "LATINF~6.BIN",
+      "long_name": "LATINFONT.BIN",
+      "long_name_record": "0x7a0580",
+      "first_cluster": 2308,
+      "declared_size": 130886,
+      "file_spans": [
+        {
+          "offset": 10296000,
+          "size": 130886
+        }
+      ],
+      "sha256": "9ba8e0f0b4fe85a9c097f7cd3e992ca6a159eef76ddc2340c2b6f6d22c1cc44b"
+    },
+    "context_template": {
+      "stride": 736,
+      "height": 176,
+      "initial_index": 165,
+      "origin": [
+        96,
+        64
+      ],
+      "font_cell": [
+        64,
+        48
+      ],
+      "source_bits_per_pixel": 2,
+      "source_row_bytes": 16,
+      "orientation": 0,
+      "spacing_control": 1,
+      "pixel_indices": [
+        null,
+        2,
+        1,
+        3
+      ]
+    },
+    "modeled_boundaries": {
+      "refresh": {
+        "0x800ee804": "Allocate zeroed synthetic GUI heap at the requested size.",
+        "0x80433354": "Bypass mode-entry DataHelper_UpdateUserData / arrange-mode display update. This call's effects are outside the replay.",
+        "0x80adfeb8": "Accept initial UI-start request only. Refreshes execute the original SendRequest.",
+        "0x80125c24": "Accept the UI start wakeup without an RTOS thread.",
+        "0x809dc650": "Accept capture-thread notification. For mode requests the harness observes the original record and clears it as the receiver would consume it.",
+        "0x8024df84": "Observe DCF API boundary after the original prefix-selection routines, without touching media.",
+        "0x80125d0c": "Capture the original 16-byte queue send record and retain it in the fixture.",
+        "0x80125cec": "Deliver that exact record once to the native consumer.",
+        "0x80125be0": "Accept the outer RTOS event wait.",
+        "0x80125f14": "Accept platform mutex lock.",
+        "0x80125f98": "Accept platform mutex unlock.",
+        "0x80126090": "Accept UI service semaphore acquisition.",
+        "0x801260b0": "Accept UI service semaphore release if reached.",
+        "0x801049c4": "Return 3 to bypass the unrelated factory-error overlay.",
+        "0x8043937c": "Observe OSD clear without clearing a real screen.",
+        "0x8024bf9c": "Record native attribute parameters before display-context setters.",
+        "0x8043eb54": "Record line geometry and palette parameters before shape rasterization.",
+        "0x8043f42c": "Record icon commands during refresh. Restore native implementation for the two isolated marker draws.",
+        "0x8024928c": "Copy and hash staged text parameters at AppDBTextOutByBufferID before GDI glyph execution.",
+        "0x802495d8": "Reject an unexpected aligned-text branch in these mode 0x53 fixtures.",
+        "0x80262fd4": "Return synthetic indexed draw RAM metadata for native roll and isolated marker draws.",
+        "0x800b3d40": "Record cache-region address and size without CPU cache operations.",
+        "0x8029ef58": "Record native show-buffer request before downstream display-context submission.",
+        "0x800ec08c": "Accept the diagnostic log call after show-buffer request."
+      },
+      "staged": {
+        "raster_setup": {
+          "0x8000bf28": "Return zeroed synthetic allocations for one display context and one bitmap.",
+          "0x80262fd4": "Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.",
+          "0x800b3d40": "Record cache address/length and return0 without CPU cache operations."
+        },
+        "font_load_and_draw": {
+          "0x80240e2c": "Return a synthetic media pointer for the observed drive selector.",
+          "0x8007d180": "Supply the verified FAT file size at the stat boundary.",
+          "0x8000bf28": "After raster setup, allocate the synthetic FileX control block or font buffer.",
+          "0x80074334": "Accept the normalized font path at FileX open.",
+          "0x80071a10": "Supply the full verified font bytes and return success at FileX read.",
+          "0x8007c258": "Accept FileX close for the modeled file.",
+          "0x8000c598": "Record release of the FileX control block without allocator effects.",
+          "0x800a14f8": "Record a diagnostic call without emitting text."
+        }
+      }
+    },
+    "units": [
+      84,
+      51,
+      40,
+      35
+    ],
+    "loader_events": [
+      {
+        "api": "0x80240e2c",
+        "kind": "media",
+        "return_address": "0x8028b6fc",
+        "selector": 2,
+        "result": 590348288
+      },
+      {
+        "api": "0x8007d180",
+        "kind": "stat",
+        "return_address": "0x80223bdc",
+        "path": "\\FontData\\LatinFont.bin",
+        "size": 130886,
+        "result": 0
+      },
+      {
+        "api": "0x8000bf28",
+        "kind": "allocate",
+        "return_address": "0x80223c08",
+        "size": 504,
+        "result": 589299712
+      },
+      {
+        "api": "0x80074334",
+        "kind": "open",
+        "return_address": "0x80223c28",
+        "path": "\\FontData\\LatinFont.bin",
+        "result": 0
+      },
+      {
+        "api": "0x8000bf28",
+        "kind": "allocate",
+        "return_address": "0x80223c48",
+        "size": 130886,
+        "result": 587202560
+      },
+      {
+        "api": "0x80071a10",
+        "kind": "read",
+        "return_address": "0x80223c64",
+        "size": 130886,
+        "result": 0
+      },
+      {
+        "api": "0x8007c258",
+        "kind": "close",
+        "return_address": "0x80223c74",
+        "result": 0
+      },
+      {
+        "api": "0x8000c598",
+        "kind": "free",
+        "return_address": "0x80223c88",
+        "result": 0
+      },
+      {
+        "api": "0x800a14f8",
+        "kind": "log",
+        "return_address": "0x80223e50",
+        "result": 0
+      }
+    ],
+    "refresh": {
+      "case_count": 4,
+      "prior_refresh_sha256": "43856af97a6702886aeadf8cad85564a5f5f25c3e964b3a247dd2584d9731143",
+      "event_counts": {
+        "attribute": 72,
+        "text": 25
+      },
+      "ordered_event_sha256": "2e8a9f3ea98670c10d59087ff45d97af2e2d9674ee86424c3883b3c3dd0de9de",
+      "srgb_groups": [
+        [
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              17,
+              7,
+              48,
+              48,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              17,
+              12,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              17,
+              4,
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "text",
+            "widget": "0x191d00b",
+            "return_address": "0x802493ec",
+            "args": [
+              0,
+              65535,
+              1879051560,
+              96,
+              64,
+              4,
+              1
+            ],
+            "staged_sha256": "adda92cf5ff02d3e692ef7a992dad973bf629a47d72e710025f1d46efcd15eca"
+          }
+        ],
+        [
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              18,
+              7,
+              48,
+              48,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              18,
+              12,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              18,
+              4,
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "text",
+            "widget": "0x191d00b",
+            "return_address": "0x802493ec",
+            "args": [
+              0,
+              65535,
+              1879051560,
+              96,
+              64,
+              4,
+              1
+            ],
+            "staged_sha256": "adda92cf5ff02d3e692ef7a992dad973bf629a47d72e710025f1d46efcd15eca"
+          }
+        ],
+        [
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              17,
+              7,
+              48,
+              48,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              17,
+              12,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              17,
+              4,
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "text",
+            "widget": "0x191d00b",
+            "return_address": "0x802493ec",
+            "args": [
+              0,
+              65535,
+              1879051560,
+              96,
+              64,
+              4,
+              1
+            ],
+            "staged_sha256": "adda92cf5ff02d3e692ef7a992dad973bf629a47d72e710025f1d46efcd15eca"
+          }
+        ],
+        [
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              18,
+              7,
+              48,
+              48,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              18,
+              12,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "attribute",
+            "widget": "0x191d00b",
+            "return_address": "0x8029ea5c",
+            "args": [
+              18,
+              4,
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "text",
+            "widget": "0x191d00b",
+            "return_address": "0x802493ec",
+            "args": [
+              0,
+              65535,
+              1879051560,
+              96,
+              64,
+              4,
+              1
+            ],
+            "staged_sha256": "adda92cf5ff02d3e692ef7a992dad973bf629a47d72e710025f1d46efcd15eca"
+          }
+        ]
+      ]
+    },
+    "dispatch": [
+      {
+        "name": "default-without-attributes",
+        "attributes": [],
+        "context_snapshots": [
+          {
+            "after": null,
+            "fields": {
+              "font_extent": [
+                64,
+                48
+              ],
+              "spacing": [
+                0,
+                0
+              ],
+              "palette": [
+                0,
+                2,
+                1,
+                3
+              ],
+              "transparent_mode": 1
+            }
+          }
+        ],
+        "renderer": "0x8022607c",
+        "return_address": "0x8022c2b0",
+        "renderer_args": [
+          553648128,
+          587267398,
+          64,
+          96,
+          64,
+          24,
+          48
+        ],
+        "vex_block_events": 114,
+        "cap": 5000
+      },
+      {
+        "name": "captured-attributes-draw-id-17",
+        "attributes": [
+          [
+            17,
+            7,
+            48,
+            48,
+            0,
+            0
+          ],
+          [
+            17,
+            12,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            17,
+            4,
+            2,
+            0,
+            0,
+            0
+          ]
+        ],
+        "context_snapshots": [
+          {
+            "after": null,
+            "fields": {
+              "font_extent": [
+                64,
+                48
+              ],
+              "spacing": [
+                0,
+                0
+              ],
+              "palette": [
+                0,
+                2,
+                1,
+                3
+              ],
+              "transparent_mode": 1
+            }
+          },
+          {
+            "after": [
+              17,
+              7,
+              48,
+              48,
+              0,
+              0
+            ],
+            "fields": {
+              "font_extent": [
+                48,
+                48
+              ],
+              "spacing": [
+                0,
+                0
+              ],
+              "palette": [
+                0,
+                2,
+                1,
+                3
+              ],
+              "transparent_mode": 1
+            }
+          },
+          {
+            "after": [
+              17,
+              12,
+              0,
+              0,
+              0,
+              0
+            ],
+            "fields": {
+              "font_extent": [
+                48,
+                48
+              ],
+              "spacing": [
+                0,
+                0
+              ],
+              "palette": [
+                0,
+                2,
+                1,
+                3
+              ],
+              "transparent_mode": 1
+            }
+          },
+          {
+            "after": [
+              17,
+              4,
+              2,
+              0,
+              0,
+              0
+            ],
+            "fields": {
+              "font_extent": [
+                48,
+                48
+              ],
+              "spacing": [
+                0,
+                0
+              ],
+              "palette": [
+                0,
+                2,
+                1,
+                3
+              ],
+              "transparent_mode": 1
+            }
+          }
+        ],
+        "renderer": "0x80226748",
+        "return_address": "0x8022c46c",
+        "renderer_args": [
+          553648128,
+          587267398,
+          64,
+          96,
+          64,
+          24,
+          48,
+          18,
+          48
+        ],
+        "vex_block_events": 114,
+        "cap": 5000
+      }
+    ],
+    "scaled": {
+      "entry": "0x8024928c",
+      "return_value": 1,
+      "attributes": [
+        [
+          17,
+          7,
+          48,
+          48,
+          0,
+          0
+        ],
+        [
+          17,
+          12,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          17,
+          4,
+          2,
+          0,
+          0,
+          0
+        ]
+      ],
+      "binding": "Synthetic default ID0 and captured attribute ID17 share the selected 8-bit context",
+      "whole_frame_equal": true,
+      "frame_sha256": "4af7c282e109f4e5bbdd247bda6968483329c732b9d5a88141e2d05017abbded",
+      "changed_bytes": 2464,
+      "indexed_histogram": {
+        "1": 1297,
+        "2": 1167,
+        "165": 127072
+      },
+      "renderer_calls": [
+        {
+          "pc": "0x80226748",
+          "ra": "0x8022c46c",
+          "args": [
+            553648128,
+            587267398,
+            64,
+            96,
+            64,
+            24,
+            48,
+            18,
+            48
+          ]
+        },
+        {
+          "pc": "0x80226748",
+          "ra": "0x8022c46c",
+          "args": [
+            553648128,
+            587242054,
+            64,
+            114,
+            64,
+            29,
+            48,
+            21,
+            48
+          ]
+        },
+        {
+          "pc": "0x80226748",
+          "ra": "0x8022c46c",
+          "args": [
+            553648128,
+            587233606,
+            64,
+            135,
+            64,
+            34,
+            48,
+            25,
+            48
+          ]
+        },
+        {
+          "pc": "0x80226748",
+          "ra": "0x8022c46c",
+          "args": [
+            553648128,
+            587229766,
+            64,
+            160,
+            64,
+            29,
+            48,
+            21,
+            48
+          ]
+        }
+      ],
+      "vex_block_events": 68969,
+      "sim_explore_step_cap": 150000
+    }
+  },
+  "attribute_dispatch": [
+    {
+      "kind": 7,
+      "table_word": "0x802a223c",
+      "case_entry": "0x8024c3c0",
+      "callee": "0x802185d0",
+      "writes": [
+        "u16 context+0x82c width",
+        "u16 context+0x82e height"
+      ]
+    },
+    {
+      "kind": 12,
+      "table_word": "0x802a2250",
+      "case_entry": "0x8024c354",
+      "callee": "0x80218544",
+      "writes": [
+        "u32 context+0x824",
+        "u32 context+0x828"
+      ]
+    },
+    {
+      "kind": 4,
+      "table_word": "0x802a2230",
+      "case_entry": "0x8024c3f0",
+      "callee": "0x802184cc",
+      "writes": [
+        "u32 context+0x28 palette slot 1"
+      ]
+    }
+  ],
+  "scale_oracle": {
+    "factor_q16": "floor(48 * 65536 / 64) = 0xc000",
+    "destination_width": "floor(source_width * factor_q16 / 65536)",
+    "source_column": "(column * inverse_step + (inverse_step >> 1)) >> 16",
+    "inverse_step": "floor(source_width * 65536 / destination_width)",
+    "orientation": 0,
+    "vertical_scale": "1:1",
+    "frame_bytes": 129536,
+    "guard_bytes_per_end": 8
+  },
+  "selected_functions": [
+    {
+      "names": [
+        "ResourceString_DrawStringChangeColor"
+      ],
+      "address": 2158781176,
+      "candidate_end": 2158781516,
+      "size": 340,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "0bc2dadb5649e135292ec131d0e88e2b5e2ace90ee2fce4a4cca6b4438ff70e3",
+      "segment": "E06-text",
+      "decoded_offset": 2963064
+    },
+    {
+      "names": [
+        "ResourceString_DrawString"
+      ],
+      "address": 2158781516,
+      "candidate_end": 2158781696,
+      "size": 180,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "c2194a0aa88837437ea1bfc36ec591928b8a6a03cb078020605f5844e06b1763",
+      "segment": "E06-text",
+      "decoded_offset": 2963404
+    },
+    {
+      "names": [
+        "ResourceString_SetFontSize"
+      ],
+      "address": 2158780192,
+      "candidate_end": 2158780408,
+      "size": 216,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "8075faece872e0783d89b08e61912ad09997736103458cd464a5a8c20f7a1773",
+      "segment": "E06-text",
+      "decoded_offset": 2962080
+    },
+    {
+      "names": [
+        "ScreenOsdLayer_SetTextColor"
+      ],
+      "address": 2151924620,
+      "candidate_end": 2151924668,
+      "size": 48,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "d9dbb3674935c9cb19d32de6c94da0a94fbdaded571dbb4eea6b43fb1d8dc691",
+      "segment": "E04",
+      "decoded_offset": 3205388
+    },
+    {
+      "names": [
+        "ScreenOsdLayer_SetAttribute"
+      ],
+      "address": 2151924448,
+      "candidate_end": 2151924524,
+      "size": 76,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "ad64dfee1303f6a247a9d122e3e5663bb7d6228403c4af16f07cf9a947f4c5f7",
+      "segment": "E04",
+      "decoded_offset": 3205216
+    },
+    {
+      "names": [
+        "I43_SetOSDDisplayAttr"
+      ],
+      "address": 2150230580,
+      "candidate_end": 2150230636,
+      "size": 56,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "9a9e7835b370eca62c6403de0a6a207de0c013820fcdfc459a45648f0d03a63f",
+      "segment": "E04",
+      "decoded_offset": 1511348
+    },
+    {
+      "names": [
+        "AppOsdSetAttributeByBufferID"
+      ],
+      "address": 2149891996,
+      "candidate_end": 2149893524,
+      "size": 1528,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "c07af25e23d36691b7e96d506d5835814dc5129c02bfab7fbaefb3f296b2db00",
+      "segment": "E04",
+      "decoded_offset": 1172764
+    },
+    {
+      "names": [
+        "GdiSetTextSize"
+      ],
+      "address": 2149680592,
+      "candidate_end": 2149680856,
+      "size": 264,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "60c7386fce68ad274426563f99ef91f9647930321230e3c223696c961cb567d4",
+      "segment": "E04",
+      "decoded_offset": 961360
+    },
+    {
+      "names": [
+        "GdiSetTextCharacterExtra"
+      ],
+      "address": 2149680452,
+      "candidate_end": 2149680592,
+      "size": 140,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "a8312397330818870ab8aa14d4a62ce6351c56ed77d8a6fbeb6a635c655e1cc5",
+      "segment": "E04",
+      "decoded_offset": 961220
+    },
+    {
+      "names": [
+        "GdiSetTextColor"
+      ],
+      "address": 2149680332,
+      "candidate_end": 2149680368,
+      "size": 36,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "e4ad819b2d82f700b0de234ab222a81013177bba0fcda2649af919daab1427a1",
+      "segment": "E04",
+      "decoded_offset": 961100
+    },
+    {
+      "names": [
+        "FntDrawTextEx"
+      ],
+      "address": 2149761112,
+      "candidate_end": 2149762684,
+      "size": 1572,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "dbb938013b8b9fed17473eabe31e2689ed4f28a26bb83c564b0553bc085c7220",
+      "segment": "E04",
+      "decoded_offset": 1041880
+    },
+    {
+      "names": [
+        "StretchBlitFont"
+      ],
+      "address": 2149738312,
+      "candidate_end": 2149739860,
+      "size": 1548,
+      "extent_basis": "Next distinct recovered symbol address",
+      "sha256": "67963c2405cfa2958483805d287ae61f36fe4153a5337f46846e905f291e04f1",
+      "segment": "E04",
+      "decoded_offset": 1019080
+    }
+  ],
+  "evidence": [
+    {
+      "role": "Original resource label size, body palette and text dispatch",
+      "words": [
+        {
+          "va": "0x80ac6338",
+          "u32le_word": "0x0c2b17c8",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d36b8"
+        },
+        {
+          "va": "0x80ac633c",
+          "u32le_word": "0x00002021",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d36bc"
+        },
+        {
+          "va": "0x80ac6340",
+          "u32le_word": "0x0c10f0e3",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d36c0"
+        },
+        {
+          "va": "0x80ac63f0",
+          "u32le_word": "0x3404ffff",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d3770"
+        },
+        {
+          "va": "0x80ac63fc",
+          "u32le_word": "0x0c0a7ad6",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d377c"
+        },
+        {
+          "va": "0x80ac6480",
+          "u32le_word": "0x0c10f0b0",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d3800"
+        },
+        {
+          "va": "0x80ac648c",
+          "u32le_word": "0x16000018",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d380c"
+        },
+        {
+          "va": "0x80ac64a0",
+          "u32le_word": "0x0c2b18be",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d3820"
+        },
+        {
+          "va": "0x80ac5f28",
+          "u32le_word": "0x24050030",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d32a8"
+        },
+        {
+          "va": "0x80ac5f30",
+          "u32le_word": "0x24060030",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d32b0"
+        },
+        {
+          "va": "0x80ac5f38",
+          "u32le_word": "0x0c10f148",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d32b8"
+        },
+        {
+          "va": "0x80ac5f50",
+          "u32le_word": "0x24040007",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d32d0"
+        },
+        {
+          "va": "0x80ac5f58",
+          "u32le_word": "0x0c10f0b8",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d32d8"
+        },
+        {
+          "va": "0x80ac5f60",
+          "u32le_word": "0x2404000c",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d32e0"
+        },
+        {
+          "va": "0x80ac5f70",
+          "u32le_word": "0x0c10f0b8",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d32f0"
+        },
+        {
+          "va": "0x8043c2d0",
+          "u32le_word": "0x9082870d",
+          "segment": "E04",
+          "decoded_offset": "0x30e850"
+        },
+        {
+          "va": "0x8043c39c",
+          "u32le_word": "0x24040004",
+          "segment": "E04",
+          "decoded_offset": "0x30e91c"
+        },
+        {
+          "va": "0x8043c3a8",
+          "u32le_word": "0x0c10f0b8",
+          "segment": "E04",
+          "decoded_offset": "0x30e928"
+        },
+        {
+          "va": "0x8043c2e8",
+          "u32le_word": "0x9183ae84",
+          "segment": "E04",
+          "decoded_offset": "0x30e868"
+        },
+        {
+          "va": "0x8043c318",
+          "u32le_word": "0x0c0a7a8d",
+          "segment": "E04",
+          "decoded_offset": "0x30e898"
+        },
+        {
+          "va": "0x8029ea54",
+          "u32le_word": "0x0c092fe7",
+          "segment": "E04",
+          "decoded_offset": "0x170fd4"
+        }
+      ]
+    },
+    {
+      "role": "Attribute jump table, default-context selection and native stores",
+      "words": [
+        {
+          "va": "0x8024bfe0",
+          "u32le_word": "0x8e30b4d8",
+          "segment": "E04",
+          "decoded_offset": "0x11e560"
+        },
+        {
+          "va": "0x8024bfec",
+          "u32le_word": "0x8e22b4d8",
+          "segment": "E04",
+          "decoded_offset": "0x11e56c"
+        },
+        {
+          "va": "0x8024bff0",
+          "u32le_word": "0x1040001a",
+          "segment": "E04",
+          "decoded_offset": "0x11e570"
+        },
+        {
+          "va": "0x8024c014",
+          "u32le_word": "0x8cc50000",
+          "segment": "E04",
+          "decoded_offset": "0x11e594"
+        },
+        {
+          "va": "0x8024c018",
+          "u32le_word": "0x00a00008",
+          "segment": "E04",
+          "decoded_offset": "0x11e598"
+        },
+        {
+          "va": "0x8024c04c",
+          "u32le_word": "0x0c092432",
+          "segment": "E04",
+          "decoded_offset": "0x11e5cc"
+        },
+        {
+          "va": "0x802a2230",
+          "u32le_word": "0x8024c3f0",
+          "segment": "E04",
+          "decoded_offset": "0x1747b0"
+        },
+        {
+          "va": "0x802a223c",
+          "u32le_word": "0x8024c3c0",
+          "segment": "E04",
+          "decoded_offset": "0x1747bc"
+        },
+        {
+          "va": "0x802a2250",
+          "u32le_word": "0x8024c354",
+          "segment": "E04",
+          "decoded_offset": "0x1747d0"
+        },
+        {
+          "va": "0x8024c35c",
+          "u32le_word": "0x0c086151",
+          "segment": "E04",
+          "decoded_offset": "0x11e8dc"
+        },
+        {
+          "va": "0x8024c3c8",
+          "u32le_word": "0x0c086174",
+          "segment": "E04",
+          "decoded_offset": "0x11e948"
+        },
+        {
+          "va": "0x8024c3f8",
+          "u32le_word": "0x0c086133",
+          "segment": "E04",
+          "decoded_offset": "0x11e978"
+        },
+        {
+          "va": "0x8024c3fc",
+          "u32le_word": "0x24050001",
+          "segment": "E04",
+          "decoded_offset": "0x11e97c"
+        },
+        {
+          "va": "0x802184e4",
+          "u32le_word": "0xac660024",
+          "segment": "E04",
+          "decoded_offset": "0xeaa64"
+        },
+        {
+          "va": "0x80218580",
+          "u32le_word": "0xae220824",
+          "segment": "E04",
+          "decoded_offset": "0xeab00"
+        },
+        {
+          "va": "0x802185b0",
+          "u32le_word": "0xae220828",
+          "segment": "E04",
+          "decoded_offset": "0xeab30"
+        },
+        {
+          "va": "0x80218684",
+          "u32le_word": "0xa642082e",
+          "segment": "E04",
+          "decoded_offset": "0xeac04"
+        },
+        {
+          "va": "0x80218688",
+          "u32le_word": "0xa651082c",
+          "segment": "E04",
+          "decoded_offset": "0xeac08"
+        }
+      ]
+    },
+    {
+      "role": "Dimension compare, Q16 factor and renderer ABI",
+      "words": [
+        {
+          "va": "0x8022c084",
+          "u32le_word": "0x8c8b002c",
+          "segment": "E04",
+          "decoded_offset": "0xfe604"
+        },
+        {
+          "va": "0x8022c088",
+          "u32le_word": "0x94ac082e",
+          "segment": "E04",
+          "decoded_offset": "0xfe608"
+        },
+        {
+          "va": "0x8022c094",
+          "u32le_word": "0x8c840024",
+          "segment": "E04",
+          "decoded_offset": "0xfe614"
+        },
+        {
+          "va": "0x8022c098",
+          "u32le_word": "0x94a5082c",
+          "segment": "E04",
+          "decoded_offset": "0xfe618"
+        },
+        {
+          "va": "0x8022c0d0",
+          "u32le_word": "0x14600008",
+          "segment": "E04",
+          "decoded_offset": "0xfe650"
+        },
+        {
+          "va": "0x8022c0d8",
+          "u32le_word": "0x00053c00",
+          "segment": "E04",
+          "decoded_offset": "0xfe658"
+        },
+        {
+          "va": "0x8022c0dc",
+          "u32le_word": "0x00e4001b",
+          "segment": "E04",
+          "decoded_offset": "0xfe65c"
+        },
+        {
+          "va": "0x8022c0e8",
+          "u32le_word": "0xafa50054",
+          "segment": "E04",
+          "decoded_offset": "0xfe668"
+        },
+        {
+          "va": "0x8022c0f0",
+          "u32le_word": "0xafa60058",
+          "segment": "E04",
+          "decoded_offset": "0xfe670"
+        },
+        {
+          "va": "0x8022c1e0",
+          "u32le_word": "0x72b4c802",
+          "segment": "E04",
+          "decoded_offset": "0xfe760"
+        },
+        {
+          "va": "0x8022c1f0",
+          "u32le_word": "0x00198c02",
+          "segment": "E04",
+          "decoded_offset": "0xfe770"
+        },
+        {
+          "va": "0x8022c28c",
+          "u32le_word": "0x8fce088c",
+          "segment": "E04",
+          "decoded_offset": "0xfe80c"
+        },
+        {
+          "va": "0x8022c2a8",
+          "u32le_word": "0x01c0f809",
+          "segment": "E04",
+          "decoded_offset": "0xfe828"
+        },
+        {
+          "va": "0x8022c434",
+          "u32le_word": "0x8fcc0894",
+          "segment": "E04",
+          "decoded_offset": "0xfe9b4"
+        },
+        {
+          "va": "0x8022c43c",
+          "u32le_word": "0xafb50014",
+          "segment": "E04",
+          "decoded_offset": "0xfe9bc"
+        },
+        {
+          "va": "0x8022c45c",
+          "u32le_word": "0xafa30018",
+          "segment": "E04",
+          "decoded_offset": "0xfe9dc"
+        },
+        {
+          "va": "0x8022c460",
+          "u32le_word": "0xafb1001c",
+          "segment": "E04",
+          "decoded_offset": "0xfe9e0"
+        },
+        {
+          "va": "0x8022c464",
+          "u32le_word": "0x0180f809",
+          "segment": "E04",
+          "decoded_offset": "0xfe9e4"
+        },
+        {
+          "va": "0x8022c468",
+          "u32le_word": "0xafb50020",
+          "segment": "E04",
+          "decoded_offset": "0xfe9e8"
+        }
+      ]
+    },
+    {
+      "role": "Stretch inverse steps, half-step horizontal sample and palette store",
+      "words": [
+        {
+          "va": "0x80226844",
+          "u32le_word": "0x0012ac00",
+          "segment": "E04",
+          "decoded_offset": "0xf8dc4"
+        },
+        {
+          "va": "0x8022684c",
+          "u32le_word": "0x02a8001b",
+          "segment": "E04",
+          "decoded_offset": "0xf8dcc"
+        },
+        {
+          "va": "0x802268a8",
+          "u32le_word": "0x024c001b",
+          "segment": "E04",
+          "decoded_offset": "0xf8e28"
+        },
+        {
+          "va": "0x802268b0",
+          "u32le_word": "0xafa2002c",
+          "segment": "E04",
+          "decoded_offset": "0xf8e30"
+        },
+        {
+          "va": "0x802268bc",
+          "u32le_word": "0xafa60030",
+          "segment": "E04",
+          "decoded_offset": "0xf8e3c"
+        },
+        {
+          "va": "0x80226938",
+          "u32le_word": "0x000b2842",
+          "segment": "E04",
+          "decoded_offset": "0xf8eb8"
+        },
+        {
+          "va": "0x80226998",
+          "u32le_word": "0x00a74021",
+          "segment": "E04",
+          "decoded_offset": "0xf8f18"
+        },
+        {
+          "va": "0x80226a24",
+          "u32le_word": "0x95b00000",
+          "segment": "E04",
+          "decoded_offset": "0xf8fa4"
+        },
+        {
+          "va": "0x80226a34",
+          "u32le_word": "0x7c1018a0",
+          "segment": "E04",
+          "decoded_offset": "0xf8fb4"
+        },
+        {
+          "va": "0x80226a48",
+          "u32le_word": "0x03025007",
+          "segment": "E04",
+          "decoded_offset": "0xf8fc8"
+        },
+        {
+          "va": "0x80226ab0",
+          "u32le_word": "0x8ca20024",
+          "segment": "E04",
+          "decoded_offset": "0xf9030"
+        },
+        {
+          "va": "0x80226ae4",
+          "u32le_word": "0x01044021",
+          "segment": "E04",
+          "decoded_offset": "0xf9064"
+        },
+        {
+          "va": "0x80226c5c",
+          "u32le_word": "0xa0820000",
+          "segment": "E04",
+          "decoded_offset": "0xf91dc"
+        }
+      ]
+    }
+  ],
+  "extent_limit": "Each range ends at the next distinct recovered symbol address. Hashes describe candidate ranges.",
+  "limits": [
+    "The four original refresh runs capture requests at modeled attribute and text boundaries. Their original render-report observations match byte for byte in canonical metadata.",
+    "Two separate staged controls run to the first renderer entry. The configured full-frame case applies captured draw-ID 17 attributes and text ID 0 through an explicit synthetic context alias.",
+    "Font media and FileX calls, allocation, cache, and diagnostics remain modeled at the enumerated boundaries. The context and inherited palette slots are fixture inputs.",
+    "The complete scaled run covers four glyphs, horizontal shrink, unity height, one origin and one transparency mode. The whole synthetic indexed frame and guards match the independent packed-source calculation.",
+    "The refresh and configured indexed draw are separate runs. Actual context aliasing, complete refresh-to-pixel execution, physical palette, display scanout, DMA and camera runtime are unverified.",
+    "VEX block-event counts are bounded emulator trace measurements."
+  ],
+  "reproduction": {
+    "checker": "python tools/check_colorspace_attributes.py <original-firmware.bin> <analysis.elf> --output <new-report.json>",
+    "dependency": "angr 10.0.5"
+  }
+}

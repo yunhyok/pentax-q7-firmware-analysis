@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "2e307e9998eeda865c387a252e6a5ebbda12c6cc",
-  "updated_at": "2026-11-08T19:04:12+09:00",
+  "baseline_commit": "a7636ca14a224b91e3f4fb6973b3e32c62a46687",
+  "updated_at": "2026-11-08T19:14:28+09:00",
   "goals": {
     "rebuild": {
       "status": "E01 NAND terminal4 remains separately validated. New MAIN23 fixtures cover file staging11 and DownloadCard/handle/wrapper12. Native MAIN handle selects805dd7b8; its Burn body is modeled, so E01 execution must not be transferred to MAIN hardware acceptance.",
@@ -151,7 +151,7 @@
       "queue_rejection": "Modeled queue API0, no delivery;101 waits,setter6,pending1,outer1,motion-check1,no lower link. Original send-call return0 observed."
     },
     "ui_port": {
-      "status": "Original FAT font chain, native loader relocation, GDI conversion and indexed glyph writes reproduced in two fixtures with whole-frame oracle equality. Previous UI requests are replayed into a default synthetic context; continuous refresh and actual UI scale remain separate.",
+      "status": "Four native refresh captures identify48x48/spacing0/color2 requests. Separate native setter controls select scaled renderer; one full129536-byte indexed frame equals independent oracle under explicit synthetic ID17=ID0 alias. Actual UI binding and continuous refresh remain unverified.",
       "evidence": [
         "analysis/colorspace-ui.json",
         "tools/check_colorspace_ui.py",
@@ -166,15 +166,18 @@
         "analysis/colorspace-glyph.json",
         "tools/check_colorspace_glyph.py",
         "tools/verify_glyph.py",
-        "colorspace-glyph-report.html"
+        "colorspace-glyph-report.html",
+        "analysis/colorspace-attributes.json",
+        "tools/check_colorspace_attributes.py",
+        "colorspace-attributes-report.html"
       ],
       "gaps": [
-        "Continuous full UI refresh through font selection, attributes and raster in the same actual buffer context",
-        "Actual UI text scaling and colors, RGB palette, physical display registration, DMA and LCD",
+        "Actual buffer-context alias for draw IDs17/18 versus text ID0 and continuous full UI refresh to raster",
+        "RGB palette, physical display registration, DMA and LCD",
         "Other language fonts, range-end glyph and clipping behavior"
       ],
       "next_actions": [
-        "Apply captured native UI font-size and text-color attributes; verify scaled renderer and whole indexed buffer before joining continuous refresh"
+        "Trace original context registration and active/default ID selection to replace the synthetic alias before attempting continuous refresh"
       ],
       "stable_evidence": {
         "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
@@ -187,8 +190,11 @@
         "colorspace-raster-report.html": "459796ecfd4108e0d41318fa5232acf6f9ea768fcb9b6c0f157b75b1e3bf3c60",
         "analysis/colorspace-glyph.json": "be6667479381038bef41253c0cfb14b156f77096218fbddfa13ace6b630d7f1c",
         "tools/check_colorspace_glyph.py": "cc5a69d3a826a0a81137806e5eab44562c7904c2201023067f142340ea6480e2",
-        "tools/verify_glyph.py": "6533074c11cfe5ad10cb593de91c052a8f39cda9d6e696d805d2fa515ba4748f",
-        "colorspace-glyph-report.html": "bff0b6e25ffb1dc2b51a8a70d9e7f133937975aedc654c2871b6d946b2e8f449"
+        "tools/verify_glyph.py": "7d06336886841817f526d394bffb77f11121978c650f9f16193b72faa0fbaf0a",
+        "colorspace-glyph-report.html": "bf1d5662e2eb7b0fe48691d5045aa51c7fc7c3f3aabdc93826794645dbd80a01",
+        "analysis/colorspace-attributes.json": "1792115a76bbc5665667d4100bb4c5f3aafcd8842985430d124c07fd84ac6d5e",
+        "tools/check_colorspace_attributes.py": "4c4f24cc88582f9db58318bca674999dc3199c1b32f439ea98ed57e118d3ebc1",
+        "colorspace-attributes-report.html": "3b16b0a905b1a4e605dc4cd3aef5a799df0c374a29e78afdec5ac8bb32687460"
       },
       "hash_normalization": "UTF-8 LF bytes",
       "reproduction_command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
@@ -215,7 +221,15 @@
         "glyph_original_words": 62,
         "glyph_functions": 10,
         "glyph_frame_bytes": 129536,
-        "font_resource_bytes": 130886
+        "font_resource_bytes": 130886,
+        "attribute_refreshes": 4,
+        "attribute_requests": 72,
+        "attribute_text_requests": 25,
+        "attribute_dispatch_cases": 2,
+        "scaled_frame_cases": 1,
+        "attribute_original_words": 71,
+        "attribute_function_extents": 12,
+        "scaled_changed_bytes": 2464
       }
     }
   },
@@ -228,7 +242,7 @@
     "MBR helper skips ID999 or span0; copies section fields to entry start/length and type byte1; only ID0 writes byte0=0x80. Seven full-buffer/guard cases pass; no filesystem/type inference.",
     "Original MD5 passes26 cases, native manager8 and wrappers9; wrappers do not gate on modeled queue API status. Separate card7 cases run9 actual native MD5/compare worker transactions; no hash-result stub.",
     "Color Space native refresh queue4 times stages25 text lines and20 highlight requests and rolls4 buffers. Only the selected marker is rasterized in two separate synthetic RAM cases with330 changed bytes each.",
-    "Rendering resources are address/length/hash metadata only. Original glyph units stop at GDI API; LayerSetFrameBuffer/Move continuation is static and DMA/LCD remains unverified.",
+    "UI refresh stops at captured GDI requests; separate basic and captured-attribute configured runs execute original glyph renderers. Resource bytes remain private; continuous actual-context binding and DMA/LCD remain unverified.",
     "Review wording corrected: stop is FCU callee entry after JAL/delay slot and before op5 processing; lens RX copy uses configured command receive length, not measured wire length.",
     "Independent review correction: positive-wrap output matches but HI/LO differ(original0/0xc0000000,compiled0/0); original MakeColorMatrix has no MFHI/MFLO. Observation-only hooks are explicitly disclosed. No C/code/package change.",
     "C Q13 text164 bytes fits original236-byte function and preserves tested alias/O32 contract; 96leaf/4caller cases and58 nested calls match.",
@@ -248,7 +262,8 @@
     "Native DirectLoadFontEx/GdiCreateFont relocate verified LatinFont130886bytes. A prior sRGB request reenters AppDBTextOutByBufferID with original GDI conversion and four original indexed glyph writes; whole129536-byte buffer equals independent packed2bpp oracle. Default identity-scale context is not the actual full UI state.",
     "Original MAIN staging queries configured path size before rewriting its local input drive: board3 fixture measures F then opens E. Uses low32 size and wrapping32 addition for reservation;96byte copy request is bounded evidence.",
     "Native MAIN DownloadCard reads original64+128byte header; native handle kind3 selects805dd7b8 at+ca4, distinct from E01+1254/80012654. MAIN Burn body is replaced at entry.",
-    "With backup flag0, native synchronous MAIN wrapper returns1 and clears updating for both modeled Burn0 and7; asynchronous Thread_Create0 returns0 but keeps updating1. These are software return contracts, not update-success proof."
+    "With backup flag0, native synchronous MAIN wrapper returns1 and clears updating for both modeled Burn0 and7; asynchronous Thread_Create0 returns0 but keeps updating1. These are software return contracts, not update-success proof.",
+    "Captured sRGB requests set48x48 size, zero character-extra fields and palette slot1 index2. Native configured context switches+88c BlitFont to+894 StretchBlitFont;69k-event scaled draw exactly matches full-frame half-step Q16 oracle. Actual ID alias remains unverified."
   ],
   "validation": [
     {
@@ -552,7 +567,10 @@
     "analysis/update-service.json",
     "tools/check_update_service.py",
     "tools/verify_update_service.py",
-    "update-service-report.html"
+    "update-service-report.html",
+    "analysis/colorspace-attributes.json",
+    "tools/check_colorspace_attributes.py",
+    "colorspace-attributes-report.html"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
@@ -563,10 +581,10 @@
     "validation": "311 original words,21 typed/3 anonymous E01 records,47 main functions,38 ranges reproduced; deterministic HTML PASS."
   },
   "latest_followup": {
-    "scope": "MAIN update service namespace and status boundaries",
-    "validation": "Coordinator and native reviewer independently ran23original cases;98words,12ranges,2resources and original192byte header verified; modeled file inputs and burn results explicitly separated. Full46unit tests PASS;2SVG inspected at1265px without overflow.",
-    "remaining": "MAIN Burn/NAND body, continuous full-package file path, backup mode, actual flash/boot/recovery remain unverified.",
-    "editorial": "9paragraph light route,3.6%character/22.9%sentence touch,goldenPASS,modality0; subsequent source-review clarification of staging order and32bit arithmetic recorded separately."
+    "scope": "Captured UI attributes and separate scaled indexed draw",
+    "validation": "Coordinator independently reproduced complete public CLI JSON and71original words/12ranges; independent half-step oracle regression and metadata drift rejection pass. Full48unit tests PASS;2SVG inspected at1265px without horizontal overflow.",
+    "remaining": "Actual ID17/18 versus ID0 context binding, continuous refresh, RGB palette and LCD remain unverified.",
+    "editorial": "8paragraphs; light2.9%character20.7%sentence,goldenPASS,modality0,B6/6; coordinator direct finalizeraccept."
   },
   "validation_runs": [
     {
@@ -588,6 +606,11 @@
       "command": "check_update_service.py original firmware/pinned ELF; verify_update_service; targeted unit tests",
       "result": "23original cases exact twice;98words/12functions/2pathresources plus E01 distinction reproduced; independent P3 staging-order clarification accepted and explicit assertions added",
       "limits": "Synthetic96byte staging and separately supplied original header; MAIN Burn/FileX/device/scheduler boundaries modeled"
+    },
+    {
+      "command": "check_colorspace_attributes.py original firmware and expanded ELF; verify_attributes",
+      "result": "4refresh captures,2renderer controls,1complete scaled frame exact across worker and coordinator;71words12ranges and prior linkage reproduced",
+      "limits": "Attribute/text hooks and separately configured synthetic ID alias; no actual UI context or display"
     }
   ],
   "af_queue_regression": {
@@ -597,11 +620,11 @@
     "scheduled_delivery": "First wait scheduled; native normal101/no worker versus condition-deleted mutant1/worker1. Only worker_delivery_wait null→1 changes in public replay."
   },
   "usage_checkpoint": {
-    "remaining_percent": 19,
+    "remaining_percent": 17,
     "decision": "checkpoint",
     "current_task_may_continue": true,
-    "stop_threshold_percent": 10,
-    "observed_at": "2026-11-08T19:04:12+09:00"
+    "stop_threshold_percent": 5,
+    "observed_at": "2026-11-08T19:14:28+09:00"
   },
   "terminal_comparison_correction": {
     "scope": "Comparison prose now states modeled header writeback, native ready callback and terminal return.",
