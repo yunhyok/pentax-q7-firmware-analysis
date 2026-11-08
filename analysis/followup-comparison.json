@@ -1,0 +1,27 @@
+{
+  "repository": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis",
+  "commit": "a6b84f4e2e81213e54f1fe4d19beea9e93a6bbd9",
+  "source": "git show of fixed public commit; working-tree edits excluded",
+  "files": [
+    {
+      "path": "analysis/pipeline-evidence.json",
+      "sha256": "dfae64d80f9da746587f803c64e8feca3701c30201ab920e68a5bd535ea2d63d"
+    },
+    {
+      "path": "analysis/deep-evidence.json",
+      "sha256": "728cc0fb17a5952c8c9906393ba75a600dc5ed9b818b75dcd408b9161e8f9f02"
+    },
+    {
+      "path": "analysis/color-algorithms.html",
+      "sha256": "fad7c721b38ec67bbf66e7cfd3ba38a58bfb642cf850c99ace2bf393521ec3a3"
+    },
+    {
+      "path": "analysis/isp-buffer-checks.json",
+      "sha256": "9660c87bdb5130ee2ed4767aad739241fcc42bf5f203084ee777493f3164442b"
+    },
+    {
+      "path": "analysis/gamma-tone-checks.json",
+      "sha256": "2037797ab030723517df7395c44233ae346af431648c8a8e2deb1f0bf0e0b152"
+    }
+  ]
+}
