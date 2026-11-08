@@ -1,6 +1,7 @@
 """Replay Q7 lens capability, position limits and focus completion on synthetic RAM."""
 import argparse
 import json
+from os.path import lexists
 import struct
 from pathlib import Path
 
@@ -330,7 +331,7 @@ def main():
     parser.add_argument('elf',type=Path)
     parser.add_argument('--output',required=True,type=Path)
     args=parser.parse_args()
-    if args.output.exists():
+    if lexists(args.output):
         parser.error('output must not exist')
     report=replay(args.elf)
     validate_report(report)

@@ -18,12 +18,13 @@
     "references": [
       "https://raw.githubusercontent.com/llvm/llvm-project/main/llvm/include/llvm/BinaryFormat/ELF.h",
       "https://s3-eu-west-1.amazonaws.com/downloads-mips/documents/MD00565-2B-MIPS32-QRC-01.01.pdf"
-    ]
+    ],
+    "machine_state_limit": "HI/LO differ in this VEX case. Equality is limited to checked output, memory and ABI observables; not whole-machine state or hardware behavior."
   },
   "caller": {
     "entry": "0x8041c180",
     "selected": "Four synthetic configuration objects with styles 0, 1, 2 and Color Space values 0/1; non-null fifth output pointer, optional second pointer null.",
-    "action": "Execute from original MakeColorMatrix entry to its actual return. The caller uses real Q8 hue rotation, lookup tables, Q13 matrix calls and subsequent transforms. No hooks or stubs.",
+    "action": "Execute from original MakeColorMatrix entry to its actual return. The caller uses real Q8 hue rotation, lookup tables, Q13 matrix calls and subsequent transforms. Observation-only state.inspect hooks; no function stubs or behavior substitutions.",
     "match": "Every caller case compares the actual leaf call sites, arguments and input hashes, ordered nonstack store addresses/sizes/values, full guarded output buffers and scratch, callee-preserved registers, and the fifth stack argument.",
     "bounds": "These settings reach 14 Q13 calls for sRGB and 15 for AdobeRGB, including in-place calls. This does not exercise all picture-style or optional second-object branches."
   },
@@ -110,7 +111,7 @@
       "carrier_fp_abi_attribute": null,
       "unchanged_tail_bytes": 72
     },
-    "scope": "Two code images use the same verified Q7 ELF snapshot. The second changes only the selected leaf text at its original address in host memory. The leaf and four original MakeColorMatrix calls execute with VEX and synthetic RAM, with no device or runtime hooks.",
+    "scope": "Two code images use the same verified Q7 ELF snapshot. The second changes only the selected leaf text at its original address in host memory. The leaf and four original MakeColorMatrix calls execute with VEX and synthetic RAM, using observation-only state.inspect hooks and no function stubs or behavior substitutions. No device is used.",
     "leaf_cases": [
       {
         "case": "identity-left",
@@ -796,7 +797,19 @@
     "leaf_case_count": 96,
     "caller_case_count": 4,
     "substituted_calls": 58,
-    "ordered_leaf_store_count_per_image": 864
+    "ordered_leaf_store_count_per_image": 864,
+    "machine_state_probe": {
+      "case": "positive-wrap",
+      "layout": "distinct",
+      "original_hi": 0,
+      "original_lo": 3221225472,
+      "recompiled_hi": 0,
+      "recompiled_lo": 0,
+      "output_bytes": 18,
+      "outputs_equal": true,
+      "original_caller_mfhi_mflo_addresses": [],
+      "scope": "HI/LO differ in this VEX case. Equality is limited to checked output, memory and ABI observables; not whole-machine state or hardware behavior."
+    }
   },
   "selected_functions": [
     {
@@ -1254,7 +1267,8 @@
     "The C checker recompiles and replays one arithmetic leaf. The separate package checker inserts that pinned text into original fixed slots and verifies full software decoding; neither runs on a camera.",
     "The tested external contract is aligned writable/readable RAM, O32 pointer arguments, and a bounded original caller. The C implementation need not reproduce original instruction scheduling or stack contents.",
     "The code section is position-independent within this no-call/no-data leaf and has no executable relocation. The experiment does not establish placement rules for other compiled code.",
-    "The archive digest is the official Zig index entry. The already-installed compiler executable, source, resulting object/text and original inputs are pinned locally; the toolchain support directory is read-only and was not individually hashed."
+    "The archive digest is the official Zig index entry. The already-installed compiler executable, source, resulting object/text and original inputs are pinned locally; the toolchain support directory is read-only and was not individually hashed.",
+    "HI/LO differ in the positive-wrap/distinct VEX probe: original=(0,0xc0000000), recompiled=(0,0). The selected original MakeColorMatrix body has no MFHI/MFLO instruction; other callers, volatile GPRs, unused stack bytes and whole-machine state are not asserted equal."
   ],
   "comparison": {
     "model": "PENTAX K-3 Mark III",

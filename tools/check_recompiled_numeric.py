@@ -76,7 +76,12 @@ LAYOUTS = (
 CALLER_CASES = ((0, 0, 4, 4), (1, 0, 4, 4), (0, 1, 0, 8), (1, 2, 8, 0))
 SCOPE = ("Two code images use the same verified Q7 ELF snapshot. The second changes only the "
          "selected leaf text at its original address in host memory. The leaf and four original "
-         "MakeColorMatrix calls execute with VEX and synthetic RAM, with no device or runtime hooks.")
+         "MakeColorMatrix calls execute with VEX and synthetic RAM, using observation-only "
+         "state.inspect hooks and no function stubs or behavior substitutions. No device is used.")
+MACHINE_STATE = dict(case="positive-wrap", layout="distinct", original_hi=0, original_lo=0xC0000000,
+                     recompiled_hi=0, recompiled_lo=0, output_bytes=18, outputs_equal=True,
+                     original_caller_mfhi_mflo_addresses=[],
+                     scope="HI/LO differ in this VEX case. Equality is limited to checked output, memory and ABI observables; not whole-machine state or hardware behavior.")
 
 
 def digest(data):
@@ -336,6 +341,27 @@ def replay_caller(projects, angr):
     return records
 
 
+def replay_machine_state(projects, angr, original, ELFFile):
+    spec = next(spec for spec in fixtures() if spec[0] == "positive-wrap" and spec[3][0] == "distinct")
+    _, arena, args, expected = leaf_fixture(*spec)
+    dest, left, right = args
+    observed = []
+    for project, end in zip(projects, (ORIGINAL_END, ORIGINAL+RECOMPILED_SIZE), strict=True):
+        state, _, _ = run(project, angr, ORIGINAL, args, {ARENA: arena}, ((ORIGINAL, end),),
+                          ((dest, dest+18),), ((left, left+18), (right, right+18), (STACK_BASE, STACK_TOP)))
+        require(read_memory(state, dest, 18) == expected, "machine-state probe output changed")
+        observed.append((scalar(state, state.regs.hi), scalar(state, state.regs.lo)))
+    elf = ELFFile(BytesIO(original))
+    off = load_segment_offset(elf, CALLER, CALLER_END-CALLER)
+    reads = [CALLER+i*4 for i, (word,) in enumerate(struct.iter_unpack("<I", original[off:off+CALLER_END-CALLER]))
+             if word & 0xFC00003F in (0x10, 0x12)]
+    report = dict(MACHINE_STATE, original_hi=observed[0][0], original_lo=observed[0][1],
+                  recompiled_hi=observed[1][0], recompiled_lo=observed[1][1],
+                  original_caller_mfhi_mflo_addresses=reads)
+    require(report == MACHINE_STATE, "unexpected HI/LO observation")
+    return report
+
+
 def verify(firmware_path, elf_path, zig, work):
     if not __debug__:
         raise RuntimeError("Replay requires assertions")
@@ -356,6 +382,7 @@ def verify(firmware_path, elf_path, zig, work):
                   leaf_case_count=len(leaves), caller_case_count=len(caller),
                   substituted_calls=sum(len(c["call_sites"]) for c in caller),
                   ordered_leaf_store_count_per_image=9*len(leaves))
+    report["machine_state_probe"] = replay_machine_state(projects, angr, original, ELFFile)
     validate_report(report)
     return report
 
@@ -380,6 +407,7 @@ def validate_report(report):
                     "invalid caller digest")
         count += len(case["call_sites"])
     require(report["substituted_calls"] == count, "substituted-call count mismatch")
+    require(report["machine_state_probe"] == MACHINE_STATE, "machine-state scope mismatch")
 
 
 def main():
@@ -392,7 +420,7 @@ def main():
     args = parser.parse_args()
     private = (ROOT / ".private" / "recompiled-numeric").resolve()
     work = args.work_dir.resolve()
-    if args.output.exists():
+    if os.path.lexists(args.output):
         parser.error("output must not exist")
     if work == private or not work.is_relative_to(private) or work.exists():
         parser.error("work-dir must be new and below .private/recompiled-numeric")

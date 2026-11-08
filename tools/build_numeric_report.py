@@ -23,7 +23,7 @@ def main():
         'compare':(350,150,'호출·쓰기·출력 비교','객체 / scratch / 보호 영역'),
         'limit':(700,150,'함수 계약 범위의 일치','영상 픽셀·장치 실행 미검증')},
         [('config','caller',False),('caller','matrix',False),('return','compare',False),('compare','limit',False)],250,
-        '호출부 분기 주입이나 하위 함수 hook을 사용하지 않았습니다. 선택한 객체에서 원본 코드가 스스로 선택한 분기를 비교했습니다.','recompiled-numeric.json')
+        'state.inspect 관찰 hook으로 실행을 기록했습니다. 하위 함수를 대체하거나 분기를 주입하지 않고 원본 코드가 선택한 분기를 비교했습니다.','recompiled-numeric.json')
     r=data['replay']
     v['package_graph']=graph('numeric-package','고정 슬롯 안의 재인코딩과 후속 참조 보정',{
         'patch':(20,10,'C text 164바이트','실제 변경은 142바이트'),

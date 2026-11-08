@@ -9,7 +9,7 @@ def main():
     v['storage_graph']=graph('storage-flow','원본 BurnNand에서 첫 기록 경계까지',{
         'input':(20,10,'원본 첫 청크 + 합성 헤더','131,072바이트 / 1,024블록'),
         'map':(350,10,'원본 섹션 맵·사전 검사','op 6 × 2,691 / op 8 × 640'),
-        'program':(700,10,'첫 op 5 호출 직전 중단','sector 0 / count 256'),
+        'program':(700,10,'FCU 진입에서 op 5 처리 전','sector 0 / count 256'),
         'model':(20,150,'합성 FCU 결과','spare = FF / status = 0'),
         'source':(350,150,'기록 대상 버퍼 관측','원본 입력과 281바이트 차이'),
         'device':(700,150,'실제 저장 장치','기록·erase·복구 미실행')},

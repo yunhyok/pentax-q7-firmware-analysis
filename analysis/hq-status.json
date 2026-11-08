@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "3a8c1dbf69a15b35b8d0a36fcb94d30debe4df31",
-  "updated_at": "2026-11-08T16:25:40+09:00",
+  "baseline_commit": "365d0fcad7af3a1d7c7d5e1519ec7b6bb60d9e38",
+  "updated_at": "2026-11-08T16:58:35+09:00",
   "goals": {
     "rebuild": {
       "status": "Reconstructed Q13 C leaf passes 96 leaf/4 original-caller cases and fits fixed-table slots; 448-block research package exactly matches replayed image. Native BurnNand reached first program boundary with 3331 modeled storage requests.",
@@ -42,10 +42,10 @@
         "user_range_cases": 7
       },
       "stable_evidence": {
-        "analysis/recompiled-numeric.json": "74f6290cf451d2c017cf62653d67a072328b2381b4a34420d565511cd231fdbb",
+        "analysis/recompiled-numeric.json": "4ec1054854c538f06e8d3e6aaaa9767c4096d5a4b54c5e2a88754473ec5cf2b2",
         "analysis/loader-storage.json": "923e7bab3d95123074f75d7841d08ad4d83752b6c54f9dcb889aa843e3ef48f6",
-        "recompiled-numeric-report.html": "259429d7d32d340452fa4dd4e8dea886430abdad60bd3234485bb7b8472e1df9",
-        "storage-readiness-report.html": "9abeaedb730b301d9d527f29a0b63eb1cbdfbd51dd03b662271814a31faca687"
+        "recompiled-numeric-report.html": "ff5aef9870ab4c3b1f041d9b1e6ae5fa1a841beb4ecd2c14975b92db6076c4d0",
+        "storage-readiness-report.html": "b64ac07dadb4764c9045c2827b54be35ac80770ec5d0b46ea78de0e2374dd028"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -90,7 +90,7 @@
       },
       "stable_evidence": {
         "analysis/lens-readiness.json": "9516435e4609576717f714d99e8ceeddc97b23fecd57914d680cfcf849025966",
-        "tools/check_lens_readiness.py": "9e4ef511f31b6e45fceba060895193fb210e24647d7e578c6a4af88f438e1ea1"
+        "tools/check_lens_readiness.py": "b88ca7428dc9881a32f61a1cc9190daa41f6f3ffa8c5fe3ed40a7831db4d6d42"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -113,7 +113,7 @@
       ],
       "stable_evidence": {
         "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
-        "tools/check_colorspace_ui.py": "5aa71c16b5668f9a70a60c1fbc2034b0f8d0cf40b1fc2636ced95598a317b375",
+        "tools/check_colorspace_ui.py": "cfc5d3ffed73cd9e420e95813c7b2bfd86f2279be25f2fc620b2f5de2242cb64",
         "colorspace-ui-report.html": "99260a63735e2742da5d94daa8a052491d83fc12dc2ca51a58a7903eeda98cf5"
       },
       "hash_normalization": "UTF-8 LF bytes",
@@ -129,6 +129,8 @@
     }
   },
   "new_findings": [
+    "Review wording corrected: stop is FCU callee entry after JAL/delay slot and before op5 processing; lens RX copy uses configured command receive length, not measured wire length.",
+    "Independent review correction: positive-wrap output matches but HI/LO differ(original0/0xc0000000,compiled0/0); original MakeColorMatrix has no MFHI/MFLO. Observation-only hooks are explicitly disclosed. No C/code/package change.",
     "C Q13 text164 bytes fits original236-byte function and preserves tested alias/O32 contract; 96leaf/4caller cases and58 nested calls match.",
     "Fixed-table repair windows reduce E04#154 from rejected79323bits to78817bits; downstream#155 needs its own history-copy repair. Only142 decoded bytes in the164-byte intended range differ. Candidate package eb5d014b761f947b2bd1786651c56d039db8e0e281b7e96c5a8c79a93ad978d6 remains private.",
     "Independent review found repeated-byte patches could create over110million candidates. Shared per-block cap1000000 now refuses excessive search before output; 762 exhaustive small cost-oracle cases pass.",
@@ -294,6 +296,16 @@
       "command": "humanize-korean original numeric prose gates after timeline clarification",
       "result": "1.3% change;20.6% sentence touch;golden PASS;modality lost0",
       "limits": "Editorial evidence only"
+    },
+    {
+      "command": "check_recompiled_numeric.py repeated compile/replay with machine-state probe",
+      "result": "96 leaf/4 caller/58 nested results unchanged; explicit HI/LO counterexample reproduced",
+      "limits": "Checked memory and ABI only, not entire machine state"
+    },
+    {
+      "command": "test_research_guards.py",
+      "result": "4 tests PASS: real Windows dangling symlink rejected before inputs/build, malformed SHA/missing function and -O rejected",
+      "limits": "Early path guard plus exclusive creation; no claim of protection against a concurrent hostile pathname replacement"
     }
   ],
   "artifacts": [

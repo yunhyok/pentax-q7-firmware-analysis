@@ -3,6 +3,7 @@ import argparse
 from hashlib import sha256
 from io import BytesIO
 import json
+from os.path import lexists
 from pathlib import Path
 import struct
 
@@ -377,7 +378,7 @@ def main():
     args = parser.parse_args()
     if not __debug__:
         parser.error("replay requires assertions")
-    if args.output.exists():
+    if lexists(args.output):
         parser.error("output must not exist")
     report = replay(args.firmware.read_bytes())
     with args.output.open("x", encoding="utf-8", newline="\n") as stream:

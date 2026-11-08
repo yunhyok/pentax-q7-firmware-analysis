@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import io
 import json
+from os.path import lexists
 import struct
 from pathlib import Path
 from inspect_q7 import parse_elf
@@ -240,7 +241,7 @@ def validate_report(report):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('firmware',type=Path);p.add_argument('--output',required=True,type=Path);a=p.parse_args()
-    if a.output.exists(): p.error('output must not exist')
+    if lexists(a.output): p.error('output must not exist')
     result=replay(a.firmware.read_bytes())
     validate_report(result)
     with a.output.open('x',encoding='utf-8') as f: f.write(json.dumps(result,indent=2)+'\n')

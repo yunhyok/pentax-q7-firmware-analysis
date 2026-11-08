@@ -1,6 +1,7 @@
 """Replay Q7 E3 Color Space menu transitions using original MIPS code."""
 import argparse
 import json
+from os.path import lexists
 from pathlib import Path
 
 from check_isp_registers import ELF_SHA256, RETURN_PC, STACK_TOP, load_project
@@ -266,7 +267,7 @@ def main():
     parser.add_argument("elf", type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    if args.output.exists():
+    if lexists(args.output):
         parser.error("output must not exist")
     report = replay(args.elf)
     with args.output.open("x", encoding="utf-8", newline="\n") as stream:

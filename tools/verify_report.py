@@ -166,6 +166,8 @@ def verify_deep(firmware):
 
 
 def main():
+    if not __debug__:
+        raise RuntimeError('Validation requires assertions')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--firmware", type=Path)
     args = parser.parse_args()

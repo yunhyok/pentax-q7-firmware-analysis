@@ -12,6 +12,7 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre><p>{{alias}} <a href="tool
   -fno-asynchronous-unwind-tables -ffunction-sections -Oz
   -Wall -Wextra -Werror -c -x c - -o q7_numeric.o</code></pre>
 <p>재컴파일 객체의 .MIPS.abiflags는 ISA32 revision2·GPR32·FP32·FP ABI attribute1입니다. .rel.pdr은 비적재 procedure descriptor에만 존재하며 text에는 재배치가 없습니다. 원본의 e_flags가 나타내는 MIPS32r2 계열·O32·NOREORDER 의미는 <a href="https://raw.githubusercontent.com/llvm/llvm-project/main/llvm/include/llvm/BinaryFormat/ELF.h">LLVM ELF 정의</a>와 대조했습니다.</p>
+<p>{{machine_state}} <a href="analysis/recompiled-numeric.json">[C1: replay.machine_state_probe·limitations]</a></p>
 <details><summary>고정한 소스·산출물 SHA-256</summary><pre><code>C source (LF): {{source_sha}}
 object: {{object_sha}}
 text: {{text_sha}}</code></pre><p>공식 <a href="https://ziglang.org/download/index.json">Zig 배포 인덱스</a>의 0.15.2 Windows x86-64 archive 해시와 로컬 실행 파일 해시를 기록했습니다. 실행 파일과 C 입력은 검증한 바이트를 사용하고 산출물 해시를 다시 검사합니다. 컴파일러의 지원 디렉터리 파일을 각각 해시한 것은 아닙니다.</p></details></section>

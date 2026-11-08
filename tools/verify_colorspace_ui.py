@@ -1,5 +1,6 @@
 """Validate Color Space fixtures and reproduce selected original-code evidence."""
 import hashlib
+import re
 from build_deep_report import read
 from check_colorspace_ui import validate_report
 from check_isp_registers import ELF_SHA256
@@ -8,6 +9,8 @@ from verify_routing import witnesses, verify_words
 
 
 def verify(firmware=None, decoded=None):
+    if not __debug__:
+        raise RuntimeError('Validation requires assertions')
     ui = read('colorspace-ui.json')
     validate_report(ui['replay'])
     assert ui['input_sha256'] == SHA and ui['analysis_elf_sha256'] == ELF_SHA256
@@ -16,7 +19,7 @@ def verify(firmware=None, decoded=None):
     assert sum(len(c['steps']) for c in ui['replay']['cases']) == 28
     for f in ui['selected_functions']:
         assert f['candidate_end'] - f['address'] == f['size'] > 0
-        assert len(f['sha256']) == 64
+        assert re.fullmatch(r'[0-9a-f]{64}', f['sha256'])
     if firmware is None:
         return
     from build_analysis_elf import PLAIN, DECODED

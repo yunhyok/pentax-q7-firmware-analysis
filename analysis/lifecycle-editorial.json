@@ -13,5 +13,6 @@
   "self_check": "6/6",
   "grade": "B",
   "finalizer": "accept",
-  "scope": "First two paragraphs extend numeric package report; following eleven supply lifecycle report."
+  "scope": "First two paragraphs extend numeric package report; following eleven supply lifecycle report.",
+  "technical_scope_correction": "Later source review distinguishes callee entry after JAL/delay slot from before-call; RX length is configured command length, not observed wire length. Measurements unchanged."
 }

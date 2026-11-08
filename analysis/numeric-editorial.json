@@ -14,5 +14,13 @@
   "grade": "B",
   "finalizer": "corrected: exact shift wording restored; capacity failure explicitly refers to the former token-preserving attempt",
   "limits": "Editorial assessment; technical findings validated independently",
-  "package_extension": "analysis/lifecycle-editorial.json"
+  "package_extension": "analysis/lifecycle-editorial.json",
+  "machine_state_extension": {
+    "route": "light",
+    "execution": "Native Codex worker plus coordinator finalizer",
+    "run_id": "2026-11-08-012-e6f6",
+    "scope": "First paragraph of 19-paragraph follow-up; original numeric prose unchanged.",
+    "paragraph_sha256": "6c4504eb54812d6b71d612c8877bf17494387b9fd0201c046fafaf59ddb75f48",
+    "source": "Original and recompiled VEX probe after a new full96+4 replay"
+  }
 }

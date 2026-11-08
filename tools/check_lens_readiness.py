@@ -1,6 +1,7 @@
 """Replay the Q7 lens readiness, response-cache and reset boundaries on synthetic RAM."""
 import argparse
 import json
+from os.path import lexists
 from pathlib import Path
 
 from check_isp_registers import ELF_SHA256, RETURN_PC, STACK_TOP, load_project
@@ -397,7 +398,7 @@ def main():
     args = parser.parse_args()
     if not __debug__:
         parser.error("replay requires assertions")
-    if args.output.exists():
+    if lexists(args.output):
         parser.error("output must not exist")
     report = replay(args.elf)
     with args.output.open("x", encoding="utf-8", newline="\n") as stream:
