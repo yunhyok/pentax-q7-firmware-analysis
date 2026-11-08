@@ -31,6 +31,7 @@ from verify_lifecycle import verify as verify_lifecycle
 from verify_recompiled_followup import verify as verify_numeric
 from build_io_followup import build_loader as build_hash, build_render
 from verify_io_followup import verify as verify_io
+from build_af_report import main as build_af
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -138,6 +139,7 @@ def verify_deep(firmware):
     verify_html(ROOT / "recompiled-numeric-report.html", build_numeric)
     verify_numeric()
     verify_html(ROOT / "storage-readiness-report.html", build_lifecycle)
+    verify_html(ROOT / "af-completion-report.html", build_af)
     verify_lifecycle()
     verify_html(ROOT / "loader-hash-report.html", build_hash)
     verify_html(ROOT / "colorspace-render-report.html", build_render)

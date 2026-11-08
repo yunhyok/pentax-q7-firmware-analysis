@@ -2,6 +2,8 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[AF 명령·완료 경계](https://yunhyok.github.io/pentax-q7-firmware-analysis/af-completion-report.html): 원본 요청·렌즈 큐 작업자·캐시 기반 완료·시퀀스 취소 19사례와 도식 4개. 명령 결과와 실제 렌즈 동작을 구분합니다.
+
 [기록 헤더·MD5 경로](https://yunhyok.github.io/pentax-q7-firmware-analysis/loader-hash-report.html): 기록 버퍼의 281바이트 차이를 재구성하고 원본 MD5·작업자·카드 재시도를 연결했습니다. 합성 설치 헤더·미디어·큐 조건이며 카메라 기록은 실행하지 않았습니다.
 
 [Color Space 그리기 경로](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-render-report.html): 큐 갱신 4회, 텍스트 25줄, 강조 요청 20개와 아이콘 픽셀 쓰기 두 사례를 추적했습니다. 글리프·강조 도형의 최종 래스터와 LCD는 미검증입니다.

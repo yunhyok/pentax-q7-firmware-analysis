@@ -1,0 +1,4229 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Q7 v1.01 original AF request, search/stop worker, cached motion completion and AF sequence abort boundaries. Offline foundation work.",
+  "findings": {
+    "caller": "LensDriveControl 0x8037eb78 writes mode, wait flag and arguments into tFocusControlInfo 0x80c6aad4, clears blFocusCompleteflag and invokes CaptureProcessService_OnNotifyCommand with (0x6003c,0). The original capture jump table sends 0x6003c to 0x8040a458 and native ExecuteFocusControl. At 0x8040a460 the harness observes the returned setter status before the outer notification recipient substitutes its own return 1. The real mode-2 caller at 0x8038401c separately polls blFocusCompleteflag at 0x8038402c; this static example is separate from the tested mode-0/1 calls.",
+    "queue": "The native mode-0/1 setters stage messages 6/8 with pending bytes 0x80c2aa48/0x80c2aa4a. A native send wrapper reaches the modeled RTOS API. The test delivers that exact word to original LensComThreadMain from 0x80116980; after original receive and prior-communication check it chooses the native search or stop worker. The workers write result bytes 0x80c2aa56/0x80c2aa58 and clear pending. Serial wait delivery copies synthetic lens RAM in and back and stops the worker before its next receive.",
+    "transport": "Search worker uses (0,1,2,4), lower mode 2 and metadata TX3/RX1, with synthetic payload 12 34 56. Stop worker stages a local byte of value 0 at 0x801162ac and uses (0,1,2,6); metadata TX0/RX0 means LensCommunication does not copy that local byte to lower TX. Lower mode is 1. The operation header and configured data lengths are observed at 0x80110c50, with no lens or wire capture.",
+    "admission": "Ready map denying an operation yields native worker/setter status 7 without lower transport. Search with map-ready 0 and AF getter 0 still reached the lower API in the explicitly seeded fixture. Inhibit exactly 1 returns 8 without queue send. At modeled poll 101 the search worker delivered result 1 and cleared pending, but native setter returned 6. No-delivery stop reached status 6 with pending still set. These statuses differ from the outer recipient return 1.",
+    "arm": "ExecuteFocusControl clears the cached completion state and start count before it issues a lens operation. After search the setter status 7, 4 or 6 did not prevent state 1 when request+1==1. Stop with that byte 1 left state 0 after success, denial or timeout. Search with request+1==0 and inhibit 1 emitted immediate completion without a queued lens operation. Both the outer command and native completion recipient are executed, not substituted.",
+    "samples": "The original getter writes VDRC motion from 0x80c2a748 and separately returns validity 0x80c2a746. The callback ignores that validity return. State 1 advances on motion byte 1, start count at least 6, or nonzero bypass flag; transition increments count without completing on that callback. State 2 emits 0x6003f and 0x10060032 on motion 0 and clears state. In the zero sequences, the seventh callback advances the state and the eighth completes. A failed native regular communication after search link failure clears cache but retains prior validity 1. A native lens-control reset clears cache and validity without clearing capture-side state 2 in the fixture, so its next poll completes.",
+    "capture_phase": "The original search emits 0x6003e and the recipient moves capture phase 2 to 3. On motion completion the original 0x6003f changes capture phase only from 4 to 5. The usual seeded phase-2 cases end at phase 3 despite AF completion. A separate phase-4 seed tests the conditional advance without simulating how a real capture reaches phase 4. The independent 0x10060032 recipient sets blFocusCompleteflag.",
+    "focus_stop": "WaitForFocusStop 0x8042e4c4 polls the original cache getter and ignores its validity return, delaying with argument 1 while motion remains nonzero. Invalid zero returned immediately, and invalid moving samples returned only after zero. The persistent nonzero fixture was stopped by the harness after four waits with the next delay branch still selected. No fixed counter is present in the identified function body.",
+    "abort": "CAutoFocusService_OnNotifyCommand(0xe0002) calls StopAF(1) unless blBKControl at 0x80395a12 equals 1. That guarded branch sets blBKControlCancel and sends no event. StopAF clears blEnableCAF and sets blQuitCAF. With sequence flag 1 it sets blStopCommandFlag, wakes a sleeping sequence with mask 0x10 and waits for exit mask 0x08, mode 1, timeout 0xffffffff. It clears transient blStopForRelease after the modeled wait even when wait returns 0. The separate WaitAFComplete uses the same event masks while retaining CAF enable/quit state. These are software sequence-control events and do not prove actuator motion stopped."
+  },
+  "prior_q7": [
+    "analysis/lens-routing.json",
+    "analysis/lens-foundation.json",
+    "analysis/lens-readiness.json"
+  ],
+  "comparison": {
+    "model": "Pentax K-3 Mark III",
+    "commit": "5f2dcc60263fb8e0a552987e0405b6609ddde688",
+    "repository_path": "analysis/af-request-consumer-evidence.json",
+    "sha256": "f292cb93891c4e323ff1aff40400bd99ee258d5752d82a571aef8c485422556c",
+    "scope": "Committed ARM analysis follows descriptor/slot/queue task dispatch and command-completion callback with modeled exchange. It supplies a comparison boundary for request lifecycle. Q7 cached-motion predicates, commands, queues and addresses are model-specific."
+  },
+  "replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "scope": "Original LensDriveControl, capture notification/dispatch, search and stop setters, lens worker from its entry through one queued message and upper transport admission. Original live-view and focus-stop predicates consume RAM telemetry. The original AF stop notification selector and sequence-exit wait are separate checks. Link replies and wait/queue/event delivery are synthetic.",
+    "modeled_boundaries": {
+      "0x80125d0c": "Capture the original lens message word and queue handle.",
+      "0x80125cec": "Deliver the captured word to the native worker on the separate worker state.",
+      "0x8010f4f0": "Record native tick arguments. Deliver one pending worker at its fixture wait count, or supply the next focus-stop sample.",
+      "0x80110c50": "Record original command and configured TX/RX lengths; supply lower status and leave the zero-initialized shared RX buffer unchanged.",
+      "0x80125c24": "Record AF thread wake event without waking an RTOS thread.",
+      "0x80125be0": "Record AF sequence-exit event, mode and timeout; supply fixture status and result bits."
+    },
+    "command_cases": [
+      {
+        "name": "search-ack-then-motion",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 2,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 1,
+            "af_complete": 1,
+            "capture_phase": 3,
+            "notifications": [
+              393279,
+              268828722
+            ]
+          }
+        ]
+      },
+      {
+        "name": "phase-four-conditional-advance",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 4,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 4,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 4,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 1,
+            "af_complete": 1,
+            "capture_phase": 5,
+            "notifications": [
+              393279,
+              268828722
+            ]
+          }
+        ]
+      },
+      {
+        "name": "search-map-denied-then-invalid-zero",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 0,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 0
+        },
+        "af_enable": 0,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 7,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 7,
+            "worker_pending": 0,
+            "link": [],
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 1,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 1,
+            "start_count": 2,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 1,
+            "start_count": 3,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 1,
+            "start_count": 4,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 1,
+            "start_count": 5,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 1,
+            "start_count": 6,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 2,
+            "start_count": 7,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 0,
+            "start_count": 7,
+            "af_complete": 1,
+            "capture_phase": 3,
+            "notifications": [
+              393279,
+              268828722
+            ]
+          }
+        ]
+      },
+      {
+        "name": "search-link-error-then-failed-regular-zero",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 2,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 4,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 4,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 4
+              }
+            ],
+            "cached_motion": 2,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "regular-failure",
+            "result": 4,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  1,
+                  12
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 1,
+                "rx_bytes": 160,
+                "payload_hex": "00",
+                "result": 4
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 2,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 3,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 4,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 5,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 6,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 7,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 7,
+            "af_complete": 1,
+            "capture_phase": 3,
+            "notifications": [
+              393279,
+              268828722
+            ]
+          }
+        ]
+      },
+      {
+        "name": "search-late-worker-at-timeout",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 101,
+            "outer_return": 1,
+            "setter_return": 6,
+            "queue_message": [
+              6
+            ],
+            "waits": 101,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          }
+        ]
+      },
+      {
+        "name": "search-inhibited-immediate-notify",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 1,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 0,
+            "worker_delivery_wait": null,
+            "outer_return": 1,
+            "setter_return": 8,
+            "queue_message": [],
+            "waits": 0,
+            "worker_result": null,
+            "worker_pending": 0,
+            "link": [],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 0,
+            "af_complete": 1,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278,
+              268828722
+            ]
+          }
+        ]
+      },
+      {
+        "name": "search-ready-clear-forwarded",
+        "setup": {
+          "communications_state": 0,
+          "map_ready": 0,
+          "search_allowed": 0,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 0,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          }
+        ]
+      },
+      {
+        "name": "stop-ack-while-cache-moving",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "drive",
+            "mode": 1,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              8
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  6
+                ],
+                "transport_mode": 1,
+                "tx_bytes": 0,
+                "rx_bytes": 0,
+                "payload_hex": "",
+                "result": 1
+              }
+            ],
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          }
+        ]
+      },
+      {
+        "name": "stop-map-denied-clears-check",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 0,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "drive",
+            "mode": 1,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 7,
+            "queue_message": [
+              8
+            ],
+            "waits": 1,
+            "worker_result": 7,
+            "worker_pending": 0,
+            "link": [],
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          }
+        ]
+      },
+      {
+        "name": "stop-timeout-clears-check",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "drive",
+            "mode": 1,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": null,
+            "outer_return": 1,
+            "setter_return": 6,
+            "queue_message": [
+              8
+            ],
+            "waits": 101,
+            "worker_result": null,
+            "worker_pending": 1,
+            "link": [],
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 0,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          }
+        ]
+      },
+      {
+        "name": "reset-zero-during-motion-check",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": 1,
+            "outer_return": 1,
+            "setter_return": 1,
+            "queue_message": [
+              6
+            ],
+            "waits": 1,
+            "worker_result": 1,
+            "worker_pending": 0,
+            "link": [
+              {
+                "command": [
+                  0,
+                  1,
+                  2,
+                  4
+                ],
+                "transport_mode": 2,
+                "tx_bytes": 3,
+                "rx_bytes": 1,
+                "payload_hex": "123456",
+                "result": 1
+              }
+            ],
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
+            ]
+          },
+          {
+            "action": "poll",
+            "cached_motion": 1,
+            "vd_validity": 1,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "reset",
+            "communications_state": 0,
+            "map_ready": 0,
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 2,
+            "start_count": 1,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": []
+          },
+          {
+            "action": "poll",
+            "cached_motion": 0,
+            "vd_validity": 0,
+            "motion_check_state": 0,
+            "start_count": 1,
+            "af_complete": 1,
+            "capture_phase": 3,
+            "notifications": [
+              393279,
+              268828722
+            ]
+          }
+        ]
+      }
+    ],
+    "wait_cases": [
+      {
+        "name": "invalid-zero",
+        "initial": [
+          0,
+          0
+        ],
+        "samples": [],
+        "waits": 0,
+        "returned": 1,
+        "stop_pc": "0xbadf000"
+      },
+      {
+        "name": "invalid-moving-then-zero",
+        "initial": [
+          1,
+          0
+        ],
+        "samples": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "waits": 2,
+        "returned": 1,
+        "stop_pc": "0xbadf000"
+      },
+      {
+        "name": "nonzero-through-bound",
+        "initial": [
+          128,
+          1
+        ],
+        "samples": [
+          [
+            128,
+            1
+          ],
+          [
+            128,
+            1
+          ],
+          [
+            128,
+            1
+          ],
+          [
+            128,
+            1
+          ]
+        ],
+        "waits": 4,
+        "returned": 0,
+        "stop_pc": "0x8042e4d4"
+      }
+    ],
+    "abort_cases": [
+      {
+        "name": "notify-no-sequence",
+        "entry": "notify",
+        "sequence": 0,
+        "sleeping": 1,
+        "bk_control": 0,
+        "events": [],
+        "stop_command": 0,
+        "stop_release_after": 0,
+        "enable_caf": 0,
+        "quit_caf": 1,
+        "bk_cancel": 0
+      },
+      {
+        "name": "notify-active-awake",
+        "entry": "notify",
+        "sequence": 1,
+        "sleeping": 0,
+        "bk_control": 0,
+        "events": [
+          [
+            "wait",
+            8,
+            1,
+            4294967295,
+            1,
+            1
+          ]
+        ],
+        "stop_command": 1,
+        "stop_release_after": 0,
+        "enable_caf": 0,
+        "quit_caf": 1,
+        "bk_cancel": 0
+      },
+      {
+        "name": "notify-active-sleeping",
+        "entry": "notify",
+        "sequence": 1,
+        "sleeping": 1,
+        "bk_control": 0,
+        "events": [
+          [
+            "set",
+            16
+          ],
+          [
+            "wait",
+            8,
+            1,
+            4294967295,
+            1,
+            0
+          ]
+        ],
+        "stop_command": 1,
+        "stop_release_after": 0,
+        "enable_caf": 0,
+        "quit_caf": 1,
+        "bk_cancel": 0
+      },
+      {
+        "name": "notify-deferred-bk-cancel",
+        "entry": "notify",
+        "sequence": 1,
+        "sleeping": 1,
+        "bk_control": 1,
+        "events": [],
+        "stop_command": 0,
+        "stop_release_after": 0,
+        "enable_caf": 1,
+        "quit_caf": 0,
+        "bk_cancel": 1
+      },
+      {
+        "name": "separate-exit-wait",
+        "entry": "exit-wait",
+        "sequence": 1,
+        "sleeping": 1,
+        "bk_control": 0,
+        "events": [
+          [
+            "set",
+            16
+          ],
+          [
+            "wait",
+            8,
+            1,
+            4294967295,
+            0,
+            1
+          ]
+        ],
+        "stop_command": 1,
+        "stop_release_after": 0,
+        "enable_caf": 1,
+        "quit_caf": 0,
+        "bk_cancel": 0
+      }
+    ],
+    "engine": "angr 10.0.5 / VEX"
+  },
+  "selected_functions": [
+    {
+      "name": "LensService_LensCommunicationControlValueInitialize",
+      "address": 2148595096,
+      "candidate_end": 2148595580,
+      "file_offset": 2168960,
+      "size": 484,
+      "sha256": "8e177f212ac1717db2c34b5170cd16b4a7fe505fc5ccc32a789c25d1429c93d6",
+      "transfers": [
+        {
+          "site": 2148595116,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595136,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595188,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595224,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595572,
+          "word": "080447dd",
+          "kind": "jump",
+          "target": 2148605812,
+          "target_names": [
+            "LensDataServer_LensCommunicationDataInitialize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_WaitForLensComFinish",
+      "address": 2148596420,
+      "candidate_end": 2148596480,
+      "file_offset": 2170284,
+      "size": 60,
+      "sha256": "bd656ef18c65cccb6a2dd5a01a43407af08fd4508b647d0af3efa89336cf055c",
+      "transfers": [
+        {
+          "site": 2148596444,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_GetLensFunctionMapEnableOperation",
+      "address": 2148597232,
+      "candidate_end": 2148597296,
+      "file_offset": 2171096,
+      "size": 64,
+      "sha256": "8560e94bec93d88445d64f8e3c1e3e26a46e657c352ad79193f389b9849fba5c",
+      "transfers": []
+    },
+    {
+      "name": "LensService_LensCommunication",
+      "address": 2148602388,
+      "candidate_end": 2148602708,
+      "file_offset": 2176252,
+      "size": 320,
+      "sha256": "ac2903b68cbb472022ba2f4312f0b647aa67e63c85913c3f9f387d2e91b82d6f",
+      "transfers": [
+        {
+          "site": 2148602480,
+          "word": "0c045d67",
+          "kind": "call",
+          "target": 2148627868,
+          "target_names": [
+            "LensService_SetLensMapCommunicationSendDataSize"
+          ]
+        },
+        {
+          "site": 2148602500,
+          "word": "0c045d78",
+          "kind": "call",
+          "target": 2148627936,
+          "target_names": [
+            "LensService_SetLensMapCommunicationReceiveDataSize"
+          ]
+        },
+        {
+          "site": 2148602520,
+          "word": "0c045d89",
+          "kind": "call",
+          "target": 2148628004,
+          "target_names": [
+            "LensService_SetLensMapCommunicationComMode"
+          ]
+        },
+        {
+          "site": 2148602580,
+          "word": "0c044314",
+          "kind": "call",
+          "target": 2148600912,
+          "target_names": [
+            "LensService_LensCommunicationBase"
+          ]
+        },
+        {
+          "site": 2148602684,
+          "word": "0c043f7c",
+          "kind": "call",
+          "target": 2148597232,
+          "target_names": [
+            "LensService_GetLensFunctionMapEnableOperation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_LensCommunicationDataInitialize",
+      "address": 2148605812,
+      "candidate_end": 2148606416,
+      "file_offset": 2179676,
+      "size": 604,
+      "sha256": "f5cbe10cd4034ef21c1e4124cbe32a32636f2860c5216f8acc03ea2bb3c10a64",
+      "transfers": [
+        {
+          "site": 2148605856,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605876,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605896,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605916,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605936,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605956,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606064,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606084,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606104,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606132,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_GetFocusStatusVDRC",
+      "address": 2148607252,
+      "candidate_end": 2148607276,
+      "file_offset": 2181116,
+      "size": 24,
+      "sha256": "9475daefcb54732531f9f6843c563cca841062048bef1cd9c783c5144b21e876",
+      "transfers": []
+    },
+    {
+      "name": "LensDataServer_SetFocusSerchStart",
+      "address": 2148611236,
+      "candidate_end": 2148611420,
+      "file_offset": 2185100,
+      "size": 184,
+      "sha256": "3a5d4210d1b9aebadb7ba7fc9cfa97358889b7af98800d0c22b7417c420945bc",
+      "transfers": [
+        {
+          "site": 2148611272,
+          "word": "0c043cdb",
+          "kind": "call",
+          "target": 2148594540,
+          "target_names": [
+            "LensService_GetLensActuatorDriveLimitModeEnable"
+          ]
+        },
+        {
+          "site": 2148611300,
+          "word": "0c045abe",
+          "kind": "call",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148611364,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_SetFocusMovementStop",
+      "address": 2148611636,
+      "candidate_end": 2148611804,
+      "file_offset": 2185500,
+      "size": 168,
+      "sha256": "7eb6bc5756596744416d7712b0c2b973d276289efd539fe6a47529f7898e6e9f",
+      "transfers": [
+        {
+          "site": 2148611656,
+          "word": "0c043cdb",
+          "kind": "call",
+          "target": 2148594540,
+          "target_names": [
+            "LensService_GetLensActuatorDriveLimitModeEnable"
+          ]
+        },
+        {
+          "site": 2148611684,
+          "word": "0c045abe",
+          "kind": "call",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148611748,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComSetFocusSerchStart",
+      "address": 2148615832,
+      "candidate_end": 2148615936,
+      "file_offset": 2189696,
+      "size": 104,
+      "sha256": "c5a1988c674356516f38a884c4ffb77e63dcaa4d98ebca515931976f5c8d0270",
+      "transfers": [
+        {
+          "site": 2148615900,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ExGetAfEnable",
+      "address": 2148616968,
+      "candidate_end": 2148617048,
+      "file_offset": 2190832,
+      "size": 80,
+      "sha256": "9b1ce5a2f8c9ba9c50882ad658481e7cb09e342a112dba82987b5fd97c300ddd",
+      "transfers": [
+        {
+          "site": 2148616976,
+          "word": "0c045225",
+          "kind": "call",
+          "target": 2148616340,
+          "target_names": [
+            "LensDataServer_ExGetLensAttached"
+          ]
+        },
+        {
+          "site": 2148617020,
+          "word": "0c043f7c",
+          "kind": "call",
+          "target": 2148597232,
+          "target_names": [
+            "LensService_GetLensFunctionMapEnableOperation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_SingleRegularCommunication",
+      "address": 2148622160,
+      "candidate_end": 2148622684,
+      "file_offset": 2196024,
+      "size": 524,
+      "sha256": "7e0e6f913e1f2afa1a5ccb7a19e3780081a29ca626cdd11b1d3960e6c2997347",
+      "transfers": [
+        {
+          "site": 2148622180,
+          "word": "0c047aeb",
+          "kind": "call",
+          "target": 2148658092,
+          "target_names": [
+            "TemperatureInformationService_GetTemperatureBody"
+          ]
+        },
+        {
+          "site": 2148622224,
+          "word": "0c043d18",
+          "kind": "call",
+          "target": 2148594784,
+          "target_names": [
+            "LensService_GetLensState"
+          ]
+        },
+        {
+          "site": 2148622244,
+          "word": "0c043eb1",
+          "kind": "call",
+          "target": 2148596420,
+          "target_names": [
+            "LensService_WaitForLensComFinish"
+          ]
+        },
+        {
+          "site": 2148622284,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148622316,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148622336,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148622356,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148622376,
+          "word": "0c044727",
+          "kind": "call",
+          "target": 2148605084,
+          "target_names": [
+            "LensService_DistributeLensTubeClosedStatus"
+          ]
+        },
+        {
+          "site": 2148622596,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148622624,
+          "word": "0c043e97",
+          "kind": "call",
+          "target": 2148596316,
+          "target_names": [
+            "LensService_SetLensState"
+          ]
+        },
+        {
+          "site": 2148622632,
+          "word": "0c044727",
+          "kind": "call",
+          "target": 2148605084,
+          "target_names": [
+            "LensService_DistributeLensTubeClosedStatus"
+          ]
+        },
+        {
+          "site": 2148622668,
+          "word": "0c043e97",
+          "kind": "call",
+          "target": 2148596316,
+          "target_names": [
+            "LensService_SetLensState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComSetFocusMovementStop",
+      "address": 2148622976,
+      "candidate_end": 2148623052,
+      "file_offset": 2196840,
+      "size": 76,
+      "sha256": "574c8ea5fc2cf778dd34c958c20b2ded9229c939ce5d085ae4169da8a431f2ef",
+      "transfers": [
+        {
+          "site": 2148623016,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensComThreadService_LensComThreadMain",
+      "address": 2148624768,
+      "candidate_end": 2148625144,
+      "file_offset": 2198632,
+      "size": 376,
+      "sha256": "9943ed392d63cf7d75009335c75a1c3b64309b59045eccd190974ac914c8fddf",
+      "transfers": [
+        {
+          "site": 2148624816,
+          "word": "0c04973b",
+          "kind": "call",
+          "target": 2148687084,
+          "target_names": [
+            "MessageQueue_Receive"
+          ]
+        },
+        {
+          "site": 2148624836,
+          "word": "0c043eb1",
+          "kind": "call",
+          "target": 2148596420,
+          "target_names": [
+            "LensService_WaitForLensComFinish"
+          ]
+        },
+        {
+          "site": 2148624868,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148624876,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148624884,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148624892,
+          "word": "0c04425f",
+          "kind": "call",
+          "target": 2148600188,
+          "target_names": [
+            "LensService_LensInitializeSequence"
+          ]
+        },
+        {
+          "site": 2148624908,
+          "word": "0c0442cd",
+          "kind": "call",
+          "target": 2148600628,
+          "target_names": [
+            "LensService_LensSwControl"
+          ]
+        },
+        {
+          "site": 2148624924,
+          "word": "0c044002",
+          "kind": "call",
+          "target": 2148597768,
+          "target_names": [
+            "LensService_ExecuteLensEndSequence"
+          ]
+        },
+        {
+          "site": 2148624940,
+          "word": "0c044032",
+          "kind": "call",
+          "target": 2148597960,
+          "target_names": [
+            "LensService_SetLensActuatorDriveLimitMode"
+          ]
+        },
+        {
+          "site": 2148624956,
+          "word": "0c044032",
+          "kind": "call",
+          "target": 2148597960,
+          "target_names": [
+            "LensService_SetLensActuatorDriveLimitMode"
+          ]
+        },
+        {
+          "site": 2148624972,
+          "word": "0c044e90",
+          "kind": "call",
+          "target": 2148612672,
+          "target_names": [
+            "LensDataServer_ComSetReleaseShutterClose"
+          ]
+        },
+        {
+          "site": 2148624988,
+          "word": "0c044e7d",
+          "kind": "call",
+          "target": 2148612596,
+          "target_names": [
+            "LensDataServer_ComSetReleaseShutterOpen"
+          ]
+        },
+        {
+          "site": 2148625004,
+          "word": "0c044e03",
+          "kind": "call",
+          "target": 2148612108,
+          "target_names": [
+            "LensDataServer_ComSetReleasePreparRelease"
+          ]
+        },
+        {
+          "site": 2148625020,
+          "word": "0c0456c6",
+          "kind": "call",
+          "target": 2148621080,
+          "target_names": [
+            "LensDataServer_ComSetApertureApMoveStartWithNd"
+          ]
+        },
+        {
+          "site": 2148625036,
+          "word": "0c0458a0",
+          "kind": "call",
+          "target": 2148622976,
+          "target_names": [
+            "LensDataServer_ComSetFocusMovementStop"
+          ]
+        },
+        {
+          "site": 2148625052,
+          "word": "0c04586a",
+          "kind": "call",
+          "target": 2148622760,
+          "target_names": [
+            "LensDataServer_ComSetFocusLocationDrive"
+          ]
+        },
+        {
+          "site": 2148625068,
+          "word": "0c0451a6",
+          "kind": "call",
+          "target": 2148615832,
+          "target_names": [
+            "LensDataServer_ComSetFocusSerchStart"
+          ]
+        },
+        {
+          "site": 2148625084,
+          "word": "0c0457d4",
+          "kind": "call",
+          "target": 2148622160,
+          "target_names": [
+            "LensDataServer_SingleRegularCommunication"
+          ]
+        },
+        {
+          "site": 2148625104,
+          "word": "0c045723",
+          "kind": "call",
+          "target": 2148621452,
+          "target_names": [
+            "LensDataServer_VdSyncRegularCommunication"
+          ]
+        },
+        {
+          "site": 2148625112,
+          "word": "0c0456ba",
+          "kind": "call",
+          "target": 2148621032,
+          "target_names": [
+            "LensDataServer_ChangeOrderSheetViewData"
+          ]
+        },
+        {
+          "site": 2148625128,
+          "word": "0c0451c0",
+          "kind": "call",
+          "target": 2148615936,
+          "target_names": [
+            "LensDataServer_VdSyncRegularCommunicationAf"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensComThreadService_LensCommunicationSendMessage",
+      "address": 2148625144,
+      "candidate_end": 2148625188,
+      "file_offset": 2199008,
+      "size": 44,
+      "sha256": "57b58fe4d1b531670dec43f7c53e00714868877a4d2d23c2b2bdaaf0c0af7a18",
+      "transfers": [
+        {
+          "site": 2148625168,
+          "word": "0c049743",
+          "kind": "call",
+          "target": 2148687116,
+          "target_names": [
+            "MessageQueue_Send"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_SetLensMapCommunicationSendDataSize",
+      "address": 2148627868,
+      "candidate_end": 2148627936,
+      "file_offset": 2201732,
+      "size": 68,
+      "sha256": "11121baf0864bb49cee217adbdae4e791ecf7f23f0ee61f1868d7ddb2dd135df",
+      "transfers": []
+    },
+    {
+      "name": "LensService_SetLensMapCommunicationReceiveDataSize",
+      "address": 2148627936,
+      "candidate_end": 2148628004,
+      "file_offset": 2201800,
+      "size": 68,
+      "sha256": "7a22b4512da9d10ebc9d9afe41cae355157a5ec4a7d1a45ca99b3ca1d3f4cda2",
+      "transfers": []
+    },
+    {
+      "name": "LensService_SetLensMapCommunicationComMode",
+      "address": 2148628004,
+      "candidate_end": 2148628068,
+      "file_offset": 2201868,
+      "size": 64,
+      "sha256": "554b12780e8015ce35b2398ba6053039532e8705b346b50d57313cd531670b9b",
+      "transfers": []
+    },
+    {
+      "name": "CAutoFocusService_StopAF",
+      "address": 2151122368,
+      "candidate_end": 2151122560,
+      "segment": "E04",
+      "decoded_offset": 2403136,
+      "size": 192,
+      "sha256": "691fdf0d37dc41e885e833605de70d3b4dcc25d12534006a8697042b4904ad75",
+      "transfers": [
+        {
+          "site": 2151122504,
+          "word": "0c0496f8",
+          "kind": "call",
+          "target": 2148686816,
+          "target_names": [
+            "EventFlag_Wait"
+          ]
+        },
+        {
+          "site": 2151122544,
+          "word": "0c049709",
+          "kind": "call",
+          "target": 2148686884,
+          "target_names": [
+            "EventFlag_Set"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CAutoFocusService_OnNotifyComplete",
+      "address": 2151122612,
+      "candidate_end": 2151122652,
+      "segment": "E04",
+      "decoded_offset": 2403380,
+      "size": 40,
+      "sha256": "7d3072df43d2a55bd94a8661b8bbac56dbe69a3b4e0e4389753557ff1ec97b61",
+      "transfers": []
+    },
+    {
+      "name": "CAutoFocusService_WaitAFComplete",
+      "address": 2151122916,
+      "candidate_end": 2151123056,
+      "segment": "E04",
+      "decoded_offset": 2403684,
+      "size": 140,
+      "sha256": "6e8c483bc7b37887ea98d74ee15f855e04ba942010ffe69309b3433c520e8e3b",
+      "transfers": [
+        {
+          "site": 2151123008,
+          "word": "0c0496f8",
+          "kind": "call",
+          "target": 2148686816,
+          "target_names": [
+            "EventFlag_Wait"
+          ]
+        },
+        {
+          "site": 2151123040,
+          "word": "0c049709",
+          "kind": "call",
+          "target": 2148686884,
+          "target_names": [
+            "EventFlag_Set"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CAutoFocusService_OnNotifyCommand",
+      "address": 2151146008,
+      "candidate_end": 2151146220,
+      "segment": "E04",
+      "decoded_offset": 2426776,
+      "size": 212,
+      "sha256": "6905750d482fd1b224524eca285de9e5278318f896bbad0a58eac26f48bc6fb5",
+      "transfers": [
+        {
+          "site": 2151146088,
+          "word": "0c0df865",
+          "kind": "call",
+          "target": 2151145876,
+          "target_names": [
+            "CAutoFocusService_CAFSequenceStart"
+          ]
+        },
+        {
+          "site": 2151146128,
+          "word": "0c0de170",
+          "kind": "call",
+          "target": 2151122368,
+          "target_names": [
+            "CAutoFocusService_StopAF"
+          ]
+        },
+        {
+          "site": 2151146204,
+          "word": "0c0df865",
+          "kind": "call",
+          "target": 2151145876,
+          "target_names": [
+            "CAutoFocusService_CAFSequenceStart"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CAutoFocusService_LensDriveControl",
+      "address": 2151148408,
+      "candidate_end": 2151148844,
+      "segment": "E04",
+      "decoded_offset": 2429176,
+      "size": 436,
+      "sha256": "74bad815e2ba0b86f3ef68d5b8fef07aab3cc4f685bc4377a6a274a6bf8014d5",
+      "transfers": [
+        {
+          "site": 2151148452,
+          "word": "0c10b755",
+          "kind": "call",
+          "target": 2151865684,
+          "target_names": [
+            "CaptureLensControlService_GetFocusControlInfo"
+          ]
+        },
+        {
+          "site": 2151148564,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2151148640,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2151148740,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2151148836,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "CaptureProcessService_OnNotifyCommand",
+      "address": 2151718920,
+      "candidate_end": 2151720988,
+      "segment": "E04",
+      "decoded_offset": 2999688,
+      "size": 2068,
+      "sha256": "cf7e66941afeae0e77235b0b975776d6e2d7113f58615e66911998af86a927f7",
+      "transfers": [
+        {
+          "site": 2151718984,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2151718992,
+          "word": "0c105d04",
+          "kind": "call",
+          "target": 2151773200,
+          "target_names": [
+            "CaptureProcessInformation_SetFixedAutoPictFaceDetect"
+          ]
+        },
+        {
+          "site": 2151719000,
+          "word": "0c103b23",
+          "kind": "call",
+          "target": 2151738508,
+          "target_names": [
+            "CaptureSystemService_ClearCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719008,
+          "word": "0c105add",
+          "kind": "call",
+          "target": 2151770996,
+          "target_names": [
+            "CaptureProcessInformation_GetOnAfSequence"
+          ]
+        },
+        {
+          "site": 2151719024,
+          "word": "0c105ae3",
+          "kind": "call",
+          "target": 2151771020,
+          "target_names": [
+            "CaptureProcessInformation_GetOnAfEndStage"
+          ]
+        },
+        {
+          "site": 2151719040,
+          "word": "0c105ac4",
+          "kind": "call",
+          "target": 2151770896,
+          "target_names": [
+            "CaptureProcessInformation_SetDisableReleaseCause"
+          ]
+        },
+        {
+          "site": 2151719048,
+          "word": "0c10476c",
+          "kind": "call",
+          "target": 2151751088,
+          "target_names": [
+            "LiveViewService_RequestEndAfSequence"
+          ]
+        },
+        {
+          "site": 2151719084,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2151719116,
+          "word": "0c105c87",
+          "kind": "call",
+          "target": 2151772700,
+          "target_names": [
+            "CaptureProcessInformation_SetRequestPowerOff"
+          ]
+        },
+        {
+          "site": 2151719124,
+          "word": "0c103b55",
+          "kind": "call",
+          "target": 2151738708,
+          "target_names": [
+            "CaptureSystemService_SetViewModeEnable"
+          ]
+        },
+        {
+          "site": 2151719136,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719172,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151719184,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719200,
+          "word": "0c104e23",
+          "kind": "call",
+          "target": 2151757964,
+          "target_names": [
+            "LiveViewService_StartFaceDetect"
+          ]
+        },
+        {
+          "site": 2151719216,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151719232,
+          "word": "0c10b8ca",
+          "kind": "call",
+          "target": 2151867176,
+          "target_names": [
+            "CaptureLensControlService_UpdateManualFocalLength"
+          ]
+        },
+        {
+          "site": 2151719240,
+          "word": "0c10b948",
+          "kind": "call",
+          "target": 2151867680,
+          "target_names": [
+            "CaptureLensControlService_CheckUniqueLensData"
+          ]
+        },
+        {
+          "site": 2151719248,
+          "word": "0c103bd6",
+          "kind": "call",
+          "target": 2151739224,
+          "target_names": [
+            "CaptureSystemService_SetCaptureCommonEventFlag"
+          ]
+        },
+        {
+          "site": 2151719264,
+          "word": "0c105ada",
+          "kind": "call",
+          "target": 2151770984,
+          "target_names": [
+            "CaptureProcessInformation_SetOnAfSequence"
+          ]
+        },
+        {
+          "site": 2151719272,
+          "word": "0c105ae0",
+          "kind": "call",
+          "target": 2151771008,
+          "target_names": [
+            "CaptureProcessInformation_SetOnAfEndStage"
+          ]
+        },
+        {
+          "site": 2151719280,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719304,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151719312,
+          "word": "0c105cc9",
+          "kind": "call",
+          "target": 2151772964,
+          "target_names": [
+            "CaptureProcessInformation_IsRequestRelease"
+          ]
+        },
+        {
+          "site": 2151719328,
+          "word": "0c105c75",
+          "kind": "call",
+          "target": 2151772628,
+          "target_names": [
+            "CaptureProcessInformation_SetCaptureSequence"
+          ]
+        },
+        {
+          "site": 2151719336,
+          "word": "0c105ad4",
+          "kind": "call",
+          "target": 2151770960,
+          "target_names": [
+            "CaptureProcessInformation_SetReleaseCount"
+          ]
+        },
+        {
+          "site": 2151719344,
+          "word": "0c102494",
+          "kind": "call",
+          "target": 2151715408,
+          "target_names": [
+            "RequestRelease"
+          ]
+        },
+        {
+          "site": 2151719360,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151719376,
+          "word": "0c105d07",
+          "kind": "call",
+          "target": 2151773212,
+          "target_names": [
+            "CaptureProcessInformation_GetFixedAutoPictFaceDetect"
+          ]
+        },
+        {
+          "site": 2151719392,
+          "word": "0c105cf2",
+          "kind": "call",
+          "target": 2151773128,
+          "target_names": [
+            "CaptureProcessInformation_SetOnSuspendFaceDetectAf"
+          ]
+        },
+        {
+          "site": 2151719404,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151719428,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151719436,
+          "word": "0c105c8d",
+          "kind": "call",
+          "target": 2151772724,
+          "target_names": [
+            "CaptureProcessInformation_SetQuitViewOnQuickPreviewFlag"
+          ]
+        },
+        {
+          "site": 2151719448,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719464,
+          "word": "0c105aad",
+          "kind": "call",
+          "target": 2151770804,
+          "target_names": [
+            "CaptureProcessInformation_GetCaptureState"
+          ]
+        },
+        {
+          "site": 2151719520,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151719528,
+          "word": "0c105aad",
+          "kind": "call",
+          "target": 2151770804,
+          "target_names": [
+            "CaptureProcessInformation_GetCaptureState"
+          ]
+        },
+        {
+          "site": 2151719556,
+          "word": "0c105ac4",
+          "kind": "call",
+          "target": 2151770896,
+          "target_names": [
+            "CaptureProcessInformation_SetDisableReleaseCause"
+          ]
+        },
+        {
+          "site": 2151719580,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151719588,
+          "word": "0c105cc9",
+          "kind": "call",
+          "target": 2151772964,
+          "target_names": [
+            "CaptureProcessInformation_IsRequestRelease"
+          ]
+        },
+        {
+          "site": 2151719604,
+          "word": "0c105c75",
+          "kind": "call",
+          "target": 2151772628,
+          "target_names": [
+            "CaptureProcessInformation_SetCaptureSequence"
+          ]
+        },
+        {
+          "site": 2151719612,
+          "word": "0c102494",
+          "kind": "call",
+          "target": 2151715408,
+          "target_names": [
+            "RequestRelease"
+          ]
+        },
+        {
+          "site": 2151719640,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151719656,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719672,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719688,
+          "word": "0c105cf2",
+          "kind": "call",
+          "target": 2151773128,
+          "target_names": [
+            "CaptureProcessInformation_SetOnSuspendFaceDetectAf"
+          ]
+        },
+        {
+          "site": 2151719696,
+          "word": "0c104e2d",
+          "kind": "call",
+          "target": 2151758004,
+          "target_names": [
+            "LiveViewService_EndFaceDetect"
+          ]
+        },
+        {
+          "site": 2151719792,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151719808,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151719840,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151719848,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151719864,
+          "word": "0c10b8ca",
+          "kind": "call",
+          "target": 2151867176,
+          "target_names": [
+            "CaptureLensControlService_UpdateManualFocalLength"
+          ]
+        },
+        {
+          "site": 2151719880,
+          "word": "0c10bf08",
+          "kind": "call",
+          "target": 2151873568,
+          "target_names": [
+            "CaptureSrControlService_EndLiveViewSrDrive"
+          ]
+        },
+        {
+          "site": 2151719896,
+          "word": "0c10befe",
+          "kind": "call",
+          "target": 2151873528,
+          "target_names": [
+            "CaptureSrControlService_StartLiveViewSrDrive"
+          ]
+        },
+        {
+          "site": 2151719912,
+          "word": "0c105d04",
+          "kind": "call",
+          "target": 2151773200,
+          "target_names": [
+            "CaptureProcessInformation_SetFixedAutoPictFaceDetect"
+          ]
+        },
+        {
+          "site": 2151719920,
+          "word": "0c1048f4",
+          "kind": "call",
+          "target": 2151752656,
+          "target_names": [
+            "LiveViewService_UpdateRequestAfGeometry"
+          ]
+        },
+        {
+          "site": 2151720000,
+          "word": "0c10b9d3",
+          "kind": "call",
+          "target": 2151868236,
+          "target_names": [
+            "CaptureLensControlService_SetApertureMoving"
+          ]
+        },
+        {
+          "site": 2151720008,
+          "word": "0c10b806",
+          "kind": "call",
+          "target": 2151866392,
+          "target_names": [
+            "CaptureLensControlService_RequestApertureControl"
+          ]
+        },
+        {
+          "site": 2151720024,
+          "word": "0c10b810",
+          "kind": "call",
+          "target": 2151866432,
+          "target_names": [
+            "CaptureLensControlService_ExecuteFocusControl"
+          ]
+        },
+        {
+          "site": 2151720040,
+          "word": "0c2b0e5f",
+          "kind": "call",
+          "target": 2158770556,
+          "target_names": [
+            "CaptureImageService_PreContinuousRelease"
+          ]
+        },
+        {
+          "site": 2151720056,
+          "word": "0c105b42",
+          "kind": "call",
+          "target": 2151771400,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyComletionToReleaseSvc"
+          ]
+        },
+        {
+          "site": 2151720100,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151720116,
+          "word": "0c105add",
+          "kind": "call",
+          "target": 2151770996,
+          "target_names": [
+            "CaptureProcessInformation_GetOnAfSequence"
+          ]
+        },
+        {
+          "site": 2151720132,
+          "word": "0c105af8",
+          "kind": "call",
+          "target": 2151771104,
+          "target_names": [
+            "CaptureProcessInformation_SetAfCancelCommandRequested"
+          ]
+        },
+        {
+          "site": 2151720164,
+          "word": "0c105ce0",
+          "kind": "call",
+          "target": 2151773056,
+          "target_names": [
+            "CaptureProcessInformation_SetEnableChargeStartCompletion"
+          ]
+        },
+        {
+          "site": 2151720172,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151720188,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151720212,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151720220,
+          "word": "0c1027ca",
+          "kind": "call",
+          "target": 2151718696,
+          "target_names": [
+            "ConfirmCaptureCancel"
+          ]
+        },
+        {
+          "site": 2151720236,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151720252,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151720268,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151720292,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151720300,
+          "word": "0c105ac4",
+          "kind": "call",
+          "target": 2151770896,
+          "target_names": [
+            "CaptureProcessInformation_SetDisableReleaseCause"
+          ]
+        },
+        {
+          "site": 2151720316,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151720332,
+          "word": "0c104bfe",
+          "kind": "call",
+          "target": 2151755768,
+          "target_names": [
+            "LiveViewService_SetUserAeLock"
+          ]
+        },
+        {
+          "site": 2151720348,
+          "word": "0c104bfe",
+          "kind": "call",
+          "target": 2151755768,
+          "target_names": [
+            "LiveViewService_SetUserAeLock"
+          ]
+        },
+        {
+          "site": 2151720372,
+          "word": "0c105b2a",
+          "kind": "call",
+          "target": 2151771304,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyCommandToCaptureApp"
+          ]
+        },
+        {
+          "site": 2151720388,
+          "word": "0c105aef",
+          "kind": "call",
+          "target": 2151771068,
+          "target_names": [
+            "CaptureProcessInformation_GetOnReleaseSequence"
+          ]
+        },
+        {
+          "site": 2151720404,
+          "word": "0c105add",
+          "kind": "call",
+          "target": 2151770996,
+          "target_names": [
+            "CaptureProcessInformation_GetOnAfSequence"
+          ]
+        },
+        {
+          "site": 2151720432,
+          "word": "0c105b42",
+          "kind": "call",
+          "target": 2151771400,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyComletionToReleaseSvc"
+          ]
+        },
+        {
+          "site": 2151720456,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151720464,
+          "word": "0c2b0e3f",
+          "kind": "call",
+          "target": 2158770428,
+          "target_names": [
+            "CaptureImageService_CancelBulb"
+          ]
+        },
+        {
+          "site": 2151720480,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151720504,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151720512,
+          "word": "0c105c8d",
+          "kind": "call",
+          "target": 2151772724,
+          "target_names": [
+            "CaptureProcessInformation_SetQuitViewOnQuickPreviewFlag"
+          ]
+        },
+        {
+          "site": 2151720528,
+          "word": "0c10da34",
+          "kind": "call",
+          "target": 2151901392,
+          "target_names": [
+            "DataHelper_IsAeLockStatus"
+          ]
+        },
+        {
+          "site": 2151720544,
+          "word": "0c105aef",
+          "kind": "call",
+          "target": 2151771068,
+          "target_names": [
+            "CaptureProcessInformation_GetOnReleaseSequence"
+          ]
+        },
+        {
+          "site": 2151720564,
+          "word": "0c0f11c0",
+          "kind": "call",
+          "target": 2151433984,
+          "target_names": [
+            "HandleCaptureProcess_OnNotifyLensChanging"
+          ]
+        },
+        {
+          "site": 2151720600,
+          "word": "0c105aef",
+          "kind": "call",
+          "target": 2151771068,
+          "target_names": [
+            "CaptureProcessInformation_GetOnReleaseSequence"
+          ]
+        },
+        {
+          "site": 2151720624,
+          "word": "0c105a9f",
+          "kind": "call",
+          "target": 2151770748,
+          "target_names": [
+            "CaptureProcessInformation_SetLiveViewNextAction"
+          ]
+        },
+        {
+          "site": 2151720648,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151720664,
+          "word": "0c105b32",
+          "kind": "call",
+          "target": 2151771336,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyCommandToReleaseSvc"
+          ]
+        },
+        {
+          "site": 2151720688,
+          "word": "0c105b32",
+          "kind": "call",
+          "target": 2151771336,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyCommandToReleaseSvc"
+          ]
+        },
+        {
+          "site": 2151720712,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151720720,
+          "word": "0c105ce6",
+          "kind": "call",
+          "target": 2151773080,
+          "target_names": [
+            "CaptureProcessInformation_SetOnBcSequence"
+          ]
+        },
+        {
+          "site": 2151720728,
+          "word": "0c10247b",
+          "kind": "call",
+          "target": 2151715308,
+          "target_names": [
+            "CaptureProcessService_NotifyReleaseStart"
+          ]
+        },
+        {
+          "site": 2151720748,
+          "word": "0c105c75",
+          "kind": "call",
+          "target": 2151772628,
+          "target_names": [
+            "CaptureProcessInformation_SetCaptureSequence"
+          ]
+        },
+        {
+          "site": 2151720756,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151720772,
+          "word": "0c104796",
+          "kind": "call",
+          "target": 2151751256,
+          "target_names": [
+            "LiveViewService_UpdateAutoPictFaceDetect"
+          ]
+        },
+        {
+          "site": 2151720780,
+          "word": "0c105d04",
+          "kind": "call",
+          "target": 2151773200,
+          "target_names": [
+            "CaptureProcessInformation_SetFixedAutoPictFaceDetect"
+          ]
+        },
+        {
+          "site": 2151720788,
+          "word": "0c105cf2",
+          "kind": "call",
+          "target": 2151773128,
+          "target_names": [
+            "CaptureProcessInformation_SetOnSuspendFaceDetectAf"
+          ]
+        },
+        {
+          "site": 2151720808,
+          "word": "0c105b42",
+          "kind": "call",
+          "target": 2151771400,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyComletionToReleaseSvc"
+          ]
+        },
+        {
+          "site": 2151720824,
+          "word": "0c105ae3",
+          "kind": "call",
+          "target": 2151771020,
+          "target_names": [
+            "CaptureProcessInformation_GetOnAfEndStage"
+          ]
+        },
+        {
+          "site": 2151720844,
+          "word": "0c105b42",
+          "kind": "call",
+          "target": 2151771400,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyComletionToReleaseSvc"
+          ]
+        },
+        {
+          "site": 2151720860,
+          "word": "0c105acd",
+          "kind": "call",
+          "target": 2151770932,
+          "target_names": [
+            "CaptureProcessInformation_ClearDisableReleaseCause"
+          ]
+        },
+        {
+          "site": 2151720872,
+          "word": "0c105b2e",
+          "kind": "call",
+          "target": 2151771320,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyComletionToCaptureApp"
+          ]
+        },
+        {
+          "site": 2151720884,
+          "word": "0c105b2e",
+          "kind": "call",
+          "target": 2151771320,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyComletionToCaptureApp"
+          ]
+        },
+        {
+          "site": 2151720904,
+          "word": "0c0275aa",
+          "kind": "call",
+          "target": 2148128424,
+          "target_names": [
+            "TimingMark"
+          ]
+        },
+        {
+          "site": 2151720912,
+          "word": "0c103b4d",
+          "kind": "call",
+          "target": 2151738676,
+          "target_names": [
+            "CaptureSystemService_SetCaptureEvent"
+          ]
+        },
+        {
+          "site": 2151720928,
+          "word": "0c105afe",
+          "kind": "call",
+          "target": 2151771128,
+          "target_names": [
+            "CaptureProcessInformation_SetOnReleaseAfCancel"
+          ]
+        },
+        {
+          "site": 2151720944,
+          "word": "0c105b2a",
+          "kind": "call",
+          "target": 2151771304,
+          "target_names": [
+            "CaptureProcessInformation_SendNotifyCommandToCaptureApp"
+          ]
+        },
+        {
+          "site": 2151720980,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureProcessService_GetOnNotifyCommand",
+      "address": 2151730272,
+      "candidate_end": 2151730284,
+      "segment": "E04",
+      "decoded_offset": 3011040,
+      "size": 12,
+      "sha256": "bc5cbcede98602df51a407438fa19a9a472be350c7e9bdf1e69ddf00620df2d4",
+      "transfers": []
+    },
+    {
+      "name": "CaptureLensControlService_Initialize",
+      "address": 2151865552,
+      "candidate_end": 2151865684,
+      "segment": "E04",
+      "decoded_offset": 3146320,
+      "size": 132,
+      "sha256": "13cd70fef71530014729e0a7bf730f303efeb5038ac442b2c8271b303d8bb4c9",
+      "transfers": [
+        {
+          "site": 2151865580,
+          "word": "0c0de1ba",
+          "kind": "call",
+          "target": 2151122664,
+          "target_names": [
+            "CAutoFocusService_GetOnNotifyComplete"
+          ]
+        },
+        {
+          "site": 2151865588,
+          "word": "0c0d84b0",
+          "kind": "call",
+          "target": 2151027392,
+          "target_names": [
+            "CAutoExposureService_GetOnNotifyCompletion"
+          ]
+        },
+        {
+          "site": 2151865624,
+          "word": "0c045a24",
+          "kind": "call",
+          "target": 2148624528,
+          "target_names": [
+            "LensComThreadService_RegisterNotifyCompletion"
+          ]
+        },
+        {
+          "site": 2151865636,
+          "word": "0c045ae5",
+          "kind": "call",
+          "target": 2148625300,
+          "target_names": [
+            "LensControlService_RegisterNotifyCompletion"
+          ]
+        },
+        {
+          "site": 2151865644,
+          "word": "0c045aeb",
+          "kind": "call",
+          "target": 2148625324,
+          "target_names": [
+            "LensControlService_GetNotifyCommand"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureLensControlService_ExecuteFocusControl",
+      "address": 2151866432,
+      "candidate_end": 2151866756,
+      "segment": "E04",
+      "decoded_offset": 3147200,
+      "size": 324,
+      "sha256": "9e96d75fb10913e88b539c75b3b0670c28cf85f12fd27fb019552ed178ce059b",
+      "transfers": [
+        {
+          "site": 2151866564,
+          "word": "0c045aee",
+          "kind": "call",
+          "target": 2148625336,
+          "target_names": [
+            "LensControlService_SetBreakFocusStopWait"
+          ]
+        },
+        {
+          "site": 2151866612,
+          "word": "0c10b772",
+          "kind": "call",
+          "target": 2151865800,
+          "target_names": [
+            "SendNotifyComletion"
+          ]
+        },
+        {
+          "site": 2151866620,
+          "word": "0c045aee",
+          "kind": "call",
+          "target": 2148625336,
+          "target_names": [
+            "LensControlService_SetBreakFocusStopWait"
+          ]
+        },
+        {
+          "site": 2151866660,
+          "word": "0c044d57",
+          "kind": "call",
+          "target": 2148611420,
+          "target_names": [
+            "LensDataServer_SetFocusSerchStartVdSync"
+          ]
+        },
+        {
+          "site": 2151866684,
+          "word": "0c044d29",
+          "kind": "call",
+          "target": 2148611236,
+          "target_names": [
+            "LensDataServer_SetFocusSerchStart"
+          ]
+        },
+        {
+          "site": 2151866708,
+          "word": "0c10b75b",
+          "kind": "call",
+          "target": 2151865708,
+          "target_names": [
+            "SendNotifyCommand"
+          ]
+        },
+        {
+          "site": 2151866724,
+          "word": "0c044d8d",
+          "kind": "call",
+          "target": 2148611636,
+          "target_names": [
+            "LensDataServer_SetFocusMovementStop"
+          ]
+        },
+        {
+          "site": 2151866740,
+          "word": "0c044d5f",
+          "kind": "call",
+          "target": 2148611452,
+          "target_names": [
+            "LensDataServer_SetFocusLocationDrive"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureLensControlService_WaitForFocusStop",
+      "address": 2151867588,
+      "candidate_end": 2151867644,
+      "segment": "E04",
+      "decoded_offset": 3148356,
+      "size": 56,
+      "sha256": "04399712fa0ba153a4292f5d51b733671123734bf293dba7c63ed13a3265613f",
+      "transfers": [
+        {
+          "site": 2151867604,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2151867612,
+          "word": "0c044945",
+          "kind": "call",
+          "target": 2148607252,
+          "target_names": [
+            "LensDataServer_GetFocusStatusVDRC"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureLensControlService_CallBackLiveView",
+      "address": 2151867820,
+      "candidate_end": 2151868188,
+      "segment": "E04",
+      "decoded_offset": 3148588,
+      "size": 368,
+      "sha256": "773e96480f64db8b31011e7ef6c15d5b4de68b13f92d7424f8c5b160b3ccf641",
+      "transfers": [
+        {
+          "site": 2151867832,
+          "word": "0c10da90",
+          "kind": "call",
+          "target": 2151901760,
+          "target_names": [
+            "DataHelper_GetFocusMode"
+          ]
+        },
+        {
+          "site": 2151867840,
+          "word": "0c10dadf",
+          "kind": "call",
+          "target": 2151902076,
+          "target_names": [
+            "DataHelper_IsEnableFocusRingAction"
+          ]
+        },
+        {
+          "site": 2151867884,
+          "word": "0c044945",
+          "kind": "call",
+          "target": 2148607252,
+          "target_names": [
+            "LensDataServer_GetFocusStatusVDRC"
+          ]
+        },
+        {
+          "site": 2151867952,
+          "word": "0c0447cc",
+          "kind": "call",
+          "target": 2148605744,
+          "target_names": [
+            "LensService_SetFocusRingEnableSetting"
+          ]
+        },
+        {
+          "site": 2151867972,
+          "word": "0c10b75b",
+          "kind": "call",
+          "target": 2151865708,
+          "target_names": [
+            "SendNotifyCommand"
+          ]
+        },
+        {
+          "site": 2151868016,
+          "word": "0c10b75b",
+          "kind": "call",
+          "target": 2151865708,
+          "target_names": [
+            "SendNotifyCommand"
+          ]
+        },
+        {
+          "site": 2151868036,
+          "word": "0c10b772",
+          "kind": "call",
+          "target": 2151865800,
+          "target_names": [
+            "SendNotifyComletion"
+          ]
+        },
+        {
+          "site": 2151868136,
+          "word": "0c0447cc",
+          "kind": "call",
+          "target": 2148605744,
+          "target_names": [
+            "LensService_SetFocusRingEnableSetting"
+          ]
+        },
+        {
+          "site": 2151868156,
+          "word": "0c10b75b",
+          "kind": "call",
+          "target": 2151865708,
+          "target_names": [
+            "SendNotifyCommand"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "evidence": [
+    {
+      "role": "Upper AF request, capture jump-table route and native setter result",
+      "words": [
+        {
+          "va": "0x8037e14c",
+          "u32le_word": "0xac827e00",
+          "segment": "E04",
+          "decoded_offset": "0x2506cc"
+        },
+        {
+          "va": "0x8037ebb4",
+          "u32le_word": "0xa0500001",
+          "segment": "E04",
+          "decoded_offset": "0x251134"
+        },
+        {
+          "va": "0x8037ebb8",
+          "u32le_word": "0xac520008",
+          "segment": "E04",
+          "decoded_offset": "0x251138"
+        },
+        {
+          "va": "0x8037ebbc",
+          "u32le_word": "0xa0510000",
+          "segment": "E04",
+          "decoded_offset": "0x25113c"
+        },
+        {
+          "va": "0x8037ebc0",
+          "u32le_word": "0xa0530002",
+          "segment": "E04",
+          "decoded_offset": "0x251140"
+        },
+        {
+          "va": "0x8037ebc8",
+          "u32le_word": "0xa4540004",
+          "segment": "E04",
+          "decoded_offset": "0x251148"
+        },
+        {
+          "va": "0x8037ec38",
+          "u32le_word": "0xa220592c",
+          "segment": "E04",
+          "decoded_offset": "0x2511b8"
+        },
+        {
+          "va": "0x8037ed00",
+          "u32le_word": "0xa220592c",
+          "segment": "E04",
+          "decoded_offset": "0x251280"
+        },
+        {
+          "va": "0x8037ed24",
+          "u32le_word": "0x03200008",
+          "segment": "E04",
+          "decoded_offset": "0x2512a4"
+        },
+        {
+          "va": "0x804a2bdc",
+          "u32le_word": "0x8040a458",
+          "segment": "E04",
+          "decoded_offset": "0x37515c"
+        },
+        {
+          "va": "0x8040a458",
+          "u32le_word": "0x0c10b810",
+          "segment": "E04",
+          "decoded_offset": "0x2dc9d8"
+        },
+        {
+          "va": "0x8040a460",
+          "u32le_word": "0x1000ff0c",
+          "segment": "E04",
+          "decoded_offset": "0x2dc9e0"
+        },
+        {
+          "va": "0x8040a464",
+          "u32le_word": "0x02201021",
+          "segment": "E04",
+          "decoded_offset": "0x2dc9e4"
+        },
+        {
+          "va": "0x8038401c",
+          "u32le_word": "0x0c0dfade",
+          "segment": "E04",
+          "decoded_offset": "0x25659c"
+        },
+        {
+          "va": "0x8038402c",
+          "u32le_word": "0x9249592c",
+          "segment": "E04",
+          "decoded_offset": "0x2565ac"
+        },
+        {
+          "va": "0x80384030",
+          "u32le_word": "0x113002c3",
+          "segment": "E04",
+          "decoded_offset": "0x2565b0"
+        }
+      ]
+    },
+    {
+      "role": "Search/stop original queue gates, wait boundary, result and pending",
+      "words": [
+        {
+          "va": "0x801134c8",
+          "u32le_word": "0x0c043cdb",
+          "segment": "E03",
+          "original_file_offset": "0x2157b0"
+        },
+        {
+          "va": "0x801134d4",
+          "u32le_word": "0x1052000a",
+          "segment": "E03",
+          "original_file_offset": "0x2157bc"
+        },
+        {
+          "va": "0x801134e4",
+          "u32le_word": "0x0c045abe",
+          "segment": "E03",
+          "original_file_offset": "0x2157cc"
+        },
+        {
+          "va": "0x801134e8",
+          "u32le_word": "0xa232aa48",
+          "segment": "E03",
+          "original_file_offset": "0x2157d0"
+        },
+        {
+          "va": "0x80113524",
+          "u32le_word": "0x0c043d3c",
+          "segment": "E03",
+          "original_file_offset": "0x21580c"
+        },
+        {
+          "va": "0x8011352c",
+          "u32le_word": "0x2e060065",
+          "segment": "E03",
+          "original_file_offset": "0x215814"
+        },
+        {
+          "va": "0x80113530",
+          "u32le_word": "0x10c00006",
+          "segment": "E03",
+          "original_file_offset": "0x215818"
+        },
+        {
+          "va": "0x8011354c",
+          "u32le_word": "0x24030006",
+          "segment": "E03",
+          "original_file_offset": "0x215834"
+        },
+        {
+          "va": "0x80113558",
+          "u32le_word": "0xa083aa56",
+          "segment": "E03",
+          "original_file_offset": "0x215840"
+        },
+        {
+          "va": "0x80113648",
+          "u32le_word": "0x0c043cdb",
+          "segment": "E03",
+          "original_file_offset": "0x215930"
+        },
+        {
+          "va": "0x80113654",
+          "u32le_word": "0x1052000a",
+          "segment": "E03",
+          "original_file_offset": "0x21593c"
+        },
+        {
+          "va": "0x80113664",
+          "u32le_word": "0x0c045abe",
+          "segment": "E03",
+          "original_file_offset": "0x21594c"
+        },
+        {
+          "va": "0x80113668",
+          "u32le_word": "0xa232aa4a",
+          "segment": "E03",
+          "original_file_offset": "0x215950"
+        },
+        {
+          "va": "0x801136a4",
+          "u32le_word": "0x0c043d3c",
+          "segment": "E03",
+          "original_file_offset": "0x21598c"
+        },
+        {
+          "va": "0x801136ac",
+          "u32le_word": "0x2e040065",
+          "segment": "E03",
+          "original_file_offset": "0x215994"
+        },
+        {
+          "va": "0x801136cc",
+          "u32le_word": "0x24030006",
+          "segment": "E03",
+          "original_file_offset": "0x2159b4"
+        },
+        {
+          "va": "0x801136d8",
+          "u32le_word": "0xa043aa58",
+          "segment": "E03",
+          "original_file_offset": "0x2159c0"
+        },
+        {
+          "va": "0x80116b10",
+          "u32le_word": "0x0c049743",
+          "segment": "E03",
+          "original_file_offset": "0x218df8"
+        },
+        {
+          "va": "0x801169b0",
+          "u32le_word": "0x0c04973b",
+          "segment": "E03",
+          "original_file_offset": "0x218c98"
+        },
+        {
+          "va": "0x801169c4",
+          "u32le_word": "0x0c043eb1",
+          "segment": "E03",
+          "original_file_offset": "0x218cac"
+        },
+        {
+          "va": "0x801169e0",
+          "u32le_word": "0x8ca40000",
+          "segment": "E03",
+          "original_file_offset": "0x218cc8"
+        },
+        {
+          "va": "0x8011f0c0",
+          "u32le_word": "0x80116aac",
+          "segment": "E03",
+          "original_file_offset": "0x2213a8"
+        },
+        {
+          "va": "0x8011f0c8",
+          "u32le_word": "0x80116a8c",
+          "segment": "E03",
+          "original_file_offset": "0x2213b0"
+        },
+        {
+          "va": "0x80116a8c",
+          "u32le_word": "0x0c0458a0",
+          "segment": "E03",
+          "original_file_offset": "0x218d74"
+        },
+        {
+          "va": "0x80116aac",
+          "u32le_word": "0x0c0451a6",
+          "segment": "E03",
+          "original_file_offset": "0x218d94"
+        },
+        {
+          "va": "0x801146f4",
+          "u32le_word": "0xa062aa56",
+          "segment": "E03",
+          "original_file_offset": "0x2169dc"
+        },
+        {
+          "va": "0x801146fc",
+          "u32le_word": "0xa080aa48",
+          "segment": "E03",
+          "original_file_offset": "0x2169e4"
+        },
+        {
+          "va": "0x801162c0",
+          "u32le_word": "0xa062aa58",
+          "segment": "E03",
+          "original_file_offset": "0x2185a8"
+        },
+        {
+          "va": "0x801162c8",
+          "u32le_word": "0xa080aa4a",
+          "segment": "E03",
+          "original_file_offset": "0x2185b0"
+        }
+      ]
+    },
+    {
+      "role": "Native transport map and metadata including zero-length stop",
+      "words": [
+        {
+          "va": "0x801146dc",
+          "u32le_word": "0x0c044485",
+          "segment": "E03",
+          "original_file_offset": "0x2169c4"
+        },
+        {
+          "va": "0x801162a8",
+          "u32le_word": "0x0c044485",
+          "segment": "E03",
+          "original_file_offset": "0x218590"
+        },
+        {
+          "va": "0x801162ac",
+          "u32le_word": "0xa3a00018",
+          "segment": "E03",
+          "original_file_offset": "0x218594"
+        },
+        {
+          "va": "0x80111248",
+          "u32le_word": "0x1062003a",
+          "segment": "E03",
+          "original_file_offset": "0x213530"
+        },
+        {
+          "va": "0x8011133c",
+          "u32le_word": "0x0c043f7c",
+          "segment": "E03",
+          "original_file_offset": "0x213624"
+        },
+        {
+          "va": "0x80111344",
+          "u32le_word": "0x1440ffc2",
+          "segment": "E03",
+          "original_file_offset": "0x21362c"
+        },
+        {
+          "va": "0x80111348",
+          "u32le_word": "0x24030007",
+          "segment": "E03",
+          "original_file_offset": "0x213630"
+        },
+        {
+          "va": "0x80111270",
+          "u32le_word": "0x0c045d67",
+          "segment": "E03",
+          "original_file_offset": "0x213558"
+        },
+        {
+          "va": "0x80111284",
+          "u32le_word": "0x0c045d78",
+          "segment": "E03",
+          "original_file_offset": "0x21356c"
+        },
+        {
+          "va": "0x80111298",
+          "u32le_word": "0x0c045d89",
+          "segment": "E03",
+          "original_file_offset": "0x213580"
+        },
+        {
+          "va": "0x801112a0",
+          "u32le_word": "0x1260000b",
+          "segment": "E03",
+          "original_file_offset": "0x213588"
+        },
+        {
+          "va": "0x801112c0",
+          "u32le_word": "0xa0cb0000",
+          "segment": "E03",
+          "original_file_offset": "0x2135a8"
+        },
+        {
+          "va": "0x801112d4",
+          "u32le_word": "0x0c044314",
+          "segment": "E03",
+          "original_file_offset": "0x2135bc"
+        },
+        {
+          "va": "0x801219bc",
+          "u32le_word": "0x00000001",
+          "segment": "E03",
+          "original_file_offset": "0x223ca4"
+        },
+        {
+          "va": "0x80121bcc",
+          "u32le_word": "0x00000003",
+          "segment": "E03",
+          "original_file_offset": "0x223eb4"
+        },
+        {
+          "va": "0x80121bd4",
+          "u32le_word": "0x00000000",
+          "segment": "E03",
+          "original_file_offset": "0x223ebc"
+        },
+        {
+          "va": "0x8011fbcc",
+          "u32le_word": "0x00000001",
+          "segment": "E03",
+          "original_file_offset": "0x221eb4"
+        },
+        {
+          "va": "0x8011fbd4",
+          "u32le_word": "0x00000000",
+          "segment": "E03",
+          "original_file_offset": "0x221ebc"
+        },
+        {
+          "va": "0x8011f240",
+          "u32le_word": "0x00010002",
+          "segment": "E03",
+          "original_file_offset": "0x221528"
+        }
+      ]
+    },
+    {
+      "role": "Native completion arm and cached motion predicate",
+      "words": [
+        {
+          "va": "0x8042e070",
+          "u32le_word": "0xac801478",
+          "segment": "E04",
+          "decoded_offset": "0x3005f0"
+        },
+        {
+          "va": "0x8042e078",
+          "u32le_word": "0xa260147c",
+          "segment": "E04",
+          "decoded_offset": "0x3005f8"
+        },
+        {
+          "va": "0x8042e080",
+          "u32le_word": "0x90510001",
+          "segment": "E04",
+          "decoded_offset": "0x300600"
+        },
+        {
+          "va": "0x8042e0b4",
+          "u32le_word": "0x162a000d",
+          "segment": "E04",
+          "decoded_offset": "0x300634"
+        },
+        {
+          "va": "0x8042e0bc",
+          "u32le_word": "0x56110001",
+          "segment": "E04",
+          "decoded_offset": "0x30063c"
+        },
+        {
+          "va": "0x8042e0c0",
+          "u32le_word": "0xa271147c",
+          "segment": "E04",
+          "decoded_offset": "0x300640"
+        },
+        {
+          "va": "0x8042e0f4",
+          "u32le_word": "0x0c10b772",
+          "segment": "E04",
+          "decoded_offset": "0x300674"
+        },
+        {
+          "va": "0x8042e13c",
+          "u32le_word": "0x0c044d29",
+          "segment": "E04",
+          "decoded_offset": "0x3006bc"
+        },
+        {
+          "va": "0x8042e154",
+          "u32le_word": "0x0c10b75b",
+          "segment": "E04",
+          "decoded_offset": "0x3006d4"
+        },
+        {
+          "va": "0x8042e164",
+          "u32le_word": "0x0c044d8d",
+          "segment": "E04",
+          "decoded_offset": "0x3006e4"
+        },
+        {
+          "va": "0x80112518",
+          "u32le_word": "0x9043a748",
+          "segment": "E03",
+          "original_file_offset": "0x214800"
+        },
+        {
+          "va": "0x8011251c",
+          "u32le_word": "0xa0830000",
+          "segment": "E03",
+          "original_file_offset": "0x214804"
+        },
+        {
+          "va": "0x80112528",
+          "u32le_word": "0x9082a746",
+          "segment": "E03",
+          "original_file_offset": "0x214810"
+        },
+        {
+          "va": "0x8042e5ec",
+          "u32le_word": "0x0c044945",
+          "segment": "E04",
+          "decoded_offset": "0x300b6c"
+        },
+        {
+          "va": "0x8042e5f8",
+          "u32le_word": "0x90e3147c",
+          "segment": "E04",
+          "decoded_offset": "0x300b78"
+        },
+        {
+          "va": "0x8042e658",
+          "u32le_word": "0x1700ffef",
+          "segment": "E04",
+          "decoded_offset": "0x300bd8"
+        },
+        {
+          "va": "0x8042e670",
+          "u32le_word": "0x0c10b75b",
+          "segment": "E04",
+          "decoded_offset": "0x300bf0"
+        },
+        {
+          "va": "0x8042e674",
+          "u32le_word": "0xa0e0147c",
+          "segment": "E04",
+          "decoded_offset": "0x300bf4"
+        },
+        {
+          "va": "0x8042e684",
+          "u32le_word": "0x0c10b772",
+          "segment": "E04",
+          "decoded_offset": "0x300c04"
+        },
+        {
+          "va": "0x8042e6a0",
+          "u32le_word": "0x1163001a",
+          "segment": "E04",
+          "decoded_offset": "0x300c20"
+        },
+        {
+          "va": "0x8042e6ac",
+          "u32le_word": "0x288c0006",
+          "segment": "E04",
+          "decoded_offset": "0x300c2c"
+        },
+        {
+          "va": "0x8042e6bc",
+          "u32le_word": "0x91cd1474",
+          "segment": "E04",
+          "decoded_offset": "0x300c3c"
+        },
+        {
+          "va": "0x8042e6cc",
+          "u32le_word": "0xa0af147c",
+          "segment": "E04",
+          "decoded_offset": "0x300c4c"
+        },
+        {
+          "va": "0x8042e6d4",
+          "u32le_word": "0xacd01478",
+          "segment": "E04",
+          "decoded_offset": "0x300c54"
+        },
+        {
+          "va": "0x803786d8",
+          "u32le_word": "0xa085592c",
+          "segment": "E04",
+          "decoded_offset": "0x24ac58"
+        }
+      ]
+    },
+    {
+      "role": "Capture-phase notification guards and cache-reset boundary",
+      "words": [
+        {
+          "va": "0x804a2be4",
+          "u32le_word": "0x8040a420",
+          "segment": "E04",
+          "decoded_offset": "0x375164"
+        },
+        {
+          "va": "0x804a2be8",
+          "u32le_word": "0x8040a400",
+          "segment": "E04",
+          "decoded_offset": "0x375168"
+        },
+        {
+          "va": "0x8040a40c",
+          "u32le_word": "0x156aff21",
+          "segment": "E04",
+          "decoded_offset": "0x2dc98c"
+        },
+        {
+          "va": "0x8040a41c",
+          "u32le_word": "0xac825200",
+          "segment": "E04",
+          "decoded_offset": "0x2dc99c"
+        },
+        {
+          "va": "0x8040a42c",
+          "u32le_word": "0x1528ff19",
+          "segment": "E04",
+          "decoded_offset": "0x2dc9ac"
+        },
+        {
+          "va": "0x8040a43c",
+          "u32le_word": "0xac825200",
+          "segment": "E04",
+          "decoded_offset": "0x2dc9bc"
+        },
+        {
+          "va": "0x8010f688",
+          "u32le_word": "0xa120a2d9",
+          "segment": "E03",
+          "original_file_offset": "0x211970"
+        },
+        {
+          "va": "0x8010f68c",
+          "u32le_word": "0xa1005e4b",
+          "segment": "E03",
+          "original_file_offset": "0x211974"
+        },
+        {
+          "va": "0x80115fdc",
+          "u32le_word": "0x1222001b",
+          "segment": "E03",
+          "original_file_offset": "0x2182c4"
+        },
+        {
+          "va": "0x80115fec",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x2182d4"
+        },
+        {
+          "va": "0x80116000",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x2182e8"
+        },
+        {
+          "va": "0x80116014",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x2182fc"
+        },
+        {
+          "va": "0x80116114",
+          "u32le_word": "0x240a0001",
+          "segment": "E03",
+          "original_file_offset": "0x2183fc"
+        },
+        {
+          "va": "0x8042e4d4",
+          "u32le_word": "0x0c043d3c",
+          "segment": "E04",
+          "decoded_offset": "0x300a54"
+        },
+        {
+          "va": "0x8042e4dc",
+          "u32le_word": "0x0c044945",
+          "segment": "E04",
+          "decoded_offset": "0x300a5c"
+        },
+        {
+          "va": "0x8042e4e8",
+          "u32le_word": "0x1440fffa",
+          "segment": "E04",
+          "decoded_offset": "0x300a68"
+        }
+      ]
+    },
+    {
+      "role": "AF stop selector, transient stop byte and separate CAF exit event",
+      "words": [
+        {
+          "va": "0x8037e228",
+          "u32le_word": "0x10820015",
+          "segment": "E04",
+          "decoded_offset": "0x2507a8"
+        },
+        {
+          "va": "0x8037e284",
+          "u32le_word": "0x91245a12",
+          "segment": "E04",
+          "decoded_offset": "0x250804"
+        },
+        {
+          "va": "0x8037e288",
+          "u32le_word": "0x10860007",
+          "segment": "E04",
+          "decoded_offset": "0x250808"
+        },
+        {
+          "va": "0x8037e290",
+          "u32le_word": "0x0c0de170",
+          "segment": "E04",
+          "decoded_offset": "0x250810"
+        },
+        {
+          "va": "0x8037e294",
+          "u32le_word": "0x24040001",
+          "segment": "E04",
+          "decoded_offset": "0x250814"
+        },
+        {
+          "va": "0x8037e2b8",
+          "u32le_word": "0xa1465a64",
+          "segment": "E04",
+          "decoded_offset": "0x250838"
+        },
+        {
+          "va": "0x803785e8",
+          "u32le_word": "0xa0e54bae",
+          "segment": "E04",
+          "decoded_offset": "0x24ab68"
+        },
+        {
+          "va": "0x803785ec",
+          "u32le_word": "0xa0604bad",
+          "segment": "E04",
+          "decoded_offset": "0x24ab6c"
+        },
+        {
+          "va": "0x803785f4",
+          "u32le_word": "0x10c20007",
+          "segment": "E04",
+          "decoded_offset": "0x24ab74"
+        },
+        {
+          "va": "0x8037861c",
+          "u32le_word": "0xa2044bc0",
+          "segment": "E04",
+          "decoded_offset": "0x24ab9c"
+        },
+        {
+          "va": "0x80378624",
+          "u32le_word": "0xa0865a22",
+          "segment": "E04",
+          "decoded_offset": "0x24aba4"
+        },
+        {
+          "va": "0x80378628",
+          "u32le_word": "0x1126000f",
+          "segment": "E04",
+          "decoded_offset": "0x24aba8"
+        },
+        {
+          "va": "0x80378648",
+          "u32le_word": "0x0c0496f8",
+          "segment": "E04",
+          "decoded_offset": "0x24abc8"
+        },
+        {
+          "va": "0x8037864c",
+          "u32le_word": "0xafab0010",
+          "segment": "E04",
+          "decoded_offset": "0x24abcc"
+        },
+        {
+          "va": "0x80378650",
+          "u32le_word": "0xa2004bc0",
+          "segment": "E04",
+          "decoded_offset": "0x24abd0"
+        },
+        {
+          "va": "0x80378670",
+          "u32le_word": "0x0c049709",
+          "segment": "E04",
+          "decoded_offset": "0x24abf0"
+        },
+        {
+          "va": "0x803787fc",
+          "u32le_word": "0x10a30004",
+          "segment": "E04",
+          "decoded_offset": "0x24ad7c"
+        },
+        {
+          "va": "0x8037881c",
+          "u32le_word": "0xa0c55a22",
+          "segment": "E04",
+          "decoded_offset": "0x24ad9c"
+        },
+        {
+          "va": "0x80378840",
+          "u32le_word": "0x0c0496f8",
+          "segment": "E04",
+          "decoded_offset": "0x24adc0"
+        },
+        {
+          "va": "0x80378844",
+          "u32le_word": "0xafa90010",
+          "segment": "E04",
+          "decoded_offset": "0x24adc4"
+        },
+        {
+          "va": "0x80378860",
+          "u32le_word": "0x0c049709",
+          "segment": "E04",
+          "decoded_offset": "0x24ade0"
+        },
+        {
+          "va": "0x804a36d0",
+          "u32le_word": "0x00000010",
+          "segment": "E04",
+          "decoded_offset": "0x375c50"
+        },
+        {
+          "va": "0x804a36d4",
+          "u32le_word": "0x00000008",
+          "segment": "E04",
+          "decoded_offset": "0x375c54"
+        }
+      ]
+    }
+  ],
+  "reproduction": "python tools/check_af_completion.py .private/main-expanded.elf --output .private/af-completion/recheck.json",
+  "limitations": [
+    "Bounded firmware routines run under VEX, with synthetic queue, wait/event and lower-link boundaries listed in replay. No physical lens, AF sensor input, RTOS concurrency, actual time, or mechanical motion is measured.",
+    "The original command getter and CaptureLensControlService initialization run. The AF callback slot is populated with that getter value from the separately established initialization binding; the full AF algorithm thread is not started.",
+    "Initial readiness, capture phase, temperature bytes and settings are synthetic. Explicit poll inputs emulate telemetry and are labeled; the failure and reset fixtures execute native cache mutation.",
+    "A separate worker project with copied lens-control RAM delivers one captured queue word. Worker stack/register state is discarded at the next receive boundary. No real scheduler or post-timeout late delivery beyond the tested same-poll case is inferred.",
+    "The phase-4 fixture seeds that phase and does not run the full capture lifecycle. Flag notification, ACK and motion completion remain separate software boundaries."
+  ]
+}

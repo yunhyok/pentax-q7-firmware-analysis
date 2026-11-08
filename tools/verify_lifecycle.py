@@ -1,8 +1,10 @@
 """Validate storage/readiness fixtures and reproduce original code witnesses."""
 import hashlib
+import re
 from build_deep_report import read
 from check_burn_storage import validate_report
 from check_lens_readiness import validate_report as validate_lens
+from check_af_completion import validate_report as validate_af
 from check_isp_registers import ELF_SHA256
 from inspect_q7 import parse_elf
 from q7_symbols import SHA
@@ -11,8 +13,18 @@ from verify_routing import witnesses, verify_words
 
 
 def verify(firmware=None,decoded=None):
+    if not __debug__:
+        raise RuntimeError('Validation requires assertions')
     data=read('loader-storage.json')
     lens=read('lens-readiness.json')
+    af=read('af-completion.json')
+    validate_af(af['replay'])
+    assert af['input_sha256']==SHA and af['analysis_elf_sha256']==ELF_SHA256
+    assert len(list(witnesses(af)))==128 and len(af['selected_functions'])==28
+    for f in af['selected_functions']:
+        assert f['candidate_end']-f['address']==f['size']>0
+        assert re.fullmatch('[0-9a-f]{64}',f['sha256'])
+        assert all(f['address'] <= e['site'] < f['candidate_end'] for e in f['transfers'])
     validate_report(data['replay'])
     validate_lens(lens['replay'])
     assert lens['input_sha256']==SHA and lens['analysis_elf_sha256']==ELF_SHA256
@@ -42,6 +54,9 @@ def verify(firmware=None,decoded=None):
     assert verify_words(lens,segments)==153
     assert trace(firmware,[f['name'] for f in lens['selected_functions']],decoded)['functions']==lens['selected_functions']
     print('Lens readiness: 153 words and 33 function hashes/transfers reproduced')
+    assert verify_words(af,segments)==128
+    assert trace(firmware,[f['name'] for f in af['selected_functions']],decoded)['functions']==af['selected_functions']
+    print('AF completion: 128 words and 28 function hashes/transfers reproduced')
 
 
 if __name__=='__main__':

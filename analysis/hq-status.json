@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "fae70c2b8ee496880474c34df41d49b96576e639",
-  "updated_at": "2026-11-08T17:11:30+09:00",
+  "baseline_commit": "441aced49a59f40b090328d7de0fd04ccfeb4a2d",
+  "updated_at": "2026-11-08T17:26:16+09:00",
   "goals": {
     "rebuild": {
       "status": "Native program-source281-byte changes explained by170 field events plus3072 byte-preserving copy events; native MD5 and card callback connected. Existing C fixed-table package and compiler results retained.",
@@ -81,7 +81,7 @@
       ]
     },
     "autofocus": {
-      "status": "Native readiness lifecycle replayed: AF-enable and upper command admission differ in failure/reset states; stale/zero/mixed-age VDRC and validity distinguished. Coordinator independently reproduced all17 new cases.",
+      "status": "Coordinator independently reproduced19 original AF command/completion, cached-stop and sequence-abort cases. Native requester, capture recipient, queue worker and completion callbacks connected; physical motion is not established.",
       "evidence": [
         "analysis/lens-foundation.json",
         "tools/check_lens_policy.py",
@@ -89,24 +89,35 @@
         "analysis/portability-evidence.json",
         "analysis/lens-readiness.json",
         "tools/check_lens_readiness.py",
-        "storage-readiness-report.html"
+        "storage-readiness-report.html",
+        "analysis/af-completion.json",
+        "tools/check_af_completion.py",
+        "af-completion-report.html"
       ],
       "gaps": [
-        "Continuous fault-injected AF scan/command/completion chain",
-        "Scheduler interleavings and full timeout recovery beyond nested reentry",
-        "Physical units, actual response timing and per-lens mechanical behavior"
+        "Full AF scan/algorithm-thread lifecycle and producers of completion telemetry",
+        "Actual AF sequence exit-event producer and post-timeout scheduler interleavings",
+        "Physical units, sensor feedback, timing and per-lens mechanical behavior"
       ],
       "next_actions": [
-        "Trace bounded AF search/stop policy using validated cache and failure boundaries; no immediate AF patch"
+        "Follow AF sequence exit producer and scan-loop transition conditions before proposing an AF change"
       ],
       "counts": {
         "new_lifecycle_cases": 17,
         "original_words": 153,
-        "function_extents": 33
+        "function_extents": 33,
+        "command_completion_cases": 11,
+        "focus_stop_cases": 3,
+        "sequence_abort_cases": 5,
+        "completion_words": 128,
+        "completion_function_extents": 28
       },
       "stable_evidence": {
         "analysis/lens-readiness.json": "9516435e4609576717f714d99e8ceeddc97b23fecd57914d680cfcf849025966",
-        "tools/check_lens_readiness.py": "b88ca7428dc9881a32f61a1cc9190daa41f6f3ffa8c5fe3ed40a7831db4d6d42"
+        "tools/check_lens_readiness.py": "b88ca7428dc9881a32f61a1cc9190daa41f6f3ffa8c5fe3ed40a7831db4d6d42",
+        "analysis/af-completion.json": "b603055d40a8cf6b90a9ca45fd70c03920bd2531eab4cec70577e71320e14bc1",
+        "tools/check_af_completion.py": "70892f18b3cb9df7a21d9ea6609e260225f7f7bd6f449abfbec0cdc6ae2fa8bd",
+        "af-completion-report.html": "eb1f44ba8095e2f725043c8be54a8b0cda3cf0c414207539243b0029fee302f7"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -160,7 +171,11 @@
     }
   },
   "new_findings": [
-    "VEX event units are explicit:3242 writes from35 PCs;170 field events already reconstruct final SHA a13f08d3\u2026,3072 copy events do not alter any byte in this fixture. All281 differences lie below offset0x600.",
+    "Native AF command results7/4/6 do not prevent motion-check arming when request+1==1. The completion callback ignores getter validity; native regular-failure/reset zeros can trigger completion in synthetic state.",
+    "Lens stop prepares local zero byte but original metadata givesTX0/RX0. A successful result at modeled poll101 still yields setter timeout6. Capture phase4 to5 and AF flag notification are distinct.",
+    "AF stop notification0xe0002 uses BK-control cancellation guard; active sequence may wake with0x10 and waits for0x08. This does not prove actuator stop.",
+    "441aced pins all35 ordered header event groups, including ranges and per-group digest. Seven altered forms, including duplicate PC, are rejected; private3242-event log independently reconstructs the pin.",
+    "VEX event units are explicit:3242 writes from35 PCs;170 field events already reconstruct final SHA a13f08d3…,3072 copy events do not alter any byte in this fixture. All281 differences lie below offset0x600.",
     "MBR helper skips ID999 or span0; copies section fields to entry start/length and type byte1; only ID0 writes byte0=0x80. Seven full-buffer/guard cases pass; no filesystem/type inference.",
     "Original MD5 passes26 cases, native manager8 and wrappers9; wrappers do not gate on modeled queue API status. Separate card7 cases run9 actual native MD5/compare worker transactions; no hash-result stub.",
     "Color Space native refresh queue4 times stages25 text lines and20 highlight requests and rolls4 buffers. Only the selected marker is rasterized in two separate synthetic RAM cases with330 changed bytes each.",
@@ -382,6 +397,46 @@
       "command": "python tools/verify_report.py --firmware <original>",
       "result": "All prior reports plus311 new words,21typed/3anonymous E01 records,47 main functions and38 resource extents reproduced;448 original blocks and analysisELF also exact",
       "limits": "Original-byte provenance and bounded offline execution; no camera hardware"
+    },
+    {
+      "command": "0f919501 GitHub publication",
+      "result": "CI42461933531 and Pages42461933105 success; six public HTML/JSON files HTTP200 and LF-byte identical",
+      "limits": "Publication only"
+    },
+    {
+      "command": "441aced header provenance fix",
+      "result": "CI42462756315 and Pages42462756062 success; complete35group pin reproduced from private3242event log",
+      "limits": "Metadata validation; original MIPS conclusions unchanged"
+    },
+    {
+      "command": "python tools/check_af_completion.py <original analysisELF> --output <new file>",
+      "result": "Coordinator rerun exactly matches11+3+5publiccases",
+      "limits": "Six modeled APIs; serialized lensRAM; no sensor, lens or real RTOS timing"
+    },
+    {
+      "command": "Original AF evidence verification",
+      "result": "128words and28function hashes/transfers reproduced; K3 pinned5f2dcc6 source bytes match recorded SHA256",
+      "limits": "Offline original-byte provenance"
+    },
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "result": "38passed including complete header-group corruption and AF CLI dangling-link rejection",
+      "limits": "No camera"
+    },
+    {
+      "command": "Browser QA of af-completion-report.html",
+      "result": "FourSVG diagrams and anchors inspected; width1265 has no horizontal document overflow",
+      "limits": "Desktop layout only"
+    },
+    {
+      "command": "humanize-korean light plus coordinator finalizer",
+      "result": "12paragraphs;0.4%character change,6.1%sentence touch,goldenPASS,modalitylost0,B6/6",
+      "limits": "Language audit, not technical proof"
+    },
+    {
+      "command": "python tools/verify_report.py --firmware <original>",
+      "result": "All prior evidence plus128AF words/28functions reproduced;448blocks and analysisELF exact; all deterministicHTML and local links pass",
+      "limits": "Offline provenance and bounded replay only"
     }
   ],
   "artifacts": [
@@ -423,7 +478,11 @@
     "tools/check_colorspace_render.py",
     "tools/verify_io_followup.py",
     "loader-hash-report.html",
-    "colorspace-render-report.html"
+    "colorspace-render-report.html",
+    "analysis/af-completion.json",
+    "tools/check_af_completion.py",
+    "af-completion-report.html",
+    "tools/build_af_report.py"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
