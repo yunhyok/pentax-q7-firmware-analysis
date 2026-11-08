@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — Loader와 렌즈 정책의 기반 분석</title><meta name="description" content="Q7 카드 입력 검증, 설치 헤더와 섹션 맵, 렌즈 능력·캐시·응답·완료 경로의 원본 코드 검증"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
+<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / OFFLINE FOLLOW-UP</p><h1>Loader와<br><span>렌즈 정책의 기반 분석</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="implementation-report.html">재패킹·AF·UI 선행 분석</a><a href="hdr-task-report.html">FC1·HDR task</a><a href="index.html">전체 분석</a></p></div><aside class="milestone"><strong>32 cases</strong><span>렌즈 정보·정책·응답·완료</span><strong>114 cases</strong><span>카드 14 / 보호 84 / 포인터 8 / 맵 8</span><strong>331 words</strong><span>원본 명령·데이터와 대조</span></aside></header>
+<nav aria-label="문서 목차"><a href="#card">카드 읽기</a><a href="#map">섹션 맵</a><a href="#lens">렌즈 정책</a><a href="#completion">응답·완료</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·한계</a></nav><main>
+<section id="card"><p class="eyebrow">01 / FILE INPUT CALLBACK</p><h2>일반 입력은 두 번 읽어 비교한다</h2><p>{{card}} <a href="analysis/loader-foundation.json">[L1: replay.card_cases]</a></p>{{card_graph}}
+<p>콜백 테이블은 E01의 <code>0x800a74dc</code>이며 읽기 함수는 <code>0x80019014</code>, 준비 함수는 <code>0x80019390</code>입니다. 준비 함수는 1을 반환합니다. 읽기 실패, 되감기 실패, 길이 불일치, 바이트 불일치와 재시도를 14개 사례로 확인했습니다. <a href="tools/check_burn_input.py">[원본 재실행 도구]</a></p>
+<p class="note">두 번 읽은 실제 길이가 모두 8바이트 또는 0바이트이고 FileX 결과가 성공이면, 이 콜백만은 1을 반환했습니다. 이는 짧은 업데이트가 전체 검사를 통과한다는 증거가 아닙니다. 해시 분기의 계산 결과와 파일 I/O는 모델 입력입니다.</p></section>
+
+<section id="map"><p class="eyebrow">02 / INSTALLED HEADER AND SECTION POLICY</p><h2>업데이트 헤더만으로 목적지를 정하지 않는다</h2><p>{{map}} <a href="analysis/loader-foundation.json">[L1: header·section_map_cases]</a></p>{{map_graph}}
+<div class="table-wrap"><table><caption>IsSectionProtected 0x8001a2a4 — 숫자 섹션 ID에 따른 조건</caption><thead><tr><th>섹션 ID</th><th>보호로 판정하는 조건</th></tr></thead><tbody><tr><th>3</th><td>header+0x234의 u8 == 1 AND handle+0x1268의 u8 == 1</td></tr><tr><th>6</th><td>header mode == 1 AND section+8의 payload == 0</td></tr><tr><th>그 외</th><td>section+4의 span != 0 AND section+8의 payload == 0</td></tr></tbody></table></div>
+<p>84개 조합은 섹션 0…6, header mode 0/1, handle protect 0/1과 세 가지 span/payload 쌍입니다. 포인터 getter는 ID 0에 header+0x3b0을, 나머지에는 header+0x214+ID×0x24를 반환합니다. ID 7의 주소 계산을 관측한 것을 유효한 여덟 번째 섹션의 증거로 쓰지는 않았습니다. <a href="analysis/loader-foundation.json">[L1: protection_cases·section_pointer_cases]</a></p>
+<div class="table-wrap"><table><caption>원본 입력 헤더 + 합성 설치 헤더·geometry의 맵 계산</caption><thead><tr><th>합성 사례</th><th>반환값</th></tr></thead><tbody>{{map_rows}}</tbody></table></div>
+<p>기준 geometry는 섹터당 512바이트, 블록당 256섹터, 총 0x40000섹터로 넣었습니다. 이 값과 출력 주소는 실제 Q7 NAND 덤프가 아닙니다. 보호 조건에 따라 동일한 코드·A 영역 불일치가 반환 3 또는 0으로 달라졌습니다. <a href="analysis/loader-foundation.json">[L1: replay.section_map_cases]</a></p>
+<details><summary>원본 페이로드 헤더에서 읽은 값</summary><div class="table-wrap"><table><caption>파일 0x1000c0 기준 — 이름은 원본 진단 함수와 소비 코드에 근거</caption><thead><tr><th>필드</th><th>헤더 offset</th><th>원본 u32 값</th></tr></thead><tbody>{{header_rows}}</tbody></table></div></details>
+<p>{{payload}} <a href="analysis/loader-foundation.json">[L1: payload_accounting]</a></p><pre><code>payload [0x1000c0, 0x11e00c0) = 135 × 0x20000 bytes
+ code:       ceil((0x982 + 3) / 256) = 10 chunks
+ Resource A: ceil(0x7c58 / 256)      = 125 chunks
+ Resource A begins 0x2400c0; embedded E04 begins 0x2402c0</code></pre></section>
+
+<section id="lens"><p class="eyebrow">03 / LENS INFORMATION TO AF POLICY</p><h2>AF 지원은 통신 상태와 연산 비트맵을 함께 본다</h2><p>{{lens}} <a href="analysis/lens-foundation.json">[A1: discovery]</a></p>{{lens_graph}}
+<pre><code>LLC startup 0x80111448:
+  (0, 1, 0, 1)     → 8-byte function-group bitmap
+  (0, 1, group, 0) → 32-byte operation bitmap
+  LSB-first expansion → operation_flags[u8(group)*256 + u8(operation)]
+ExGetAfEnable 0x80114b08:
+  (communication_state &amp; 0x08) != 0 AND operation_flags[2*256 + 4] != 0</code></pre>
+<p>명령 전송 함수는 map-read-OK가 정확히 1일 때 연산 비트맵을 검사하고, 허용값이 0이면 하위 전송 전에 7을 반환합니다. 이 전송 함수는 AF 지원 getter의 통신 상태 0x08 검사를 반복하지 않습니다. 두 검사를 같은 조건으로 합치지 않았습니다. <a href="analysis/lens-foundation.json">[A1: transport_admission]</a></p>
+<p>{{cache}} <a href="analysis/lens-foundation.json">[A1: cached_fields·af_policy]</a></p>
+<div class="table-wrap"><table><caption>캐시 해석과 정책의 대표 연결</caption><thead><tr><th>입력</th><th>확인한 표현·소비</th></tr></thead><tbody><tr><th>렌즈 ID</th><td>PLC primary specification +2 / BE u16</td></tr><tr><th>표준 이동 한계</th><td>PLC standard data +0x47 / BE u32</td></tr><tr><th>현재 위치</th><td>VD-synchronized data +1 / BE u32; 별도 유효 상태</td></tr><tr><th>최대·최소 속도</th><td>동기화 캐시 +0x91 / +0x93 / BE u16</td></tr><tr><th>0 한계의 fallback</th><td>lens ID 1 → 0x938 / ID 2 → 0xa6e; 해당 분기에 한정</td></tr><tr><th>최대 속도 변환</th><td>raw × float32(0x3b888889) × 100 → 정수 변환 후 low 16 bits</td></tr></tbody></table></div>
+<p>변환 함수 <code>0x80378e98</code>는 캐시 상태나 속도 값이 0이면 0을 반환합니다. 7개 변환 사례에서는 함수 내부 호출을 대체하지 않았습니다. 광학 거리·기계적 단위와 실제 속도는 미확정입니다. <a href="tools/check_lens_policy.py">[캐시·속도 재현]</a></p></section>
+
+<section id="completion"><p class="eyebrow">04 / REQUEST ACKNOWLEDGEMENT AND MOTION COMPLETION</p><h2>큐 응답과 이동 완료를 구분한다</h2><p>{{completion}} <a href="analysis/lens-foundation.json">[A1: commands·completion·replay]</a></p>
+<div class="table-wrap"><table><caption>서로 다른 대기·제한 조건</caption><thead><tr><th>경로</th><th>원본 코드에서 확인한 조건</th><th>한계</th></tr></thead><tbody><tr><th>mode 2 setter</th><td>limit-mode byte == 1일 때 큐 제출 없이 status 8; 인자 복사는 먼저 수행</td><td>제한 모드의 전체 활성화 수명은 미확정</td></tr><tr><th>응답 대기</th><td>100회 허용 / 101회 status 6</td><td>실제 시간·스케줄링 측정 아님</td></tr><tr><th>라이브뷰 state 1</th><td>이동 상태 == 1 OR counter &gt;= 6 OR 시작 대기 비활성</td><td>이 조건으로 state 2로 이동</td></tr><tr><th>라이브뷰 state 2</th><td>이동 상태 == 0 → 메시지 0x10060032 → 완료 처리</td><td>렌즈 위치 정확도·합초 성공 증거 아님</td></tr></tbody></table></div>
+<p>렌즈 재실행은 기능맵 6건, 캐시 3건, 속도 7건, 요청 응답 7건과 완료 상태 9건입니다. 캐시 3건에서는 getter와 상태값 21쌍을 함께 검사했습니다. <a href="analysis/lens-foundation.json">[A1: validation]</a></p></section>
+
+<section id="comparison"><p class="eyebrow">05 / K-3 MARK III COMPARISON</p><h2>검증 항목을 대조하고 수치 의미는 분리한다</h2><p>{{k3}}</p><p>공개 비교 기준은 <code>{{k3_commit}}</code>의 <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/update-resource-evidence.json">업데이트 근거</a>와 <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/dispatch-af.html">요청·AF 경로</a>입니다. 파일 해시도 L1에 기록했습니다.</p>
+<div class="table-wrap"><table><caption>기종별 관측을 서로의 실행 증거로 사용하지 않음</caption><thead><tr><th>항목</th><th>Q7</th><th>K-3 Mark III 기준 자료</th></tr></thead><tbody><tr><th>업데이트 검사</th><td>footer 3식별자 + byte sum / 별도 E01 loader</td><td>project·type·magic + word sum / decode·내부 검사</td></tr><tr><th>요청 성공</th><td>큐 응답과 라이브뷰 이동 완료를 분리</td><td>수신 응답 성공이 큐 반영·AF 완료를 보장하지 않음</td></tr><tr><th>물리 의미</th><td>보고값·fallback·속도 변환까지 확인</td><td>보정과 제한 이후 광학 단위·최종 구동은 별도 추적</td></tr><tr><th>실기 검증</th><td colspan="2">이번 대조에 카메라·렌즈·저장장치의 실제 실행 증거는 없음</td></tr></tbody></table></div></section>
+
+<section id="validation"><p class="eyebrow">06 / REPRODUCIBILITY AND LIMITS</p><h2>실행한 코드와 모델 입력을 함께 기록했다</h2><p>{{limits}}</p>
+<ul><li>워드 대조: VA 331개 + 원본 파일 20개; 메인 함수 67개, typed E01 함수 17개와 익명 콜백 범위 2개.</li><li>원본 재실행: 렌즈 32건, loader helper 114건, BurnNand 진입부 1건.</li><li>공통 모델: 파일 읽기·되감기, 할당·캐시·진단, 비동기 MD5 결과. BurnNand 진입부에는 카드 페이로드·기존 헤더·geometry 모델 3개를 추가.</li><li>재패킹 도구: 오류·짧은 쓰기 시 생성 파일만 정리하고 보고서는 마지막에 기록. 강제 종료·전원 손실에 대한 원자성은 보장하지 않음.</li><li>재실행 도구: SHA-256으로 검사한 바이트를 그대로 실행 엔진에 전달. 경로를 다시 열어 다른 파일을 실행하던 틈을 제거.</li></ul>
+<pre><code>python -m unittest discover -s tests -v
+python tools/verify_report.py --firmware path/to/fwdc603p.bin
+python tools/check_burn_input.py path/to/fwdc603p.bin --output .private/new-burn.json
+python tools/check_lens_policy.py .private/main-expanded.elf --output .private/new-lens.json</code></pre>
+<p>펌웨어·분석 ELF·전체 디컴파일·원본 자원은 공개하지 않습니다. 문서와 재현 도구, 제한된 워드 근거 및 해시를 공개합니다.</p>
+<ul class="sources"><li><a href="analysis/loader-foundation.json">L1 · Loader 근거·헤더·재실행 결과</a></li><li><a href="analysis/lens-foundation.json">A1 · 렌즈 정책·캐시·완료 근거</a></li><li><a href="tools/verify_foundations.py">원본 워드·함수·공개 근거 검증</a></li><li><a href="analysis/foundation-editorial.json">문장 검수 기록</a></li><li><a href="analysis/hq-status.json">연구 상태와 후속 작업</a></li></ul></section>
+</main><footer>독립적인 펌웨어 분석 · Q7 v1.01 · 오프라인 원본 코드 검증과 실기 동작을 구분합니다.</footer></body></html>

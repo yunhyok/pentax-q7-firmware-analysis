@@ -1,24 +1,26 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "2f850e7f1ef5bd4a4024574f66b035c359bc133d",
-  "updated_at": "2026-11-08T15:19:04+09:00",
+  "baseline_commit": "b02c42ed03942fb4a50aacff9c32914cde93a13f",
+  "updated_at": "2026-11-08T15:31:14+09:00",
   "goals": {
     "rebuild": {
-      "status": "offline round-trip and bounded instruction-change replay passed; camera acceptance unverified",
+      "status": "Original BurnNand prefix through native section-map return reproduced; file input, protection and map helpers verified offline",
       "evidence": [
         "analysis/rebuild-evidence.json",
+        "analysis/loader-foundation.json",
         "tools/repack_q7.py",
-        "tools/check_update_gate.py",
-        "tools/check_rebuild_code.py"
+        "tools/check_burn_input.py",
+        "loader-lens-report.html"
       ],
       "gaps": [
+        "Full BurnNand storage loop, subsequent integrity/recovery and real installed-media geometry",
         "General insertion/deletion and relocation",
-        "Full burn-record application and later integrity checks",
         "Camera update recognition, flash, boot, capture and recovery"
       ],
       "next_actions": [
-        "Trace burn-record dispatch, protection and destination handling"
+        "Continue from section-map return to bounded storage callback boundaries using synthetic memory only",
+        "Verify native MD5 primitives separately from the modeled asynchronous hash-worker outcomes"
       ]
     },
     "raw_profile": {
@@ -37,22 +39,25 @@
       ]
     },
     "autofocus": {
-      "status": "foundational research only; no immediate AF patch or physical drive requested",
+      "status": "Lens discovery/capability, cached-data interpretation, AF policy consumption, request acknowledgement and live-view completion documented; 32 original-code cases passed",
       "evidence": [
-        "analysis/portability-evidence.json",
-        "tools/check_q7_portability.py"
+        "analysis/lens-foundation.json",
+        "tools/check_lens_policy.py",
+        "loader-lens-report.html",
+        "analysis/portability-evidence.json"
       ],
       "gaps": [
-        "Lens information to capability/policy mapping",
-        "AF estimator, limits, command and completion semantics across Q lenses"
+        "Readiness-bit lifecycle and stale/failed lens-reply windows",
+        "Continuous fault-injected AF scan/command/completion chain",
+        "Physical units and per-lens mechanical behavior"
       ],
       "next_actions": [
-        "Trace lens information, capabilities and actuator policy into the existing AF/control path",
-        "Document supported future modification boundaries without applying a lens-specific patch"
+        "Replay initialization/readiness and failed lens replies",
+        "Trace safe synthetic AF search windows, limits and stop/dismount behavior; no immediate AF patch"
       ]
     },
     "ui_port": {
-      "status": "Q7 icon banks, logical geometry and indexed LCD draw ABI verified in bounded replay",
+      "status": "Common sRGB/AdobeRGB selector under active original-code investigation; existing icon/display ABI evidence retained",
       "evidence": [
         "analysis/portability-evidence.json",
         "tools/check_q7_portability.py"
@@ -69,13 +74,12 @@
     }
   },
   "new_findings": [
-    "All 448 compressed blocks round-trip to the byte-identical original package.",
-    "One MIPS delay-slot instruction can be changed without moving segment or block boundaries; rebuilt analysis code returns 1 instead of 0.",
-    "The application update gate checks three footer IDs and an additive byte checksum excluding the last 32 bytes.",
-    "The supplied burn header selects NAND and has its optional MD5-worker flag set to zero; later integrity checks remain unexcluded.",
-    "Q7 indexed LCD icon rendering uses one byte per palette index; the internal LCD geometry is distinct from physical panel dot count.",
-    "Review fixes: repacker rolls back owned files on failed or short writes; pinned replay tools execute the verified byte snapshot without reopening the path.",
-    "Further offline research is in progress: original BurnNand prefix to section-map return and lens discovery/policy/completion; public evidence integration pending."
+    "Card hash flag 0 selects two reads with actual-count/content comparison and at most two attempts; flag 1 uses a modeled hash worker. Equal short reads succeed only at this callback boundary.",
+    "Native BurnNand prologue reaches native section-map return using original payload bytes and a synthetic installed header/geometry; no storage writes executed.",
+    "Section3 protection uses header-mode and handle-protect bytes; section6 and generic sections use different payload/span conditions.",
+    "Lens capability combines communication-state bit 0x08 with group2/operation4, while transport admission has a separate map gate.",
+    "Cached big-endian lens values feed AF policy. Queue acknowledgement, timeout and live-view motion completion are distinct.",
+    "Replay tools now load exactly the verified bytes. Repacker failure rollback preserves pre-existing and colliding foreign files."
   ],
   "validation": [
     {
@@ -105,7 +109,7 @@
     },
     {
       "command": "python -m unittest discover -s tests -v",
-      "result": "23 passed",
+      "result": "28 passed",
       "limits": "Offline tools and synthetic parser/guard tests"
     },
     {
@@ -132,6 +136,36 @@
       "command": "GitHub Actions for 2f850e7",
       "result": "Validation 42452782255 and Pages 42452781507 completed successfully",
       "limits": "Published offline metadata, not hardware execution"
+    },
+    {
+      "command": "python tools/check_lens_policy.py <pinned-analysis.elf> --output <new-json>",
+      "result": "Coordinator: 32 cases passed and match worker reference metadata",
+      "limits": "Synthetic lens replies/scheduler/motion telemetry; no real lens"
+    },
+    {
+      "command": "python tools/check_burn_input.py <original> --output <new-json>",
+      "result": "14 card + 84 protection + 8 pointer + 8 map cases; native BurnNand prefix PASS; independent worker reproduced equal results",
+      "limits": "File I/O, MD5 outcomes, installed header and media geometry modeled; no storage write"
+    },
+    {
+      "command": "Native regression after shared verified-byte loader change",
+      "result": "All 15 callers passed: 12 replay entry points, lens policy, color math and ISP writer CLIs",
+      "limits": "Existing bounded synthetic fixtures; optional Unicorn unavailable, VEX used"
+    },
+    {
+      "command": "python tools/verify_report.py --firmware <original>",
+      "result": "PASS: all prior inventory/reports, new 331 VA +20 file words, 67 main /17 typed E01 /2 anonymous extents reproduced",
+      "limits": "Offline evidence reconstruction"
+    },
+    {
+      "command": "HTML browser rendering and anchor navigation",
+      "result": "Three SVG diagrams inspected at 1265px; no document horizontal overflow",
+      "limits": "Desktop viewport only"
+    },
+    {
+      "command": "humanize-korean official gates",
+      "result": "3.1% character change; golden PASS; no lost modality; nine paragraphs preserved",
+      "limits": "Native worker + coordinator finalizer, not Claude Opus"
     }
   ],
   "artifacts": [
@@ -141,7 +175,13 @@
     "tools/check_rebuild_code.py",
     "tools/check_q7_portability.py",
     "analysis/rebuild-evidence.json",
-    "implementation-report.html"
+    "implementation-report.html",
+    "analysis/loader-foundation.json",
+    "analysis/lens-foundation.json",
+    "tools/check_burn_input.py",
+    "tools/check_lens_policy.py",
+    "tools/verify_foundations.py",
+    "loader-lens-report.html"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."

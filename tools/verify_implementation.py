@@ -68,10 +68,19 @@ def verify(firmware=None, decoded=None):
         assert trace(firmware,[f['name'] for f in document['selected_functions']],decoded)['functions']==document['selected_functions']
     for w in rebuild['file_evidence']:
         assert struct.unpack_from('<I',firmware,int(w['original_file_offset'],16))[0]==int(w['u32le_word'],16)
+    verify_boot_functions(firmware,boot,symbols,rebuild['boot_selected_functions'])
+    header=rebuild['boot_dispatch'];off=int(header['header_original_file_offset'],16)
+    assert hashlib.sha256(firmware[off:off+header['header_size']]).hexdigest()==header['header_sha256']
+    assert footer_check(firmware)==rt['footer_before']==rt['footer_after']
+    print(f'Rebuild/AF/UI: {count} VA words, {len(rebuild["file_evidence"])} file words, main and typed E01 functions reproduced')
+
+
+def verify_boot_functions(firmware,boot,symbols,functions):
+    from trace_q7 import transfer
     labels={}
     for s in symbols:
         if s['name']: labels.setdefault(s['value'],[]).append(s['name'])
-    for f in rebuild['boot_selected_functions']:
+    for f in functions:
         found=[s for s in symbols if s['name']==f['name'] and s['value']==f['address'] and s['size']==f['size'] and s['type']==2]
         assert found and found[0]['section_index']==f['section_index']
         load=boot['segments'][f['pt_load_index']]
@@ -90,10 +99,6 @@ def verify(firmware=None, decoded=None):
                 if kind=='jump' and f['address']<=target<f['candidate_end']: continue
                 edges.append(dict(site=pc,word=f'{word:08x}',kind=kind,target=target,target_names=labels.get(target,[])))
         assert edges==f['transfers']
-    header=rebuild['boot_dispatch'];off=int(header['header_original_file_offset'],16)
-    assert hashlib.sha256(firmware[off:off+header['header_size']]).hexdigest()==header['header_sha256']
-    assert footer_check(firmware)==rt['footer_before']==rt['footer_after']
-    print(f'Rebuild/AF/UI: {count} VA words, {len(rebuild["file_evidence"])} file words, main and typed E01 functions reproduced')
 
 
 if __name__=='__main__':
