@@ -7,15 +7,15 @@ from verify_routing import witnesses
 def main():
     data = read('colorspace-glyph.json')
     v = {key:esc(value) for key,value in read('glyph-copy.json').items()}
-    v['pipeline_graph'] = graph('glyph-pipeline','파일과 텍스트가 원본 글리프 렌더러에서 만난다',{
+    v['pipeline_graph'] = graph('glyph-pipeline','별도 기본 배율 시험의 글꼴과 텍스트 입력',{
         'file':(20,10,'FAT16 / LatinFont','130,886바이트 · 체인과 해시'),
         'load':(350,10,'DirectLoadFontEx','파일 읽기는 원본 바이트 모델'),
         'font':(700,10,'GdiCreateFont / type 0x202','오프셋 재배치 · 함수 테이블'),
-        'input':(20,150,'앞선 sRGB 요청으로 재진입','AppDBTextOutByBufferID'),
+        'input':(20,150,'동일 sRGB 텍스트 별도 입력','새 기본 배율 컨텍스트'),
         'convert':(350,150,'변환 → 글꼴 간접 호출','0x8022968c → 0x8022c058'),
         'pixels':(700,150,'8비트 글리프 렌더러','context+0x88c → 인덱스 RAM')},
         [('file','load',True),('load','font',False),('font','pixels',False),('input','convert',False),('convert','pixels',False)],250,
-        '점선은 원본 파일 바이트를 공급하는 모델입니다. 화면 생산자 전체는 재진입 이전의 별도 검증입니다.','colorspace-glyph.json')
+        '점선은 원본 파일 바이트 공급 모델입니다. 앞선 UI 상태를 이어받지 않고 동일 텍스트를 새 기본 배율 컨텍스트에 재입력합니다. 실제 UI 배율 분기는 별도 추적 대상입니다.','colorspace-glyph.json')
     v['packing_graph'] = graph('glyph-packing','2비트 코드와 이번 컨텍스트의 인덱스',{
         'source':(20,10,'64×48 셀 / 행당 16바이트','바이트 상위 2비트부터 읽기'),
         'codes':(350,10,'코드 0 · 1 · 2 · 3','0은 기존 픽셀 보존'),

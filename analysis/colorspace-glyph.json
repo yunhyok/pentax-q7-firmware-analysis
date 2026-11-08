@@ -2,7 +2,7 @@
   "schema_version": 1,
   "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
   "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
-  "scope": "Exact FAT16 LatinFont file, original file-loader control path, and two bounded indexed glyph raster fixtures.",
+  "scope": "Exact FAT16 LatinFont file, original file-loader control path, and two bounded indexed glyph raster fixtures. The staged case reuses the observed text in a new default identity-scale synthetic context; it does not continue the UI state or reproduce actual UI font attributes.",
   "related_evidence": [
     "analysis/colorspace-render.json",
     "analysis/colorspace-raster.json"
