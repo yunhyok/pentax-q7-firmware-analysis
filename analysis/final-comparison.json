@@ -1,0 +1,61 @@
+{
+  "purpose": "Bounded comparison for Q7 IpuSubmit output descriptor selection and HDR final FIPLIB matrix numeric generation",
+  "k3_public_remote": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis",
+  "latest_main_commit_verified_via_gh_api": "a6b84f4e2e81213e54f1fe4d19beea9e93a6bbd9",
+  "commit_url": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/commit/a6b84f4e2e81213e54f1fe4d19beea9e93a6bbd9",
+  "method": "Read committed blobs with git show at the fixed public commit; ignored dirty local worktree content. SHA-256 values below were computed from those exact blob bytes.",
+  "claims": [
+    {
+      "topic": "JPEG output descriptor and selection boundary",
+      "claim": "K-3 JPEG evidence maps output descriptor +0 to the coded-output buffer address; MMIO write site 0x5320c4d0 stores it at 0x298c0440. Descriptor +8 is capacity, and 0x5320c4e4 writes capacity >> 9 to 0x298c0458 on the full-resolution path but zero on the prepass path. This establishes a capacity/control branch, not which output descriptor IpuSubmit selected or that it aliases an ISP output buffer. Completion reads code length from 0x298c0020; descriptor +0xc is recorded as actual output length after completion.",
+      "evidence": [
+        "analysis/pipeline-evidence.json: jpeg.descriptor_fields.output",
+        "analysis/pipeline-evidence.json: jpeg.mmio entries 0x440, 0x458, and 0x20",
+        "analysis/pipeline-evidence.json: jpeg.relationships[encode completion]"
+      ],
+      "addresses": ["0x5320c4d0", "0x5320c4e4", "0x298c0440", "0x298c0458", "0x298c0020"]
+    },
+    {
+      "topic": "Conditional color-matrix coefficient generation",
+      "claim": "K-3 color evidence describes configuration-matrix preparation at 0x5312ce30: T=Mul16_Q13(F,M); U=(ColorSpace condition ? Mul16_Q13(A,T) : T); V=Mul32_Q13(sign_extend(U),sign_extend(B)). The effective ColorSpace flag P52 is one exactly when common+0x26b5==1; it selects optional A and also affects YCbCr coefficients and gamma preparation. Saturation selection uses 0..8 with fallback index 4; filter value 9 selects the manual-RGB branch. The report explicitly limits this to coefficient preparation, not pixel-pass order. This K-3 evidence is not an HDR-specific FIPLIB execution trace.",
+      "evidence": [
+        "analysis/color-algorithms.html: section 色 행렬·채도·색상 조절",
+        "analysis/pipeline-evidence.json: colorspace_wb.controls[ColorSpace effective flag]",
+        "analysis/deep-evidence.json: color/matrix ranges and conditional bindings"
+      ],
+      "addresses": ["0x5312ce30", "0x5312cd40", "0x5312cdb4", "0x53132698", "0x53132628", "common+0x26b5", "+0x264f", "tuning+0x1f8", "parameter+0x57"]
+    },
+    {
+      "topic": "Numerical verification scope and limits",
+      "claim": "The committed color-math checks report 942 isolated ARM/reference comparisons: 170 kernels, 690 matrix-preparation cases, 64 output-packing cases, and 18 Hue cases. Inputs are synthetic and execution is limited to listed code ranges; the suite does not execute the camera or ISP peripherals. The HTML also states that the physical input RGB primaries/transfer function and pixel-processing order remain unresolved. Thus it validates selected coefficient/configuration arithmetic, not final HDR pixels, FIPLIB runtime pass selection, DMA, or output image correctness.",
+      "evidence": [
+        "analysis/color-algorithms.html: section 색 행렬·채도·색상 조절 and its execution/limits paragraph",
+        "analysis/color-math-checks.json: totals and scope"
+      ],
+      "addresses": ["0x5312ce30", "0x5313eb50"]
+    }
+  ],
+  "source_blobs": [
+    {
+      "path": "analysis/pipeline-evidence.json",
+      "sha256": "dfae64d80f9da746587f803c64e8feca3701c30201ab920e68a5bd535ea2d63d"
+    },
+    {
+      "path": "analysis/color-algorithms.html",
+      "sha256": "fad7c721b38ec67bbf66e7cfd3ba38a58bfb642cf850c99ace2bf393521ec3a3"
+    },
+    {
+      "path": "analysis/color-math-checks.json",
+      "sha256": "514c2aef004798c1cd7a9a6c910c5cdddd483ac8260a77f5674187197a72d21d"
+    },
+    {
+      "path": "analysis/deep-evidence.json",
+      "sha256": "728cc0fb17a5952c8c9906393ba75a600dc5ed9b818b75dcd408b9161e8f9f02"
+    }
+  ],
+  "explicit_unknowns": [
+    "K-3 public evidence does not establish which output descriptor the Q7 IpuSubmit analogue selects; model-specific addresses and branch predicates must be traced independently.",
+    "The K-3 matrix preparation path is not evidence that Q7 uses the same stages, coefficients, or FIPLIB semantics, and does not establish HDR pixel math or final pixel-pass ordering.",
+    "No camera/peripheral execution, DMA/cache behavior, or final image correctness is verified by the cited numeric checks."
+  ]
+}

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — HDR 제출 분기와 최종 FC 계수</title><meta name="description" content="IpuSubmit 출력 디스크립터 선택, HDR FIPLIB FC 계수 생성·내보내기·레지스터 기록의 조건부 검증"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
+<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / FOLLOW-UP 04</p><h1>HDR 제출 분기와<br><span>최종 FC 계수</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="pixel-report.html">이전 버퍼·패스 분석</a><a href="index.html">전체 분석</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub</a></p></div><aside class="milestone"><strong>path+0x28</strong><span>새 HDR 경로에서 선택되는 출력</span><strong>11개 값</strong><span>FC 계수 9개 + 보조값 2개 보존</span><strong>72회</strong><span>6개 사례의 MMIO 쓰기 대조</span></aside></header>
+<nav aria-label="문서 목차"><a href="#selector">출력 선택</a><a href="#producer">FIPLIB 생성</a><a href="#values">최종 설정값</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·한계</a></nav><main>
+<section id="selector"><p class="eyebrow">01 / OUTPUT DESCRIPTOR</p><h2>대체 출력의 타입 필드가 선택 조건이다</h2><p>{{selector}} <a href="analysis/submit-followup.json">[S1: selector·type_0_registry]</a></p>{{selector_graph}}
+<p>{{mutators}} <a href="analysis/submit-followup.json">[S1: HDR 설정·surface 바인딩]</a></p>
+<div class="table-wrap"><table><caption>분석한 경로: W+0x208 == 0 → IpuToneMapRgb, 새 type 0 경로, format 0x0f01</caption><thead><tr><th>구간</th><th>주소 근거</th><th>확인한 내용</th></tr></thead><tbody>
+<tr><th>생성 규격</th><td>ConvertPathInit <code>0x801bcefc</code>; callback <code>0x801bcc48</code></td><td>type 0 크기 0xb40. 전체 초기화 후 +0x964도 명시적으로 0 기록</td></tr>
+<tr><th>대체 출력 설정</th><td>PathSetDescriptors / PathSetDescriptorsbyId</td><td>ID 9의 비NULL 입력은 path+0x8fc에 0x74바이트 복사. NULL 입력은 +0x964를 0으로 지움. 분석한 HDR 호출에는 없음</td></tr>
+<tr><th>출력 선택</th><td><code>0x801d0b98 / 0x801d0cac</code></td><td>0이면 path+0x28, 0이 아니면 path+0x8fc의 디스크립터 복사</td></tr>
+<tr><th>일반 출력 생성</th><td><code>0x801d0ce8</code>; ImageSurfaceInitialize <code>0x8009fa14</code></td><td>형식 하위 바이트 1 → type 8. surface[0]에 출력 블록 주소 보존</td></tr>
+<tr><th>processor 전달</th><td><code>0x801d0e18</code></td><td>만든 디스크립터를 SetImage의 image kind 2로 전달</td></tr></tbody></table></div>
+<h3>정상 분기와 대체 분기를 각각 실행하다</h3><p>{{submit_replay}} <a href="analysis/submit-followup.json">[S1: replay]</a> <a href="tools/check_submit_choice.py">[재현 코드]</a></p>
+<div class="table-wrap"><table><caption>SetImage(kind 2) 진입 시점에서 검사 — 수치는 합성 버퍼 주소</caption><thead><tr><th>사례</th><th>path+0x28</th><th>path+0x964</th><th>제출 surface[0]</th></tr></thead><tbody><tr><th>새 HDR 경로</th><td>0x20004000</td><td>0</td><td>0x20004000</td></tr><tr><th>ID 9 대체 디스크립터 설정</th><td>0x20004000</td><td>8</td><td>0x20009000</td></tr></tbody></table></div>
+<p class="note">대체 함수 목록은 재실행 JSON에 공개했습니다. allocator, RTOS, IpuInit, processor·observer 생성자, 앞선 SetImage(kind 0·1·5)를 모델링했습니다. 선택자와 디스크립터 생성·복사 코드는 원본 명령을 실행했으며 kind 2는 함수 진입에서 멈췄습니다. 실제 촬영·메모리 버스 관측은 아닙니다.</p>
+<p>이 결과로 <a href="pixel-report.html#buffer">이전 보고서의 HDR B → T(B) 연결</a>에서 남겨 둔 IpuSubmit 선택 조건을 좁혔습니다. 새 HDR 경로는 B 내부의 출력 view를 일반 출력 디스크립터로 제출합니다. DMA 완료와 JPEG가 읽은 실제 픽셀은 여전히 검증 범위 밖입니다.</p></section>
+
+<section id="producer"><p class="eyebrow">02 / FC CONFIGURATION PRODUCER</p><h2>HDR 행렬은 FC mode 1에서 그대로 복사된다</h2><p>{{producer}} <a href="analysis/fiplib-followup.json">[F1: FC 구성·Export]</a></p>{{producer_graph}}
+<h3>새 HDR 경로에서 input[1] == 0인 이유</h3><p>processor 생성자는 디스크립터 슬롯을 비우고 기본값으로 ID <code>0xf</code>와 <code>0x19</code>만 설치합니다. IpuToneMapRgb는 HDR 보조 설정 ID <code>0x1f</code>와 로컬 ID <code>0xa / 0xf</code>를 설치합니다. 보조 설정은 HDR 캐시 생성부와 HdrSetZLightFilter에서 ID <code>0x1f</code>, version <code>0xc</code>로 제한됩니다. 분석한 새 경로에는 ID <code>0x1d</code>가 없습니다. <a href="analysis/fiplib-followup.json">[F1: HDR descriptor 출처·기본값]</a></p>
+<p>PrepareCalculations는 FIPLIB 입력을 0으로 지운 뒤 ID <code>0x1d</code>가 있을 때만 그 디스크립터의 <code>+0x18</code>에서 입력 <code>+1</code>을 채웁니다. 따라서 이 HDR 경로에서는 입력 <code>+1 = 0</code>입니다. 각 IPU 패스의 준비 함수는 이 값이 1이 아니면 입력 <code>+0x1074</code>를 로컬 패스 입력 <code>+0x68</code>에 연결합니다. 값이 1인 다른 경로는 <code>+0x68</code>을 비우고 <code>+0x6c</code>에 연결하므로 같은 결론을 적용하지 않습니다. <a href="analysis/fiplib-followup.json">[F1: PrepareCalculations·PreparePassInParams]</a></p>
+<div class="table-wrap"><table><caption>객체 기준을 구분한 데이터 연결</caption><thead><tr><th>단계</th><th>코드</th><th>필드 관계</th></tr></thead><tbody>
+<tr><th>상위 값 수집</th><td>PrepareCalculations <code>0x80349814</code></td><td>ID 0xf v0xc의 11 halfwords → FIPLIB input+0x1074..0x1088</td></tr>
+<tr><th>FC 객체 생성</th><td>IPU pass constructor <code>0x80176ec0</code></td><td>pass+0x118의 FC 블록을 mode 1로 생성</td></tr>
+<tr><th>패스 입력</th><td>기본 클래스와 IPU 파생 클래스의 준비 함수</td><td>local = pass+0x88c; local+0x68 = pass+0x8f4</td></tr>
+<tr><th>계수 설정</th><td>call <code>0x80178400</code> → ConfigIntRegs <code>0x8017ab94</code></td><td>mode 1 + 포인터 존재 → 11 halfwords를 FC block+0x10..0x24로 복사</td></tr>
+<tr><th>내보내기</th><td>call <code>0x801784f4</code> → FC Export <code>0x8017ad04</code></td><td>pass+0x118 → payload+0x100..0x12c. record+8과 wrapper+0x1c가 같은 payload를 참조</td></tr></tbody></table></div>
+<p class="note">직접 실행 경로와 COP 작업자 경로의 Analyze·Export 호출 연결을 확인했습니다. 전체 FIPLIB 토폴로지 계산이나 COP 스레드를 동작시킨 것은 아닙니다. 패스별로 이 계수를 저장하는 것과 FC1을 활성화하는 것은 별개입니다.</p></section>
+
+<section id="values"><p class="eyebrow">03 / VALUES AND GATES</p><h2>확인한 최종 값은 계수 9개와 보조값 2개다</h2><pre aria-label="HDR FC 계수 행렬과 두 추가 보조값"><code> 612   1202    233
+−346   −678   1024
+1024   −857   −167
+
+companion values: 2048, 2048</code></pre>
+<p>이 11개 값은 HDR의 상위 디스크립터에서 FIPLIB 입력·FC 블록·출력 payload를 거쳐 FC1 객체까지 유지됩니다. FC1 writer는 계수와 보조값을 부호 확장해 <code>0xb60000c0..0xb60000e8</code>에 기록합니다. FIPLIB가 FC1 값을 덮어쓸 수 있다는 <a href="pixel-report.html#overwrite">이전 분석</a>은 그대로 유효하며, 이번에 확인한 새 HDR 경로에서는 그 덮어쓰기 값이 같다는 뜻입니다. <a href="analysis/fiplib-followup.json">[F1]</a> <a href="analysis/fiplib-coefficient-checks.json">[N1]</a></p>
+<div class="table-wrap"><table><caption>계수 이외의 제어값은 따로 판단해야 합니다</caption><thead><tr><th>대상</th><th>확인한 식·조건</th><th>남은 범위</th></tr></thead><tbody>
+<tr><th>FC1 제어 워드</th><td>mode 1에서는 payload+0x12c = local pass input[0x28] &amp; 1; writer 주소 0xb60000fc</td><td>실제 촬영의 모든 패스에서 이 비트를 고정하지 않음</td></tr>
+<tr><th>FC1 활성화</th><td>payload+0x44 바이트 == 0일 때 enable. 이 값은 general block+0x3f ← pass+0x8b0의 별도 top-control 값</td><td>모든 패스에서 FC1이 활성이라는 결론은 아님</td></tr>
+<tr><th>갱신·제출</th><td>wrapper 존재, dirty/force gate, 패스 선택 범위, UID·writer dirty 조건</td><td>조건별 상세는 <a href="pixel-report.html#passes">이전 패스 보고서</a>. 특정 촬영에서 모두 충족됐다는 실측은 없음</td></tr></tbody></table></div>
+<p>{{numeric}} <a href="analysis/fiplib-coefficient-checks.json">[N1: 6개 사례]</a></p>{{numeric_graph}}
+<div class="table-wrap"><table><caption>실제 명령 실행과 비교한 11개 값 및 flags — mode 1의 기본 경로와 대조 사례</caption><thead><tr><th>사례</th><th>9계수 + 2추가값</th><th>flags</th><th>MMIO 대조</th></tr></thead><tbody>{{numeric_rows}}</tbody></table></div>
+<p class="note">601·709 명칭은 원본 함수 심볼을 따릅니다. 내장 601 값이 HDR 상수와 같다는 사실만으로 선택 분기를 추정하지 않았습니다. 위의 포인터 출처를 별도로 추적했습니다. 이 표로 센서 RGB의 원색·전달함수, 고정소수점 분모 또는 ISP 내부 픽셀 연산 순서를 단정하지 않습니다.</p></section>
+
+<section id="comparison"><p class="eyebrow">04 / K-3 MARK III COMPARISON</p><h2>동일한 질문을 기종별 코드로 검증한다</h2><p>{{comparison}} <a href="analysis/final-comparison.json">[K1: 주장·파일 해시]</a></p><p>참조한 공개 커밋은 <code>{{k3_commit}}</code>입니다. 로컬 미커밋 파일을 제외하고 해당 커밋의 원본 blob 4개를 SHA-256으로 확인했습니다.</p>
+<div class="table-wrap"><table><caption>같은 분석 항목에 대한 현재 증거</caption><thead><tr><th>질문</th><th>K-3 Mark III</th><th>Q7 이번 결과</th></tr></thead><tbody>
+<tr><th>출력 선택 조건</th><td><a href="{{k3_base}}pipeline-evidence.json">JPEG 출력 descriptor+0 → 0x298c0440</a>. 용량 +8은 full-res에서 &gt;&gt;9, prepass에서 0. Q7의 디스크립터 선택과 동일한 분기는 아님</td><td>대체 descriptor 타입이 0인 새 HDR 경로는 일반 출력 블록 선택. 대체 설정 비교 실행도 확인</td></tr>
+<tr><th>최종 계수 생성</th><td><a href="{{k3_base}}color-algorithms.html">0x5312ce30의 조건부 Q13 행렬 준비</a>. ColorSpace P52로 추가 행렬 선택. HDR FIPLIB 실행 근거는 아님</td><td>FC mode 1은 사용자 포인터 11 halfwords 복사 또는 내장값 선택. 새 HDR 포인터 출처와 Export·FC1 갱신 연결</td></tr>
+<tr><th>수치 검증</th><td><a href="{{k3_base}}color-math-checks.json">942 비교</a>: kernel 170, preparation 690, packing 64, Hue 18</td><td>출력 선택 2사례, FC 생성·내보내기·FC1 setter·writer 6사례와 MMIO 72회</td></tr>
+<tr><th>공통 한계</th><td>합성 입력의 지정 산술·설정 함수. 센서·ISP·JPEG 픽셀 미실행</td><td>정적 경로 및 제한된 MIPS 실행. 모든 패스의 활성화와 실제 최종 픽셀 미확인</td></tr></tbody></table></div></section>
+
+<section id="validation"><p class="eyebrow">05 / REPRODUCTION AND LIMITS</p><h2>정적 연결·제한된 실행·미확정 항목</h2><p>새 근거 집합은 함수 후보 <strong>{{function_count}}개</strong>와 원본 명령·데이터 워드 <strong>{{word_count}}건</strong>입니다. 함수 후보 범위는 다음 sidecar 주소까지이며 공식 함수 크기는 아닙니다. 원본 펌웨어에서 워드, 함수 해시와 전이 정보를 다시 계산해 확인했습니다. <a href="tools/verify_final_followup.py">[검증 코드]</a></p>
+<pre><code>python -m unittest discover -s tests -v
+python tools/verify_report.py --firmware path/to/fwdc603p.bin
+# 합성 ELF 생성 절차: deep-report.html#reproduce
+python tools/check_submit_choice.py .private/main-expanded.elf --output .private/submit-recheck.json
+python tools/check_fiplib_coefficients.py .private/main-expanded.elf --output .private/fc-recheck.json</code></pre>
+<p>각 재실행 도구는 입력 ELF의 SHA-256을 검사하고 이미 존재하는 출력 파일을 거부합니다. VEX를 사용했으며 optional Unicorn 엔진은 사용하지 않았습니다. 공개 CI는 원본 펌웨어 없이 메타데이터·기준값·도구 테스트·HTML·링크를 검사합니다. 원본 명령 재실행과 원본 펌웨어 대조는 로컬 검증입니다.</p>
+<p>{{limits}}</p><p class="note">다음 추적 대상은 패스별 top-control이 FC1 enable·flags를 고르는 조건과 실제 촬영의 패스 수입니다. 최종 픽셀을 확인하려면 하드웨어 실행 또는 확보한 입력·출력 영상과의 대조가 별도로 필요합니다. 원본 BIN·추출 ELF·전체 디컴파일은 공개하지 않습니다.</p>
+<ul class="sources"><li><a href="analysis/submit-followup.json">S1 · 출력 선택과 제한된 재실행</a> · <a href="tools/check_submit_choice.py">재현 도구</a></li><li><a href="analysis/fiplib-followup.json">F1 · HDR 입력에서 FIPLIB Export까지</a></li><li><a href="analysis/fiplib-coefficient-checks.json">N1 · 6개 수치 검증 사례</a> · <a href="tools/check_fiplib_coefficients.py">재현 도구</a></li><li><a href="analysis/final-comparison.json">K1 · K-3 공개 커밋·출처 해시</a></li><li><a href="analysis/provenance.json">Q7 원본 출처·해시</a> · <a href="analysis/final-editorial.json">한국어 문장 검수 기록</a></li></ul></section>
+</main><footer>독립적인 펌웨어 분석 · Q7 v1.01 · 조건부 설정값과 카메라 픽셀 관측을 구분했습니다.</footer></body></html>

@@ -8,12 +8,14 @@ import unittest
 class OptimizedReplayTests(unittest.TestCase):
     def test_optimized_python_is_rejected_before_reading_input(self):
         root=Path(__file__).resolve().parents[1]
-        result=subprocess.run([sys.executable,'-O','-c',
-            "import sys; from pathlib import Path; sys.path.insert(0,'tools'); "
-            "from check_color_handoff import replay; replay(Path('not-an-input.elf'))"],
-            cwd=root,capture_output=True,text=True)
-        self.assertNotEqual(result.returncode,0)
-        self.assertIn('Replay validation requires assertions',result.stderr)
+        for module in ('check_color_handoff','check_fiplib_coefficients','check_submit_choice'):
+            with self.subTest(module=module):
+                result=subprocess.run([sys.executable,'-O','-c',
+                    "import sys; from pathlib import Path; sys.path.insert(0,'tools'); "
+                    f"from {module} import replay; replay(Path('not-an-input.elf'))"],
+                    cwd=root,capture_output=True,text=True)
+                self.assertNotEqual(result.returncode,0)
+                self.assertIn('requires assertions',result.stderr)
 
 
 if __name__=='__main__': unittest.main()

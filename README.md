@@ -2,6 +2,8 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[HDR 제출 분기·최종 FC 계수 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/final-color-report.html): 새 HDR 경로의 IpuSubmit 출력 선택과 FIPLIB FC 계수 생성·내보내기를 추적했습니다. 출력 선택 2사례와 FC 구성→Export→FC1 setter·writer 6사례, MMIO 쓰기 72회를 원본 명령으로 검증했습니다. 계수 보존과 패스별 활성화·실제 픽셀의 한계는 구분했습니다. [근거·한계](final-color-report.html#validation)
+
 [HDR 버퍼·색 처리 패스 후속 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/pixel-report.html): HDR IPU 출력 할당에서 LDC를 거쳐 JPEG 입력으로 전달되는 조건부 주소 연결, 실제 DirectCompress 압축 위치, 패스 선택과 CM·FC1의 FIPLIB 덮어쓰기를 추적했습니다. 두 setter·writer 구간에서 객체 바이트와 MMIO 28회를 대조했습니다. [근거·한계](pixel-report.html#validation)
 
 [렌즈 수신자·ISP 레지스터·출력 경계 후속 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/routing-report.html): AF 콜백 바인딩과 네 구동 모드, 색 행렬의 캐시·필터·vtable 연결, 통계 감마 포트, JPEG 저장 경계를 추적했습니다. ISP 기록 함수 10조건·164검사와 렌즈 분기를 원본 MIPS 명령으로 재실행했습니다. K-3 Mark III의 고정한 참조 커밋과 대조하며 실제 픽셀 출력의 미확정 범위를 명시합니다. [근거·재현](routing-report.html#validation)

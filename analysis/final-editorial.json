@@ -1,0 +1,16 @@
+{
+  "skill": "humanize-korean 2.3.2",
+  "route": "light",
+  "run_id": "2026-11-08-004-f217",
+  "change_rate_percent": 1.8,
+  "golden": "PASS",
+  "lost_modality_pairs": 0,
+  "grade": "B",
+  "scope": "8 narrative paragraphs; addresses, conditions and limitations preserved",
+  "post_review_clarifications": [
+    "ID 9 copies only a nonnull descriptor; a null source clears its type field.",
+    "Removed unnecessary slot count after verifying the inclusive constructor loop.",
+    "Used companion values instead of offsets to avoid implying unverified hardware semantics.",
+    "FC1 enable consumes the byte at payload+0x44."
+  ]
+}

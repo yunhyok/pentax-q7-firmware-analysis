@@ -1,0 +1,3084 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Q7 v1.01 successful merged HDR branch using IpuToneMapRgb and a newly created type-0 path with format 0x0f01.",
+  "coordinates": "Word locations are decoded segment offsets. E03 word locations use original firmware file offsets.",
+  "conclusion": "The new path reaches IpuSubmit with the alternative image descriptor's type word at path+0x964 still zero. The selected output is constructed from the configured block buffer at path+0x28 and passed to CImageProcessor::SetImage as image kind 2.",
+  "evidence": [
+    {
+      "id": "type_0_registry",
+      "observation": "ConvertPathInit initializes path type 0 record 0x801e3824 with size 0xb40 and create callback 0x801bcc48 at record+0x4c. PathGetSize uses the record size. PathCreate forwards to PathCreateInPlace, which clears that size and writes the path type before invoking the registered callback.",
+      "words": [
+        {
+          "va": "0x801bcefc",
+          "u32le_word": "0x3c18801e",
+          "segment": "E04",
+          "decoded_offset": "0x8f47c"
+        },
+        {
+          "va": "0x801bcf00",
+          "u32le_word": "0x27053824",
+          "segment": "E04",
+          "decoded_offset": "0x8f480"
+        },
+        {
+          "va": "0x801bcf04",
+          "u32le_word": "0x3c0e801c",
+          "segment": "E04",
+          "decoded_offset": "0x8f484"
+        },
+        {
+          "va": "0x801bcf24",
+          "u32le_word": "0x25cdcc48",
+          "segment": "E04",
+          "decoded_offset": "0x8f4a4"
+        },
+        {
+          "va": "0x801bcf3c",
+          "u32le_word": "0x24190b40",
+          "segment": "E04",
+          "decoded_offset": "0x8f4bc"
+        },
+        {
+          "va": "0x801bcf44",
+          "u32le_word": "0xacad004c",
+          "segment": "E04",
+          "decoded_offset": "0x8f4c4"
+        },
+        {
+          "va": "0x801bcf64",
+          "u32le_word": "0xaf193824",
+          "segment": "E04",
+          "decoded_offset": "0x8f4e4"
+        },
+        {
+          "va": "0x801b9194",
+          "u32le_word": "0x24020068",
+          "segment": "E04",
+          "decoded_offset": "0x8b714"
+        },
+        {
+          "va": "0x801b9198",
+          "u32le_word": "0x70822802",
+          "segment": "E04",
+          "decoded_offset": "0x8b718"
+        },
+        {
+          "va": "0x801b91a0",
+          "u32le_word": "0x24c33824",
+          "segment": "E04",
+          "decoded_offset": "0x8b720"
+        },
+        {
+          "va": "0x801b91ac",
+          "u32le_word": "0x8c820000",
+          "segment": "E04",
+          "decoded_offset": "0x8b72c"
+        },
+        {
+          "va": "0x801b930c",
+          "u32le_word": "0x0c002fca",
+          "segment": "E04",
+          "decoded_offset": "0x8b88c"
+        },
+        {
+          "va": "0x801b933c",
+          "u32le_word": "0x0806e46c",
+          "segment": "E04",
+          "decoded_offset": "0x8b8bc"
+        },
+        {
+          "va": "0x801b91e4",
+          "u32le_word": "0x0c06e465",
+          "segment": "E04",
+          "decoded_offset": "0x8b764"
+        },
+        {
+          "va": "0x801b91ec",
+          "u32le_word": "0x00403021",
+          "segment": "E04",
+          "decoded_offset": "0x8b76c"
+        },
+        {
+          "va": "0x801b91f0",
+          "u32le_word": "0x00002821",
+          "segment": "E04",
+          "decoded_offset": "0x8b770"
+        },
+        {
+          "va": "0x801b91f4",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E04",
+          "decoded_offset": "0x8b774"
+        },
+        {
+          "va": "0x801b91fc",
+          "u32le_word": "0xae120004",
+          "segment": "E04",
+          "decoded_offset": "0x8b77c"
+        },
+        {
+          "va": "0x801b9260",
+          "u32le_word": "0x8e22004c",
+          "segment": "E04",
+          "decoded_offset": "0x8b7e0"
+        },
+        {
+          "va": "0x801b926c",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x8b7ec"
+        },
+        {
+          "va": "0x801b9270",
+          "u32le_word": "0x02002021",
+          "segment": "E04",
+          "decoded_offset": "0x8b7f0"
+        }
+      ]
+    },
+    {
+      "id": "hdr_create_and_defaults",
+      "observation": "IpuToneMapRgb supplies type 0 and a cleared create parameter block. The create callback copies the block's halfword +2 into path+0xba, initializes both inline descriptor +0x68 fields to zero at path+0x8f0 and path+0x964, and constructs a separately allocated processor through IpuCreate. It stores the processor pointer at path+0x880 and the observer at +0x884.",
+      "words": [
+        {
+          "va": "0x80b1c10c",
+          "u32le_word": "0x27b00018",
+          "segment": "E06-text",
+          "decoded_offset": "0x32948c"
+        },
+        {
+          "va": "0x80b1c124",
+          "u32le_word": "0x00002821",
+          "segment": "E06-text",
+          "decoded_offset": "0x3294a4"
+        },
+        {
+          "va": "0x80b1c128",
+          "u32le_word": "0x02002021",
+          "segment": "E06-text",
+          "decoded_offset": "0x3294a8"
+        },
+        {
+          "va": "0x80b1c130",
+          "u32le_word": "0x24060048",
+          "segment": "E06-text",
+          "decoded_offset": "0x3294b0"
+        },
+        {
+          "va": "0x80b1c14c",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E06-text",
+          "decoded_offset": "0x3294cc"
+        },
+        {
+          "va": "0x80b1c188",
+          "u32le_word": "0x02002821",
+          "segment": "E06-text",
+          "decoded_offset": "0x329508"
+        },
+        {
+          "va": "0x80b1c18c",
+          "u32le_word": "0x00002021",
+          "segment": "E06-text",
+          "decoded_offset": "0x32950c"
+        },
+        {
+          "va": "0x80b1c194",
+          "u32le_word": "0x0c06e4a5",
+          "segment": "E06-text",
+          "decoded_offset": "0x329514"
+        },
+        {
+          "va": "0x80b1c198",
+          "u32le_word": "0xa7a0001a",
+          "segment": "E06-text",
+          "decoded_offset": "0x329518"
+        },
+        {
+          "va": "0x801bcc50",
+          "u32le_word": "0x00808021",
+          "segment": "E04",
+          "decoded_offset": "0x8f1d0"
+        },
+        {
+          "va": "0x801bcc74",
+          "u32le_word": "0x10a00025",
+          "segment": "E04",
+          "decoded_offset": "0x8f1f4"
+        },
+        {
+          "va": "0x801bccd4",
+          "u32le_word": "0xae1f0028",
+          "segment": "E04",
+          "decoded_offset": "0x8f254"
+        },
+        {
+          "va": "0x801bccf4",
+          "u32le_word": "0x95a50002",
+          "segment": "E04",
+          "decoded_offset": "0x8f274"
+        },
+        {
+          "va": "0x801bccfc",
+          "u32le_word": "0xa60500ba",
+          "segment": "E04",
+          "decoded_offset": "0x8f27c"
+        },
+        {
+          "va": "0x801bcd2c",
+          "u32le_word": "0xae0008f0",
+          "segment": "E04",
+          "decoded_offset": "0x8f2ac"
+        },
+        {
+          "va": "0x801bcd30",
+          "u32le_word": "0xae000964",
+          "segment": "E04",
+          "decoded_offset": "0x8f2b0"
+        },
+        {
+          "va": "0x801bcd80",
+          "u32le_word": "0xa200087c",
+          "segment": "E04",
+          "decoded_offset": "0x8f300"
+        },
+        {
+          "va": "0x801bcda8",
+          "u32le_word": "0x0c074225",
+          "segment": "E04",
+          "decoded_offset": "0x8f328"
+        },
+        {
+          "va": "0x801bcdb4",
+          "u32le_word": "0xae020880",
+          "segment": "E04",
+          "decoded_offset": "0x8f334"
+        },
+        {
+          "va": "0x801bcdbc",
+          "u32le_word": "0x0c074278",
+          "segment": "E04",
+          "decoded_offset": "0x8f33c"
+        },
+        {
+          "va": "0x801d08ac",
+          "u32le_word": "0x0c00362f",
+          "segment": "E04",
+          "decoded_offset": "0xa2e2c"
+        },
+        {
+          "va": "0x801d08b8",
+          "u32le_word": "0x0c0ce0fe",
+          "segment": "E04",
+          "decoded_offset": "0xa2e38"
+        },
+        {
+          "va": "0x801d0a14",
+          "u32le_word": "0x8e320880",
+          "segment": "E04",
+          "decoded_offset": "0xa2f94"
+        },
+        {
+          "va": "0x801d0a30",
+          "u32le_word": "0xae300884",
+          "segment": "E04",
+          "decoded_offset": "0xa2fb0"
+        }
+      ]
+    },
+    {
+      "id": "alternative_descriptor_producers",
+      "observation": "On type 0, PathSetDescriptors takes the output descriptor in a2 and calls SetDescriptor with path+0x8fc as destination. PathSetDescriptorsbyId also selects that destination for ID 9. SetDescriptor copies 0x74 bytes for a nonnull input and clears destination+0x68 for a null input. This +0x68 word, written as image type by ImageDescriptorCreate, is exactly path+0x964 for the alternative output. These descriptor setters are absent from the inspected HDR path.",
+      "words": [
+        {
+          "va": "0x801bb59c",
+          "u32le_word": "0x8c830004",
+          "segment": "E04",
+          "decoded_offset": "0x8db1c"
+        },
+        {
+          "va": "0x801bb5b0",
+          "u32le_word": "0x00c09821",
+          "segment": "E04",
+          "decoded_offset": "0x8db30"
+        },
+        {
+          "va": "0x801bb5c0",
+          "u32le_word": "0x10600016",
+          "segment": "E04",
+          "decoded_offset": "0x8db40"
+        },
+        {
+          "va": "0x801bb624",
+          "u32le_word": "0x02602021",
+          "segment": "E04",
+          "decoded_offset": "0x8dba4"
+        },
+        {
+          "va": "0x801bb628",
+          "u32le_word": "0x0c06ed1d",
+          "segment": "E04",
+          "decoded_offset": "0x8dba8"
+        },
+        {
+          "va": "0x801bb62c",
+          "u32le_word": "0x260508fc",
+          "segment": "E04",
+          "decoded_offset": "0x8dbac"
+        },
+        {
+          "va": "0x801bb4d0",
+          "u32le_word": "0x8c820004",
+          "segment": "E04",
+          "decoded_offset": "0x8da50"
+        },
+        {
+          "va": "0x801bb4e0",
+          "u32le_word": "0x1440001b",
+          "segment": "E04",
+          "decoded_offset": "0x8da60"
+        },
+        {
+          "va": "0x801bb4e8",
+          "u32le_word": "0x24070007",
+          "segment": "E04",
+          "decoded_offset": "0x8da68"
+        },
+        {
+          "va": "0x801bb4ec",
+          "u32le_word": "0x1067000c",
+          "segment": "E04",
+          "decoded_offset": "0x8da6c"
+        },
+        {
+          "va": "0x801bb4f0",
+          "u32le_word": "0x24080009",
+          "segment": "E04",
+          "decoded_offset": "0x8da70"
+        },
+        {
+          "va": "0x801bb4f8",
+          "u32le_word": "0x10680009",
+          "segment": "E04",
+          "decoded_offset": "0x8da78"
+        },
+        {
+          "va": "0x801bb4fc",
+          "u32le_word": "0x260508fc",
+          "segment": "E04",
+          "decoded_offset": "0x8da7c"
+        },
+        {
+          "va": "0x801bb520",
+          "u32le_word": "0x0c06ed1d",
+          "segment": "E04",
+          "decoded_offset": "0x8daa0"
+        },
+        {
+          "va": "0x801bb474",
+          "u32le_word": "0x10800011",
+          "segment": "E04",
+          "decoded_offset": "0x8d9f4"
+        },
+        {
+          "va": "0x801bb480",
+          "u32le_word": "0x24880070",
+          "segment": "E04",
+          "decoded_offset": "0x8da00"
+        },
+        {
+          "va": "0x801bb498",
+          "u32le_word": "0xace20000",
+          "segment": "E04",
+          "decoded_offset": "0x8da18"
+        },
+        {
+          "va": "0x801bb4a8",
+          "u32le_word": "0x14c8fff6",
+          "segment": "E04",
+          "decoded_offset": "0x8da28"
+        },
+        {
+          "va": "0x801bb4ac",
+          "u32le_word": "0x24e70010",
+          "segment": "E04",
+          "decoded_offset": "0x8da2c"
+        },
+        {
+          "va": "0x801bb4b8",
+          "u32le_word": "0xace80000",
+          "segment": "E04",
+          "decoded_offset": "0x8da38"
+        },
+        {
+          "va": "0x801bb4c0",
+          "u32le_word": "0xaca00068",
+          "segment": "E04",
+          "decoded_offset": "0x8da40"
+        },
+        {
+          "va": "0x8009fa8c",
+          "u32le_word": "0x00a08821",
+          "segment": "E03",
+          "original_file_offset": "0x1a1d74"
+        },
+        {
+          "va": "0x8009faac",
+          "u32le_word": "0xae110068",
+          "segment": "E03",
+          "original_file_offset": "0x1a1d94"
+        }
+      ]
+    },
+    {
+      "id": "type_0_filter_configuration",
+      "observation": "Between creation and submission, the HDR path sets three filters and enables IDs 8, 0xa and 0xf. The type-0 setter locks path+0x80, translates the supplied filter and uses IpuSetFilter. The enable dispatch for all three goes through IpuSetFilterEnable. Both delegate using the processor at path+0x880. Their writes are to the filter descriptors or the separate processor and its allocations. Header/LUT/default initialization takes stack or separate filter storage rather than either inline image descriptor.",
+      "words": [
+        {
+          "va": "0x80b1c1ac",
+          "u32le_word": "0x8e65000c",
+          "segment": "E06-text",
+          "decoded_offset": "0x32952c"
+        },
+        {
+          "va": "0x80b1c1b0",
+          "u32le_word": "0x0c07087a",
+          "segment": "E06-text",
+          "decoded_offset": "0x329530"
+        },
+        {
+          "va": "0x80b1c1c0",
+          "u32le_word": "0x24050008",
+          "segment": "E06-text",
+          "decoded_offset": "0x329540"
+        },
+        {
+          "va": "0x80b1c1c4",
+          "u32le_word": "0x0c0709d7",
+          "segment": "E06-text",
+          "decoded_offset": "0x329544"
+        },
+        {
+          "va": "0x80b1c1f0",
+          "u32le_word": "0x0c2c7c48",
+          "segment": "E06-text",
+          "decoded_offset": "0x329570"
+        },
+        {
+          "va": "0x80b1c20c",
+          "u32le_word": "0x0c2c6d5b",
+          "segment": "E06-text",
+          "decoded_offset": "0x32958c"
+        },
+        {
+          "va": "0x80b1c258",
+          "u32le_word": "0x02202021",
+          "segment": "E06-text",
+          "decoded_offset": "0x3295d8"
+        },
+        {
+          "va": "0x80b1c25c",
+          "u32le_word": "0x0c07087a",
+          "segment": "E06-text",
+          "decoded_offset": "0x3295dc"
+        },
+        {
+          "va": "0x80b1c270",
+          "u32le_word": "0x2405000a",
+          "segment": "E06-text",
+          "decoded_offset": "0x3295f0"
+        },
+        {
+          "va": "0x80b1c274",
+          "u32le_word": "0x0c0709d7",
+          "segment": "E06-text",
+          "decoded_offset": "0x3295f4"
+        },
+        {
+          "va": "0x80b1c27c",
+          "u32le_word": "0x02602021",
+          "segment": "E06-text",
+          "decoded_offset": "0x3295fc"
+        },
+        {
+          "va": "0x80b1c284",
+          "u32le_word": "0x0c0707d9",
+          "segment": "E06-text",
+          "decoded_offset": "0x329604"
+        },
+        {
+          "va": "0x80b1c2e0",
+          "u32le_word": "0x0c07087a",
+          "segment": "E06-text",
+          "decoded_offset": "0x329660"
+        },
+        {
+          "va": "0x80b1c2f8",
+          "u32le_word": "0x0c0709d7",
+          "segment": "E06-text",
+          "decoded_offset": "0x329678"
+        },
+        {
+          "va": "0x80b1c2fc",
+          "u32le_word": "0x2405000f",
+          "segment": "E06-text",
+          "decoded_offset": "0x32967c"
+        },
+        {
+          "va": "0x801c2218",
+          "u32le_word": "0x24940080",
+          "segment": "E04",
+          "decoded_offset": "0x94798"
+        },
+        {
+          "va": "0x801c2240",
+          "u32le_word": "0x12200046",
+          "segment": "E04",
+          "decoded_offset": "0x947c0"
+        },
+        {
+          "va": "0x801c235c",
+          "u32le_word": "0x0c070812",
+          "segment": "E04",
+          "decoded_offset": "0x948dc"
+        },
+        {
+          "va": "0x801c2364",
+          "u32le_word": "0x02602021",
+          "segment": "E04",
+          "decoded_offset": "0x948e4"
+        },
+        {
+          "va": "0x801c2368",
+          "u32le_word": "0x0c0744cf",
+          "segment": "E04",
+          "decoded_offset": "0x948e8"
+        },
+        {
+          "va": "0x801c2370",
+          "u32le_word": "0x0c03464f",
+          "segment": "E04",
+          "decoded_offset": "0x948f0"
+        },
+        {
+          "va": "0x801d133c",
+          "u32le_word": "0x8c840880",
+          "segment": "E04",
+          "decoded_offset": "0xa38bc"
+        },
+        {
+          "va": "0x801d1340",
+          "u32le_word": "0x080ce042",
+          "segment": "E04",
+          "decoded_offset": "0xa38c0"
+        },
+        {
+          "va": "0x801c275c",
+          "u32le_word": "0x8c830004",
+          "segment": "E04",
+          "decoded_offset": "0x94cdc"
+        },
+        {
+          "va": "0x801c2764",
+          "u32le_word": "0x10600006",
+          "segment": "E04",
+          "decoded_offset": "0x94ce4"
+        },
+        {
+          "va": "0x801c2790",
+          "u32le_word": "0x256a3614",
+          "segment": "E04",
+          "decoded_offset": "0x94d10"
+        },
+        {
+          "va": "0x801c2798",
+          "u32le_word": "0x8d040000",
+          "segment": "E04",
+          "decoded_offset": "0x94d18"
+        },
+        {
+          "va": "0x801c279c",
+          "u32le_word": "0x00800008",
+          "segment": "E04",
+          "decoded_offset": "0x94d1c"
+        },
+        {
+          "va": "0x801d3634",
+          "u32le_word": "0x801c2808",
+          "segment": "E04",
+          "decoded_offset": "0xa5bb4"
+        },
+        {
+          "va": "0x801d363c",
+          "u32le_word": "0x801c27a8",
+          "segment": "E04",
+          "decoded_offset": "0xa5bbc"
+        },
+        {
+          "va": "0x801d3650",
+          "u32le_word": "0x801c27a8",
+          "segment": "E04",
+          "decoded_offset": "0xa5bd0"
+        },
+        {
+          "va": "0x801c2808",
+          "u32le_word": "0x2405001f",
+          "segment": "E04",
+          "decoded_offset": "0x94d88"
+        },
+        {
+          "va": "0x801c280c",
+          "u32le_word": "0x080744e1",
+          "segment": "E04",
+          "decoded_offset": "0x94d8c"
+        },
+        {
+          "va": "0x801c27a8",
+          "u32le_word": "0x080744e1",
+          "segment": "E04",
+          "decoded_offset": "0x94d28"
+        },
+        {
+          "va": "0x801c27ac",
+          "u32le_word": "0x00e02021",
+          "segment": "E04",
+          "decoded_offset": "0x94d2c"
+        },
+        {
+          "va": "0x801d1384",
+          "u32le_word": "0x8c840880",
+          "segment": "E04",
+          "decoded_offset": "0xa3904"
+        },
+        {
+          "va": "0x801d1388",
+          "u32le_word": "0x080ce00e",
+          "segment": "E04",
+          "decoded_offset": "0xa3908"
+        },
+        {
+          "va": "0x8033814c",
+          "u32le_word": "0x00728021",
+          "segment": "E04",
+          "decoded_offset": "0x20a6cc"
+        },
+        {
+          "va": "0x80338190",
+          "u32le_word": "0xa1cf0051",
+          "segment": "E04",
+          "decoded_offset": "0x20a710"
+        },
+        {
+          "va": "0x803381c0",
+          "u32le_word": "0xae460324",
+          "segment": "E04",
+          "decoded_offset": "0x20a740"
+        },
+        {
+          "va": "0x80338080",
+          "u32le_word": "0xace50320",
+          "segment": "E04",
+          "decoded_offset": "0x20a600"
+        },
+        {
+          "va": "0x80338094",
+          "u32le_word": "0xa1060050",
+          "segment": "E04",
+          "decoded_offset": "0x20a614"
+        }
+      ]
+    },
+    {
+      "id": "hdr_geometry_and_buffer_configuration",
+      "observation": "For the selected HDR call, format 0x0f01 is passed in. The type-0 format setter writes +0xb8 and +0x68. PathSetScale updates the two block-buffer geometries and +0x68. PathSetBuffers receives output address B plus the current subimage offset and stores it at path+0x28. These setters leave the alternative image descriptor untouched.",
+      "words": [
+        {
+          "va": "0x80b29ddc",
+          "u32le_word": "0x24060f01",
+          "segment": "E06-text",
+          "decoded_offset": "0x33715c"
+        },
+        {
+          "va": "0x80b29de0",
+          "u32le_word": "0x0c2c7041",
+          "segment": "E06-text",
+          "decoded_offset": "0x337160"
+        },
+        {
+          "va": "0x80b1c12c",
+          "u32le_word": "0x00c0b821",
+          "segment": "E06-text",
+          "decoded_offset": "0x3294ac"
+        },
+        {
+          "va": "0x80b1c304",
+          "u32le_word": "0x0c06e82d",
+          "segment": "E06-text",
+          "decoded_offset": "0x329684"
+        },
+        {
+          "va": "0x80b1c308",
+          "u32le_word": "0x02e02821",
+          "segment": "E06-text",
+          "decoded_offset": "0x329688"
+        },
+        {
+          "va": "0x80b1c314",
+          "u32le_word": "0x0c06e716",
+          "segment": "E06-text",
+          "decoded_offset": "0x329694"
+        },
+        {
+          "va": "0x80b1c318",
+          "u32le_word": "0x02c03021",
+          "segment": "E06-text",
+          "decoded_offset": "0x329698"
+        },
+        {
+          "va": "0x80b1c31c",
+          "u32le_word": "0x8ea50000",
+          "segment": "E06-text",
+          "decoded_offset": "0x32969c"
+        },
+        {
+          "va": "0x80b1c320",
+          "u32le_word": "0x8ec60000",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296a0"
+        },
+        {
+          "va": "0x80b1c324",
+          "u32le_word": "0x02202021",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296a4"
+        },
+        {
+          "va": "0x80b1c328",
+          "u32le_word": "0x0c06ed09",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296a8"
+        },
+        {
+          "va": "0x80b1c32c",
+          "u32le_word": "0x00003821",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296ac"
+        },
+        {
+          "va": "0x801ba0bc",
+          "u32le_word": "0x8c830004",
+          "segment": "E04",
+          "decoded_offset": "0x8c63c"
+        },
+        {
+          "va": "0x801ba0c4",
+          "u32le_word": "0x1062000b",
+          "segment": "E04",
+          "decoded_offset": "0x8c644"
+        },
+        {
+          "va": "0x801ba0d0",
+          "u32le_word": "0x1068000d",
+          "segment": "E04",
+          "decoded_offset": "0x8c650"
+        },
+        {
+          "va": "0x801ba0e8",
+          "u32le_word": "0xa4c500b8",
+          "segment": "E04",
+          "decoded_offset": "0x8c668"
+        },
+        {
+          "va": "0x801ba0f0",
+          "u32le_word": "0xacc30068",
+          "segment": "E04",
+          "decoded_offset": "0x8c670"
+        },
+        {
+          "va": "0x801b9c58",
+          "u32le_word": "0x24870008",
+          "segment": "E04",
+          "decoded_offset": "0x8c1d8"
+        },
+        {
+          "va": "0x801b9c60",
+          "u32le_word": "0x24880028",
+          "segment": "E04",
+          "decoded_offset": "0x8c1e0"
+        },
+        {
+          "va": "0x801b9c9c",
+          "u32le_word": "0xaceb0018",
+          "segment": "E04",
+          "decoded_offset": "0x8c21c"
+        },
+        {
+          "va": "0x801b9ca8",
+          "u32le_word": "0xac850068",
+          "segment": "E04",
+          "decoded_offset": "0x8c228"
+        },
+        {
+          "va": "0x801b9ce8",
+          "u32le_word": "0xad050014",
+          "segment": "E04",
+          "decoded_offset": "0x8c268"
+        },
+        {
+          "va": "0x801b9cec",
+          "u32le_word": "0xad070018",
+          "segment": "E04",
+          "decoded_offset": "0x8c26c"
+        },
+        {
+          "va": "0x801b9cf8",
+          "u32le_word": "0xac860068",
+          "segment": "E04",
+          "decoded_offset": "0x8c278"
+        },
+        {
+          "va": "0x801bb424",
+          "u32le_word": "0x10a00005",
+          "segment": "E04",
+          "decoded_offset": "0x8d9a4"
+        },
+        {
+          "va": "0x801bb434",
+          "u32le_word": "0x34620001",
+          "segment": "E04",
+          "decoded_offset": "0x8d9b4"
+        },
+        {
+          "va": "0x801bb448",
+          "u32le_word": "0xac860028",
+          "segment": "E04",
+          "decoded_offset": "0x8d9c8"
+        },
+        {
+          "va": "0x801bb458",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x8d9d8"
+        },
+        {
+          "va": "0x801bb464",
+          "u32le_word": "0x35260001",
+          "segment": "E04",
+          "decoded_offset": "0x8d9e4"
+        }
+      ]
+    },
+    {
+      "id": "hdr_type_0_submit",
+      "observation": "The HDR path submits its type-0 object. PathSubmit dispatches to SubmitC12Ipu and IpuSubmit. The cleared +0xba and +0x8f0 avoid the alternate submit-flag and inline input descriptor arms. Before output selection the path-derived stores, if reached, are to input geometry +0x14/+0x18. Allocation and input construction use separate temporary objects and the input block descriptor. SetParam receives the separate processor pointer.",
+      "words": [
+        {
+          "va": "0x80b1c330",
+          "u32le_word": "0x0c0720f2",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296b0"
+        },
+        {
+          "va": "0x80b1c334",
+          "u32le_word": "0x02202021",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296b4"
+        },
+        {
+          "va": "0x801c83dc",
+          "u32le_word": "0x8c830004",
+          "segment": "E04",
+          "decoded_offset": "0x9a95c"
+        },
+        {
+          "va": "0x801c83e0",
+          "u32le_word": "0x1060002a",
+          "segment": "E04",
+          "decoded_offset": "0x9a960"
+        },
+        {
+          "va": "0x801c848c",
+          "u32le_word": "0x0c06f392",
+          "segment": "E04",
+          "decoded_offset": "0x9aa0c"
+        },
+        {
+          "va": "0x801bce54",
+          "u32le_word": "0x0c0742a2",
+          "segment": "E04",
+          "decoded_offset": "0x8f3d4"
+        },
+        {
+          "va": "0x801d0ab0",
+          "u32le_word": "0x948300ba",
+          "segment": "E04",
+          "decoded_offset": "0xa3030"
+        },
+        {
+          "va": "0x801d0ab8",
+          "u32le_word": "0x30620004",
+          "segment": "E04",
+          "decoded_offset": "0xa3038"
+        },
+        {
+          "va": "0x801d0ae0",
+          "u32le_word": "0x14400180",
+          "segment": "E04",
+          "decoded_offset": "0xa3060"
+        },
+        {
+          "va": "0x801d0ae4",
+          "u32le_word": "0x8c920880",
+          "segment": "E04",
+          "decoded_offset": "0xa3064"
+        },
+        {
+          "va": "0x801d0ae8",
+          "u32le_word": "0x962700b8",
+          "segment": "E04",
+          "decoded_offset": "0xa3068"
+        },
+        {
+          "va": "0x801d0b0c",
+          "u32le_word": "0x0c00362f",
+          "segment": "E04",
+          "decoded_offset": "0xa308c"
+        },
+        {
+          "va": "0x801d0b20",
+          "u32le_word": "0x0c00362f",
+          "segment": "E04",
+          "decoded_offset": "0xa30a0"
+        },
+        {
+          "va": "0x801d0b28",
+          "u32le_word": "0x962400ba",
+          "segment": "E04",
+          "decoded_offset": "0xa30a8"
+        },
+        {
+          "va": "0x801d0b2c",
+          "u32le_word": "0x30850008",
+          "segment": "E04",
+          "decoded_offset": "0xa30ac"
+        },
+        {
+          "va": "0x801d0b60",
+          "u32le_word": "0xae2b0018",
+          "segment": "E04",
+          "decoded_offset": "0xa30e0"
+        },
+        {
+          "va": "0x801d0b68",
+          "u32le_word": "0x1180003b",
+          "segment": "E04",
+          "decoded_offset": "0xa30e8"
+        },
+        {
+          "va": "0x801d0c58",
+          "u32le_word": "0x24050005",
+          "segment": "E04",
+          "decoded_offset": "0xa31d8"
+        },
+        {
+          "va": "0x801d0c5c",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa31dc"
+        },
+        {
+          "va": "0x801d0c64",
+          "u32le_word": "0x8e2d08f0",
+          "segment": "E04",
+          "decoded_offset": "0xa31e4"
+        },
+        {
+          "va": "0x801d0c68",
+          "u32le_word": "0x15a0ffc7",
+          "segment": "E04",
+          "decoded_offset": "0xa31e8"
+        },
+        {
+          "va": "0x801d0c94",
+          "u32le_word": "0x0c027edc",
+          "segment": "E04",
+          "decoded_offset": "0xa3214"
+        },
+        {
+          "va": "0x801d0c98",
+          "u32le_word": "0x26250008",
+          "segment": "E04",
+          "decoded_offset": "0xa3218"
+        },
+        {
+          "va": "0x801d0ca8",
+          "u32le_word": "0x5080ffbb",
+          "segment": "E04",
+          "decoded_offset": "0xa3228"
+        },
+        {
+          "va": "0x801d0cac",
+          "u32le_word": "0x8e2b0964",
+          "segment": "E04",
+          "decoded_offset": "0xa322c"
+        },
+        {
+          "va": "0x801d10ac",
+          "u32le_word": "0x1000fea7",
+          "segment": "E04",
+          "decoded_offset": "0xa362c"
+        }
+      ]
+    },
+    {
+      "id": "hdr_output_selector",
+      "observation": "The zero at path+0x964 sends this HDR route to the path+0x28 output, with the output format byte 1 mapping to image type 8 through the output format jump table. IpuSubmit constructs the image descriptor from path+0x28, and the type-8 single-surface construction copies the block buffer word 0 into surface word 0. The resulting descriptor is submitted as image kind 2 to CImageProcessor::SetImage. A nonzero descriptor type at path+0x964 instead selects a copy from path+0x8fc.",
+      "words": [
+        {
+          "va": "0x801d0b08",
+          "u32le_word": "0x30f700ff",
+          "segment": "E04",
+          "decoded_offset": "0xa3088"
+        },
+        {
+          "va": "0x801d0b94",
+          "u32le_word": "0x8e2b0964",
+          "segment": "E04",
+          "decoded_offset": "0xa3114"
+        },
+        {
+          "va": "0x801d0b98",
+          "u32le_word": "0x1160004a",
+          "segment": "E04",
+          "decoded_offset": "0xa3118"
+        },
+        {
+          "va": "0x801d0ba0",
+          "u32le_word": "0x0c027e60",
+          "segment": "E04",
+          "decoded_offset": "0xa3120"
+        },
+        {
+          "va": "0x801d0ba4",
+          "u32le_word": "0x262408fc",
+          "segment": "E04",
+          "decoded_offset": "0xa3124"
+        },
+        {
+          "va": "0x801d0ba8",
+          "u32le_word": "0x0040a021",
+          "segment": "E04",
+          "decoded_offset": "0xa3128"
+        },
+        {
+          "va": "0x801d0cac",
+          "u32le_word": "0x8e2b0964",
+          "segment": "E04",
+          "decoded_offset": "0xa322c"
+        },
+        {
+          "va": "0x801d0cb8",
+          "u32le_word": "0x8e2b0964",
+          "segment": "E04",
+          "decoded_offset": "0xa3238"
+        },
+        {
+          "va": "0x801d0cbc",
+          "u32le_word": "0x1560ffb8",
+          "segment": "E04",
+          "decoded_offset": "0xa323c"
+        },
+        {
+          "va": "0x801d0cc4",
+          "u32le_word": "0x0c0741ae",
+          "segment": "E04",
+          "decoded_offset": "0xa3244"
+        },
+        {
+          "va": "0x801d0cc8",
+          "u32le_word": "0x02e02021",
+          "segment": "E04",
+          "decoded_offset": "0xa3248"
+        },
+        {
+          "va": "0x801d06d0",
+          "u32le_word": "0x00043880",
+          "segment": "E04",
+          "decoded_offset": "0xa2c50"
+        },
+        {
+          "va": "0x801d06d4",
+          "u32le_word": "0x250347bc",
+          "segment": "E04",
+          "decoded_offset": "0xa2c54"
+        },
+        {
+          "va": "0x801d06dc",
+          "u32le_word": "0x8ca40000",
+          "segment": "E04",
+          "decoded_offset": "0xa2c5c"
+        },
+        {
+          "va": "0x801d06e0",
+          "u32le_word": "0x00800008",
+          "segment": "E04",
+          "decoded_offset": "0xa2c60"
+        },
+        {
+          "va": "0x801d47c0",
+          "u32le_word": "0x801d0700",
+          "segment": "E04",
+          "decoded_offset": "0xa6d40"
+        },
+        {
+          "va": "0x801d0704",
+          "u32le_word": "0x24020008",
+          "segment": "E04",
+          "decoded_offset": "0xa2c84"
+        },
+        {
+          "va": "0x801d0cd0",
+          "u32le_word": "0x104c0147",
+          "segment": "E04",
+          "decoded_offset": "0xa3250"
+        },
+        {
+          "va": "0x801d0ce8",
+          "u32le_word": "0x0c027edc",
+          "segment": "E04",
+          "decoded_offset": "0xa3268"
+        },
+        {
+          "va": "0x801d0cec",
+          "u32le_word": "0x26250028",
+          "segment": "E04",
+          "decoded_offset": "0xa326c"
+        },
+        {
+          "va": "0x8009fbbc",
+          "u32le_word": "0x0c027ea0",
+          "segment": "E03",
+          "original_file_offset": "0x1a1ea4"
+        },
+        {
+          "va": "0x8009fbc0",
+          "u32le_word": "0x02402821",
+          "segment": "E03",
+          "original_file_offset": "0x1a1ea8"
+        },
+        {
+          "va": "0x8009fbd0",
+          "u32le_word": "0x0c027ebe",
+          "segment": "E03",
+          "original_file_offset": "0x1a1eb8"
+        },
+        {
+          "va": "0x8009fb40",
+          "u32le_word": "0x0c027e85",
+          "segment": "E03",
+          "original_file_offset": "0x1a1e28"
+        },
+        {
+          "va": "0x8009fa34",
+          "u32le_word": "0x8ca20000",
+          "segment": "E03",
+          "original_file_offset": "0x1a1d1c"
+        },
+        {
+          "va": "0x8009fa4c",
+          "u32le_word": "0xad420000",
+          "segment": "E03",
+          "original_file_offset": "0x1a1d34"
+        },
+        {
+          "va": "0x801d0e10",
+          "u32le_word": "0x02802821",
+          "segment": "E04",
+          "decoded_offset": "0xa3390"
+        },
+        {
+          "va": "0x801d0e18",
+          "u32le_word": "0x0c0cdf45",
+          "segment": "E04",
+          "decoded_offset": "0xa3398"
+        },
+        {
+          "va": "0x801d0e1c",
+          "u32le_word": "0x24060002",
+          "segment": "E04",
+          "decoded_offset": "0xa339c"
+        }
+      ]
+    }
+  ],
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "scope": "Original ConvertPathInit, HDR caller, type-0 creation and descriptor setters/selector. Stops at SetImage(kind=2); allocation, RTOS calls and hardware setup are modeled.",
+    "stubs": {
+      "0x801d12f4": "IpuInit",
+      "0x800d9ac8": "_tx_counter_get",
+      "0x800d9df0": "_tx_thread_interrupt_control",
+      "0x800cdb00": "_tx_mutex_create",
+      "0x800cbee4": "_tx_mutex_get",
+      "0x800d193c": "_tx_mutex_put",
+      "0x803383f8": "CImageProcessor constructor",
+      "0x800b6a40": "CObserver constructor",
+      "0x800ad164": "CObservable::Register",
+      "0x8000bf28": "PoolAllocEx",
+      "0x8000d8bc": "operator new",
+      "0x80b1f120": "MemAlloc",
+      "0x80337d14": "SetImage kinds 0, 1 and 5 only"
+    },
+    "cases": [
+      {
+        "name": "fresh_hdr_type0",
+        "path_output": "0x20004000",
+        "selector": 0,
+        "selector_destination": "0x801d0cc4",
+        "submitted_surface": "0x20004000",
+        "image_type": 8,
+        "image_kind": 2
+      },
+      {
+        "name": "explicit_descriptor_id9_counterfactual",
+        "path_output": "0x20004000",
+        "selector": 8,
+        "selector_destination": "0x801d0ba0",
+        "submitted_surface": "0x20009000",
+        "image_type": 8,
+        "image_kind": 2
+      }
+    ],
+    "limitations": [
+      "Synthetic descriptors and successful software calls, with firmware memory initialized where needed.",
+      "No physical memory accesses, image writes, camera pixels or hardware execution."
+    ]
+  },
+  "selected_functions": [
+    {
+      "name": "ConvertPathInit",
+      "address": 2149306108,
+      "candidate_end": 2149306216,
+      "segment": "E04",
+      "decoded_offset": 586876,
+      "size": 108,
+      "sha256": "50fe3e2a8185458dde6cdecaca3d0bb2b0ee134591b33ff73e34671b54faf6be",
+      "transfers": [
+        {
+          "site": 2149306208,
+          "word": "080744bd",
+          "kind": "jump",
+          "target": 2149389044,
+          "target_names": [
+            "IpuInit"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PathGetSize",
+      "address": 2149290388,
+      "candidate_end": 2149290416,
+      "segment": "E04",
+      "decoded_offset": 571156,
+      "size": 28,
+      "sha256": "f8c451c71fbc94ad61c9d5b639d75a9d195af3f19596483f6a066f5d3984d5fb",
+      "transfers": []
+    },
+    {
+      "name": "PathCreate",
+      "address": 2149290644,
+      "candidate_end": 2149290876,
+      "segment": "E04",
+      "decoded_offset": 571412,
+      "size": 232,
+      "sha256": "7fd747c09b3f55f7ae49ac2843f9f46b2fe8c0b42592bdde4e50d3436b244fa4",
+      "transfers": [
+        {
+          "site": 2149290728,
+          "word": "0c06e465",
+          "kind": "call",
+          "target": 2149290388,
+          "target_names": [
+            "PathGetSize"
+          ]
+        },
+        {
+          "site": 2149290764,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149290812,
+          "word": "0806e46c",
+          "kind": "jump",
+          "target": 2149290416,
+          "target_names": [
+            "PathCreateInPlace"
+          ]
+        },
+        {
+          "site": 2149290832,
+          "word": "0c06e465",
+          "kind": "call",
+          "target": 2149290388,
+          "target_names": [
+            "PathGetSize"
+          ]
+        },
+        {
+          "site": 2149290860,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PathCreateInPlace",
+      "address": 2149290416,
+      "candidate_end": 2149290644,
+      "segment": "E04",
+      "decoded_offset": 571184,
+      "size": 228,
+      "sha256": "e1d3c560b720f800b9bfb8aad765250afec1fb908456e3e7c00212a34429aee1",
+      "transfers": [
+        {
+          "site": 2149290468,
+          "word": "0c06e465",
+          "kind": "call",
+          "target": 2149290388,
+          "target_names": [
+            "PathGetSize"
+          ]
+        },
+        {
+          "site": 2149290484,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2149290496,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2149290524,
+          "word": "0c03677c",
+          "kind": "call",
+          "target": 2148376048,
+          "target_names": [
+            "_tx_thread_interrupt_control"
+          ]
+        },
+        {
+          "site": 2149290576,
+          "word": "0c0336c0",
+          "kind": "call",
+          "target": 2148326144,
+          "target_names": [
+            "_tx_mutex_create"
+          ]
+        },
+        {
+          "site": 2149290604,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "IpuCreate",
+      "address": 2149386388,
+      "candidate_end": 2149386452,
+      "segment": "E04",
+      "decoded_offset": 667156,
+      "size": 64,
+      "sha256": "e934e87af275ba17a068fecde31164f7596be5d7ff036ab51028963cd60e1773",
+      "transfers": [
+        {
+          "site": 2149386412,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149386424,
+          "word": "0c0ce0fe",
+          "kind": "call",
+          "target": 2150859768,
+          "target_names": [
+            "_ZN15CImageProcessorC1Ev"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuSetCallBack",
+      "address": 2149386720,
+      "candidate_end": 2149386844,
+      "segment": "E04",
+      "decoded_offset": 667488,
+      "size": 124,
+      "sha256": "d74ef014f6e878a9111668d2d5efc7f8a70a480cdb81e84ff2100faad3e31b31",
+      "transfers": [
+        {
+          "site": 2149386768,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149386780,
+          "word": "0c02da90",
+          "kind": "call",
+          "target": 2148231744,
+          "target_names": [
+            "_ZN9CObserverC2Ev"
+          ]
+        },
+        {
+          "site": 2149386836,
+          "word": "0802b459",
+          "kind": "jump",
+          "target": 2148192612,
+          "target_names": [
+            "_ZN11CObservable8RegisterEP9CObserver"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuToneMapRgb",
+      "address": 2159132932,
+      "candidate_end": 2159134224,
+      "segment": "E06-text",
+      "decoded_offset": 3314820,
+      "size": 1292,
+      "sha256": "5b55a77c848f6820895258c1001f814e96426c9de7a232721247cd6cf965c78c",
+      "transfers": [
+        {
+          "site": 2159133004,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2159133056,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2159133076,
+          "word": "0c06e4a5",
+          "kind": "call",
+          "target": 2149290644,
+          "target_names": [
+            "PathCreate"
+          ]
+        },
+        {
+          "site": 2159133104,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133124,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133168,
+          "word": "0c2c7c48",
+          "kind": "call",
+          "target": 2159145248,
+          "target_names": [
+            "MemAlloc"
+          ]
+        },
+        {
+          "site": 2159133196,
+          "word": "0c2c6d5b",
+          "kind": "call",
+          "target": 2159129964,
+          "target_names": [
+            "SetFilterHeader"
+          ]
+        },
+        {
+          "site": 2159133276,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133300,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133316,
+          "word": "0c0707d9",
+          "kind": "call",
+          "target": 2149326692,
+          "target_names": [
+            "PathImageProcessingCreate"
+          ]
+        },
+        {
+          "site": 2159133408,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133432,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133444,
+          "word": "0c06e82d",
+          "kind": "call",
+          "target": 2149294260,
+          "target_names": [
+            "PathSetFormat"
+          ]
+        },
+        {
+          "site": 2159133460,
+          "word": "0c06e716",
+          "kind": "call",
+          "target": 2149293144,
+          "target_names": [
+            "PathSetScale"
+          ]
+        },
+        {
+          "site": 2159133480,
+          "word": "0c06ed09",
+          "kind": "call",
+          "target": 2149299236,
+          "target_names": [
+            "PathSetBuffers"
+          ]
+        },
+        {
+          "site": 2159133488,
+          "word": "0c0720f2",
+          "kind": "call",
+          "target": 2149352392,
+          "target_names": [
+            "PathSubmit"
+          ]
+        },
+        {
+          "site": 2159133504,
+          "word": "0c0729d4",
+          "kind": "call",
+          "target": 2149361488,
+          "target_names": [
+            "PathGo"
+          ]
+        },
+        {
+          "site": 2159133520,
+          "word": "0c072a4a",
+          "kind": "call",
+          "target": 2149361960,
+          "target_names": [
+            "PathWait"
+          ]
+        },
+        {
+          "site": 2159133544,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        },
+        {
+          "site": 2159133556,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2159133592,
+          "word": "0c03f232",
+          "kind": "call",
+          "target": 2148518088,
+          "target_names": [
+            "__udivdi3"
+          ]
+        },
+        {
+          "site": 2159133608,
+          "word": "0c2c624c",
+          "kind": "call",
+          "target": 2159118640,
+          "target_names": [
+            "DebugProfUpdateCounter"
+          ]
+        },
+        {
+          "site": 2159133640,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133676,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133692,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        },
+        {
+          "site": 2159133724,
+          "word": "0c2c807f",
+          "kind": "call",
+          "target": 2159149564,
+          "target_names": [
+            "MemFree"
+          ]
+        },
+        {
+          "site": 2159133800,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133856,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133916,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133964,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133996,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134024,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134088,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134132,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134184,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SetDescriptor",
+      "address": 2149299316,
+      "candidate_end": 2149299396,
+      "segment": "E04",
+      "decoded_offset": 580084,
+      "size": 80,
+      "sha256": "e66ba9f7525dc563f9674e837d8ee20ec4d7141361bd5e94c75b9404a586a1cc",
+      "transfers": []
+    },
+    {
+      "name": "PathSetDescriptors",
+      "address": 2149299584,
+      "candidate_end": 2149299892,
+      "segment": "E04",
+      "decoded_offset": 580352,
+      "size": 308,
+      "sha256": "98e0036ea75b5dd6fa31c8a5cf9c5f6aad8d4a10d050d3be7ed37e7c61acfc4b",
+      "transfers": [
+        {
+          "site": 2149299668,
+          "word": "0c06ed1d",
+          "kind": "call",
+          "target": 2149299316,
+          "target_names": [
+            "SetDescriptor"
+          ]
+        },
+        {
+          "site": 2149299684,
+          "word": "0c06ed1d",
+          "kind": "call",
+          "target": 2149299316,
+          "target_names": [
+            "SetDescriptor"
+          ]
+        },
+        {
+          "site": 2149299740,
+          "word": "0c06ed1d",
+          "kind": "call",
+          "target": 2149299316,
+          "target_names": [
+            "SetDescriptor"
+          ]
+        },
+        {
+          "site": 2149299752,
+          "word": "0c06ed1d",
+          "kind": "call",
+          "target": 2149299316,
+          "target_names": [
+            "SetDescriptor"
+          ]
+        },
+        {
+          "site": 2149299764,
+          "word": "0c06ed1d",
+          "kind": "call",
+          "target": 2149299316,
+          "target_names": [
+            "SetDescriptor"
+          ]
+        },
+        {
+          "site": 2149299824,
+          "word": "0c06ed1d",
+          "kind": "call",
+          "target": 2149299316,
+          "target_names": [
+            "SetDescriptor"
+          ]
+        },
+        {
+          "site": 2149299848,
+          "word": "0c072b9e",
+          "kind": "call",
+          "target": 2149363320,
+          "target_names": [
+            "LdcGetPath"
+          ]
+        },
+        {
+          "site": 2149299884,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PathSetDescriptorsbyId",
+      "address": 2149299396,
+      "candidate_end": 2149299584,
+      "segment": "E04",
+      "decoded_offset": 580164,
+      "size": 188,
+      "sha256": "6f48b0109252bb7b9eabc7f2d40dfdc977f5103882dde79903f2d2d6d0d42d0b",
+      "transfers": [
+        {
+          "site": 2149299488,
+          "word": "0c06ed1d",
+          "kind": "call",
+          "target": 2149299316,
+          "target_names": [
+            "SetDescriptor"
+          ]
+        },
+        {
+          "site": 2149299552,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2149299576,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PathSetImageProcessing",
+      "address": 2149327336,
+      "candidate_end": 2149328548,
+      "segment": "E04",
+      "decoded_offset": 608104,
+      "size": 1212,
+      "sha256": "d77322c559c2d7160af74380e5bc046de1b43d2ea2ac26641c1b0692b33909ad",
+      "transfers": [
+        {
+          "site": 2149327392,
+          "word": "0c032fb9",
+          "kind": "call",
+          "target": 2148318948,
+          "target_names": [
+            "_tx_mutex_get"
+          ]
+        },
+        {
+          "site": 2149327448,
+          "word": "0c0707d9",
+          "kind": "call",
+          "target": 2149326692,
+          "target_names": [
+            "PathImageProcessingCreate"
+          ]
+        },
+        {
+          "site": 2149327480,
+          "word": "0c03ed5e",
+          "kind": "call",
+          "target": 2148513144,
+          "target_names": [
+            "memcpy"
+          ]
+        },
+        {
+          "site": 2149327512,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        },
+        {
+          "site": 2149327648,
+          "word": "0c070805",
+          "kind": "call",
+          "target": 2149326868,
+          "target_names": [
+            "PathImageProcessingDestroy"
+          ]
+        },
+        {
+          "site": 2149327700,
+          "word": "00600008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149327708,
+          "word": "0c070812",
+          "kind": "call",
+          "target": 2149326920,
+          "target_names": [
+            "TranslatePathFilterToC12ApiFilter"
+          ]
+        },
+        {
+          "site": 2149327720,
+          "word": "0c0744cf",
+          "kind": "call",
+          "target": 2149389116,
+          "target_names": [
+            "IpuSetFilter"
+          ]
+        },
+        {
+          "site": 2149327728,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        },
+        {
+          "site": 2149327760,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2149327784,
+          "word": "0c03ed5e",
+          "kind": "call",
+          "target": 2148513144,
+          "target_names": [
+            "memcpy"
+          ]
+        },
+        {
+          "site": 2149327840,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149327848,
+          "word": "0c070785",
+          "kind": "call",
+          "target": 2149326356,
+          "target_names": [
+            "PathImageProcessingSetDefaults"
+          ]
+        },
+        {
+          "site": 2149327960,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        },
+        {
+          "site": 2149328180,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        },
+        {
+          "site": 2149328288,
+          "word": "0c06f3dc",
+          "kind": "call",
+          "target": 2149306224,
+          "target_names": [
+            "PathCalcChromaEnhancementValues"
+          ]
+        },
+        {
+          "site": 2149328308,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        },
+        {
+          "site": 2149328540,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PathImageProcessingEnable",
+      "address": 2149328732,
+      "candidate_end": 2149328916,
+      "segment": "E04",
+      "decoded_offset": 609500,
+      "size": 184,
+      "sha256": "7502c60615f9ad23af404a4ae0d8957831b3ddeb5dfebb7a0a063a0255458ad2",
+      "transfers": [
+        {
+          "site": 2149328796,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149328808,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328872,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328884,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328896,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328908,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuSetFilter",
+      "address": 2149389116,
+      "candidate_end": 2149389128,
+      "segment": "E04",
+      "decoded_offset": 669884,
+      "size": 12,
+      "sha256": "caa7b05fb721e2800d00855d91b556e8b31dc5343678aa0f4abe20356a4fb2c0",
+      "transfers": [
+        {
+          "site": 2149389120,
+          "word": "080ce042",
+          "kind": "jump",
+          "target": 2150859016,
+          "target_names": [
+            "_ZN15CImageProcessor9SetFilterEPvm"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuSetFilterEnable",
+      "address": 2149389188,
+      "candidate_end": 2149389200,
+      "segment": "E04",
+      "decoded_offset": 669956,
+      "size": 12,
+      "sha256": "faaa0aeacbbe0f6e086150a572f89fb3e25eb6ee13995500f2ebb1f324b1b9e4",
+      "transfers": [
+        {
+          "site": 2149389192,
+          "word": "080ce00e",
+          "kind": "jump",
+          "target": 2150858808,
+          "target_names": [
+            "_ZN15CImageProcessor15SetFilterEnableE29_IMAGE_PROCESSING_FILTER_ENUMh"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PathSetFormat",
+      "address": 2149294260,
+      "candidate_end": 2149294368,
+      "segment": "E04",
+      "decoded_offset": 575028,
+      "size": 108,
+      "sha256": "8baa968017d0ea11f6d75046dc3edf9aadd4cc094797833eb851a89fefd24da6",
+      "transfers": [
+        {
+          "site": 2149294344,
+          "word": "0c0745ab",
+          "kind": "call",
+          "target": 2149389996,
+          "target_names": [
+            "GpsuPathSetFormat"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PathSetScale",
+      "address": 2149293144,
+      "candidate_end": 2149293348,
+      "segment": "E04",
+      "decoded_offset": 573912,
+      "size": 204,
+      "sha256": "ab533d6075240067044ff2487d9b0fc211ccd38b9f657a15f4b5b8bae402421d",
+      "transfers": []
+    },
+    {
+      "name": "PathSetBuffers",
+      "address": 2149299236,
+      "candidate_end": 2149299316,
+      "segment": "E04",
+      "decoded_offset": 580004,
+      "size": 80,
+      "sha256": "08f9c45a1e17806651d1b7498f57986a7b536f32a156686c118023c78e6affe1",
+      "transfers": []
+    },
+    {
+      "name": "PathSubmit",
+      "address": 2149352392,
+      "candidate_end": 2149352668,
+      "segment": "E04",
+      "decoded_offset": 633160,
+      "size": 276,
+      "sha256": "037285926298f7239ad9c866916095663c6fe96210223ce17989bfa028e94a13",
+      "transfers": [
+        {
+          "site": 2149352572,
+          "word": "0c06ff5b",
+          "kind": "call",
+          "target": 2149317996,
+          "target_names": [
+            "ScaleIsp2Calculation"
+          ]
+        },
+        {
+          "site": 2149352588,
+          "word": "0c06f392",
+          "kind": "call",
+          "target": 2149305928,
+          "target_names": [
+            "SubmitC12Ipu"
+          ]
+        },
+        {
+          "site": 2149352604,
+          "word": "0c0745c8",
+          "kind": "call",
+          "target": 2149390112,
+          "target_names": [
+            "GpsuPathSubmit"
+          ]
+        },
+        {
+          "site": 2149352620,
+          "word": "0c072c30",
+          "kind": "call",
+          "target": 2149363904,
+          "target_names": [
+            "IcaPathSubmit"
+          ]
+        },
+        {
+          "site": 2149352636,
+          "word": "0c077d60",
+          "kind": "call",
+          "target": 2149447040,
+          "target_names": [
+            "JpegPathSubmit"
+          ]
+        },
+        {
+          "site": 2149352652,
+          "word": "0c0761db",
+          "kind": "call",
+          "target": 2149418860,
+          "target_names": [
+            "PathStatisticsSubmit"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SubmitC12Ipu",
+      "address": 2149305928,
+      "candidate_end": 2149305964,
+      "segment": "E04",
+      "decoded_offset": 586696,
+      "size": 36,
+      "sha256": "5183052d59644f7a9d70d6b4ed699053ab145a4d225f95f824d5dc44d1b5fd8e",
+      "transfers": [
+        {
+          "site": 2149305940,
+          "word": "0c0742a2",
+          "kind": "call",
+          "target": 2149386888,
+          "target_names": [
+            "IpuSubmit"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuSubmit",
+      "address": 2149386888,
+      "candidate_end": 2149389044,
+      "segment": "E04",
+      "decoded_offset": 667656,
+      "size": 2156,
+      "sha256": "030ffd0e3f5f5b8d56bc4bcc2155a482dc25aaf3f93eac89a575686ca2045213",
+      "transfers": [
+        {
+          "site": 2149387020,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387040,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387124,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387144,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387168,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387204,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387220,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387236,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387264,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387292,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387332,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149387356,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387376,
+          "word": "0c07417c",
+          "kind": "call",
+          "target": 2149385712,
+          "target_names": [
+            "_Z21uiPathInput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387396,
+          "word": "0c07417c",
+          "kind": "call",
+          "target": 2149385712,
+          "target_names": [
+            "_Z21uiPathInput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387412,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2149387460,
+          "word": "0c0741ae",
+          "kind": "call",
+          "target": 2149385912,
+          "target_names": [
+            "_Z22uiPathOutput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387480,
+          "word": "0c0741ae",
+          "kind": "call",
+          "target": 2149385912,
+          "target_names": [
+            "_Z22uiPathOutput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387496,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2149387528,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387556,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2149387572,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387592,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387608,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387624,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387652,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387680,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387720,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149387736,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149387752,
+          "word": "0c0741d8",
+          "kind": "call",
+          "target": 2149386080,
+          "target_names": [
+            "_Z14CalcDecimationP13tagSSCALEPATHP19tagSIMAGEDESCRIPTORS2_"
+          ]
+        },
+        {
+          "site": 2149387768,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387784,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387800,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387828,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387860,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387888,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387904,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387988,
+          "word": "0c0cecaa",
+          "kind": "call",
+          "target": 2150871720,
+          "target_names": [
+            "_ZN15CImageProcessor20setInputSubImageDataEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2149388008,
+          "word": "0c0ced1c",
+          "kind": "call",
+          "target": 2150872176,
+          "target_names": [
+            "_ZN15CImageProcessor12setBatchDataEhjP21tagSCONVERTSINGLETASK"
+          ]
+        },
+        {
+          "site": 2149388100,
+          "word": "0c0ced26",
+          "kind": "call",
+          "target": 2150872216,
+          "target_names": [
+            "_ZN15CImageProcessor17SetSensorGeometryER20tagS_SENSOR_GEOMETRY"
+          ]
+        },
+        {
+          "site": 2149388112,
+          "word": "0c0ce8b2",
+          "kind": "call",
+          "target": 2150867656,
+          "target_names": [
+            "_ZN15CImageProcessor11GetPropertyE22tagIP_PROPERTY_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388200,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388228,
+          "word": "0c0ce9ee",
+          "kind": "call",
+          "target": 2150868920,
+          "target_names": [
+            "_ZN15CImageProcessor6CommitEv"
+          ]
+        },
+        {
+          "site": 2149388240,
+          "word": "0c0ce8b2",
+          "kind": "call",
+          "target": 2150867656,
+          "target_names": [
+            "_ZN15CImageProcessor11GetPropertyE22tagIP_PROPERTY_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388284,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149388328,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149388348,
+          "word": "0c0ce92c",
+          "kind": "call",
+          "target": 2150868144,
+          "target_names": [
+            "_ZN15CImageProcessor16GetSubImagesDataEPmPt"
+          ]
+        },
+        {
+          "site": 2149388400,
+          "word": "0c0ce8aa",
+          "kind": "call",
+          "target": 2150867624,
+          "target_names": [
+            "_ZN15CImageProcessor8GetParamE19tagIP_PARAM_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388472,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149388496,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149388524,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388548,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149388580,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149388600,
+          "word": "0c0ce92c",
+          "kind": "call",
+          "target": 2150868144,
+          "target_names": [
+            "_ZN15CImageProcessor16GetSubImagesDataEPmPt"
+          ]
+        },
+        {
+          "site": 2149388652,
+          "word": "0c0ce8aa",
+          "kind": "call",
+          "target": 2150867624,
+          "target_names": [
+            "_ZN15CImageProcessor8GetParamE19tagIP_PARAM_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388672,
+          "word": "0c0740ea",
+          "kind": "call",
+          "target": 2149385128,
+          "target_names": [
+            "_Z20FillNrDataExtractionP8tagSPATH"
+          ]
+        },
+        {
+          "site": 2149388732,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149388752,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388768,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388784,
+          "word": "0c027ea0",
+          "kind": "call",
+          "target": 2148137600,
+          "target_names": [
+            "ImageDescriptorCreate"
+          ]
+        },
+        {
+          "site": 2149388800,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149388896,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149388912,
+          "word": "0c027ea0",
+          "kind": "call",
+          "target": 2148137600,
+          "target_names": [
+            "ImageDescriptorCreate"
+          ]
+        },
+        {
+          "site": 2149388928,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149389008,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149389028,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_Z22uiPathOutput2ImageTypej",
+      "address": 2149385912,
+      "candidate_end": 2149386080,
+      "segment": "E04",
+      "decoded_offset": 666680,
+      "size": 168,
+      "sha256": "797307ddaa25773a11aa580492bcf15e68e13a66b74f5dd58bdc22a7d5cc1a55",
+      "transfers": [
+        {
+          "site": 2149385952,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149385976,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ImageDescriptorCreateFromBlockBuffer",
+      "address": 2148137840,
+      "candidate_end": 2148138372,
+      "file_offset": 1711704,
+      "size": 532,
+      "sha256": "64780df5015ac3baad5c6304d370d1ac07140f00672ea82f042dd0131ec20517",
+      "transfers": [
+        {
+          "site": 2148137916,
+          "word": "0c027ea0",
+          "kind": "call",
+          "target": 2148137600,
+          "target_names": [
+            "ImageDescriptorCreate"
+          ]
+        },
+        {
+          "site": 2148137936,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2148138072,
+          "word": "0c027ea0",
+          "kind": "call",
+          "target": 2148137600,
+          "target_names": [
+            "ImageDescriptorCreate"
+          ]
+        },
+        {
+          "site": 2148138092,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2148138236,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ImageDescriptorAddSurface",
+      "address": 2148137720,
+      "candidate_end": 2148137840,
+      "file_offset": 1711584,
+      "size": 120,
+      "sha256": "212e1fad01878789749daf3ff77ca4f72b344f115778b749edaae7f00802df2f",
+      "transfers": [
+        {
+          "site": 2148137760,
+          "word": "0c027df6",
+          "kind": "call",
+          "target": 2148136920,
+          "target_names": [
+            "ImageType2Bpp"
+          ]
+        },
+        {
+          "site": 2148137792,
+          "word": "0c027e85",
+          "kind": "call",
+          "target": 2148137492,
+          "target_names": [
+            "ImageSurfaceInitialize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ImageDescriptorCreate",
+      "address": 2148137600,
+      "candidate_end": 2148137720,
+      "file_offset": 1711464,
+      "size": 120,
+      "sha256": "250203f2188dc6629ba0d2cfa95d2a6916f921015a1733774e3d6d2cecd45b8f",
+      "transfers": [
+        {
+          "site": 2148137636,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148137676,
+          "word": "0c027e4b",
+          "kind": "call",
+          "target": 2148137260,
+          "target_names": [
+            "ImageDescriptorAllocate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ImageSurfaceInitialize",
+      "address": 2148137492,
+      "candidate_end": 2148137600,
+      "file_offset": 1711356,
+      "size": 108,
+      "sha256": "acd8071221b5af8b41a19d69df543c2aaa1634a66ee70d448dc376d16f1bdd6e",
+      "transfers": []
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "limitations": [
+    "Static reconstruction of the fresh successful HDR path. Other paths can populate the inline descriptor through PathSetDescriptors or PathSetDescriptorsbyId.",
+    "Descriptor construction and handoff to SetImage establish the software buffer binding. DMA transactions, physical aliasing and camera pixels were not measured."
+  ]
+}
