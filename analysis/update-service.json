@@ -1,0 +1,7112 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "MAIN application update-file staging, in-process DownloadCard header/handle selection, and synchronous/asynchronous caller return behavior. Burn and hardware boundaries are modeled; E01 BurnNand is a separate implementation.",
+  "bounded_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "header_original_offset": "0x100000",
+    "header_bytes": 192,
+    "header_sha256": "5269e3c1cd9cc8dedec0d35d27021c978fd1bc6fc1eaa329b9c0976e65c8c7c9",
+    "staging_input_bytes": 96,
+    "staging_input_sha256": "4519a1b9c31602ae847f65cea013c9a3d61fe6437b975436f68d4cb05fd01fcd",
+    "bridge_cases": [
+      {
+        "options": {},
+        "result": 0,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e14b4",
+            "offset": 1048576,
+            "count": 64,
+            "sha256": "66b55fd56627eb23f435aded667c5a418204a761ed6e6bf573f5582d0b5613d6",
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e1570",
+            "offset": 1048640,
+            "count": 128,
+            "sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+            "result": 0
+          },
+          {
+            "api": "0x805dc7f4",
+            "kind": "led_init",
+            "ra": "0x805e14d8",
+            "result": 0
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e14e0",
+            "status": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e5118",
+            "size": 3392,
+            "pointer": "0x24030000",
+            "result": 604176384
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e522c",
+            "result": 0
+          },
+          {
+            "api": "0x805e5374",
+            "kind": "burn",
+            "ra": "0x805e14fc",
+            "arguments": [
+              "0x24030000",
+              "0x20000",
+              "0x805e8854"
+            ],
+            "callback": "0x805dd7b8",
+            "device": "0x8006444c",
+            "hash_flag": 0,
+            "kind_id": 3,
+            "header_sha256": "5269e3c1cd9cc8dedec0d35d27021c978fd1bc6fc1eaa329b9c0976e65c8c7c9",
+            "result": 0
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e1540",
+            "status": 2,
+            "result": 0
+          },
+          {
+            "api": "0x805e59b8",
+            "kind": "reboot",
+            "ra": "0x805e1558",
+            "header_reboot_field": 0,
+            "result": 0
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 1
+          }
+        ]
+      },
+      {
+        "options": {
+          "burn": 7
+        },
+        "result": 254,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e14b4",
+            "offset": 1048576,
+            "count": 64,
+            "sha256": "66b55fd56627eb23f435aded667c5a418204a761ed6e6bf573f5582d0b5613d6",
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e1570",
+            "offset": 1048640,
+            "count": 128,
+            "sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+            "result": 0
+          },
+          {
+            "api": "0x805dc7f4",
+            "kind": "led_init",
+            "ra": "0x805e14d8",
+            "result": 0
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e14e0",
+            "status": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e5118",
+            "size": 3392,
+            "pointer": "0x24030000",
+            "result": 604176384
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e522c",
+            "result": 0
+          },
+          {
+            "api": "0x805e5374",
+            "kind": "burn",
+            "ra": "0x805e14fc",
+            "arguments": [
+              "0x24030000",
+              "0x20000",
+              "0x805e8854"
+            ],
+            "callback": "0x805dd7b8",
+            "device": "0x8006444c",
+            "hash_flag": 0,
+            "kind_id": 3,
+            "header_sha256": "5269e3c1cd9cc8dedec0d35d27021c978fd1bc6fc1eaa329b9c0976e65c8c7c9",
+            "result": 7
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e1610",
+            "status": 3,
+            "result": 0
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "media_open": 7
+        },
+        "result": 254,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 7
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1374",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1388",
+            "pointer": "0x24010000",
+            "result": 1
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "file_open": 7
+        },
+        "result": 254,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 7
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "seek": 7
+        },
+        "result": 254,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 7
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "read": 7
+        },
+        "result": 254,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e14b4",
+            "offset": 1048576,
+            "count": 64,
+            "sha256": "66b55fd56627eb23f435aded667c5a418204a761ed6e6bf573f5582d0b5613d6",
+            "result": 7
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "read_extended": 7
+        },
+        "result": 254,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e14b4",
+            "offset": 1048576,
+            "count": 64,
+            "sha256": "66b55fd56627eb23f435aded667c5a418204a761ed6e6bf573f5582d0b5613d6",
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e1570",
+            "offset": 1048640,
+            "count": 128,
+            "sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+            "result": 7
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "file_close": 7
+        },
+        "result": 0,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e14b4",
+            "offset": 1048576,
+            "count": 64,
+            "sha256": "66b55fd56627eb23f435aded667c5a418204a761ed6e6bf573f5582d0b5613d6",
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e1570",
+            "offset": 1048640,
+            "count": 128,
+            "sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+            "result": 0
+          },
+          {
+            "api": "0x805dc7f4",
+            "kind": "led_init",
+            "ra": "0x805e14d8",
+            "result": 0
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e14e0",
+            "status": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e5118",
+            "size": 3392,
+            "pointer": "0x24030000",
+            "result": 604176384
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e522c",
+            "result": 0
+          },
+          {
+            "api": "0x805e5374",
+            "kind": "burn",
+            "ra": "0x805e14fc",
+            "arguments": [
+              "0x24030000",
+              "0x20000",
+              "0x805e8854"
+            ],
+            "callback": "0x805dd7b8",
+            "device": "0x8006444c",
+            "hash_flag": 0,
+            "kind_id": 3,
+            "header_sha256": "5269e3c1cd9cc8dedec0d35d27021c978fd1bc6fc1eaa329b9c0976e65c8c7c9",
+            "result": 0
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 7
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e1664",
+            "status": 3,
+            "result": 0
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 1
+          }
+        ]
+      },
+      {
+        "options": {
+          "outer": true
+        },
+        "result": 1,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x80125f14",
+            "kind": "lock",
+            "ra": "0x807f2294",
+            "args": [
+              604241920,
+              4294967295
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f98",
+            "kind": "unlock",
+            "ra": "0x807f22a8",
+            "args": [
+              604241920
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e14b4",
+            "offset": 1048576,
+            "count": 64,
+            "sha256": "66b55fd56627eb23f435aded667c5a418204a761ed6e6bf573f5582d0b5613d6",
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e1570",
+            "offset": 1048640,
+            "count": 128,
+            "sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+            "result": 0
+          },
+          {
+            "api": "0x805dc7f4",
+            "kind": "led_init",
+            "ra": "0x805e14d8",
+            "result": 0
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e14e0",
+            "status": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e5118",
+            "size": 3392,
+            "pointer": "0x24030000",
+            "result": 604176384
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e522c",
+            "result": 0
+          },
+          {
+            "api": "0x805e5374",
+            "kind": "burn",
+            "ra": "0x805e14fc",
+            "arguments": [
+              "0x24030000",
+              "0x20000",
+              "0x805e8854"
+            ],
+            "callback": "0x805dd7b8",
+            "device": "0x8006444c",
+            "hash_flag": 0,
+            "kind_id": 3,
+            "header_sha256": "5269e3c1cd9cc8dedec0d35d27021c978fd1bc6fc1eaa329b9c0976e65c8c7c9",
+            "result": 0
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e1540",
+            "status": 2,
+            "result": 0
+          },
+          {
+            "api": "0x805e59b8",
+            "kind": "reboot",
+            "ra": "0x805e1558",
+            "header_reboot_field": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1fa0",
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1fb8",
+            "args": [
+              286,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f14",
+            "kind": "lock",
+            "ra": "0x807f1fc4",
+            "args": [
+              604241920,
+              4294967295
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f98",
+            "kind": "unlock",
+            "ra": "0x807f1fd4",
+            "args": [
+              604241920
+            ],
+            "result": 0
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 1
+          },
+          {
+            "pc": "0x807f1f88",
+            "return_value": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "outer": true,
+          "burn": 7
+        },
+        "result": 1,
+        "updating": 0,
+        "events": [
+          {
+            "api": "0x80125f14",
+            "kind": "lock",
+            "ra": "0x807f2294",
+            "args": [
+              604241920,
+              4294967295
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f98",
+            "kind": "unlock",
+            "ra": "0x807f22a8",
+            "args": [
+              604241920
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1628",
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11d8",
+            "size": 8192,
+            "pointer": "0x24000000",
+            "result": 603979776
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e11fc",
+            "size": 3192,
+            "pointer": "0x24010000",
+            "result": 604045312
+          },
+          {
+            "api": "0x80067700",
+            "kind": "media_open",
+            "ra": "0x805e1240",
+            "media": "0x24010000",
+            "driver": "0x800728f8",
+            "info": "0x0",
+            "buffer": "0x24000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1270",
+            "result": 0
+          },
+          {
+            "api": "0x8006e984",
+            "kind": "first",
+            "ra": "0x805e1284",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e1434",
+            "result": 0
+          },
+          {
+            "api": "0x8000bf28",
+            "kind": "alloc",
+            "ra": "0x805e1450",
+            "result": 604110848
+          },
+          {
+            "api": "0x80074334",
+            "kind": "file_open",
+            "ra": "0x805e146c",
+            "path": "\\UPG_FILE.ELF",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x8007d19c",
+            "kind": "seek",
+            "ra": "0x805e1484",
+            "offset": 1048576,
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e14b4",
+            "offset": 1048576,
+            "count": 64,
+            "sha256": "66b55fd56627eb23f435aded667c5a418204a761ed6e6bf573f5582d0b5613d6",
+            "result": 0
+          },
+          {
+            "api": "0x80071a10",
+            "kind": "read",
+            "ra": "0x805e1570",
+            "offset": 1048640,
+            "count": 128,
+            "sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+            "result": 0
+          },
+          {
+            "api": "0x805dc7f4",
+            "kind": "led_init",
+            "ra": "0x805e14d8",
+            "result": 0
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e14e0",
+            "status": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8000c2b4",
+            "kind": "calloc",
+            "ra": "0x805e5118",
+            "size": 3392,
+            "pointer": "0x24030000",
+            "result": 604176384
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x805e522c",
+            "result": 0
+          },
+          {
+            "api": "0x805e5374",
+            "kind": "burn",
+            "ra": "0x805e14fc",
+            "arguments": [
+              "0x24030000",
+              "0x20000",
+              "0x805e8854"
+            ],
+            "callback": "0x805dd7b8",
+            "device": "0x8006444c",
+            "hash_flag": 0,
+            "kind_id": 3,
+            "header_sha256": "5269e3c1cd9cc8dedec0d35d27021c978fd1bc6fc1eaa329b9c0976e65c8c7c9",
+            "result": 7
+          },
+          {
+            "api": "0x8007c258",
+            "kind": "file_close",
+            "ra": "0x805e101c",
+            "result": 0
+          },
+          {
+            "api": "0x80077e74",
+            "kind": "media_close",
+            "ra": "0x805e1028",
+            "result": 0
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1048",
+            "pointer": "0x24000000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1064",
+            "pointer": "0x24010000",
+            "result": 1
+          },
+          {
+            "api": "0x8000c598",
+            "kind": "free",
+            "ra": "0x805e1080",
+            "pointer": "0x24020000",
+            "result": 1
+          },
+          {
+            "api": "0x805dc6b4",
+            "kind": "led_status",
+            "ra": "0x805e1610",
+            "status": 3,
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1fa0",
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1fb8",
+            "args": [
+              286,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f14",
+            "kind": "lock",
+            "ra": "0x807f1fc4",
+            "args": [
+              604241920,
+              4294967295
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f98",
+            "kind": "unlock",
+            "ra": "0x807f1fd4",
+            "args": [
+              604241920
+            ],
+            "result": 0
+          }
+        ],
+        "observations": [
+          {
+            "pc": "0x805e5bd4",
+            "return_value": 0
+          },
+          {
+            "pc": "0x807f1f88",
+            "return_value": 254
+          }
+        ]
+      },
+      {
+        "options": {
+          "outer": true,
+          "sync": 0,
+          "thread": 0
+        },
+        "result": 0,
+        "updating": 1,
+        "events": [
+          {
+            "api": "0x80125f14",
+            "kind": "lock",
+            "ra": "0x807f2294",
+            "args": [
+              604241920,
+              4294967295
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f98",
+            "kind": "unlock",
+            "ra": "0x807f22a8",
+            "args": [
+              604241920
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x801260b8",
+            "kind": "thread",
+            "ra": "0x807f22fc",
+            "args": [
+              2155817608,
+              2155814724,
+              0,
+              7000,
+              1007,
+              3,
+              1
+            ],
+            "result": 0
+          }
+        ],
+        "observations": []
+      },
+      {
+        "options": {
+          "outer": true,
+          "sync": 0,
+          "thread": 1
+        },
+        "result": 1,
+        "updating": 1,
+        "events": [
+          {
+            "api": "0x80125f14",
+            "kind": "lock",
+            "ra": "0x807f2294",
+            "args": [
+              604241920,
+              4294967295
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x80125f98",
+            "kind": "unlock",
+            "ra": "0x807f22a8",
+            "args": [
+              604241920
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x801260b8",
+            "kind": "thread",
+            "ra": "0x807f22fc",
+            "args": [
+              2155817608,
+              2155814724,
+              0,
+              7000,
+              1007,
+              3,
+              1
+            ],
+            "result": 1
+          }
+        ],
+        "observations": []
+      }
+    ],
+    "staging_cases": [
+      {
+        "options": {},
+        "result": 1,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ee804",
+            "kind": "allocate",
+            "ra": "0x807f1c34",
+            "size": 96,
+            "result": 620756992
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1c58",
+            "path": "F:\\fwdc603p.bin",
+            "mode": 0,
+            "result": 257
+          },
+          {
+            "api": "0x8025fd60",
+            "kind": "read",
+            "ra": "0x807f1ca0",
+            "count": 96,
+            "result": 96
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1cac",
+            "handle": "0x101",
+            "result": 0
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1cf4",
+            "path": "I:\\UPG_FILE.ELF",
+            "mode": 1,
+            "result": 258
+          },
+          {
+            "api": "0x80087034",
+            "kind": "filex_write",
+            "ra": "0x8025fd9c",
+            "handle": "0x102",
+            "count": 96,
+            "sha256": "4519a1b9c31602ae847f65cea013c9a3d61fe6437b975436f68d4cb05fd01fcd",
+            "result": 0
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1d68",
+            "handle": "0x102",
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1da8",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ee86c",
+            "kind": "free",
+            "ra": "0x807f1db8",
+            "pointer": "0x25000000",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "board": 3
+        },
+        "result": 1,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 3
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ee804",
+            "kind": "allocate",
+            "ra": "0x807f1c34",
+            "size": 96,
+            "result": 620756992
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1c58",
+            "path": "E:\\fwdc603p.bin",
+            "mode": 0,
+            "result": 257
+          },
+          {
+            "api": "0x8025fd60",
+            "kind": "read",
+            "ra": "0x807f1ca0",
+            "count": 96,
+            "result": 96
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1cac",
+            "handle": "0x101",
+            "result": 0
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1cf4",
+            "path": "I:\\UPG_FILE.ELF",
+            "mode": 1,
+            "result": 258
+          },
+          {
+            "api": "0x80087034",
+            "kind": "filex_write",
+            "ra": "0x8025fd9c",
+            "handle": "0x102",
+            "count": 96,
+            "sha256": "4519a1b9c31602ae847f65cea013c9a3d61fe6437b975436f68d4cb05fd01fcd",
+            "result": 0
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1d68",
+            "handle": "0x102",
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1da8",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ee86c",
+            "kind": "free",
+            "ra": "0x807f1db8",
+            "pointer": "0x25000000",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "size": 0
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1b24",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "ready": 0
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 0,
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "format": 7
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 7,
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "mount": 7
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 7,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1c04",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1c10",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "alloc_failure": true
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ee804",
+            "kind": "allocate",
+            "ra": "0x807f1c34",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1d3c",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1d44",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "open_input": 0
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ee804",
+            "kind": "allocate",
+            "ra": "0x807f1c34",
+            "size": 96,
+            "result": 620756992
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1c58",
+            "path": "F:\\fwdc603p.bin",
+            "mode": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1c6c",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ee86c",
+            "kind": "free",
+            "ra": "0x807f1c80",
+            "pointer": "0x25000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1c88",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "read": 95
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ee804",
+            "kind": "allocate",
+            "ra": "0x807f1c34",
+            "size": 96,
+            "result": 620756992
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1c58",
+            "path": "F:\\fwdc603p.bin",
+            "mode": 0,
+            "result": 257
+          },
+          {
+            "api": "0x8025fd60",
+            "kind": "read",
+            "ra": "0x807f1ca0",
+            "count": 96,
+            "result": 95
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1cac",
+            "handle": "0x101",
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1cc4",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ee86c",
+            "kind": "free",
+            "ra": "0x807f1cd8",
+            "pointer": "0x25000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1ce0",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "open_output": 0
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ee804",
+            "kind": "allocate",
+            "ra": "0x807f1c34",
+            "size": 96,
+            "result": 620756992
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1c58",
+            "path": "F:\\fwdc603p.bin",
+            "mode": 0,
+            "result": 257
+          },
+          {
+            "api": "0x8025fd60",
+            "kind": "read",
+            "ra": "0x807f1ca0",
+            "count": 96,
+            "result": 96
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1cac",
+            "handle": "0x101",
+            "result": 0
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1cf4",
+            "path": "I:\\UPG_FILE.ELF",
+            "mode": 1,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1d08",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ee86c",
+            "kind": "free",
+            "ra": "0x807f1d1c",
+            "pointer": "0x25000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1d24",
+            "result": 0
+          }
+        ]
+      },
+      {
+        "options": {
+          "write_status": 7
+        },
+        "result": 0,
+        "events": [
+          {
+            "api": "0x80260e1c",
+            "kind": "size",
+            "ra": "0x807f1b0c",
+            "path": "F:\\fwdc603p.bin",
+            "size": 96,
+            "result": 0
+          },
+          {
+            "api": "0x801049c4",
+            "kind": "board",
+            "ra": "0x807f1b58",
+            "result": 2
+          },
+          {
+            "api": "0x800ec0b0",
+            "kind": "set_long",
+            "ra": "0x807f1b94",
+            "arguments": [
+              286,
+              65537
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec100",
+            "kind": "get_param",
+            "ra": "0x807f1ba0",
+            "selector": 286,
+            "out_value": 1,
+            "result": 0
+          },
+          {
+            "api": "0x8024e7a8",
+            "kind": "format",
+            "ra": "0x807f1bb8",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1bd4",
+            "arguments": [
+              170,
+              0
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1be0",
+            "arguments": [
+              357,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x8024e708",
+            "kind": "mount",
+            "ra": "0x807f1bec",
+            "selector": 5,
+            "out_value": 0,
+            "result": 0
+          },
+          {
+            "api": "0x800ee804",
+            "kind": "allocate",
+            "ra": "0x807f1c34",
+            "size": 96,
+            "result": 620756992
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1c58",
+            "path": "F:\\fwdc603p.bin",
+            "mode": 0,
+            "result": 257
+          },
+          {
+            "api": "0x8025fd60",
+            "kind": "read",
+            "ra": "0x807f1ca0",
+            "count": 96,
+            "result": 96
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1cac",
+            "handle": "0x101",
+            "result": 0
+          },
+          {
+            "api": "0x8025fc7c",
+            "kind": "open",
+            "ra": "0x807f1cf4",
+            "path": "I:\\UPG_FILE.ELF",
+            "mode": 1,
+            "result": 258
+          },
+          {
+            "api": "0x80087034",
+            "kind": "filex_write",
+            "ra": "0x8025fd9c",
+            "handle": "0x102",
+            "count": 96,
+            "sha256": "4519a1b9c31602ae847f65cea013c9a3d61fe6437b975436f68d4cb05fd01fcd",
+            "result": 7
+          },
+          {
+            "api": "0x8025fc84",
+            "kind": "close",
+            "ra": "0x807f1d68",
+            "handle": "0x102",
+            "result": 0
+          },
+          {
+            "api": "0x800ec08c",
+            "kind": "set_param",
+            "ra": "0x807f1d78",
+            "arguments": [
+              356,
+              40192
+            ],
+            "result": 0
+          },
+          {
+            "api": "0x800ee86c",
+            "kind": "free",
+            "ra": "0x807f1d88",
+            "pointer": "0x25000000",
+            "result": 0
+          },
+          {
+            "api": "0x800a14f8",
+            "kind": "log",
+            "ra": "0x807f1d98",
+            "result": 0
+          }
+        ]
+      }
+    ]
+  },
+  "selected_functions": [
+    {
+      "name": "UpdateFW_LoadFirmware",
+      "address": 2155813580,
+      "candidate_end": 2155814340,
+      "segment": "E05",
+      "decoded_offset": 2956492,
+      "size": 760,
+      "sha256": "222a593fb26137f3947f220d8cd9a116491ac1de1e8be6a1cf482bf4ab0ad3fb",
+      "transfers": [
+        {
+          "site": 2155813636,
+          "word": "0c098387",
+          "kind": "call",
+          "target": 2149977628,
+          "target_names": [
+            "DirectFsGetFileSize"
+          ]
+        },
+        {
+          "site": 2155813660,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155813704,
+          "word": "0c03efa0",
+          "kind": "call",
+          "target": 2148515456,
+          "target_names": [
+            "strcpy"
+          ]
+        },
+        {
+          "site": 2155813712,
+          "word": "0c041271",
+          "kind": "call",
+          "target": 2148551108,
+          "target_names": [
+            "MainBoardInformation_GetVersion"
+          ]
+        },
+        {
+          "site": 2155813772,
+          "word": "0c03b02c",
+          "kind": "call",
+          "target": 2148450480,
+          "target_names": [
+            "I43_SetParamLong"
+          ]
+        },
+        {
+          "site": 2155813784,
+          "word": "0c03b040",
+          "kind": "call",
+          "target": 2148450560,
+          "target_names": [
+            "I43_GetParam"
+          ]
+        },
+        {
+          "site": 2155813808,
+          "word": "0c0939ea",
+          "kind": "call",
+          "target": 2149902248,
+          "target_names": [
+            "I43_FormatStorageMedia"
+          ]
+        },
+        {
+          "site": 2155813836,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155813848,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155813860,
+          "word": "0c0939c2",
+          "kind": "call",
+          "target": 2149902088,
+          "target_names": [
+            "I43_MountStorageMedia"
+          ]
+        },
+        {
+          "site": 2155813884,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155813896,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155813932,
+          "word": "0c03ba01",
+          "kind": "call",
+          "target": 2148460548,
+          "target_names": [
+            "DirectPoolAllocEx"
+          ]
+        },
+        {
+          "site": 2155813956,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2155813968,
+          "word": "0c097f1f",
+          "kind": "call",
+          "target": 2149973116,
+          "target_names": [
+            "DirectFsFileOpen"
+          ]
+        },
+        {
+          "site": 2155813988,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155814008,
+          "word": "0c03ba1b",
+          "kind": "call",
+          "target": 2148460652,
+          "target_names": [
+            "DirectPoolFreeEx"
+          ]
+        },
+        {
+          "site": 2155814016,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155814040,
+          "word": "0c097f58",
+          "kind": "call",
+          "target": 2149973344,
+          "target_names": [
+            "DirectFsFileRead"
+          ]
+        },
+        {
+          "site": 2155814052,
+          "word": "0c097f21",
+          "kind": "call",
+          "target": 2149973124,
+          "target_names": [
+            "DirectFsFileClose"
+          ]
+        },
+        {
+          "site": 2155814076,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155814096,
+          "word": "0c03ba1b",
+          "kind": "call",
+          "target": 2148460652,
+          "target_names": [
+            "DirectPoolFreeEx"
+          ]
+        },
+        {
+          "site": 2155814104,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155814124,
+          "word": "0c097f1f",
+          "kind": "call",
+          "target": 2149973116,
+          "target_names": [
+            "DirectFsFileOpen"
+          ]
+        },
+        {
+          "site": 2155814144,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155814164,
+          "word": "0c03ba1b",
+          "kind": "call",
+          "target": 2148460652,
+          "target_names": [
+            "DirectPoolFreeEx"
+          ]
+        },
+        {
+          "site": 2155814172,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155814196,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155814204,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155814228,
+          "word": "0c097f63",
+          "kind": "call",
+          "target": 2149973388,
+          "target_names": [
+            "DirectFsFileWrite"
+          ]
+        },
+        {
+          "site": 2155814240,
+          "word": "0c097f21",
+          "kind": "call",
+          "target": 2149973124,
+          "target_names": [
+            "DirectFsFileClose"
+          ]
+        },
+        {
+          "site": 2155814256,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155814272,
+          "word": "0c03ba1b",
+          "kind": "call",
+          "target": 2148460652,
+          "target_names": [
+            "DirectPoolFreeEx"
+          ]
+        },
+        {
+          "site": 2155814288,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155814304,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155814320,
+          "word": "0c03ba1b",
+          "kind": "call",
+          "target": 2148460652,
+          "target_names": [
+            "DirectPoolFreeEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DirectFsFileWrite",
+      "address": 2149973388,
+      "candidate_end": 2149973420,
+      "segment": "E04",
+      "decoded_offset": 1254156,
+      "size": 32,
+      "sha256": "d5029f6c9e128af7289c3da93092bc7e20bbd6216faffc657bb042f3f74d87e8",
+      "transfers": [
+        {
+          "site": 2149973396,
+          "word": "0c021c0d",
+          "kind": "call",
+          "target": 2148036660,
+          "target_names": [
+            "_fx_file_write"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UpdateFW_UpdateFirmware",
+      "address": 2155815536,
+      "candidate_end": 2155815700,
+      "segment": "E05",
+      "decoded_offset": 2958448,
+      "size": 164,
+      "sha256": "95ee2e8b1cf8acfc3e23bb9d03d38f78b8738a4920fe9a717fdfb6c013e074a1",
+      "transfers": [
+        {
+          "site": 2155815564,
+          "word": "0c0497c5",
+          "kind": "call",
+          "target": 2148687636,
+          "target_names": [
+            "Mutex_Lock"
+          ]
+        },
+        {
+          "site": 2155815584,
+          "word": "0c0497e6",
+          "kind": "call",
+          "target": 2148687768,
+          "target_names": [
+            "Mutex_Unlock"
+          ]
+        },
+        {
+          "site": 2155815620,
+          "word": "0c1fc7d1",
+          "kind": "call",
+          "target": 2155814724,
+          "target_names": [
+            "UpdateFirmwarePerform"
+          ]
+        },
+        {
+          "site": 2155815668,
+          "word": "0c04982e",
+          "kind": "call",
+          "target": 2148688056,
+          "target_names": [
+            "Thread_Create"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UpdateFirmwarePerform",
+      "address": 2155814724,
+      "candidate_end": 2155815536,
+      "segment": "E05",
+      "decoded_offset": 2957636,
+      "size": 812,
+      "sha256": "c845655d3120a26b8f1b4f7918b03110308babc6615bea12c8b34084dfa4349d",
+      "transfers": [
+        {
+          "site": 2155814784,
+          "word": "0c093a10",
+          "kind": "call",
+          "target": 2149902400,
+          "target_names": [
+            "I43_UpgradeFlashFromCard"
+          ]
+        },
+        {
+          "site": 2155814808,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155814832,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155814844,
+          "word": "0c0497c5",
+          "kind": "call",
+          "target": 2148687636,
+          "target_names": [
+            "Mutex_Lock"
+          ]
+        },
+        {
+          "site": 2155814860,
+          "word": "0c0497e6",
+          "kind": "call",
+          "target": 2148687768,
+          "target_names": [
+            "Mutex_Unlock"
+          ]
+        },
+        {
+          "site": 2155814920,
+          "word": "0c03b9ba",
+          "kind": "call",
+          "target": 2148460264,
+          "target_names": [
+            "DirectFastBootResourceClose"
+          ]
+        },
+        {
+          "site": 2155814928,
+          "word": "0c0939de",
+          "kind": "call",
+          "target": 2149902200,
+          "target_names": [
+            "I43_DisMountStorageMedia"
+          ]
+        },
+        {
+          "site": 2155814936,
+          "word": "0c093a05",
+          "kind": "call",
+          "target": 2149902356,
+          "target_names": [
+            "I43_UnRegisterResourceMedia"
+          ]
+        },
+        {
+          "site": 2155815032,
+          "word": "0c0939c2",
+          "kind": "call",
+          "target": 2149902088,
+          "target_names": [
+            "I43_MountStorageMedia"
+          ]
+        },
+        {
+          "site": 2155815076,
+          "word": "0c03efa0",
+          "kind": "call",
+          "target": 2148515456,
+          "target_names": [
+            "strcpy"
+          ]
+        },
+        {
+          "site": 2155815088,
+          "word": "0c03efa0",
+          "kind": "call",
+          "target": 2148515456,
+          "target_names": [
+            "strcpy"
+          ]
+        },
+        {
+          "site": 2155815100,
+          "word": "0c1fc771",
+          "kind": "call",
+          "target": 2155814340,
+          "target_names": [
+            "CopyFile"
+          ]
+        },
+        {
+          "site": 2155815128,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155815144,
+          "word": "0c0939de",
+          "kind": "call",
+          "target": 2149902200,
+          "target_names": [
+            "I43_DisMountStorageMedia"
+          ]
+        },
+        {
+          "site": 2155815156,
+          "word": "0c093a10",
+          "kind": "call",
+          "target": 2149902400,
+          "target_names": [
+            "I43_UpgradeFlashFromCard"
+          ]
+        },
+        {
+          "site": 2155815180,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155815200,
+          "word": "0c093a86",
+          "kind": "call",
+          "target": 2149902872,
+          "target_names": [
+            "I43_MediaInfoRefresh"
+          ]
+        },
+        {
+          "site": 2155815296,
+          "word": "0c0939c2",
+          "kind": "call",
+          "target": 2149902088,
+          "target_names": [
+            "I43_MountStorageMedia"
+          ]
+        },
+        {
+          "site": 2155815340,
+          "word": "0c03efa0",
+          "kind": "call",
+          "target": 2148515456,
+          "target_names": [
+            "strcpy"
+          ]
+        },
+        {
+          "site": 2155815352,
+          "word": "0c03efa0",
+          "kind": "call",
+          "target": 2148515456,
+          "target_names": [
+            "strcpy"
+          ]
+        },
+        {
+          "site": 2155815364,
+          "word": "0c1fc771",
+          "kind": "call",
+          "target": 2155814340,
+          "target_names": [
+            "CopyFile"
+          ]
+        },
+        {
+          "site": 2155815392,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2155815408,
+          "word": "0c0939de",
+          "kind": "call",
+          "target": 2149902200,
+          "target_names": [
+            "I43_DisMountStorageMedia"
+          ]
+        },
+        {
+          "site": 2155815424,
+          "word": "0c0939ea",
+          "kind": "call",
+          "target": 2149902248,
+          "target_names": [
+            "I43_FormatStorageMedia"
+          ]
+        },
+        {
+          "site": 2155815432,
+          "word": "0c0939fa",
+          "kind": "call",
+          "target": 2149902312,
+          "target_names": [
+            "I43_RegisterResourceMedia"
+          ]
+        },
+        {
+          "site": 2155815448,
+          "word": "0c03b023",
+          "kind": "call",
+          "target": 2148450444,
+          "target_names": [
+            "I43_SetParam"
+          ]
+        },
+        {
+          "site": 2155815460,
+          "word": "0c0497c5",
+          "kind": "call",
+          "target": 2148687636,
+          "target_names": [
+            "Mutex_Lock"
+          ]
+        },
+        {
+          "site": 2155815476,
+          "word": "0c0497e6",
+          "kind": "call",
+          "target": 2148687768,
+          "target_names": [
+            "Mutex_Unlock"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "I43_UpgradeFlashFromCard",
+      "address": 2149902400,
+      "candidate_end": 2149902440,
+      "segment": "E04",
+      "decoded_offset": 1183168,
+      "size": 40,
+      "sha256": "a5929beeaa8962586b293aa53009c56ddbabae2cb3c2ab39e371c5049757d41b",
+      "transfers": [
+        {
+          "site": 2149902408,
+          "word": "0c090ae1",
+          "kind": "call",
+          "target": 2149854084,
+          "target_names": [
+            "AppUpgradeFlashFromCard"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppUpgradeFlashFromCard",
+      "address": 2149854084,
+      "candidate_end": 2149854112,
+      "segment": "E04",
+      "decoded_offset": 1134852,
+      "size": 28,
+      "sha256": "1455a23445a2360be2f12617b48b7a31ccf3890a3e4b7e3e9bac4b87c751e072",
+      "transfers": [
+        {
+          "site": 2149854092,
+          "word": "0c1796ee",
+          "kind": "call",
+          "target": 2153667512,
+          "target_names": [
+            "BurnUfcMain"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "BurnUfcMain",
+      "address": 2153667512,
+      "candidate_end": 2153667552,
+      "segment": "E05",
+      "decoded_offset": 810424,
+      "size": 40,
+      "sha256": "8882a686f2d04b5144eedff66af8ea19441e293245c50db5b38dc57bbc6c8e44",
+      "transfers": [
+        {
+          "site": 2153667532,
+          "word": "0c17842b",
+          "kind": "call",
+          "target": 2153648300,
+          "target_names": [
+            "DownloadCard"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DownloadCard",
+      "address": 2153648300,
+      "candidate_end": 2153649796,
+      "segment": "E05",
+      "decoded_offset": 791212,
+      "size": 1496,
+      "sha256": "d4bd17fb106c126a3add350f9f91b308f875228527ae410fce007e1b992faec1",
+      "transfers": [
+        {
+          "site": 2153648368,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153648516,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153648544,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153648592,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2153648628,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2153648696,
+          "word": "0c019dc0",
+          "kind": "call",
+          "target": 2147907328,
+          "target_names": [
+            "_fx_media_open"
+          ]
+        },
+        {
+          "site": 2153648744,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153648764,
+          "word": "0c01ba61",
+          "kind": "call",
+          "target": 2147936644,
+          "target_names": [
+            "_fx_directory_first_full_entry_find"
+          ]
+        },
+        {
+          "site": 2153648800,
+          "word": "0c2c0254",
+          "kind": "call",
+          "target": 2159020368,
+          "target_names": [
+            "toupper"
+          ]
+        },
+        {
+          "site": 2153648836,
+          "word": "0c03f083",
+          "kind": "call",
+          "target": 2148516364,
+          "target_names": [
+            "strstr"
+          ]
+        },
+        {
+          "site": 2153648860,
+          "word": "0c01cc73",
+          "kind": "call",
+          "target": 2147955148,
+          "target_names": [
+            "_fx_directory_next_full_entry_find"
+          ]
+        },
+        {
+          "site": 2153648892,
+          "word": "0c01df9d",
+          "kind": "call",
+          "target": 2147974772,
+          "target_names": [
+            "_fx_media_close"
+          ]
+        },
+        {
+          "site": 2153648912,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153648932,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153649004,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153649024,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153649044,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649092,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2153649128,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2153649160,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649172,
+          "word": "0c01526d",
+          "kind": "call",
+          "target": 2147830196,
+          "target_names": [
+            "FcuMsproSetSerialMode"
+          ]
+        },
+        {
+          "site": 2153649196,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649224,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153649252,
+          "word": "0c01d0cd",
+          "kind": "call",
+          "target": 2147959604,
+          "target_names": [
+            "_fx_file_open"
+          ]
+        },
+        {
+          "site": 2153649276,
+          "word": "0c01f467",
+          "kind": "call",
+          "target": 2147996060,
+          "target_names": [
+            "_fx_file_seek"
+          ]
+        },
+        {
+          "site": 2153649304,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153649324,
+          "word": "0c01c684",
+          "kind": "call",
+          "target": 2147949072,
+          "target_names": [
+            "_fx_file_read"
+          ]
+        },
+        {
+          "site": 2153649360,
+          "word": "0c1771fd",
+          "kind": "call",
+          "target": 2153629684,
+          "target_names": [
+            "LedInit"
+          ]
+        },
+        {
+          "site": 2153649368,
+          "word": "0c1771ad",
+          "kind": "call",
+          "target": 2153629364,
+          "target_names": [
+            "LedSetBurnStatus"
+          ]
+        },
+        {
+          "site": 2153649376,
+          "word": "0c1793f9",
+          "kind": "call",
+          "target": 2153664484,
+          "target_names": [
+            "BurnGetHandle"
+          ]
+        },
+        {
+          "site": 2153649396,
+          "word": "0c1794dd",
+          "kind": "call",
+          "target": 2153665396,
+          "target_names": [
+            "Burn"
+          ]
+        },
+        {
+          "site": 2153649412,
+          "word": "0c1783fb",
+          "kind": "call",
+          "target": 2153648108,
+          "target_names": [
+            "CloseAndFree"
+          ]
+        },
+        {
+          "site": 2153649464,
+          "word": "0c1771ad",
+          "kind": "call",
+          "target": 2153629364,
+          "target_names": [
+            "LedSetBurnStatus"
+          ]
+        },
+        {
+          "site": 2153649488,
+          "word": "0c17966e",
+          "kind": "call",
+          "target": 2153667000,
+          "target_names": [
+            "DoReboot"
+          ]
+        },
+        {
+          "site": 2153649512,
+          "word": "0c01c684",
+          "kind": "call",
+          "target": 2147949072,
+          "target_names": [
+            "_fx_file_read"
+          ]
+        },
+        {
+          "site": 2153649532,
+          "word": "0c1783fb",
+          "kind": "call",
+          "target": 2153648108,
+          "target_names": [
+            "CloseAndFree"
+          ]
+        },
+        {
+          "site": 2153649548,
+          "word": "0c03efa0",
+          "kind": "call",
+          "target": 2148515456,
+          "target_names": [
+            "strcpy"
+          ]
+        },
+        {
+          "site": 2153649568,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649592,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649624,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649648,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649664,
+          "word": "0c1783fb",
+          "kind": "call",
+          "target": 2153648108,
+          "target_names": [
+            "CloseAndFree"
+          ]
+        },
+        {
+          "site": 2153649672,
+          "word": "0c1771ad",
+          "kind": "call",
+          "target": 2153629364,
+          "target_names": [
+            "LedSetBurnStatus"
+          ]
+        },
+        {
+          "site": 2153649696,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153649716,
+          "word": "0c0044c9",
+          "kind": "call",
+          "target": 2147554084,
+          "target_names": [
+            "PowerOff"
+          ]
+        },
+        {
+          "site": 2153649728,
+          "word": "0c17966e",
+          "kind": "call",
+          "target": 2153667000,
+          "target_names": [
+            "DoReboot"
+          ]
+        },
+        {
+          "site": 2153649756,
+          "word": "0c1771ad",
+          "kind": "call",
+          "target": 2153629364,
+          "target_names": [
+            "LedSetBurnStatus"
+          ]
+        },
+        {
+          "site": 2153649776,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "BurnGetHandle",
+      "address": 2153664484,
+      "candidate_end": 2153665340,
+      "segment": "E05",
+      "decoded_offset": 807396,
+      "size": 856,
+      "sha256": "55bb073704681e67079f3759f2ff23e4e7af33d204f3b787c1d3aabe6b289e3e",
+      "transfers": [
+        {
+          "site": 2153664688,
+          "word": "02200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153664784,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2153664924,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665000,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665060,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665108,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665156,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665208,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665264,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665324,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CloseAndFree",
+      "address": 2153648108,
+      "candidate_end": 2153648300,
+      "segment": "E05",
+      "decoded_offset": 791020,
+      "size": 192,
+      "sha256": "2f8e3aae561abb6f2299d56684e0694fae1a9f61a7168a94e82b8359d85b3689",
+      "transfers": [
+        {
+          "site": 2153648148,
+          "word": "0c01f096",
+          "kind": "call",
+          "target": 2147992152,
+          "target_names": [
+            "_fx_file_close"
+          ]
+        },
+        {
+          "site": 2153648160,
+          "word": "0c01df9d",
+          "kind": "call",
+          "target": 2147974772,
+          "target_names": [
+            "_fx_media_close"
+          ]
+        },
+        {
+          "site": 2153648192,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153648220,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153648248,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Burn",
+      "address": 2153665396,
+      "candidate_end": 2153666276,
+      "segment": "E05",
+      "decoded_offset": 808308,
+      "size": 880,
+      "sha256": "0929dfd94eb4c7a5a1937d1c7325c7a0d6748b5d2d345941b142ee66abf0986a",
+      "transfers": [
+        {
+          "site": 2153665452,
+          "word": "0c0157c8",
+          "kind": "call",
+          "target": 2147835680,
+          "target_names": [
+            "FcuMediaInfoInit"
+          ]
+        },
+        {
+          "site": 2153665492,
+          "word": "0c015532",
+          "kind": "call",
+          "target": 2147833032,
+          "target_names": [
+            "FcuSetZoneConfig"
+          ]
+        },
+        {
+          "site": 2153665532,
+          "word": "0c0030ad",
+          "kind": "call",
+          "target": 2147533492,
+          "target_names": [
+            "PoolCallocEx"
+          ]
+        },
+        {
+          "site": 2153665580,
+          "word": "0c019dc0",
+          "kind": "call",
+          "target": 2147907328,
+          "target_names": [
+            "_fx_media_open"
+          ]
+        },
+        {
+          "site": 2153665600,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665620,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153665684,
+          "word": "0c01a6e5",
+          "kind": "call",
+          "target": 2147916692,
+          "target_names": [
+            "_fx_media_information_get"
+          ]
+        },
+        {
+          "site": 2153665756,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153665788,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153665804,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153665840,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153665864,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153665884,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153665904,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153665924,
+          "word": "0c01df9d",
+          "kind": "call",
+          "target": 2147974772,
+          "target_names": [
+            "_fx_media_close"
+          ]
+        },
+        {
+          "site": 2153665952,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153665972,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153665980,
+          "word": "0c01df9d",
+          "kind": "call",
+          "target": 2147974772,
+          "target_names": [
+            "_fx_media_close"
+          ]
+        },
+        {
+          "site": 2153665996,
+          "word": "0c1794cf",
+          "kind": "call",
+          "target": 2153665340,
+          "target_names": [
+            "BurnHashExit"
+          ]
+        },
+        {
+          "site": 2153666004,
+          "word": "0c033287",
+          "kind": "call",
+          "target": 2148321820,
+          "target_names": [
+            "OsThreadSleepMS"
+          ]
+        },
+        {
+          "site": 2153666012,
+          "word": "0c0338e6",
+          "kind": "call",
+          "target": 2148328344,
+          "target_names": [
+            "_tx_queue_delete"
+          ]
+        },
+        {
+          "site": 2153666020,
+          "word": "0c0338e6",
+          "kind": "call",
+          "target": 2148328344,
+          "target_names": [
+            "_tx_queue_delete"
+          ]
+        },
+        {
+          "site": 2153666040,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153666048,
+          "word": "0c01df9d",
+          "kind": "call",
+          "target": 2147974772,
+          "target_names": [
+            "_fx_media_close"
+          ]
+        },
+        {
+          "site": 2153666084,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153666120,
+          "word": "0c0331bd",
+          "kind": "call",
+          "target": 2148321012,
+          "target_names": [
+            "_tx_queue_create"
+          ]
+        },
+        {
+          "site": 2153666152,
+          "word": "0c0331bd",
+          "kind": "call",
+          "target": 2148321012,
+          "target_names": [
+            "_tx_queue_create"
+          ]
+        },
+        {
+          "site": 2153666200,
+          "word": "0c0335f8",
+          "kind": "call",
+          "target": 2148325344,
+          "target_names": [
+            "OsThreadCreateEx"
+          ]
+        },
+        {
+          "site": 2153666228,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153666236,
+          "word": "0c01df9d",
+          "kind": "call",
+          "target": 2147974772,
+          "target_names": [
+            "_fx_media_close"
+          ]
+        },
+        {
+          "site": 2153666268,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "BurnNand",
+      "address": 2153633720,
+      "candidate_end": 2153644760,
+      "segment": "E05",
+      "decoded_offset": 776632,
+      "size": 11040,
+      "sha256": "b40bb07f1935620f553e6e1c429eff5bcf1fcbed46ad647115e684b286d7db11",
+      "transfers": [
+        {
+          "site": 2153633828,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153633840,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153633860,
+          "word": "0c015991",
+          "kind": "call",
+          "target": 2147837508,
+          "target_names": [
+            "FcuMediaInfoGetHeader"
+          ]
+        },
+        {
+          "site": 2153634016,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153634140,
+          "word": "0c015991",
+          "kind": "call",
+          "target": 2147837508,
+          "target_names": [
+            "FcuMediaInfoGetHeader"
+          ]
+        },
+        {
+          "site": 2153634240,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634380,
+          "word": "0c177419",
+          "kind": "call",
+          "target": 2153631844,
+          "target_names": [
+            "NandUserAreaBackup"
+          ]
+        },
+        {
+          "site": 2153634408,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634428,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153634532,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634544,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634720,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634736,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634748,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634764,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153634784,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153635212,
+          "word": "0c17735b",
+          "kind": "call",
+          "target": 2153631084,
+          "target_names": [
+            "BlockIsBad"
+          ]
+        },
+        {
+          "site": 2153635264,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153635284,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153635312,
+          "word": "0c1773c3",
+          "kind": "call",
+          "target": 2153631500,
+          "target_names": [
+            "BlockBurn"
+          ]
+        },
+        {
+          "site": 2153635340,
+          "word": "0c177315",
+          "kind": "call",
+          "target": 2153630804,
+          "target_names": [
+            "BlockMarkBad"
+          ]
+        },
+        {
+          "site": 2153635368,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153635468,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153635496,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153635616,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153635660,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153635788,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153635812,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153635832,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153635852,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153635884,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153635900,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153635932,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153635976,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153636000,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153636012,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153636032,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153636056,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153636092,
+          "word": "0c01554d",
+          "kind": "call",
+          "target": 2147833140,
+          "target_names": [
+            "FcuGetZonesConfig"
+          ]
+        },
+        {
+          "site": 2153636172,
+          "word": "0c179170",
+          "kind": "call",
+          "target": 2153661888,
+          "target_names": [
+            "BurnGetSectionsMap"
+          ]
+        },
+        {
+          "site": 2153636220,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153636256,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153636316,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153636360,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153636444,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153636520,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153636572,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153636592,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153636700,
+          "word": "0c17735b",
+          "kind": "call",
+          "target": 2153631084,
+          "target_names": [
+            "BlockIsBad"
+          ]
+        },
+        {
+          "site": 2153636768,
+          "word": "0c17726b",
+          "kind": "call",
+          "target": 2153630124,
+          "target_names": [
+            "BlockIsProtected"
+          ]
+        },
+        {
+          "site": 2153636904,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153637152,
+          "word": "03c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153637192,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153637220,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153637248,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153637272,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153637296,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153637332,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153637376,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153637420,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153637440,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153637460,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153637496,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153637616,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153637644,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153637664,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153637700,
+          "word": "0c177315",
+          "kind": "call",
+          "target": 2153630804,
+          "target_names": [
+            "BlockMarkBad"
+          ]
+        },
+        {
+          "site": 2153637796,
+          "word": "0c17735b",
+          "kind": "call",
+          "target": 2153631084,
+          "target_names": [
+            "BlockIsBad"
+          ]
+        },
+        {
+          "site": 2153637872,
+          "word": "0c17726b",
+          "kind": "call",
+          "target": 2153630124,
+          "target_names": [
+            "BlockIsProtected"
+          ]
+        },
+        {
+          "site": 2153637912,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153638048,
+          "word": "02e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153638068,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153638096,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153638184,
+          "word": "0c17724d",
+          "kind": "call",
+          "target": 2153630004,
+          "target_names": [
+            "BlockUserArea"
+          ]
+        },
+        {
+          "site": 2153638236,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153638372,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153638412,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153638456,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153638484,
+          "word": "0c17735b",
+          "kind": "call",
+          "target": 2153631084,
+          "target_names": [
+            "BlockIsBad"
+          ]
+        },
+        {
+          "site": 2153638556,
+          "word": "0c17726b",
+          "kind": "call",
+          "target": 2153630124,
+          "target_names": [
+            "BlockIsProtected"
+          ]
+        },
+        {
+          "site": 2153638596,
+          "word": "0c1773c3",
+          "kind": "call",
+          "target": 2153631500,
+          "target_names": [
+            "BlockBurn"
+          ]
+        },
+        {
+          "site": 2153638628,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153638660,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153638688,
+          "word": "0c177315",
+          "kind": "call",
+          "target": 2153630804,
+          "target_names": [
+            "BlockMarkBad"
+          ]
+        },
+        {
+          "site": 2153638748,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153638924,
+          "word": "0c1773c3",
+          "kind": "call",
+          "target": 2153631500,
+          "target_names": [
+            "BlockBurn"
+          ]
+        },
+        {
+          "site": 2153639128,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153639148,
+          "word": "0c177315",
+          "kind": "call",
+          "target": 2153630804,
+          "target_names": [
+            "BlockMarkBad"
+          ]
+        },
+        {
+          "site": 2153639184,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153639216,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153639252,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153639280,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153639332,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153639376,
+          "word": "0c17735b",
+          "kind": "call",
+          "target": 2153631084,
+          "target_names": [
+            "BlockIsBad"
+          ]
+        },
+        {
+          "site": 2153639412,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153639492,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153639772,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153639804,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153639868,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153639972,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153639992,
+          "word": "0c177315",
+          "kind": "call",
+          "target": 2153630804,
+          "target_names": [
+            "BlockMarkBad"
+          ]
+        },
+        {
+          "site": 2153640044,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640068,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640244,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153640312,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153640332,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153640380,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153640396,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640432,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640460,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640476,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640524,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640560,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153640680,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153640832,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153640876,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153640896,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153640944,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153640964,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153640992,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641008,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641052,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153641072,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153641176,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153641196,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641228,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153641420,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641444,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641468,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641492,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641524,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641552,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153641572,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153641620,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153641676,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641700,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641720,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641776,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153641808,
+          "word": "0c177315",
+          "kind": "call",
+          "target": 2153630804,
+          "target_names": [
+            "BlockMarkBad"
+          ]
+        },
+        {
+          "site": 2153641824,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641852,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153641872,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153641912,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153641948,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153641976,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153641988,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642020,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153642096,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642124,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642164,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642196,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642260,
+          "word": "0c177537",
+          "kind": "call",
+          "target": 2153632988,
+          "target_names": [
+            "NandUserAreaRestore"
+          ]
+        },
+        {
+          "site": 2153642304,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153642332,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153642344,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642360,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642380,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642408,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153642436,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153642488,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153642516,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153642544,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153642660,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153642700,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153642832,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153642872,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153642892,
+          "word": "0c03ed38",
+          "kind": "call",
+          "target": 2148512992,
+          "target_names": [
+            "memcmp"
+          ]
+        },
+        {
+          "site": 2153642928,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153642996,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643036,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2153643080,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643096,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153643128,
+          "word": "0c177315",
+          "kind": "call",
+          "target": 2153630804,
+          "target_names": [
+            "BlockMarkBad"
+          ]
+        },
+        {
+          "site": 2153643144,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643172,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643192,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643208,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643248,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643312,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2153643404,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153643440,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643476,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643500,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643508,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643532,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643552,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643580,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643608,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643640,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643676,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643696,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643724,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153643740,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2153643892,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643908,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643924,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153643976,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153644012,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153644212,
+          "word": "0c014f9c",
+          "kind": "call",
+          "target": 2147827312,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2153644256,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644276,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644304,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644316,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153644348,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153644364,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153644396,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644452,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644480,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644516,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644544,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644576,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644584,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153644612,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153644640,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2153644660,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2153644688,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "evidence": [
+    {
+      "role": "staging file drive and reserved size",
+      "words": [
+        {
+          "va": "0x807f1b04",
+          "u32le_word": "0x0c098387",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d04"
+        },
+        {
+          "va": "0x807f1b0c",
+          "u32le_word": "0x8fb10030",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d0c"
+        },
+        {
+          "va": "0x807f1b10",
+          "u32le_word": "0x1620000d",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d10"
+        },
+        {
+          "va": "0x807f1b50",
+          "u32le_word": "0x0c041271",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d50"
+        },
+        {
+          "va": "0x807f1b58",
+          "u32le_word": "0x2c460003",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d58"
+        },
+        {
+          "va": "0x807f1b5c",
+          "u32le_word": "0x54c00002",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d5c"
+        },
+        {
+          "va": "0x807f1b60",
+          "u32le_word": "0x24020046",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d60"
+        },
+        {
+          "va": "0x807f1b64",
+          "u32le_word": "0x24020045",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d64"
+        },
+        {
+          "va": "0x807f1b68",
+          "u32le_word": "0x3c0c0200",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d68"
+        },
+        {
+          "va": "0x807f1b6c",
+          "u32le_word": "0x022c5021",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d6c"
+        },
+        {
+          "va": "0x807f1b70",
+          "u32le_word": "0x314b01ff",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d70"
+        },
+        {
+          "va": "0x807f1b74",
+          "u32le_word": "0x000b482b",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d74"
+        },
+        {
+          "va": "0x807f1b78",
+          "u32le_word": "0x000a4242",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d78"
+        },
+        {
+          "va": "0x807f1b7c",
+          "u32le_word": "0x01092821",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d7c"
+        }
+      ]
+    },
+    {
+      "role": "staging prerequisites and file operations",
+      "words": [
+        {
+          "va": "0x807f1b8c",
+          "u32le_word": "0x0c03b02c",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d8c"
+        },
+        {
+          "va": "0x807f1b98",
+          "u32le_word": "0x0c03b040",
+          "segment": "E05",
+          "decoded_offset": "0x2d1d98"
+        },
+        {
+          "va": "0x807f1ba4",
+          "u32le_word": "0x10e0ffe0",
+          "segment": "E05",
+          "decoded_offset": "0x2d1da4"
+        },
+        {
+          "va": "0x807f1bb0",
+          "u32le_word": "0x0c0939ea",
+          "segment": "E05",
+          "decoded_offset": "0x2d1db0"
+        },
+        {
+          "va": "0x807f1bbc",
+          "u32le_word": "0x15a0ffda",
+          "segment": "E05",
+          "decoded_offset": "0x2d1dbc"
+        },
+        {
+          "va": "0x807f1be4",
+          "u32le_word": "0x0c0939c2",
+          "segment": "E05",
+          "decoded_offset": "0x2d1de4"
+        },
+        {
+          "va": "0x807f1bf0",
+          "u32le_word": "0x11c0000a",
+          "segment": "E05",
+          "decoded_offset": "0x2d1df0"
+        },
+        {
+          "va": "0x807f1c2c",
+          "u32le_word": "0x0c03ba01",
+          "segment": "E05",
+          "decoded_offset": "0x2d1e2c"
+        },
+        {
+          "va": "0x807f1c34",
+          "u32le_word": "0x1040003d",
+          "segment": "E05",
+          "decoded_offset": "0x2d1e34"
+        },
+        {
+          "va": "0x807f1c50",
+          "u32le_word": "0x0c097f1f",
+          "segment": "E05",
+          "decoded_offset": "0x2d1e50"
+        },
+        {
+          "va": "0x807f1c58",
+          "u32le_word": "0x1440000d",
+          "segment": "E05",
+          "decoded_offset": "0x2d1e58"
+        },
+        {
+          "va": "0x807f1c98",
+          "u32le_word": "0x0c097f58",
+          "segment": "E05",
+          "decoded_offset": "0x2d1e98"
+        },
+        {
+          "va": "0x807f1cac",
+          "u32le_word": "0x0211c02b",
+          "segment": "E05",
+          "decoded_offset": "0x2d1eac"
+        },
+        {
+          "va": "0x807f1cb0",
+          "u32le_word": "0x1300000d",
+          "segment": "E05",
+          "decoded_offset": "0x2d1eb0"
+        },
+        {
+          "va": "0x807f1ce8",
+          "u32le_word": "0x27242904",
+          "segment": "E05",
+          "decoded_offset": "0x2d1ee8"
+        },
+        {
+          "va": "0x807f1cec",
+          "u32le_word": "0x0c097f1f",
+          "segment": "E05",
+          "decoded_offset": "0x2d1eec"
+        },
+        {
+          "va": "0x807f1cf0",
+          "u32le_word": "0x24050001",
+          "segment": "E05",
+          "decoded_offset": "0x2d1ef0"
+        },
+        {
+          "va": "0x807f1d54",
+          "u32le_word": "0x0c097f63",
+          "segment": "E05",
+          "decoded_offset": "0x2d1f54"
+        },
+        {
+          "va": "0x807f1d68",
+          "u32le_word": "0x1620000d",
+          "segment": "E05",
+          "decoded_offset": "0x2d1f68"
+        },
+        {
+          "va": "0x807f1db0",
+          "u32le_word": "0x0c03ba1b",
+          "segment": "E05",
+          "decoded_offset": "0x2d1fb0"
+        },
+        {
+          "va": "0x807f1db8",
+          "u32le_word": "0x24020001",
+          "segment": "E05",
+          "decoded_offset": "0x2d1fb8"
+        },
+        {
+          "va": "0x8025fd94",
+          "u32le_word": "0x0c021c0d",
+          "segment": "E04",
+          "decoded_offset": "0x132314"
+        },
+        {
+          "va": "0x8025fda0",
+          "u32le_word": "0x2c420001",
+          "segment": "E04",
+          "decoded_offset": "0x132320"
+        }
+      ]
+    },
+    {
+      "role": "native wrapper and MAIN DownloadCard bridge",
+      "words": [
+        {
+          "va": "0x8024e848",
+          "u32le_word": "0x0c090ae1",
+          "segment": "E04",
+          "decoded_offset": "0x120dc8"
+        },
+        {
+          "va": "0x8024e84c",
+          "u32le_word": "0x24050001",
+          "segment": "E04",
+          "decoded_offset": "0x120dcc"
+        },
+        {
+          "va": "0x8024e850",
+          "u32le_word": "0x38430001",
+          "segment": "E04",
+          "decoded_offset": "0x120dd0"
+        },
+        {
+          "va": "0x8024e858",
+          "u32le_word": "0x240200fe",
+          "segment": "E04",
+          "decoded_offset": "0x120dd8"
+        },
+        {
+          "va": "0x8024e85c",
+          "u32le_word": "0x0003100a",
+          "segment": "E04",
+          "decoded_offset": "0x120ddc"
+        },
+        {
+          "va": "0x80242b8c",
+          "u32le_word": "0x0c1796ee",
+          "segment": "E04",
+          "decoded_offset": "0x11510c"
+        },
+        {
+          "va": "0x805e5bbc",
+          "u32le_word": "0x27bdffe8",
+          "segment": "E05",
+          "decoded_offset": "0xc5dbc"
+        },
+        {
+          "va": "0x805e5bc0",
+          "u32le_word": "0x00a03021",
+          "segment": "E05",
+          "decoded_offset": "0xc5dc0"
+        },
+        {
+          "va": "0x805e5bc4",
+          "u32le_word": "0x7c853bc0",
+          "segment": "E05",
+          "decoded_offset": "0xc5dc4"
+        },
+        {
+          "va": "0x805e5bcc",
+          "u32le_word": "0x0c17842b",
+          "segment": "E05",
+          "decoded_offset": "0xc5dcc"
+        },
+        {
+          "va": "0x805e5bd0",
+          "u32le_word": "0x308400ff",
+          "segment": "E05",
+          "decoded_offset": "0xc5dd0"
+        },
+        {
+          "va": "0x805e1150",
+          "u32le_word": "0x52020131",
+          "segment": "E05",
+          "decoded_offset": "0xc1350"
+        },
+        {
+          "va": "0x805e1624",
+          "u32le_word": "0x24b7b640",
+          "segment": "E05",
+          "decoded_offset": "0xc1824"
+        },
+        {
+          "va": "0x805e1630",
+          "u32le_word": "0x247628f8",
+          "segment": "E05",
+          "decoded_offset": "0xc1830"
+        }
+      ]
+    },
+    {
+      "role": "original header reads and selected MAIN callback",
+      "words": [
+        {
+          "va": "0x805e1478",
+          "u32le_word": "0x3c060010",
+          "segment": "E05",
+          "decoded_offset": "0xc1678"
+        },
+        {
+          "va": "0x805e147c",
+          "u32le_word": "0x0c01f467",
+          "segment": "E05",
+          "decoded_offset": "0xc167c"
+        },
+        {
+          "va": "0x805e14a8",
+          "u32le_word": "0x24060040",
+          "segment": "E05",
+          "decoded_offset": "0xc16a8"
+        },
+        {
+          "va": "0x805e14ac",
+          "u32le_word": "0x0c01c684",
+          "segment": "E05",
+          "decoded_offset": "0xc16ac"
+        },
+        {
+          "va": "0x805e14bc",
+          "u32le_word": "0x97a7009e",
+          "segment": "E05",
+          "decoded_offset": "0xc16bc"
+        },
+        {
+          "va": "0x805e14c0",
+          "u32le_word": "0x10e60027",
+          "segment": "E05",
+          "decoded_offset": "0xc16c0"
+        },
+        {
+          "va": "0x805e1564",
+          "u32le_word": "0x24060080",
+          "segment": "E05",
+          "decoded_offset": "0xc1764"
+        },
+        {
+          "va": "0x805e1568",
+          "u32le_word": "0x0c01c684",
+          "segment": "E05",
+          "decoded_offset": "0xc1768"
+        },
+        {
+          "va": "0x805e14e0",
+          "u32le_word": "0x0c1793f9",
+          "segment": "E05",
+          "decoded_offset": "0xc16e0"
+        },
+        {
+          "va": "0x805e14ec",
+          "u32le_word": "0x8fa50064",
+          "segment": "E05",
+          "decoded_offset": "0xc16ec"
+        },
+        {
+          "va": "0x805e14f4",
+          "u32le_word": "0x0c1794dd",
+          "segment": "E05",
+          "decoded_offset": "0xc16f4"
+        },
+        {
+          "va": "0x805e14f8",
+          "u32le_word": "0x25068854",
+          "segment": "E05",
+          "decoded_offset": "0xc16f8"
+        },
+        {
+          "va": "0x805e14fc",
+          "u32le_word": "0x14400040",
+          "segment": "E05",
+          "decoded_offset": "0xc16fc"
+        },
+        {
+          "va": "0x805e4ff8",
+          "u32le_word": "0x8c830008",
+          "segment": "E05",
+          "decoded_offset": "0xc51f8"
+        },
+        {
+          "va": "0x805e5010",
+          "u32le_word": "0x10800038",
+          "segment": "E05",
+          "decoded_offset": "0xc5210"
+        },
+        {
+          "va": "0x805e5014",
+          "u32le_word": "0x0062880b",
+          "segment": "E05",
+          "decoded_offset": "0xc5214"
+        },
+        {
+          "va": "0x805e50fc",
+          "u32le_word": "0x24060d40",
+          "segment": "E05",
+          "decoded_offset": "0xc52fc"
+        },
+        {
+          "va": "0x805e515c",
+          "u32le_word": "0xa0c70cc8",
+          "segment": "E05",
+          "decoded_offset": "0xc535c"
+        },
+        {
+          "va": "0x805e5210",
+          "u32le_word": "0x3c06805f",
+          "segment": "E05",
+          "decoded_offset": "0xc5410"
+        },
+        {
+          "va": "0x805e521c",
+          "u32le_word": "0xacac0ca8",
+          "segment": "E05",
+          "decoded_offset": "0xc541c"
+        },
+        {
+          "va": "0x805e5220",
+          "u32le_word": "0xacb10ca4",
+          "segment": "E05",
+          "decoded_offset": "0xc5420"
+        }
+      ]
+    },
+    {
+      "role": "cleanup return and synchronous status loss",
+      "words": [
+        {
+          "va": "0x805e1014",
+          "u32le_word": "0x0c01f096",
+          "segment": "E05",
+          "decoded_offset": "0xc1214"
+        },
+        {
+          "va": "0x805e1024",
+          "u32le_word": "0x2c500001",
+          "segment": "E05",
+          "decoded_offset": "0xc1224"
+        },
+        {
+          "va": "0x805e1044",
+          "u32le_word": "0x0002800b",
+          "segment": "E05",
+          "decoded_offset": "0xc1244"
+        },
+        {
+          "va": "0x805e1084",
+          "u32le_word": "0x0002800b",
+          "segment": "E05",
+          "decoded_offset": "0xc1284"
+        },
+        {
+          "va": "0x805e1088",
+          "u32le_word": "0x02001021",
+          "segment": "E05",
+          "decoded_offset": "0xc1288"
+        },
+        {
+          "va": "0x805e150c",
+          "u32le_word": "0x10400053",
+          "segment": "E05",
+          "decoded_offset": "0xc170c"
+        },
+        {
+          "va": "0x805e1518",
+          "u32le_word": "0x17d20050",
+          "segment": "E05",
+          "decoded_offset": "0xc1718"
+        },
+        {
+          "va": "0x805e1668",
+          "u32le_word": "0x24020001",
+          "segment": "E05",
+          "decoded_offset": "0xc1868"
+        },
+        {
+          "va": "0x805e1608",
+          "u32le_word": "0x0c1771ad",
+          "segment": "E05",
+          "decoded_offset": "0xc1808"
+        },
+        {
+          "va": "0x805e1614",
+          "u32le_word": "0x00001021",
+          "segment": "E05",
+          "decoded_offset": "0xc1814"
+        },
+        {
+          "va": "0x807f1f80",
+          "u32le_word": "0x0c093a10",
+          "segment": "E05",
+          "decoded_offset": "0x2d2180"
+        },
+        {
+          "va": "0x807f1f98",
+          "u32le_word": "0x0c02853e",
+          "segment": "E05",
+          "decoded_offset": "0x2d2198"
+        },
+        {
+          "va": "0x807f1f9c",
+          "u32le_word": "0x00403021",
+          "segment": "E05",
+          "decoded_offset": "0x2d219c"
+        },
+        {
+          "va": "0x807f1fcc",
+          "u32le_word": "0x0c0497e6",
+          "segment": "E05",
+          "decoded_offset": "0x2d21cc"
+        },
+        {
+          "va": "0x807f1fd0",
+          "u32le_word": "0xa2002520",
+          "segment": "E05",
+          "decoded_offset": "0x2d21d0"
+        },
+        {
+          "va": "0x807f1ffc",
+          "u32le_word": "0x24020001",
+          "segment": "E05",
+          "decoded_offset": "0x2d21fc"
+        }
+      ]
+    },
+    {
+      "role": "update flag and asynchronous branch",
+      "words": [
+        {
+          "va": "0x807f2284",
+          "u32le_word": "0x309100ff",
+          "segment": "E05",
+          "decoded_offset": "0x2d2484"
+        },
+        {
+          "va": "0x807f228c",
+          "u32le_word": "0x0c0497c5",
+          "segment": "E05",
+          "decoded_offset": "0x2d248c"
+        },
+        {
+          "va": "0x807f22a4",
+          "u32le_word": "0xa0432520",
+          "segment": "E05",
+          "decoded_offset": "0x2d24a4"
+        },
+        {
+          "va": "0x807f22bc",
+          "u32le_word": "0x12200008",
+          "segment": "E05",
+          "decoded_offset": "0x2d24bc"
+        },
+        {
+          "va": "0x807f22c4",
+          "u32le_word": "0x0c1fc7d1",
+          "segment": "E05",
+          "decoded_offset": "0x2d24c4"
+        },
+        {
+          "va": "0x807f22ec",
+          "u32le_word": "0xafaa0010",
+          "segment": "E05",
+          "decoded_offset": "0x2d24ec"
+        },
+        {
+          "va": "0x807f22f0",
+          "u32le_word": "0xafa90014",
+          "segment": "E05",
+          "decoded_offset": "0x2d24f0"
+        },
+        {
+          "va": "0x807f22f4",
+          "u32le_word": "0x0c04982e",
+          "segment": "E05",
+          "decoded_offset": "0x2d24f4"
+        },
+        {
+          "va": "0x807f22f8",
+          "u32le_word": "0xafa80018",
+          "segment": "E05",
+          "decoded_offset": "0x2d24f8"
+        },
+        {
+          "va": "0x807f2308",
+          "u32le_word": "0x0002102b",
+          "segment": "E05",
+          "decoded_offset": "0x2d2508"
+        }
+      ]
+    }
+  ],
+  "modeled_boundaries": {
+    "staging": {
+      "0x80260e1c": "size",
+      "0x801049c4": "board",
+      "0x800ec0b0": "set_long",
+      "0x800ec100": "get_param",
+      "0x8024e7a8": "format",
+      "0x8024e708": "mount",
+      "0x800ec08c": "set_param",
+      "0x800ee804": "allocate",
+      "0x800ee86c": "free",
+      "0x8025fc7c": "open",
+      "0x8025fd60": "read",
+      "0x8025fc84": "close",
+      "0x80087034": "filex_write",
+      "0x800a14f8": "log"
+    },
+    "bridge": {
+      "0x8000c2b4": "calloc",
+      "0x8000bf28": "alloc",
+      "0x8000c598": "free",
+      "0x800a14f8": "log",
+      "0x80067700": "media_open",
+      "0x8006e984": "first",
+      "0x800731cc": "next",
+      "0x80074334": "file_open",
+      "0x8007d19c": "seek",
+      "0x80071a10": "read",
+      "0x8007c258": "file_close",
+      "0x80077e74": "media_close",
+      "0x805dc7f4": "led_init",
+      "0x805dc6b4": "led_status",
+      "0x805e5374": "burn",
+      "0x805e59b8": "reboot",
+      "0x800ec08c": "set_param",
+      "0x80125f14": "lock",
+      "0x80125f98": "unlock",
+      "0x801260b8": "thread"
+    }
+  },
+  "prior_E01": {
+    "reference": "analysis/rebuild-evidence.json#/boot_dispatch",
+    "get_handle": "0x8001b134",
+    "selected_callback": "0x80012654",
+    "callback_field": "0x1254",
+    "hash_flag_field": "0x1278"
+  },
+  "comparison": {
+    "model": "Pentax K-3 Mark III",
+    "commit": "c55c107e47594218b48678ce8bdb8d8ef2c984da",
+    "path": "analysis/update-finalization-evidence.json",
+    "sha256": "c28f8d63bf12bee0264d8efb99456c9fa4b8ae02a76e6687636aa44ffb2c4b78",
+    "scope": "K3 kinds2/6/7 preserve executor32-bit result after finalization. Q7 synchronous wrapper returns1 after recording modeled MAIN Burn failure; operation numbers and success semantics are model-specific."
+  },
+  "findings": [
+    "Native staging first obtains the low32 file size from the configured global path, then rewrites a local input-open path drive to F for board revision below3 or E otherwise. Board3 fixture queries size on F then opens E; both use96bytes. Parameter0x11e receives ceil(((low32_size+0x2000000) mod2^32)/512). After setup, caller requests the measured count and rejects read return below that count; the native FileX write adapter maps status0 to boolean1. The exercised96byte buffer equals the write input for I:\\UPG_FILE.ELF.",
+    "Native I43 adapter calls AppUpgradeFlashFromCard, BurnUfcMain and MAIN DownloadCard with (0xfe,0,1); directory model supplies upg_file.elf, native case conversion and .ELF match select \\UPG_FILE.ELF.",
+    "MAIN DownloadCard reads64+128 bytes from original package offset0x100000 because header+0x3e is0x55aa. Native BurnGetHandle maps kind3 to805dd7b8, handle+ca4 callback, +ca8 device8006444c, +cc8 hash flag0. Native MAIN Burn call is observed then replaced; its body does not execute.",
+    "Modeled Burn0 produces native DownloadCard1 and I43 result0. Modeled Burn7 produces DownloadCard0 and I43 result254. File-close7 after Burn0 still gives adapter0 while skipping DoReboot.",
+    "Native synchronous UpdateFW_UpdateFirmware sets updating1, calls original Perform and native bridge, logs the I43 status, clears updating0 and returns1 for both Burn0 and7. The zero backup flag is a supplied fixture condition.",
+    "Asynchronous branch passes original Perform entry to modeled Thread_Create. A zero return maps to wrapper0 but leaves updating1; nonzero returns1 and also leaves flag1 because worker execution is outside this fixture."
+  ],
+  "limitations": [
+    "Staging uses a synthetic96-byte file; it is not a full-package checksum, recognition or disk-write execution. The existing full-package host checksum evidence is separate.",
+    "Staging and DownloadCard bridge are separate states. The latter models file APIs with the original192-byte header and a supplied .ELF directory entry. No native FileX media, driver or block device is exercised.",
+    "MAIN Burn805e5374 and DoReboot805e59b8 are replaced at entry, as are LED, allocation, mutex and thread primitives. Selected Burn/BurnNand extents are static provenance only. E01 NAND replay does not establish MAIN BurnNand execution.",
+    "Backup flag0 and nonnull allocations are fixture assumptions. Adjustment backup path, null allocations, installed state, real scheduler, full flash programming, boot, recovery and camera acceptance are unverified."
+  ],
+  "reproduction": "python tools/check_update_service.py <original fwdc603p.bin> <pinned-analysis.elf> --output <new-json>",
+  "resource_ranges": [
+    {
+      "role": "staging destination",
+      "va": "0x807f2904",
+      "segment": "E05",
+      "decoded_offset": "0x2d2b04",
+      "length_bytes": 16,
+      "sha256": "adc8ae18b37f93d7ab7f3c66af8338f228012879b39acc39695e6a50f0d34ad1"
+    },
+    {
+      "role": "directory filename substring",
+      "va": "0x805e9950",
+      "segment": "E05",
+      "decoded_offset": "0xc9b50",
+      "length_bytes": 5,
+      "sha256": "0ef1f98e5092acfd989dee13818d0d0f9b85952977c3fb847ce0879ca34a09d0"
+    }
+  ]
+}

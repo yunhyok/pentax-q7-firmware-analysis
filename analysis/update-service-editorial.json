@@ -1,0 +1,25 @@
+{
+  "skill": "humanize-korean2.3.2",
+  "route": "light",
+  "run_id": "2026-11-08-017-8b89",
+  "execution": "Native worker and coordinator finalizer, not Opus",
+  "paragraphs": 9,
+  "change_rate_percent": 3.6,
+  "sentence_touch_rate_percent": 22.9,
+  "golden": "PASS",
+  "modality_lost": 0,
+  "gate": "OK",
+  "grade": "B",
+  "self_check": "6/6",
+  "finalizer": "accept; complete original-to-rewrite comparison",
+  "input_sha256": "c8f4b8453cef564e15062956bb769061727f510d3d27e039327e84b98c7d2b9f",
+  "output_body_sha256": "6f2d669f6912684ff231ea6409cad08cbe33ec7eefe21465e9e2aabfaae0e66c",
+  "published_copy_sha256": "e0b6f311c1054235a28e0be5b9000eeaca78848faf04a933ecc76ed564e9bbca",
+  "gate_scope": "Initial9paragraph style revision; subsequent source-review staging clarification is separately recorded.",
+  "post_review_correction": {
+    "paragraph": "staging",
+    "detail": "Size-query order precedes local drive rewrite; uses low32 size and wrapping addition; measured-count request rather than unqualified complete-file copy.",
+    "verification": "Original instructions and independent23case replay; board3 has size query F then input open E, both96bytes.",
+    "published_copy_sha256": "76024a1b9eb40533c0dfe066e76fb5600fa1804360133fc6318c423e77ccc525"
+  }
+}

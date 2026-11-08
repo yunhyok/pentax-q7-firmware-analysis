@@ -2,6 +2,8 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[메인 업데이트 진입·반환](https://yunhyok.github.io/pentax-q7-firmware-analysis/update-service-report.html): 파일 준비 11사례와 메인 호출 12사례를 재현했습니다. E01과 다른 핸들 구조를 확인했고, 하위 실패에서도 동기 래퍼가 1을 반환하는 범위를 구분했습니다.
+
 [기본 배율 글리프 시험](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-glyph-report.html): 관측한 sRGB 텍스트를 새 기본 배율 컨텍스트에 별도로 재입력해 글꼴 로딩·GDI 변환·2비트 쓰기를 검증했습니다. 실제 UI 배율을 이어받은 연속 실행은 아닙니다.
 
 [NAND 후속 기록](https://yunhyok.github.io/pentax-q7-firmware-analysis/burn-continuation-report.html): 재시도·보호·카드 실패 7사례와 종료 4사례를 추적했습니다. 135청크 뒤 블록 0 재기록과 준비 콜백을 거쳐 반환하는 경로를 확인했으며, 저장장치 응답은 모델입니다.
