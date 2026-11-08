@@ -24,6 +24,9 @@ class OptimizedReplayTests(unittest.TestCase):
         self.assertIn('requires assertions',result.stderr)
 
         for call in ("from check_burn_input import replay; replay(b'')",
+                     "from check_burn_storage import replay; replay(b'')",
+                     "from check_lens_readiness import replay; replay(None)",
+                     "from check_recompiled_numeric import verify; verify(None,None,None,None)",
                      "from check_isp_registers import load_project; load_project(None)"):
             result=subprocess.run([sys.executable,'-O','-c',
                 "import sys; sys.path.insert(0,'tools'); " + call],

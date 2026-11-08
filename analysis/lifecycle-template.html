@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — 저장 경계와 렌즈 준비 상태</title><meta name="description" content="원본 MIPS로 추적한 BurnNand 사전 검사, 기록·재읽기 비교와 렌즈 초기화·실패·리셋"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
+<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / LIFECYCLE</p><h1>저장 경계와<br><span>렌즈 준비 상태</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="loader-lens-report.html">앞선 loader·렌즈 분석</a><a href="recompiled-numeric-report.html">C 재컴파일·재패킹</a><a href="index.html">전체 분석</a></p></div><aside class="milestone"><strong>3,331</strong><span>모델 경계에서 기록한 FCU 요청</span><strong>8 + 7</strong><span>기록 비교 / 사용자 영역 사례</span><strong>17</strong><span>렌즈 상태·실패·복구 사례</span></aside></header>
+<nav aria-label="문서 목차"><a href="#storage">저장 사전 검사</a><a href="#program">기록·비교</a><a href="#gates">렌즈 준비 조건</a><a href="#cache">캐시·리셋</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·한계</a></nav><main>
+<section id="storage"><p class="eyebrow">01 / NATIVE PREFLIGHT</p><h2>첫 기록 요청 앞까지 실행한다</h2><p>{{preflight}} <a href="analysis/loader-storage.json">[L1: findings.preflight·replay.preflight]</a></p>{{storage_graph}}
+<p>{{protect}} <a href="analysis/loader-storage.json">[L1: user_area·user_range_cases]</a></p>
+<pre><code>BurnNand 0x80012654 → BurnGetSectionsMap 0x8001a710
+blocks   0…639: op6 at sector B×256, B×256+1, B×256 → op8 at block B
+blocks 640…1023: op6 at sector B×256, B×256+1
+then op6 at sectors 0, 1, 0 → stop before first op5
+2,691 spare reads + 640 erase requests = 3,331 modeled requests</code></pre>
+<p>설치 헤더는 +0x310=640, +0x314=384, +0x234 byte=1이며 별도 handle+0x1268도 1입니다. BlockUserArea는 모드 2도 0이 아닌 값으로 처리합니다. 다른 보호 helper의 정확히 1 비교와 혼동하지 않았습니다. 순서 있는 (operation, location, count) triple의 해시를 L1에 기록했습니다.</p></section>
+<section id="program"><p class="eyebrow">02 / PROGRAM, READBACK AND COMPARE</p><h2>요청 성공과 실제 바이트 일치를 분리한다</h2><p>{{program}} <a href="analysis/loader-storage.json">[L1: program_boundary·program_helper]</a></p>{{program_graph}}
+<div class="table-wrap"><table><caption>원본 helper 0x80011da8…0x80011f00의 합성 메모리 검사</caption><thead><tr><th>사례</th><th>섹터 수</th><th>각 피연산자에서 비교한 바이트</th><th>반환값</th><th>블록 맵</th></tr></thead><tbody>{{program_rows}}</tbody></table></div>
+<p>실패 맵의 <code>x</code>가 0x78입니다. 맵 없는 실패는 쓰기를 생략합니다. 비교 주소가 원본 source와 readback에서 순서대로 증가하는지, 입력·extra·버퍼 주변 보호 바이트가 유지되는지도 확인했습니다. 첫 256섹터 요청 전체를 이 별도 1·2섹터 사례로 대체해 검증했다고 주장하지 않습니다. <a href="tools/check_burn_storage.py">[L2: replay_program]</a></p>
+<p>{{dispatch}} <a href="analysis/loader-storage.json">[L1: storage_dispatch]</a></p>
+<div class="table-wrap"><table><caption>정적 FCU 분기표 0x800a4e24, 인덱스 op−4</caption><thead><tr><th>op</th><th>분기 목적지</th><th>확인한 요청 구성</th></tr></thead><tbody><tr><th>4</th><td>0x80081f2c</td><td>main data 읽기</td></tr><tr><th>5</th><td>0x80081d20</td><td>main data 기록</td></tr><tr><th>6</th><td>0x80082054</td><td>extra 포인터로 spare 읽기</td></tr><tr><th>8</th><td>0x80081fd0</td><td>erase 경로; descriptor byte 0xd0 / command 0x107</td></tr></tbody></table></div>
+<p>기본 wrapper 0x8008249c → 0x80081808, op4 예외는 global 0x800b785b==1 → 0x80080de0입니다. 설정한 요청의 하위 호출은 0x80081dbc → FcuOperation 0x8007ee30에서 확인했습니다. 재실행은 이 드라이버 아래로 내려가지 않습니다.</p></section>
+<section id="gates"><p class="eyebrow">03 / TWO READINESS GATES</p><h2>AF 지원과 검색 전달 여부가 다를 수 있다</h2><p>{{gates}} <a href="analysis/lens-readiness.json">[R1: two_gates]</a></p>{{gate_graph}}
+<p>{{startup}} <a href="analysis/lens-readiness.json">[R1: startup·startup_disagreement]</a></p>
+<div class="table-wrap"><table><caption>실제 초기화 진입부터 getter·검색 전달 경계까지; 입력은 합성</caption><thead><tr><th>초기화 사례</th><th>통신 상태</th><th>AF getter</th><th>VDRC 상태</th><th>하위 경계 전달</th></tr></thead><tbody>{{lens_rows}}</tbody></table></div>
+<p>SetLensCommunicationsState 0x8010f44c는 OR 연산입니다. 인자 0으로 지워지지 않습니다. map-ready는 정상 맵 확장 뒤 0x801118f8에서 1이 됩니다. 이미 전원이 활성화된 입력에서는 LensInitializeSequence 0x8011097c가 2를 반환하며 새 discovery 없이 기존 상태를 보존합니다. 별도 부팅 InitializeLens 0x8011190c의 유사 분기는 정적 근거입니다.</p></section>
+<section id="cache"><p class="eyebrow">04 / CACHE FAILURE AND RESET</p><h2>실패 응답이 전체 상태를 지우지는 않는다</h2><p>{{cache}} <a href="analysis/lens-readiness.json">[R1: cache_failure·vd_failure]</a></p>{{reset_graph}}
+<p>SingleRegular 0x80115f50은 세 버퍼, VD-sync 0x80115c8c는 이전 256바이트와 다른 수신 버퍼의 첫 5바이트, Primary 0x80113eac는 PLC 및 유효 상태를 다르게 처리합니다. LensCommunication 0x80111214의 RX 복사는 nonzero 수신 길이를 기준으로 하며 반환 상태로 차단하지 않습니다. 실패 상태와 함께 5바이트 접두부를 공급한 사례는 가능한 합성 관측일 뿐 실제 렌즈의 응답 형식이나 빈도를 뜻하지 않습니다. <a href="tools/check_lens_readiness.py">[R2: cache fixtures]</a></p>
+<p>{{reset}} <a href="analysis/lens-readiness.json">[R1: dismount·timeout]</a></p>
+<p>핀 기반 경로는 PowerOffSequence 0x8010fa10, LensSwControl 0x80110b34와 LensDetInt 0x8011045c를 실행했습니다. detect ISR은 latch가 없는 사례에서 기존 캐시를 보존했습니다. timeout은 LensCommunicationBase의 실제 event 분기를 실행하되 재진입한 초기화는 모델 경계에서 멈춥니다.</p></section>
+<section id="comparison"><p class="eyebrow">05 / PINNED K-3 MARK III REFERENCES</p><h2>같은 검증 구분을 적용하고 내부 형식은 따로 해석한다</h2><p>{{comparison}}</p>
+<div class="table-wrap"><table><caption>공개된 커밋의 근거와 비교 범위</caption><thead><tr><th>항목</th><th>Q7 이번 분석</th><th>K-3 Mark III 고정 자료</th></tr></thead><tbody><tr><th>저장</th><td>설치 헤더·섹션 맵, FCU op와 첫 기록 경계</td><td>descriptor·bank에 따른 write/read, 하위 vtable 미확정 범위</td></tr><tr><th>렌즈</th><td>통신 bit0x08, 연산 맵, 초기화·캐시·복구 17사례</td><td>ARM capability producer 272사례; 메타데이터·교환·캐시 복사 분리</td></tr><tr><th>모델 경계</th><td>GPIO·전원·큐·링크·FCU 결과 합성</td><td>전송·수신·event·메모리 helper 합성; 강제 오류 1사례 별도 표기</td></tr><tr><th>미확정</th><td colspan="2">카메라·렌즈·저장 장치의 실제 실행과 물리 단위, 동시성</td></tr></tbody></table></div>
+<p><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_loader}}/analysis/update-resource-evidence.json">[K1: 저장·업데이트]</a> · <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_lens}}/analysis/af-capability-checks.json">[K2: AF capability]</a>. 각각의 커밋과 파일 해시는 L1·R1 comparison에 고정했습니다.</p></section>
+<section id="validation"><p class="eyebrow">06 / INDEPENDENT REPLAY AND LIMITS</p><h2>원본 명령과 모델 입력을 구분한다</h2><p>{{limits}}</p>
+<p>저장 재실행은 작업자와 조정자의 결과 전체가 일치했습니다. L1의 원본 word 83개, E01 typed 함수 8개와 익명 범위 3개의 해시를 다시 계산했습니다. R1의 word 153개와 함수 33개도 원본에서 재계산했습니다. 렌즈 17사례도 조정자가 독립 재실행해 메타데이터 전체가 일치했습니다. 공개 검사 기록은 <a href="analysis/hq-status.json">연구 상태</a>에 기록합니다.</p>
+<pre><code>python tools/check_burn_storage.py &lt;original.bin&gt; --output &lt;new-storage.json&gt;
+python tools/check_lens_readiness.py &lt;pinned-analysis.elf&gt; --output &lt;new-lens.json&gt;
+python tools/verify_report.py --firmware &lt;original.bin&gt;
+python -m unittest discover -s tests -v</code></pre>
+<p><a href="analysis/loader-storage.json">L1 저장 근거</a> · <a href="tools/check_burn_storage.py">L2 재실행</a> · <a href="analysis/lens-readiness.json">R1 렌즈 근거</a> · <a href="tools/check_lens_readiness.py">R2 재실행</a> · <a href="tools/verify_lifecycle.py">word·함수 근거 재계산</a> · <a href="analysis/lifecycle-editorial.json">한국어 교정 기록</a></p></section></main><footer>원본 펌웨어·ELF·캐시 데이터는 공개하지 않습니다. 문서와 재현 도구는 오프라인 연구용입니다.</footer></body></html>

@@ -1,7 +1,8 @@
 """Lossless Q7 block round-trip and bounded same-size offline patch/repack.
 
 Preserves package/ELF layout, compiled tables and original token choices where
-valid. Invalidated copies become literals, including cross-block references.
+valid. Invalidated copies become literals, including cross-block references;
+an overflowing block can retokenize bounded windows with its original tables.
 This is an offline research artifact builder, not an updater or flasher.
 """
 import argparse
@@ -74,7 +75,8 @@ def pack_bits(bits, capacity):
     return payload+bytes(capacity-len(payload))
 
 
-def rebuild_stream(data, segment, target):
+def rebuild_stream(data, segment, target, patch_ranges=()):
+    target=bytes(target)
     original=bytearray();body=bytearray();changed=[];total_tokens=0
     for index, block in enumerate(segment['blocks']):
         start,end=block['file_offset'],block['file_end']
@@ -87,11 +89,12 @@ def rebuild_stream(data, segment, target):
         used=decode_block(literal,distance,data[bit_start:end],original,size,tokens)
         if len(target)<len(original):
             raise ValueError('replacement segment is too short')
-        # shortcut: preserve tokenization; general table regeneration/size changes
+        # shortcut: preserve tables and slots; general table regeneration/size changes
         # require a separate relocation and hardware-format validation milestone.
-        parts=[];pos=base;repairs=0;codes=None
+        parts=[];rows=[];pos=base;repairs=0;codes=None
         for token,value,dist,lo,hi in tokens:
             if token=='end':
+                rows.append((pos,pos,True,bits[lo:hi]))
                 parts.append(bits[lo:hi]);continue
             length=1 if token=='literal' else value
             if token=='literal':
@@ -108,16 +111,28 @@ def rebuild_stream(data, segment, target):
                 except KeyError as exc:
                     raise ValueError(f'block {index}: replacement literal {exc.args[0]} absent from table') from exc
                 repairs+=1
+            rows.append((pos,pos+length,valid,bits[lo:hi]))
             pos+=length
         if pos!=base+size:
             raise ValueError('token coverage mismatch')
         encoded=''.join(parts)
+        repair_info={}
+        if len(encoded)>8*packed and patch_ranges:
+            from fixed_table_encode import repair_windows
+            baseline=len(encoded)
+            encoded,repair_info=repair_windows(target,rows,patch_ranges,literal,distance,codes)
+            repair_info.update(method='fixed-table repair windows',literal_repair_bits=baseline)
+            check=bytearray(target[:base])
+            payload=pack_bits(encoded,packed)
+            consumed=decode_block(literal,distance,payload,check,size)
+            if consumed!=len(encoded) or check!=target[:base+size]:
+                raise ValueError('fixed-table repair verification failed')
         new=HEADER.pack(kind,size,packed,nlit,ndist)+data[table_start:bit_start]+pack_bits(encoded,packed)
         if len(new)!=end-start:
             raise ValueError('block size changed')
         if new!=data[start:end]:
             changed.append(dict(block=index,file_offset=start,file_end=end,
-                                original_bits=used,new_bits=len(encoded),repaired_tokens=repairs))
+                                original_bits=used,new_bits=len(encoded),repaired_tokens=repairs,**repair_info))
         body+=new;total_tokens+=len(tokens)
     if len(target)!=len(original):
         raise ValueError('replacement segment length changed')
@@ -160,7 +175,9 @@ def rebuild(firmware, patches):
     result=bytearray(firmware);reports=[]
     for seg in manifest['segments']:
         target=next(r[2] for r in regions if r[0]==seg['name'])
-        body,changed,tokens=rebuild_stream(firmware,seg,target)
+        ranges=[(va-seg['virtual_address'],va-seg['virtual_address']+len(new))
+                for name,va,new in plan if name==seg['name']]
+        body,changed,tokens=rebuild_stream(firmware,seg,target,ranges)
         result[seg['file_offset']:seg['file_end']]=body
         reports.append(dict(name=seg['name'],blocks=seg['block_count'],tokens=tokens,
                             changed_blocks=changed,decoded_sha256=digest(target)))

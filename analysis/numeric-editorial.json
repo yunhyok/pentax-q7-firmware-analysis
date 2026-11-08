@@ -1,0 +1,18 @@
+{
+  "skill": "humanize-korean 2.3.2",
+  "route": "light",
+  "route_source": "route_hint",
+  "execution": "Native Codex worker monolith and coordinator local finalizer; not Claude Opus",
+  "paragraphs": 9,
+  "input_sha256": "493a91a85ef1ed58ce9ad3ebcd18eb6fbfc10a9d5d1a78bd19d0ccc077f5d5e1",
+  "output_sha256": "1347c106d7a488effff4aa393d476d420a57973cd9b12ca53c9ab5c2b03c8324",
+  "change_rate_percent": 1.3,
+  "sentence_touch_rate_percent": 20.6,
+  "golden": "PASS",
+  "modality_lost": 0,
+  "self_check": "6/6",
+  "grade": "B",
+  "finalizer": "corrected: exact shift wording restored; capacity failure explicitly refers to the former token-preserving attempt",
+  "limits": "Editorial assessment; technical findings validated independently",
+  "package_extension": "analysis/lifecycle-editorial.json"
+}

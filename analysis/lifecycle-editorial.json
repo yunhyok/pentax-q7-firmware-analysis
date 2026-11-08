@@ -1,0 +1,17 @@
+{
+  "skill": "humanize-korean 2.3.2",
+  "route": "light",
+  "route_source": "route_hint",
+  "execution": "Native Codex worker monolith and coordinator finalizer; not Claude Opus",
+  "paragraphs": 13,
+  "input_sha256": "566bba3ac4f1002655663f8b03ab1609897d89913542e4612092a9b33f4da7bf",
+  "output_sha256": "b75c941735c3ef21dfc795bff039c73d33ffb92af0f415c224cb53080350be5d",
+  "change_rate_percent": 0.5,
+  "sentence_touch_rate_percent": 10.2,
+  "golden": "PASS",
+  "modality_lost": 0,
+  "self_check": "6/6",
+  "grade": "B",
+  "finalizer": "accept",
+  "scope": "First two paragraphs extend numeric package report; following eleven supply lifecycle report."
+}

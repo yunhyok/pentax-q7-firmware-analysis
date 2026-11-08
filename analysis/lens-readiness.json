@@ -1,0 +1,4899 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Q7 v1.01 attachment/readiness, capability discovery, failed replies, data-cache lifetime and software reset. Bounded original MIPS with modeled link and platform boundaries.",
+  "globals": {
+    "communications_state": "0x80c25e4b",
+    "map_ready": "0x80c2a2d9",
+    "group_bitmap": "0x80c25e78",
+    "operation_bitmap": "0x80c25eb8",
+    "search_operation_2_4": "0x80c260bc",
+    "spec_valid": "0x80c2a73d",
+    "standard_valid": "0x80c2a73f",
+    "vd_status": "0x80c2a746",
+    "vdr_cache": "0x80c2a748",
+    "vdr_receive_buffers": [
+      "0x80c2a848",
+      "0x80c2a948"
+    ],
+    "dismount_latch": "0x80c25e76"
+  },
+  "findings": {
+    "state_writes": "LensService_SetLensCommunicationsState 0x8010f44c ORs its argument into the state byte. An argument of 0 leaves it unchanged. Control reset 0x8010f598 clears both maps, map-ready and the communications-state byte, then tail-calls 0x80111f74 to clear cached PLC/VDRC payload and validity. Map-ready is set to 1 at 0x801118f8 after successful native group/operation expansion; these are the identified reset/startup writes in the traced path.",
+    "startup": "LensInitializeSequence 0x8011097c returns 2 before reset when the modeled power-enable getter is nonzero. The cold path resets before native bootstrap and powers off/reset again after bootstrap failure; its failure counter below 3 can send lens-thread message 1. With successful bootstrap it ORs 1, runs native primary and single-regular routines, ORs 4 on primary return 1 and ORs 8 if primary returned 1 and regular returned 1 or 7. Success in the mechanical command adds 2, and successful regular reply adds 0x20. Boot InitializeLens 0x8011190c has analogous 4/8 checks after its own reset/handshake stages; that separate boot routine is static evidence.",
+    "startup_disagreement": "With the regular operation blocked by the ready map, upper transport returns 7 before the modeled link; startup still sets 0x08 when primary succeeded. That fixture has AF enabled, VDRC status 0 and search forwarded. With regular link status 4 or failed primary spec, 0x08 stays clear while the decoded map still admits search op (0,1,2,4). A successful bootstrap with search unsupported keeps 0x08 yet both AF getter and admission reject search. The already-powered case preserves seeded state/cache without new discovery.",
+    "two_gates": "ExGetLensAttached 0x80114894 checks communications bit 0x08. ExGetAfEnable 0x80114b08 then checks version 1/group 2/operation 4 map byte, without testing map-ready. LensCommunication 0x80111214 checks per-operation permission only if map-ready equals 1, and returns 7 for a denied entry; it does not test bit 0x08. After reset, the tested upper admission forwards despite zero map/AF result, because map-ready is 0. Forwarded search reaches the modeled lower boundary and does not establish a serial transmission or lens motion.",
+    "cache_failure": "Primary refresh 0x80113eac clears PLC validity and VDRC status on entry, and zeroes individual PLC buffers on unsuccessful replies. Its failed-refresh fixture leaves the previous VDRC bytes and AF/map state intact, but the position getter returns validity 0 with the old bytes. SingleRegular 0x80115f50 on failure zeroes the three VDRC buffers without clearing a prior status 1 or ORed state bits. Its getter returns 1 with zero position after that modeled failure.",
+    "vd_failure": "VD-sync 0x80115c8c copies one old 256-byte receive buffer then patches the first five bytes from the other receive buffer even when the lower status is non-1. LensCommunication copies the shared RX bytes to the caller for nonzero configured receive length without gating on its returned status. Failed/no-new-bytes replay retains position and tail; a modeled five-byte prefix supplied with failure changes motion/position while retaining the old tail and validity. This is a permitted synthetic mixed-age observation, not a claim about observed real lens traffic.",
+    "dismount": "PowerOffSequence 0x8010fa10 disables power at its boundary and calls full control/data reset. LensSwControl 0x80110b34 with switch not 1, guard clear and detect 0 executes power-off and sets latch 0x80c25e76=1. LensDetInt 0x8011045c reaches the same reset only with detect 1, switch not 1 and latch 1, then clears that latch. The no-latch ISR fixture preserves active data. The names refer to the firmware's pin/API boundaries.",
+    "timeout": "A synthetic event mask 0x100 at the native LensCommunicationBase wait boundary takes 0x80110e80 and returns 5 in both cases. With map-ready 0 it does not enter full reset; with map-ready 1 it reaches 0x80110fdc reset and 0x80110ffc reinitialization. The harness records and stops the nested reentry after observing cleared readiness; it does not replay reinitialization inside this timeout fixture.",
+    "thread": "Static jump table 0x8011f0a8 in LensComThreadMain: 1 startup, 2 short VD AF, 3 ordinary VD regular, 4 single regular, 15 end sequence, 16 power-off/delay/restart, 17 mount switch control. The scheduler and event delivery are outside the replay."
+  },
+  "comparison": {
+    "model": "Pentax K-3 Mark III",
+    "repository_path": "analysis/af-capability-checks.json",
+    "commit": "c0dae9cf1032309115330478328617f56b5dd8f5",
+    "sha256": "edb6475d0bf688ccd779fd5592489f41108a2ccda330fb4196920b39c33eb353",
+    "scope": "Committed ARM verification separates command metadata, modeled reply transport and cache copy/unpack. Q7 tests the analogous boundaries with its own MIPS state, reply statuses and maps. No numeric or hardware equivalence is assumed."
+  },
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "startup_cases": [
+      {
+        "case": "success",
+        "after": {
+          "communications_state": 47,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 2,
+          "current": 287454020,
+          "tail": 3737844653,
+          "vd_buffers_zero": false,
+          "af_enable": 1,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "llc": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            1
+          ]
+        ],
+        "transport": [
+          [
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            2,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            21,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            5,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            6,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            8,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            12,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            1,
+            1
+          ]
+        ],
+        "power_requests": [
+          1
+        ],
+        "retry_messages": [],
+        "early_return_2": false
+      },
+      {
+        "case": "regular-map-denied",
+        "after": {
+          "communications_state": 15,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            0
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 1,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "llc": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            1
+          ]
+        ],
+        "transport": [
+          [
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            2,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            21,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            5,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            6,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            8,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            1,
+            1
+          ]
+        ],
+        "power_requests": [
+          1
+        ],
+        "retry_messages": [],
+        "early_return_2": false
+      },
+      {
+        "case": "regular-reply-fails",
+        "after": {
+          "communications_state": 7,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            0
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 0,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "llc": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            1
+          ]
+        ],
+        "transport": [
+          [
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            2,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            21,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            5,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            6,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            8,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            12,
+            4
+          ],
+          [
+            0,
+            1,
+            8,
+            1,
+            1
+          ]
+        ],
+        "power_requests": [
+          1
+        ],
+        "retry_messages": [],
+        "early_return_2": false
+      },
+      {
+        "case": "primary-spec-fails",
+        "after": {
+          "communications_state": 35,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            0,
+            1,
+            1
+          ],
+          "spec_id": 0,
+          "standard_limit": 16909060,
+          "motion": 2,
+          "current": 287454020,
+          "tail": 3737844653,
+          "vd_buffers_zero": false,
+          "af_enable": 0,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "llc": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            1
+          ]
+        ],
+        "transport": [
+          [
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            2,
+            4
+          ],
+          [
+            0,
+            1,
+            8,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            21,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            5,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            6,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            8,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            12,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            1,
+            1
+          ]
+        ],
+        "power_requests": [
+          1
+        ],
+        "retry_messages": [],
+        "early_return_2": false
+      },
+      {
+        "case": "search-map-denied",
+        "after": {
+          "communications_state": 47,
+          "map_ready": 1,
+          "search_operation": 0,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 2,
+          "current": 287454020,
+          "tail": 3737844653,
+          "vd_buffers_zero": false,
+          "af_enable": 0,
+          "position_getter_status": 1,
+          "search_forwarded": false,
+          "search_result": 7
+        },
+        "llc": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            1
+          ]
+        ],
+        "transport": [
+          [
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            2,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            21,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            5,
+            1
+          ],
+          [
+            0,
+            1,
+            3,
+            6,
+            1
+          ],
+          [
+            0,
+            1,
+            4,
+            8,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            12,
+            1
+          ],
+          [
+            0,
+            1,
+            8,
+            1,
+            1
+          ]
+        ],
+        "power_requests": [
+          1
+        ],
+        "retry_messages": [],
+        "early_return_2": false
+      },
+      {
+        "case": "partial-map-fails",
+        "after": {
+          "communications_state": 0,
+          "map_ready": 0,
+          "search_operation": 0,
+          "validity": [
+            0,
+            0,
+            0
+          ],
+          "spec_id": 0,
+          "standard_limit": 0,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 0,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "llc": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "transport": [
+          [
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            4
+          ]
+        ],
+        "power_requests": [
+          1,
+          0
+        ],
+        "retry_messages": [
+          1
+        ],
+        "early_return_2": false
+      },
+      {
+        "case": "already-powered",
+        "after": {
+          "communications_state": 111,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 42405,
+          "standard_limit": 2779096485,
+          "motion": 165,
+          "current": 2779096485,
+          "tail": 2779096485,
+          "vd_buffers_zero": false,
+          "af_enable": 1,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "llc": [],
+        "transport": [],
+        "power_requests": [],
+        "retry_messages": [],
+        "early_return_2": true
+      }
+    ],
+    "cache_cases": [
+      {
+        "case": "single-failed-reply",
+        "after": {
+          "communications_state": 47,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 1,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "transport": [
+          [
+            0,
+            1,
+            1,
+            12,
+            4
+          ]
+        ]
+      },
+      {
+        "case": "vd-sync-failed-reply",
+        "after": {
+          "communications_state": 47,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 2,
+          "current": 287454020,
+          "tail": 3737844653,
+          "vd_buffers_zero": false,
+          "af_enable": 1,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "transport": [
+          [
+            0,
+            1,
+            1,
+            12,
+            4
+          ]
+        ]
+      },
+      {
+        "case": "vd-sync-failed-prefix",
+        "after": {
+          "communications_state": 47,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 3,
+          "current": 1432778632,
+          "tail": 3737844653,
+          "vd_buffers_zero": false,
+          "af_enable": 1,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "transport": [
+          [
+            0,
+            1,
+            1,
+            12,
+            4
+          ]
+        ]
+      },
+      {
+        "case": "primary-refresh-failed",
+        "after": {
+          "communications_state": 47,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            0,
+            0,
+            0
+          ],
+          "spec_id": 0,
+          "standard_limit": 0,
+          "motion": 2,
+          "current": 287454020,
+          "tail": 3737844653,
+          "vd_buffers_zero": false,
+          "af_enable": 1,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "transport": [
+          [
+            0,
+            1,
+            8,
+            2,
+            4
+          ],
+          [
+            0,
+            1,
+            8,
+            11,
+            4
+          ],
+          [
+            0,
+            1,
+            8,
+            21,
+            4
+          ],
+          [
+            0,
+            1,
+            3,
+            5,
+            4
+          ],
+          [
+            0,
+            1,
+            3,
+            6,
+            4
+          ],
+          [
+            0,
+            1,
+            4,
+            8,
+            4
+          ]
+        ]
+      }
+    ],
+    "reset_cases": [
+      {
+        "case": "control-reset",
+        "after": {
+          "communications_state": 0,
+          "map_ready": 0,
+          "search_operation": 0,
+          "validity": [
+            0,
+            0,
+            0
+          ],
+          "spec_id": 0,
+          "standard_limit": 0,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 0,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "latch": 0,
+        "power_requests": []
+      },
+      {
+        "case": "mount-switch-open",
+        "after": {
+          "communications_state": 0,
+          "map_ready": 0,
+          "search_operation": 0,
+          "validity": [
+            0,
+            0,
+            0
+          ],
+          "spec_id": 0,
+          "standard_limit": 0,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 0,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "latch": 1,
+        "power_requests": [
+          0
+        ]
+      },
+      {
+        "case": "detect-with-latch",
+        "after": {
+          "communications_state": 0,
+          "map_ready": 0,
+          "search_operation": 0,
+          "validity": [
+            0,
+            0,
+            0
+          ],
+          "spec_id": 0,
+          "standard_limit": 0,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 0,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "latch": 0,
+        "power_requests": [
+          0
+        ]
+      },
+      {
+        "case": "detect-without-latch",
+        "after": {
+          "communications_state": 47,
+          "map_ready": 1,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 4660,
+          "standard_limit": 16909060,
+          "motion": 2,
+          "current": 287454020,
+          "tail": 3737844653,
+          "vd_buffers_zero": false,
+          "af_enable": 1,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "latch": 0,
+        "power_requests": []
+      }
+    ],
+    "timeout_cases": [
+      {
+        "map_ready_before": 0,
+        "result": 5,
+        "after": {
+          "communications_state": 111,
+          "map_ready": 0,
+          "search_operation": 1,
+          "validity": [
+            1,
+            1,
+            1
+          ],
+          "spec_id": 42405,
+          "standard_limit": 2779096485,
+          "motion": 165,
+          "current": 2779096485,
+          "tail": 2779096485,
+          "vd_buffers_zero": false,
+          "af_enable": 1,
+          "position_getter_status": 1,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "recovery_reentry": []
+      },
+      {
+        "map_ready_before": 1,
+        "result": 5,
+        "after": {
+          "communications_state": 0,
+          "map_ready": 0,
+          "search_operation": 0,
+          "validity": [
+            0,
+            0,
+            0
+          ],
+          "spec_id": 0,
+          "standard_limit": 0,
+          "motion": 0,
+          "current": 0,
+          "tail": 0,
+          "vd_buffers_zero": true,
+          "af_enable": 0,
+          "position_getter_status": 0,
+          "search_forwarded": true,
+          "search_result": 1
+        },
+        "recovery_reentry": [
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    ],
+    "models": {
+      "0x8010f344": "low-level sequence/port setup",
+      "0x801168b8": "semaphore/worker control",
+      "0x80105e44": "interrupt line disable",
+      "0x8010f7c0": "mount BtoL pin control",
+      "0x8010f8e4": "serial configuration",
+      "0x8010fd10": "link frequency setup, returns 0",
+      "0x8010f4f0": "delay",
+      "0x80116974": "lens worker queue clear",
+      "0x8010f77c": "mount MoVd pin control",
+      "0x8010f808": "lens port configuration",
+      "0x80111c9c": "tube-closed notification recipient",
+      "0x801102e0": "mount-switch power control",
+      "0x8011689c": "mount timer scheduling",
+      "0x80105e10": "interrupt line enable",
+      "0x80110894": "synthetic power-enable input",
+      "0x8010f78c": "record power-enable request without GPIO",
+      "0x8011090c": "synthetic power-on check succeeds",
+      "0x80110348": "synthetic mount-detect pin",
+      "0x8011032c": "synthetic mount-switch pin",
+      "0x80116af8": "record retry queue message",
+      "0x80111354": "LLC command statuses and receive bytes",
+      "0x80110c50": "serial response/status injection below original transport admission",
+      "0x8011ebac": "fixed body temperature 25"
+    },
+    "timeout_models": {
+      "0x801102f4": "BtoL input low",
+      "0x801104c4": "LtoB input low",
+      "0x801168ac": "synthetic ready-to-communicate result 1",
+      "0x8010824c": "timer setup no-op",
+      "0x80108278": "timer start no-op",
+      "0x80108444": "timer cleanup no-op",
+      "0x801081f4": "timer stop no-op",
+      "0x80125be0": "supply event mask 0x100 at the wait boundary",
+      "0x8011097c": "record recovery reentry and its input state; stop nested initialization"
+    },
+    "engine": "angr 10.0.5 / VEX"
+  },
+  "selected_functions": [
+    {
+      "name": "LensService_SetLensCommunicationsState",
+      "address": 2148594764,
+      "candidate_end": 2148594784,
+      "file_offset": 2168628,
+      "size": 20,
+      "sha256": "1f1019f18047cb4977df67ee940102708c4388ef683d559a35b48133eae8f25c",
+      "transfers": []
+    },
+    {
+      "name": "LensService_LensCommunicationControlValueInitialize",
+      "address": 2148595096,
+      "candidate_end": 2148595580,
+      "file_offset": 2168960,
+      "size": 484,
+      "sha256": "8e177f212ac1717db2c34b5170cd16b4a7fe505fc5ccc32a789c25d1429c93d6",
+      "transfers": [
+        {
+          "site": 2148595116,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595136,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595188,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595224,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148595572,
+          "word": "080447dd",
+          "kind": "jump",
+          "target": 2148605812,
+          "target_names": [
+            "LensDataServer_LensCommunicationDataInitialize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensCommunicationSequenceInitialize",
+      "address": 2148595664,
+      "candidate_end": 2148595720,
+      "file_offset": 2169528,
+      "size": 56,
+      "sha256": "d353ac9e622fb83f94686bd69d8cc3eff97addcf0bec89005fc83fd9936959a5",
+      "transfers": [
+        {
+          "site": 2148595672,
+          "word": "0c043cd1",
+          "kind": "call",
+          "target": 2148594500,
+          "target_names": [
+            "LensService_LensComBaseSetEventFlag"
+          ]
+        },
+        {
+          "site": 2148595680,
+          "word": "0c045a2e",
+          "kind": "call",
+          "target": 2148624568,
+          "target_names": [
+            "LensComThreadService_SetVdrcMsgState"
+          ]
+        },
+        {
+          "site": 2148595696,
+          "word": "0c041791",
+          "kind": "call",
+          "target": 2148556356,
+          "target_names": [
+            "GpioDriver_DisableEvent"
+          ]
+        },
+        {
+          "site": 2148595712,
+          "word": "08043df0",
+          "kind": "jump",
+          "target": 2148595648,
+          "target_names": [
+            "LensService_SetMountPortBtoL"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensPowerOffSequence",
+      "address": 2148596240,
+      "candidate_end": 2148596316,
+      "file_offset": 2170104,
+      "size": 76,
+      "sha256": "92c1f0bad4b939b7a3aa8f2b3270be775f49891cc880d646fc4b1058f0ed46b9",
+      "transfers": [
+        {
+          "site": 2148596260,
+          "word": "0c043de3",
+          "kind": "call",
+          "target": 2148595596,
+          "target_names": [
+            "LensService_SetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148596268,
+          "word": "0c045a5d",
+          "kind": "call",
+          "target": 2148624756,
+          "target_names": [
+            "LensComThreadService_ClearQueue"
+          ]
+        },
+        {
+          "site": 2148596276,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148596284,
+          "word": "0c043d66",
+          "kind": "call",
+          "target": 2148595096,
+          "target_names": [
+            "LensService_LensCommunicationControlValueInitialize"
+          ]
+        },
+        {
+          "site": 2148596292,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148596308,
+          "word": "08043e02",
+          "kind": "jump",
+          "target": 2148595720,
+          "target_names": [
+            "LensService_SetLensComPort"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_GetLensCommunicationCompleteState",
+      "address": 2148596328,
+      "candidate_end": 2148596340,
+      "file_offset": 2170192,
+      "size": 12,
+      "sha256": "dfb48f2a062d7534fd1fb38aefd35df88f1f67b001c3c2ebefeda9dc4f530a12",
+      "transfers": []
+    },
+    {
+      "name": "LensService_GetLensFunctionMapEnableOperation",
+      "address": 2148597232,
+      "candidate_end": 2148597296,
+      "file_offset": 2171096,
+      "size": 64,
+      "sha256": "8560e94bec93d88445d64f8e3c1e3e26a46e657c352ad79193f389b9849fba5c",
+      "transfers": []
+    },
+    {
+      "name": "LensService_ExecuteLensEndSequence",
+      "address": 2148597768,
+      "candidate_end": 2148597960,
+      "file_offset": 2171632,
+      "size": 192,
+      "sha256": "08af372b2b1a9eed7da18d5740f116e8d84d3814d3e604af3814afcc6223c3fc",
+      "transfers": [
+        {
+          "site": 2148597788,
+          "word": "0c043f8e",
+          "kind": "call",
+          "target": 2148597304,
+          "target_names": [
+            "LensService_LensCommunicationChangeEcoMode"
+          ]
+        },
+        {
+          "site": 2148597796,
+          "word": "0c04508c",
+          "kind": "call",
+          "target": 2148614704,
+          "target_names": [
+            "LensDataServer_ComSetLensEndPrepare"
+          ]
+        },
+        {
+          "site": 2148597816,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148597852,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148597872,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148597892,
+          "word": "0c04509b",
+          "kind": "call",
+          "target": 2148614764,
+          "target_names": [
+            "LensDataServer_ComGetLensEndState"
+          ]
+        },
+        {
+          "site": 2148597924,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensMountSwPowerControl",
+      "address": 2148598628,
+      "candidate_end": 2148598744,
+      "file_offset": 2172492,
+      "size": 116,
+      "sha256": "c1fc27326146ff558cda064d194121111fe9179be2f8db36bae1e4365efb9278",
+      "transfers": [
+        {
+          "site": 2148598648,
+          "word": "0c0440b8",
+          "kind": "call",
+          "target": 2148598496,
+          "target_names": [
+            "LensService_SetLensDetPullUp"
+          ]
+        },
+        {
+          "site": 2148598656,
+          "word": "0c0440d2",
+          "kind": "call",
+          "target": 2148598600,
+          "target_names": [
+            "LensService_GetMountPortLensDet"
+          ]
+        },
+        {
+          "site": 2148598680,
+          "word": "08045abe",
+          "kind": "jump",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148598692,
+          "word": "0c0440d2",
+          "kind": "call",
+          "target": 2148598600,
+          "target_names": [
+            "LensService_GetMountPortLensDet"
+          ]
+        },
+        {
+          "site": 2148598716,
+          "word": "08043e84",
+          "kind": "jump",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148598724,
+          "word": "0c0440b8",
+          "kind": "call",
+          "target": 2148598496,
+          "target_names": [
+            "LensService_SetLensDetPullUp"
+          ]
+        },
+        {
+          "site": 2148598736,
+          "word": "08043e84",
+          "kind": "jump",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensSwInt",
+      "address": 2148598744,
+      "candidate_end": 2148598752,
+      "file_offset": 2172608,
+      "size": 8,
+      "sha256": "5a1ec2ff2208d5250c0759032ce5f16264e3f882a53449530cfeaa52ba789ad6",
+      "transfers": [
+        {
+          "site": 2148598744,
+          "word": "080440d9",
+          "kind": "jump",
+          "target": 2148598628,
+          "target_names": [
+            "LensService_LensMountSwPowerControl"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensDetInt",
+      "address": 2148598876,
+      "candidate_end": 2148598980,
+      "file_offset": 2172740,
+      "size": 104,
+      "sha256": "af90ca63cad5007a012d44e18ed79631cec691c1c186f80940a6c21e49a19264",
+      "transfers": [
+        {
+          "site": 2148598888,
+          "word": "0c0440d2",
+          "kind": "call",
+          "target": 2148598600,
+          "target_names": [
+            "LensService_GetMountPortLensDet"
+          ]
+        },
+        {
+          "site": 2148598932,
+          "word": "0c0440cb",
+          "kind": "call",
+          "target": 2148598572,
+          "target_names": [
+            "LensService_GetMountPortLensSw"
+          ]
+        },
+        {
+          "site": 2148598956,
+          "word": "0c0440b8",
+          "kind": "call",
+          "target": 2148598496,
+          "target_names": [
+            "LensService_SetLensDetPullUp"
+          ]
+        },
+        {
+          "site": 2148598964,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensInitializeSequence",
+      "address": 2148600188,
+      "candidate_end": 2148600628,
+      "file_offset": 2174052,
+      "size": 440,
+      "sha256": "98aa5157e75fdbabf16b503007e836207106ca9c51b57adc94f3847771771e19",
+      "transfers": [
+        {
+          "site": 2148600212,
+          "word": "0c044225",
+          "kind": "call",
+          "target": 2148599956,
+          "target_names": [
+            "LensService_GetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148600268,
+          "word": "0c043de3",
+          "kind": "call",
+          "target": 2148595596,
+          "target_names": [
+            "LensService_SetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148600276,
+          "word": "0c044243",
+          "kind": "call",
+          "target": 2148600076,
+          "target_names": [
+            "LensService_LensPowerOnCheck"
+          ]
+        },
+        {
+          "site": 2148600292,
+          "word": "0c043de3",
+          "kind": "call",
+          "target": 2148595596,
+          "target_names": [
+            "LensService_SetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148600304,
+          "word": "0c043e39",
+          "kind": "call",
+          "target": 2148595940,
+          "target_names": [
+            "LensService_LensComConfig"
+          ]
+        },
+        {
+          "site": 2148600312,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148600320,
+          "word": "0c043d66",
+          "kind": "call",
+          "target": 2148595096,
+          "target_names": [
+            "LensService_LensCommunicationControlValueInitialize"
+          ]
+        },
+        {
+          "site": 2148600328,
+          "word": "0c044512",
+          "kind": "call",
+          "target": 2148602952,
+          "target_names": [
+            "LensService_LensCommunicationStartCheckWithLLCCommunication"
+          ]
+        },
+        {
+          "site": 2148600344,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148600396,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148600432,
+          "word": "0c044fab",
+          "kind": "call",
+          "target": 2148613804,
+          "target_names": [
+            "LensDataServer_LensPrimaryDataCommunication"
+          ]
+        },
+        {
+          "site": 2148600440,
+          "word": "0c0457d4",
+          "kind": "call",
+          "target": 2148622160,
+          "target_names": [
+            "LensDataServer_SingleRegularCommunication"
+          ]
+        },
+        {
+          "site": 2148600456,
+          "word": "0c044ec8",
+          "kind": "call",
+          "target": 2148612896,
+          "target_names": [
+            "LensDataServer_ComSetAllMechanicalInit"
+          ]
+        },
+        {
+          "site": 2148600500,
+          "word": "0c043de3",
+          "kind": "call",
+          "target": 2148595596,
+          "target_names": [
+            "LensService_SetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148600532,
+          "word": "08043e02",
+          "kind": "jump",
+          "target": 2148595720,
+          "target_names": [
+            "LensService_SetLensComPort"
+          ]
+        },
+        {
+          "site": 2148600540,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148600548,
+          "word": "0c045abe",
+          "kind": "call",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148600572,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148600588,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148600612,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensSwControl",
+      "address": 2148600628,
+      "candidate_end": 2148600912,
+      "file_offset": 2174492,
+      "size": 284,
+      "sha256": "e1777685c12fda81552132d6e792ef56a94abb9b2c6fa6fdf1fd8c62ace77654",
+      "transfers": [
+        {
+          "site": 2148600648,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148600656,
+          "word": "0c0440cb",
+          "kind": "call",
+          "target": 2148598572,
+          "target_names": [
+            "LensService_GetMountPortLensSw"
+          ]
+        },
+        {
+          "site": 2148600708,
+          "word": "08041784",
+          "kind": "jump",
+          "target": 2148556304,
+          "target_names": [
+            "GpioDriver_EnableEvent"
+          ]
+        },
+        {
+          "site": 2148600716,
+          "word": "0c0440d2",
+          "kind": "call",
+          "target": 2148598600,
+          "target_names": [
+            "LensService_GetMountPortLensDet"
+          ]
+        },
+        {
+          "site": 2148600732,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148600752,
+          "word": "0c045a27",
+          "kind": "call",
+          "target": 2148624540,
+          "target_names": [
+            "LensComThreadService_NotifyCompletion"
+          ]
+        },
+        {
+          "site": 2148600772,
+          "word": "0c0440b8",
+          "kind": "call",
+          "target": 2148598496,
+          "target_names": [
+            "LensService_SetLensDetPullUp"
+          ]
+        },
+        {
+          "site": 2148600780,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148600800,
+          "word": "0c0440b8",
+          "kind": "call",
+          "target": 2148598496,
+          "target_names": [
+            "LensService_SetLensDetPullUp"
+          ]
+        },
+        {
+          "site": 2148600840,
+          "word": "08041784",
+          "kind": "jump",
+          "target": 2148556304,
+          "target_names": [
+            "GpioDriver_EnableEvent"
+          ]
+        },
+        {
+          "site": 2148600848,
+          "word": "0c0440d2",
+          "kind": "call",
+          "target": 2148598600,
+          "target_names": [
+            "LensService_GetMountPortLensDet"
+          ]
+        },
+        {
+          "site": 2148600864,
+          "word": "0c04425f",
+          "kind": "call",
+          "target": 2148600188,
+          "target_names": [
+            "LensService_LensInitializeSequence"
+          ]
+        },
+        {
+          "site": 2148600892,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensCommunicationBase",
+      "address": 2148600912,
+      "candidate_end": 2148601904,
+      "file_offset": 2174776,
+      "size": 992,
+      "sha256": "27b85adeef44d53eb500c26bf8f7bc1c88080ed7a734295b3a903b94bc2bdd12",
+      "transfers": [
+        {
+          "site": 2148600972,
+          "word": "0c0440d2",
+          "kind": "call",
+          "target": 2148598600,
+          "target_names": [
+            "LensService_GetMountPortLensDet"
+          ]
+        },
+        {
+          "site": 2148600992,
+          "word": "0c0440bd",
+          "kind": "call",
+          "target": 2148598516,
+          "target_names": [
+            "LensService_GetMountPortBtoL"
+          ]
+        },
+        {
+          "site": 2148601008,
+          "word": "0c044131",
+          "kind": "call",
+          "target": 2148598980,
+          "target_names": [
+            "LensService_GetMountPortLtoB"
+          ]
+        },
+        {
+          "site": 2148601052,
+          "word": "0c041784",
+          "kind": "call",
+          "target": 2148556304,
+          "target_names": [
+            "GpioDriver_EnableEvent"
+          ]
+        },
+        {
+          "site": 2148601064,
+          "word": "0c043df0",
+          "kind": "call",
+          "target": 2148595648,
+          "target_names": [
+            "LensService_SetMountPortBtoL"
+          ]
+        },
+        {
+          "site": 2148601072,
+          "word": "0c045a2b",
+          "kind": "call",
+          "target": 2148624556,
+          "target_names": [
+            "LensComThreadService_GetVdrcMsgState"
+          ]
+        },
+        {
+          "site": 2148601100,
+          "word": "0c043d3e",
+          "kind": "call",
+          "target": 2148594936,
+          "target_names": [
+            "LensService_WaitUs"
+          ]
+        },
+        {
+          "site": 2148601244,
+          "word": "0c044225",
+          "kind": "call",
+          "target": 2148599956,
+          "target_names": [
+            "LensService_GetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148601260,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148601280,
+          "word": "0c0440c4",
+          "kind": "call",
+          "target": 2148598544,
+          "target_names": [
+            "LensService_GetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601288,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601296,
+          "word": "0c041784",
+          "kind": "call",
+          "target": 2148556304,
+          "target_names": [
+            "GpioDriver_EnableEvent"
+          ]
+        },
+        {
+          "site": 2148601308,
+          "word": "0c043df0",
+          "kind": "call",
+          "target": 2148595648,
+          "target_names": [
+            "LensService_SetMountPortBtoL"
+          ]
+        },
+        {
+          "site": 2148601316,
+          "word": "0c045a2b",
+          "kind": "call",
+          "target": 2148624556,
+          "target_names": [
+            "LensComThreadService_GetVdrcMsgState"
+          ]
+        },
+        {
+          "site": 2148601376,
+          "word": "0c042093",
+          "kind": "call",
+          "target": 2148565580,
+          "target_names": [
+            "PwmTimerDriver_RegisterCallBack"
+          ]
+        },
+        {
+          "site": 2148601400,
+          "word": "0c04209e",
+          "kind": "call",
+          "target": 2148565624,
+          "target_names": [
+            "PwmTimerDriver_Start"
+          ]
+        },
+        {
+          "site": 2148601428,
+          "word": "0c0496f8",
+          "kind": "call",
+          "target": 2148686816,
+          "target_names": [
+            "EventFlag_Wait"
+          ]
+        },
+        {
+          "site": 2148601476,
+          "word": "0c042111",
+          "kind": "call",
+          "target": 2148566084,
+          "target_names": [
+            "PwmTimerDriver_Kill"
+          ]
+        },
+        {
+          "site": 2148601484,
+          "word": "0c04207d",
+          "kind": "call",
+          "target": 2148565492,
+          "target_names": [
+            "PwmTimerDriver_UnRegisterCallBack"
+          ]
+        },
+        {
+          "site": 2148601492,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148601512,
+          "word": "0c045a2e",
+          "kind": "call",
+          "target": 2148624568,
+          "target_names": [
+            "LensComThreadService_SetVdrcMsgState"
+          ]
+        },
+        {
+          "site": 2148601544,
+          "word": "0c043df0",
+          "kind": "call",
+          "target": 2148595648,
+          "target_names": [
+            "LensService_SetMountPortBtoL"
+          ]
+        },
+        {
+          "site": 2148601580,
+          "word": "0c0423e8",
+          "kind": "call",
+          "target": 2148568992,
+          "target_names": [
+            "SioDriver_ReceiveMultiAndWait"
+          ]
+        },
+        {
+          "site": 2148601588,
+          "word": "0c043df0",
+          "kind": "call",
+          "target": 2148595648,
+          "target_names": [
+            "LensService_SetMountPortBtoL"
+          ]
+        },
+        {
+          "site": 2148601608,
+          "word": "0c042374",
+          "kind": "call",
+          "target": 2148568528,
+          "target_names": [
+            "SioDriver_ReceiveMulti"
+          ]
+        },
+        {
+          "site": 2148601616,
+          "word": "0c043df0",
+          "kind": "call",
+          "target": 2148595648,
+          "target_names": [
+            "LensService_SetMountPortBtoL"
+          ]
+        },
+        {
+          "site": 2148601632,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148601668,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148601676,
+          "word": "0c0440c4",
+          "kind": "call",
+          "target": 2148598544,
+          "target_names": [
+            "LensService_GetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601684,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601692,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148601700,
+          "word": "0c0440c4",
+          "kind": "call",
+          "target": 2148598544,
+          "target_names": [
+            "LensService_GetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601708,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601716,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148601724,
+          "word": "0c0440c4",
+          "kind": "call",
+          "target": 2148598544,
+          "target_names": [
+            "LensService_GetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601732,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601740,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148601748,
+          "word": "0c0440c4",
+          "kind": "call",
+          "target": 2148598544,
+          "target_names": [
+            "LensService_GetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601756,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601764,
+          "word": "0c041784",
+          "kind": "call",
+          "target": 2148556304,
+          "target_names": [
+            "GpioDriver_EnableEvent"
+          ]
+        },
+        {
+          "site": 2148601776,
+          "word": "0c043df0",
+          "kind": "call",
+          "target": 2148595648,
+          "target_names": [
+            "LensService_SetMountPortBtoL"
+          ]
+        },
+        {
+          "site": 2148601796,
+          "word": "0c043de3",
+          "kind": "call",
+          "target": 2148595596,
+          "target_names": [
+            "LensService_SetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148601804,
+          "word": "0c041791",
+          "kind": "call",
+          "target": 2148556356,
+          "target_names": [
+            "GpioDriver_DisableEvent"
+          ]
+        },
+        {
+          "site": 2148601812,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148601820,
+          "word": "0c043d66",
+          "kind": "call",
+          "target": 2148595096,
+          "target_names": [
+            "LensService_LensCommunicationControlValueInitialize"
+          ]
+        },
+        {
+          "site": 2148601828,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148601836,
+          "word": "0c043e02",
+          "kind": "call",
+          "target": 2148595720,
+          "target_names": [
+            "LensService_SetLensComPort"
+          ]
+        },
+        {
+          "site": 2148601844,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148601852,
+          "word": "0c04425f",
+          "kind": "call",
+          "target": 2148600188,
+          "target_names": [
+            "LensService_LensInitializeSequence"
+          ]
+        },
+        {
+          "site": 2148601868,
+          "word": "0c045a2e",
+          "kind": "call",
+          "target": 2148624568,
+          "target_names": [
+            "LensComThreadService_SetVdrcMsgState"
+          ]
+        },
+        {
+          "site": 2148601876,
+          "word": "0c042111",
+          "kind": "call",
+          "target": 2148566084,
+          "target_names": [
+            "PwmTimerDriver_Kill"
+          ]
+        },
+        {
+          "site": 2148601884,
+          "word": "0c04207d",
+          "kind": "call",
+          "target": 2148565492,
+          "target_names": [
+            "PwmTimerDriver_UnRegisterCallBack"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensCommunication",
+      "address": 2148602388,
+      "candidate_end": 2148602708,
+      "file_offset": 2176252,
+      "size": 320,
+      "sha256": "ac2903b68cbb472022ba2f4312f0b647aa67e63c85913c3f9f387d2e91b82d6f",
+      "transfers": [
+        {
+          "site": 2148602480,
+          "word": "0c045d67",
+          "kind": "call",
+          "target": 2148627868,
+          "target_names": [
+            "LensService_SetLensMapCommunicationSendDataSize"
+          ]
+        },
+        {
+          "site": 2148602500,
+          "word": "0c045d78",
+          "kind": "call",
+          "target": 2148627936,
+          "target_names": [
+            "LensService_SetLensMapCommunicationReceiveDataSize"
+          ]
+        },
+        {
+          "site": 2148602520,
+          "word": "0c045d89",
+          "kind": "call",
+          "target": 2148628004,
+          "target_names": [
+            "LensService_SetLensMapCommunicationComMode"
+          ]
+        },
+        {
+          "site": 2148602580,
+          "word": "0c044314",
+          "kind": "call",
+          "target": 2148600912,
+          "target_names": [
+            "LensService_LensCommunicationBase"
+          ]
+        },
+        {
+          "site": 2148602684,
+          "word": "0c043f7c",
+          "kind": "call",
+          "target": 2148597232,
+          "target_names": [
+            "LensService_GetLensFunctionMapEnableOperation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensCommunicationLLC",
+      "address": 2148602708,
+      "candidate_end": 2148602952,
+      "file_offset": 2176572,
+      "size": 244,
+      "sha256": "645e3f394239a497dcf98771a8b432dac0ac9243cd3a30a2b8c203881b846b64",
+      "transfers": [
+        {
+          "site": 2148602776,
+          "word": "0c045d99",
+          "kind": "call",
+          "target": 2148628068,
+          "target_names": [
+            "LensService_SetLensMapLLCCommunicationSendDataSize"
+          ]
+        },
+        {
+          "site": 2148602788,
+          "word": "0c045da0",
+          "kind": "call",
+          "target": 2148628096,
+          "target_names": [
+            "LensService_SetLensMapLLCCommunicationReceiveDataSize"
+          ]
+        },
+        {
+          "site": 2148602800,
+          "word": "0c045da7",
+          "kind": "call",
+          "target": 2148628124,
+          "target_names": [
+            "LensService_SetLensMapLLCCommunicationComMode"
+          ]
+        },
+        {
+          "site": 2148602860,
+          "word": "0c044314",
+          "kind": "call",
+          "target": 2148600912,
+          "target_names": [
+            "LensService_LensCommunicationBase"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_LensCommunicationStartCheckWithLLCCommunication",
+      "address": 2148602952,
+      "candidate_end": 2148604164,
+      "file_offset": 2176816,
+      "size": 1212,
+      "sha256": "1ab3751ed609d474a0f420fbe63320eddb01579df208eba1dff80807e586a60f",
+      "transfers": [
+        {
+          "site": 2148603052,
+          "word": "0c0444d5",
+          "kind": "call",
+          "target": 2148602708,
+          "target_names": [
+            "LensService_LensCommunicationLLC"
+          ]
+        },
+        {
+          "site": 2148603080,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148603176,
+          "word": "0c0444d5",
+          "kind": "call",
+          "target": 2148602708,
+          "target_names": [
+            "LensService_LensCommunicationLLC"
+          ]
+        },
+        {
+          "site": 2148603244,
+          "word": "0c043f44",
+          "kind": "call",
+          "target": 2148597008,
+          "target_names": [
+            "LensService_LensComChangeFreqency"
+          ]
+        },
+        {
+          "site": 2148603260,
+          "word": "0c043e39",
+          "kind": "call",
+          "target": 2148595940,
+          "target_names": [
+            "LensService_LensComConfig"
+          ]
+        },
+        {
+          "site": 2148603328,
+          "word": "0c0444d5",
+          "kind": "call",
+          "target": 2148602708,
+          "target_names": [
+            "LensService_LensCommunicationLLC"
+          ]
+        },
+        {
+          "site": 2148603412,
+          "word": "0c0444d5",
+          "kind": "call",
+          "target": 2148602708,
+          "target_names": [
+            "LensService_LensCommunicationLLC"
+          ]
+        },
+        {
+          "site": 2148603480,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148603660,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_InitializeLens",
+      "address": 2148604172,
+      "candidate_end": 2148604652,
+      "file_offset": 2178036,
+      "size": 480,
+      "sha256": "ce9668634c2c477dc96def29253bc6c33d0092e9326f20e9ef95ac3bdf8b9982",
+      "transfers": [
+        {
+          "site": 2148604188,
+          "word": "0c045be2",
+          "kind": "call",
+          "target": 2148626312,
+          "target_names": [
+            "LensMountSwService_Enable"
+          ]
+        },
+        {
+          "site": 2148604196,
+          "word": "0c045ae2",
+          "kind": "call",
+          "target": 2148625288,
+          "target_names": [
+            "LensControlService_InitializeForSw"
+          ]
+        },
+        {
+          "site": 2148604204,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148604244,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148604264,
+          "word": "0c043de3",
+          "kind": "call",
+          "target": 2148595596,
+          "target_names": [
+            "LensService_SetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148604272,
+          "word": "0c044243",
+          "kind": "call",
+          "target": 2148600076,
+          "target_names": [
+            "LensService_LensPowerOnCheck"
+          ]
+        },
+        {
+          "site": 2148604292,
+          "word": "0c043de3",
+          "kind": "call",
+          "target": 2148595596,
+          "target_names": [
+            "LensService_SetMountPortLensPowerEnable"
+          ]
+        },
+        {
+          "site": 2148604336,
+          "word": "0c044512",
+          "kind": "call",
+          "target": 2148602952,
+          "target_names": [
+            "LensService_LensCommunicationStartCheckWithLLCCommunication"
+          ]
+        },
+        {
+          "site": 2148604352,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148604372,
+          "word": "0c043cd8",
+          "kind": "call",
+          "target": 2148594528,
+          "target_names": [
+            "LensService_GetLensInitEnable"
+          ]
+        },
+        {
+          "site": 2148604400,
+          "word": "0c0440d2",
+          "kind": "call",
+          "target": 2148598600,
+          "target_names": [
+            "LensService_GetMountPortLensDet"
+          ]
+        },
+        {
+          "site": 2148604432,
+          "word": "0c044fab",
+          "kind": "call",
+          "target": 2148613804,
+          "target_names": [
+            "LensDataServer_LensPrimaryDataCommunication"
+          ]
+        },
+        {
+          "site": 2148604440,
+          "word": "0c0457d4",
+          "kind": "call",
+          "target": 2148622160,
+          "target_names": [
+            "LensDataServer_SingleRegularCommunication"
+          ]
+        },
+        {
+          "site": 2148604464,
+          "word": "0c044ec8",
+          "kind": "call",
+          "target": 2148612896,
+          "target_names": [
+            "LensDataServer_ComSetAllMechanicalInit"
+          ]
+        },
+        {
+          "site": 2148604484,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148604560,
+          "word": "0c043df4",
+          "kind": "call",
+          "target": 2148595664,
+          "target_names": [
+            "LensService_LensCommunicationSequenceInitialize"
+          ]
+        },
+        {
+          "site": 2148604568,
+          "word": "0c043d66",
+          "kind": "call",
+          "target": 2148595096,
+          "target_names": [
+            "LensService_LensCommunicationControlValueInitialize"
+          ]
+        },
+        {
+          "site": 2148604576,
+          "word": "0c043e39",
+          "kind": "call",
+          "target": 2148595940,
+          "target_names": [
+            "LensService_LensComConfig"
+          ]
+        },
+        {
+          "site": 2148604596,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148604612,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148604636,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensService_MoVdSyncVd",
+      "address": 2148605272,
+      "candidate_end": 2148605744,
+      "file_offset": 2179136,
+      "size": 472,
+      "sha256": "cab64f6f9df0ad198ba1502866ae6980f5325687c441a059b228febc31cfbe1c",
+      "transfers": [
+        {
+          "site": 2148605364,
+          "word": "0c043d18",
+          "kind": "call",
+          "target": 2148594784,
+          "target_names": [
+            "LensService_GetLensState"
+          ]
+        },
+        {
+          "site": 2148605384,
+          "word": "0c044ce3",
+          "kind": "call",
+          "target": 2148610956,
+          "target_names": [
+            "LensDataServer_GetFocusRingStatusVDRC"
+          ]
+        },
+        {
+          "site": 2148605404,
+          "word": "0c044ce9",
+          "kind": "call",
+          "target": 2148610980,
+          "target_names": [
+            "LensDataServer_GetFocusRingStatusMoveInfoVDRC"
+          ]
+        },
+        {
+          "site": 2148605424,
+          "word": "0c044727",
+          "kind": "call",
+          "target": 2148605084,
+          "target_names": [
+            "LensService_DistributeLensTubeClosedStatus"
+          ]
+        },
+        {
+          "site": 2148605492,
+          "word": "0c044727",
+          "kind": "call",
+          "target": 2148605084,
+          "target_names": [
+            "LensService_DistributeLensTubeClosedStatus"
+          ]
+        },
+        {
+          "site": 2148605592,
+          "word": "0c045abe",
+          "kind": "call",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148605636,
+          "word": "0c044727",
+          "kind": "call",
+          "target": 2148605084,
+          "target_names": [
+            "LensService_DistributeLensTubeClosedStatus"
+          ]
+        },
+        {
+          "site": 2148605652,
+          "word": "0c045abe",
+          "kind": "call",
+          "target": 2148625144,
+          "target_names": [
+            "LensComThreadService_LensCommunicationSendMessage"
+          ]
+        },
+        {
+          "site": 2148605660,
+          "word": "0c043e9a",
+          "kind": "call",
+          "target": 2148596328,
+          "target_names": [
+            "LensService_GetLensCommunicationCompleteState"
+          ]
+        },
+        {
+          "site": 2148605680,
+          "word": "0c044930",
+          "kind": "call",
+          "target": 2148607168,
+          "target_names": [
+            "LensDataServer_GetLensLocationVDRC"
+          ]
+        },
+        {
+          "site": 2148605688,
+          "word": "0c04395d",
+          "kind": "call",
+          "target": 2148590964,
+          "target_names": [
+            "UserDataService_SetFocusPosition"
+          ]
+        },
+        {
+          "site": 2148605704,
+          "word": "0c0440c4",
+          "kind": "call",
+          "target": 2148598544,
+          "target_names": [
+            "LensService_GetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148605712,
+          "word": "0c043ddf",
+          "kind": "call",
+          "target": 2148595580,
+          "target_names": [
+            "LensService_SetMountPortMoVd"
+          ]
+        },
+        {
+          "site": 2148605728,
+          "word": "0c043d1b",
+          "kind": "call",
+          "target": 2148594796,
+          "target_names": [
+            "LensService_CheckFocusLocationInitialize"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_LensCommunicationDataInitialize",
+      "address": 2148605812,
+      "candidate_end": 2148606416,
+      "file_offset": 2179676,
+      "size": 604,
+      "sha256": "f5cbe10cd4034ef21c1e4124cbe32a32636f2860c5216f8acc03ea2bb3c10a64",
+      "transfers": [
+        {
+          "site": 2148605856,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605876,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605896,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605916,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605936,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148605956,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606064,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606084,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606104,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148606132,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_GetLensLocationVDRC",
+      "address": 2148607168,
+      "candidate_end": 2148607252,
+      "file_offset": 2181032,
+      "size": 84,
+      "sha256": "36f512454da36f47504842eecc49e9ddba5c7892c97aa650638ee678934cd9c5",
+      "transfers": []
+    },
+    {
+      "name": "LensDataServer_ComSetAllMechanicalInit",
+      "address": 2148612896,
+      "candidate_end": 2148612960,
+      "file_offset": 2186760,
+      "size": 64,
+      "sha256": "3cf254103856daa72a98747706c519f3d8f048730739d70dd9820ddaa1949e4d",
+      "transfers": [
+        {
+          "site": 2148612940,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComGetLensPrimarySpecData",
+      "address": 2148612960,
+      "candidate_end": 2148613164,
+      "file_offset": 2186824,
+      "size": 204,
+      "sha256": "4850aa76877770af4fa8d70016102a763331884241e4a430e4481b99fa5e356c",
+      "transfers": [
+        {
+          "site": 2148612992,
+          "word": "0c043f7c",
+          "kind": "call",
+          "target": 2148597232,
+          "target_names": [
+            "LensService_GetLensFunctionMapEnableOperation"
+          ]
+        },
+        {
+          "site": 2148613032,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148613140,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ComGetLensPrimaryOriginalDataStandard",
+      "address": 2148613164,
+      "candidate_end": 2148613280,
+      "file_offset": 2187028,
+      "size": 116,
+      "sha256": "09c0eafe97a5c085ca8971feedf0d7afc55db76a391eda6ae2572f2b6534c036",
+      "transfers": [
+        {
+          "site": 2148613216,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_LensPrimaryDataCommunication",
+      "address": 2148613804,
+      "candidate_end": 2148614624,
+      "file_offset": 2187668,
+      "size": 820,
+      "sha256": "9fd0a61d19cd711109b6fa723b81dc8dbb6adc2be7e14b2a3f25ab92c0843837",
+      "transfers": [
+        {
+          "site": 2148613932,
+          "word": "0c044ed8",
+          "kind": "call",
+          "target": 2148612960,
+          "target_names": [
+            "LensDataServer_ComGetLensPrimarySpecData"
+          ]
+        },
+        {
+          "site": 2148613964,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148613980,
+          "word": "0c044f0b",
+          "kind": "call",
+          "target": 2148613164,
+          "target_names": [
+            "LensDataServer_ComGetLensPrimaryOriginalDataStandard"
+          ]
+        },
+        {
+          "site": 2148614008,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148614024,
+          "word": "0c044f28",
+          "kind": "call",
+          "target": 2148613280,
+          "target_names": [
+            "LensDataServer_ComGetLensPrimaryOriginalDataCasual"
+          ]
+        },
+        {
+          "site": 2148614052,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148614068,
+          "word": "0c044f45",
+          "kind": "call",
+          "target": 2148613396,
+          "target_names": [
+            "LensDataServer_ComGetApertureEvDiffTable"
+          ]
+        },
+        {
+          "site": 2148614096,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148614112,
+          "word": "0c044f67",
+          "kind": "call",
+          "target": 2148613532,
+          "target_names": [
+            "LensDataServer_ComGetApertureDisplayEvDiffTable"
+          ]
+        },
+        {
+          "site": 2148614140,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148614156,
+          "word": "0c044f89",
+          "kind": "call",
+          "target": 2148613668,
+          "target_names": [
+            "LensDataServer_ComGetReleaseShutterDelayTable"
+          ]
+        },
+        {
+          "site": 2148614184,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148614200,
+          "word": "0c044ad9",
+          "kind": "call",
+          "target": 2148608868,
+          "target_names": [
+            "LensDataServer_GetReleaseCount"
+          ]
+        },
+        {
+          "site": 2148614296,
+          "word": "0c0449ea",
+          "kind": "call",
+          "target": 2148607912,
+          "target_names": [
+            "LensDataServer_ExGetLesKindSingle"
+          ]
+        },
+        {
+          "site": 2148614384,
+          "word": "0c044f0b",
+          "kind": "call",
+          "target": 2148613164,
+          "target_names": [
+            "LensDataServer_ComGetLensPrimaryOriginalDataStandard"
+          ]
+        },
+        {
+          "site": 2148614416,
+          "word": "0c044f28",
+          "kind": "call",
+          "target": 2148613280,
+          "target_names": [
+            "LensDataServer_ComGetLensPrimaryOriginalDataCasual"
+          ]
+        },
+        {
+          "site": 2148614448,
+          "word": "0c044f45",
+          "kind": "call",
+          "target": 2148613396,
+          "target_names": [
+            "LensDataServer_ComGetApertureEvDiffTable"
+          ]
+        },
+        {
+          "site": 2148614480,
+          "word": "0c044f67",
+          "kind": "call",
+          "target": 2148613532,
+          "target_names": [
+            "LensDataServer_ComGetApertureDisplayEvDiffTable"
+          ]
+        },
+        {
+          "site": 2148614512,
+          "word": "0c044f89",
+          "kind": "call",
+          "target": 2148613668,
+          "target_names": [
+            "LensDataServer_ComGetReleaseShutterDelayTable"
+          ]
+        },
+        {
+          "site": 2148614540,
+          "word": "0c0449ea",
+          "kind": "call",
+          "target": 2148607912,
+          "target_names": [
+            "LensDataServer_ExGetLesKindSingle"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_VdSyncRegularCommunicationAf",
+      "address": 2148615936,
+      "candidate_end": 2148616088,
+      "file_offset": 2189800,
+      "size": 152,
+      "sha256": "3252c597d18b054429f1054babd5f1d7dfe7c26b0554e7c27faaee465992b812",
+      "transfers": [
+        {
+          "site": 2148615972,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148616052,
+          "word": "0c0451a6",
+          "kind": "call",
+          "target": 2148615832,
+          "target_names": [
+            "LensDataServer_ComSetFocusSerchStart"
+          ]
+        },
+        {
+          "site": 2148616072,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ExGetLensAttached",
+      "address": 2148616340,
+      "candidate_end": 2148616376,
+      "file_offset": 2190204,
+      "size": 36,
+      "sha256": "0762cc2a7a40568b2c04955f482b8a7e15cd4ab296542e396a4352fc5a6aff93",
+      "transfers": [
+        {
+          "site": 2148616348,
+          "word": "0c043e9a",
+          "kind": "call",
+          "target": 2148596328,
+          "target_names": [
+            "LensService_GetLensCommunicationCompleteState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_ExGetAfEnable",
+      "address": 2148616968,
+      "candidate_end": 2148617048,
+      "file_offset": 2190832,
+      "size": 80,
+      "sha256": "9b1ce5a2f8c9ba9c50882ad658481e7cb09e342a112dba82987b5fd97c300ddd",
+      "transfers": [
+        {
+          "site": 2148616976,
+          "word": "0c045225",
+          "kind": "call",
+          "target": 2148616340,
+          "target_names": [
+            "LensDataServer_ExGetLensAttached"
+          ]
+        },
+        {
+          "site": 2148617020,
+          "word": "0c043f7c",
+          "kind": "call",
+          "target": 2148597232,
+          "target_names": [
+            "LensService_GetLensFunctionMapEnableOperation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_VdSyncRegularCommunication",
+      "address": 2148621452,
+      "candidate_end": 2148622160,
+      "file_offset": 2195316,
+      "size": 708,
+      "sha256": "896f1c3e82c60103375dd375c72e0ebc8bdd0ac5a23438318bb307bfa096490f",
+      "transfers": [
+        {
+          "site": 2148621496,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148621504,
+          "word": "0c047aeb",
+          "kind": "call",
+          "target": 2148658092,
+          "target_names": [
+            "TemperatureInformationService_GetTemperatureBody"
+          ]
+        },
+        {
+          "site": 2148621640,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148621692,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148621720,
+          "word": "0c0456c6",
+          "kind": "call",
+          "target": 2148621080,
+          "target_names": [
+            "LensDataServer_ComSetApertureApMoveStartWithNd"
+          ]
+        },
+        {
+          "site": 2148621744,
+          "word": "0c0456dc",
+          "kind": "call",
+          "target": 2148621168,
+          "target_names": [
+            "LensDataServer_ComSetApertureApMoveStart"
+          ]
+        },
+        {
+          "site": 2148621768,
+          "word": "0c0456ef",
+          "kind": "call",
+          "target": 2148621244,
+          "target_names": [
+            "LensDataServer_ComSetApertureAvRead"
+          ]
+        },
+        {
+          "site": 2148621792,
+          "word": "0c045703",
+          "kind": "call",
+          "target": 2148621324,
+          "target_names": [
+            "LensDataServer_ComSetApertureNdOpen"
+          ]
+        },
+        {
+          "site": 2148621816,
+          "word": "0c045713",
+          "kind": "call",
+          "target": 2148621388,
+          "target_names": [
+            "LensDataServer_ComSetApertureNdClose"
+          ]
+        },
+        {
+          "site": 2148621840,
+          "word": "0c044e03",
+          "kind": "call",
+          "target": 2148612108,
+          "target_names": [
+            "LensDataServer_ComSetReleasePreparRelease"
+          ]
+        },
+        {
+          "site": 2148621860,
+          "word": "0c044e90",
+          "kind": "call",
+          "target": 2148612672,
+          "target_names": [
+            "LensDataServer_ComSetReleaseShutterClose"
+          ]
+        },
+        {
+          "site": 2148621988,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensDataServer_SingleRegularCommunication",
+      "address": 2148622160,
+      "candidate_end": 2148622684,
+      "file_offset": 2196024,
+      "size": 524,
+      "sha256": "7e0e6f913e1f2afa1a5ccb7a19e3780081a29ca626cdd11b1d3960e6c2997347",
+      "transfers": [
+        {
+          "site": 2148622180,
+          "word": "0c047aeb",
+          "kind": "call",
+          "target": 2148658092,
+          "target_names": [
+            "TemperatureInformationService_GetTemperatureBody"
+          ]
+        },
+        {
+          "site": 2148622224,
+          "word": "0c043d18",
+          "kind": "call",
+          "target": 2148594784,
+          "target_names": [
+            "LensService_GetLensState"
+          ]
+        },
+        {
+          "site": 2148622244,
+          "word": "0c043eb1",
+          "kind": "call",
+          "target": 2148596420,
+          "target_names": [
+            "LensService_WaitForLensComFinish"
+          ]
+        },
+        {
+          "site": 2148622284,
+          "word": "0c044485",
+          "kind": "call",
+          "target": 2148602388,
+          "target_names": [
+            "LensService_LensCommunication"
+          ]
+        },
+        {
+          "site": 2148622316,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148622336,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148622356,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2148622376,
+          "word": "0c044727",
+          "kind": "call",
+          "target": 2148605084,
+          "target_names": [
+            "LensService_DistributeLensTubeClosedStatus"
+          ]
+        },
+        {
+          "site": 2148622596,
+          "word": "0c043d13",
+          "kind": "call",
+          "target": 2148594764,
+          "target_names": [
+            "LensService_SetLensCommunicationsState"
+          ]
+        },
+        {
+          "site": 2148622624,
+          "word": "0c043e97",
+          "kind": "call",
+          "target": 2148596316,
+          "target_names": [
+            "LensService_SetLensState"
+          ]
+        },
+        {
+          "site": 2148622632,
+          "word": "0c044727",
+          "kind": "call",
+          "target": 2148605084,
+          "target_names": [
+            "LensService_DistributeLensTubeClosedStatus"
+          ]
+        },
+        {
+          "site": 2148622668,
+          "word": "0c043e97",
+          "kind": "call",
+          "target": 2148596316,
+          "target_names": [
+            "LensService_SetLensState"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensComThreadService_ClearQueue",
+      "address": 2148624756,
+      "candidate_end": 2148624768,
+      "file_offset": 2198620,
+      "size": 12,
+      "sha256": "91f17eb8982f22dfb9248b0efe3943d819a59c8240300c3fd774e2a79730a0ed",
+      "transfers": [
+        {
+          "site": 2148624760,
+          "word": "08049745",
+          "kind": "jump",
+          "target": 2148687124,
+          "target_names": [
+            "MessageQueue_Clear"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensComThreadService_LensComThreadMain",
+      "address": 2148624768,
+      "candidate_end": 2148625144,
+      "file_offset": 2198632,
+      "size": 376,
+      "sha256": "9943ed392d63cf7d75009335c75a1c3b64309b59045eccd190974ac914c8fddf",
+      "transfers": [
+        {
+          "site": 2148624816,
+          "word": "0c04973b",
+          "kind": "call",
+          "target": 2148687084,
+          "target_names": [
+            "MessageQueue_Receive"
+          ]
+        },
+        {
+          "site": 2148624836,
+          "word": "0c043eb1",
+          "kind": "call",
+          "target": 2148596420,
+          "target_names": [
+            "LensService_WaitForLensComFinish"
+          ]
+        },
+        {
+          "site": 2148624868,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2148624876,
+          "word": "0c043e84",
+          "kind": "call",
+          "target": 2148596240,
+          "target_names": [
+            "LensService_LensPowerOffSequence"
+          ]
+        },
+        {
+          "site": 2148624884,
+          "word": "0c043d3c",
+          "kind": "call",
+          "target": 2148594928,
+          "target_names": [
+            "LensService_LensProcessWait"
+          ]
+        },
+        {
+          "site": 2148624892,
+          "word": "0c04425f",
+          "kind": "call",
+          "target": 2148600188,
+          "target_names": [
+            "LensService_LensInitializeSequence"
+          ]
+        },
+        {
+          "site": 2148624908,
+          "word": "0c0442cd",
+          "kind": "call",
+          "target": 2148600628,
+          "target_names": [
+            "LensService_LensSwControl"
+          ]
+        },
+        {
+          "site": 2148624924,
+          "word": "0c044002",
+          "kind": "call",
+          "target": 2148597768,
+          "target_names": [
+            "LensService_ExecuteLensEndSequence"
+          ]
+        },
+        {
+          "site": 2148624940,
+          "word": "0c044032",
+          "kind": "call",
+          "target": 2148597960,
+          "target_names": [
+            "LensService_SetLensActuatorDriveLimitMode"
+          ]
+        },
+        {
+          "site": 2148624956,
+          "word": "0c044032",
+          "kind": "call",
+          "target": 2148597960,
+          "target_names": [
+            "LensService_SetLensActuatorDriveLimitMode"
+          ]
+        },
+        {
+          "site": 2148624972,
+          "word": "0c044e90",
+          "kind": "call",
+          "target": 2148612672,
+          "target_names": [
+            "LensDataServer_ComSetReleaseShutterClose"
+          ]
+        },
+        {
+          "site": 2148624988,
+          "word": "0c044e7d",
+          "kind": "call",
+          "target": 2148612596,
+          "target_names": [
+            "LensDataServer_ComSetReleaseShutterOpen"
+          ]
+        },
+        {
+          "site": 2148625004,
+          "word": "0c044e03",
+          "kind": "call",
+          "target": 2148612108,
+          "target_names": [
+            "LensDataServer_ComSetReleasePreparRelease"
+          ]
+        },
+        {
+          "site": 2148625020,
+          "word": "0c0456c6",
+          "kind": "call",
+          "target": 2148621080,
+          "target_names": [
+            "LensDataServer_ComSetApertureApMoveStartWithNd"
+          ]
+        },
+        {
+          "site": 2148625036,
+          "word": "0c0458a0",
+          "kind": "call",
+          "target": 2148622976,
+          "target_names": [
+            "LensDataServer_ComSetFocusMovementStop"
+          ]
+        },
+        {
+          "site": 2148625052,
+          "word": "0c04586a",
+          "kind": "call",
+          "target": 2148622760,
+          "target_names": [
+            "LensDataServer_ComSetFocusLocationDrive"
+          ]
+        },
+        {
+          "site": 2148625068,
+          "word": "0c0451a6",
+          "kind": "call",
+          "target": 2148615832,
+          "target_names": [
+            "LensDataServer_ComSetFocusSerchStart"
+          ]
+        },
+        {
+          "site": 2148625084,
+          "word": "0c0457d4",
+          "kind": "call",
+          "target": 2148622160,
+          "target_names": [
+            "LensDataServer_SingleRegularCommunication"
+          ]
+        },
+        {
+          "site": 2148625104,
+          "word": "0c045723",
+          "kind": "call",
+          "target": 2148621452,
+          "target_names": [
+            "LensDataServer_VdSyncRegularCommunication"
+          ]
+        },
+        {
+          "site": 2148625112,
+          "word": "0c0456ba",
+          "kind": "call",
+          "target": 2148621032,
+          "target_names": [
+            "LensDataServer_ChangeOrderSheetViewData"
+          ]
+        },
+        {
+          "site": 2148625128,
+          "word": "0c0451c0",
+          "kind": "call",
+          "target": 2148615936,
+          "target_names": [
+            "LensDataServer_VdSyncRegularCommunicationAf"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LensComThreadService_LensCommunicationSendMessage",
+      "address": 2148625144,
+      "candidate_end": 2148625188,
+      "file_offset": 2199008,
+      "size": 44,
+      "sha256": "57b58fe4d1b531670dec43f7c53e00714868877a4d2d23c2b2bdaaf0c0af7a18",
+      "transfers": [
+        {
+          "site": 2148625168,
+          "word": "0c049743",
+          "kind": "call",
+          "target": 2148687116,
+          "target_names": [
+            "MessageQueue_Send"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureLensControlService_IsEnableLensAf",
+      "address": 2151867000,
+      "candidate_end": 2151867028,
+      "segment": "E04",
+      "decoded_offset": 3147768,
+      "size": 28,
+      "sha256": "2bcd4245a6f5dbaaa7570465724c2ab35f626bdac9b027efc0c3e002a865ae16",
+      "transfers": [
+        {
+          "site": 2151867008,
+          "word": "0c0452c2",
+          "kind": "call",
+          "target": 2148616968,
+          "target_names": [
+            "LensDataServer_ExGetAfEnable"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "evidence": [
+    {
+      "role": "OR-only state writer and native control/data reset",
+      "words": [
+        {
+          "va": "0x8010f450",
+          "u32le_word": "0x90435e4b",
+          "segment": "E03",
+          "original_file_offset": "0x211738"
+        },
+        {
+          "va": "0x8010f454",
+          "u32le_word": "0x00832025",
+          "segment": "E03",
+          "original_file_offset": "0x21173c"
+        },
+        {
+          "va": "0x8010f45c",
+          "u32le_word": "0xa0445e4b",
+          "segment": "E03",
+          "original_file_offset": "0x211744"
+        },
+        {
+          "va": "0x8010f5a0",
+          "u32le_word": "0x24c45e78",
+          "segment": "E03",
+          "original_file_offset": "0x211888"
+        },
+        {
+          "va": "0x8010f5ac",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x211894"
+        },
+        {
+          "va": "0x8010f5b8",
+          "u32le_word": "0x24a45eb8",
+          "segment": "E03",
+          "original_file_offset": "0x2118a0"
+        },
+        {
+          "va": "0x8010f5bc",
+          "u32le_word": "0x24064000",
+          "segment": "E03",
+          "original_file_offset": "0x2118a4"
+        },
+        {
+          "va": "0x8010f5c0",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x2118a8"
+        },
+        {
+          "va": "0x8010f688",
+          "u32le_word": "0xa120a2d9",
+          "segment": "E03",
+          "original_file_offset": "0x211970"
+        },
+        {
+          "va": "0x8010f68c",
+          "u32le_word": "0xa1005e4b",
+          "segment": "E03",
+          "original_file_offset": "0x211974"
+        },
+        {
+          "va": "0x8010f774",
+          "u32le_word": "0x080447dd",
+          "segment": "E03",
+          "original_file_offset": "0x211a5c"
+        },
+        {
+          "va": "0x80111fa0",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x214288"
+        },
+        {
+          "va": "0x80111fb4",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x21429c"
+        },
+        {
+          "va": "0x8011204c",
+          "u32le_word": "0xa300a73d",
+          "segment": "E03",
+          "original_file_offset": "0x214334"
+        },
+        {
+          "va": "0x80112054",
+          "u32le_word": "0xa1c0a73f",
+          "segment": "E03",
+          "original_file_offset": "0x21433c"
+        },
+        {
+          "va": "0x80112074",
+          "u32le_word": "0xa0e0a746",
+          "segment": "E03",
+          "original_file_offset": "0x21435c"
+        },
+        {
+          "va": "0x80112084",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x21436c"
+        },
+        {
+          "va": "0x80112098",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x214380"
+        }
+      ]
+    },
+    {
+      "role": "Power transition and conditional 0x08 writes",
+      "words": [
+        {
+          "va": "0x80110994",
+          "u32le_word": "0x0c044225",
+          "segment": "E03",
+          "original_file_offset": "0x212c7c"
+        },
+        {
+          "va": "0x8011099c",
+          "u32le_word": "0x10400008",
+          "segment": "E03",
+          "original_file_offset": "0x212c84"
+        },
+        {
+          "va": "0x801109a0",
+          "u32le_word": "0x24020002",
+          "segment": "E03",
+          "original_file_offset": "0x212c88"
+        },
+        {
+          "va": "0x80110a00",
+          "u32le_word": "0x0c043d66",
+          "segment": "E03",
+          "original_file_offset": "0x212ce8"
+        },
+        {
+          "va": "0x80110a08",
+          "u32le_word": "0x0c044512",
+          "segment": "E03",
+          "original_file_offset": "0x212cf0"
+        },
+        {
+          "va": "0x80110a10",
+          "u32le_word": "0x1051000e",
+          "segment": "E03",
+          "original_file_offset": "0x212cf8"
+        },
+        {
+          "va": "0x80110a18",
+          "u32le_word": "0x0c043e84",
+          "segment": "E03",
+          "original_file_offset": "0x212d00"
+        },
+        {
+          "va": "0x80110a24",
+          "u32le_word": "0x29ac0003",
+          "segment": "E03",
+          "original_file_offset": "0x212d0c"
+        },
+        {
+          "va": "0x80110a4c",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x212d34"
+        },
+        {
+          "va": "0x80110a50",
+          "u32le_word": "0x24040001",
+          "segment": "E03",
+          "original_file_offset": "0x212d38"
+        },
+        {
+          "va": "0x80110a70",
+          "u32le_word": "0x0c044fab",
+          "segment": "E03",
+          "original_file_offset": "0x212d58"
+        },
+        {
+          "va": "0x80110a78",
+          "u32le_word": "0x0c0457d4",
+          "segment": "E03",
+          "original_file_offset": "0x212d60"
+        },
+        {
+          "va": "0x80110a80",
+          "u32le_word": "0x12300022",
+          "segment": "E03",
+          "original_file_offset": "0x212d68"
+        },
+        {
+          "va": "0x80110ae4",
+          "u32le_word": "0x0c045abe",
+          "segment": "E03",
+          "original_file_offset": "0x212dcc"
+        },
+        {
+          "va": "0x80110ae8",
+          "u32le_word": "0x24040001",
+          "segment": "E03",
+          "original_file_offset": "0x212dd0"
+        },
+        {
+          "va": "0x80110afc",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x212de4"
+        },
+        {
+          "va": "0x80110b0c",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x212df4"
+        },
+        {
+          "va": "0x80110b10",
+          "u32le_word": "0x24040004",
+          "segment": "E03",
+          "original_file_offset": "0x212df8"
+        },
+        {
+          "va": "0x80110b14",
+          "u32le_word": "0x12510003",
+          "segment": "E03",
+          "original_file_offset": "0x212dfc"
+        },
+        {
+          "va": "0x80110b18",
+          "u32le_word": "0x24080007",
+          "segment": "E03",
+          "original_file_offset": "0x212e00"
+        },
+        {
+          "va": "0x80110b1c",
+          "u32le_word": "0x1648ffda",
+          "segment": "E03",
+          "original_file_offset": "0x212e04"
+        },
+        {
+          "va": "0x80110b24",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x212e0c"
+        },
+        {
+          "va": "0x80110b28",
+          "u32le_word": "0x24040008",
+          "segment": "E03",
+          "original_file_offset": "0x212e10"
+        },
+        {
+          "va": "0x8011192c",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x213c14"
+        },
+        {
+          "va": "0x80111930",
+          "u32le_word": "0x00002021",
+          "segment": "E03",
+          "original_file_offset": "0x213c18"
+        },
+        {
+          "va": "0x80111a98",
+          "u32le_word": "0x0c043d66",
+          "segment": "E03",
+          "original_file_offset": "0x213d80"
+        },
+        {
+          "va": "0x80111ac4",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x213dac"
+        },
+        {
+          "va": "0x80111acc",
+          "u32le_word": "0x12510003",
+          "segment": "E03",
+          "original_file_offset": "0x213db4"
+        },
+        {
+          "va": "0x80111ad0",
+          "u32le_word": "0x24040007",
+          "segment": "E03",
+          "original_file_offset": "0x213db8"
+        },
+        {
+          "va": "0x80111adc",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x213dc4"
+        }
+      ]
+    },
+    {
+      "role": "Map replies and ready store",
+      "words": [
+        {
+          "va": "0x801114ac",
+          "u32le_word": "0x0c0444d5",
+          "segment": "E03",
+          "original_file_offset": "0x213794"
+        },
+        {
+          "va": "0x801114d0",
+          "u32le_word": "0x2e290005",
+          "segment": "E03",
+          "original_file_offset": "0x2137b8"
+        },
+        {
+          "va": "0x80111528",
+          "u32le_word": "0x0c0444d5",
+          "segment": "E03",
+          "original_file_offset": "0x213810"
+        },
+        {
+          "va": "0x801115c0",
+          "u32le_word": "0x0c0444d5",
+          "segment": "E03",
+          "original_file_offset": "0x2138a8"
+        },
+        {
+          "va": "0x80111614",
+          "u32le_word": "0x0c0444d5",
+          "segment": "E03",
+          "original_file_offset": "0x2138fc"
+        },
+        {
+          "va": "0x80111658",
+          "u32le_word": "0x0c044485",
+          "segment": "E03",
+          "original_file_offset": "0x213940"
+        },
+        {
+          "va": "0x80111664",
+          "u32le_word": "0x1450ff96",
+          "segment": "E03",
+          "original_file_offset": "0x21394c"
+        },
+        {
+          "va": "0x801116a8",
+          "u32le_word": "0xa08b0000",
+          "segment": "E03",
+          "original_file_offset": "0x213990"
+        },
+        {
+          "va": "0x8011170c",
+          "u32le_word": "0x0c044485",
+          "segment": "E03",
+          "original_file_offset": "0x2139f4"
+        },
+        {
+          "va": "0x80111714",
+          "u32le_word": "0x14500079",
+          "segment": "E03",
+          "original_file_offset": "0x2139fc"
+        },
+        {
+          "va": "0x80111760",
+          "u32le_word": "0xa08c0000",
+          "segment": "E03",
+          "original_file_offset": "0x213a48"
+        },
+        {
+          "va": "0x801118f8",
+          "u32le_word": "0xa290a2d9",
+          "segment": "E03",
+          "original_file_offset": "0x213be0"
+        },
+        {
+          "va": "0x801118fc",
+          "u32le_word": "0x1000fef0",
+          "segment": "E03",
+          "original_file_offset": "0x213be4"
+        },
+        {
+          "va": "0x80124bb8",
+          "u32le_word": "0x80c25e78",
+          "segment": "E03",
+          "original_file_offset": "0x226ea0"
+        },
+        {
+          "va": "0x80124bbc",
+          "u32le_word": "0x80c2a0d4",
+          "segment": "E03",
+          "original_file_offset": "0x226ea4"
+        },
+        {
+          "va": "0x80124bc0",
+          "u32le_word": "0x80c25eb8",
+          "segment": "E03",
+          "original_file_offset": "0x226ea8"
+        }
+      ]
+    },
+    {
+      "role": "Independent AF and admission gates and unconditional reply copy",
+      "words": [
+        {
+          "va": "0x8010fa70",
+          "u32le_word": "0x90625e4b",
+          "segment": "E03",
+          "original_file_offset": "0x211d58"
+        },
+        {
+          "va": "0x801148a4",
+          "u32le_word": "0x30420008",
+          "segment": "E03",
+          "original_file_offset": "0x216b8c"
+        },
+        {
+          "va": "0x80114b10",
+          "u32le_word": "0x0c045225",
+          "segment": "E03",
+          "original_file_offset": "0x216df8"
+        },
+        {
+          "va": "0x80114b24",
+          "u32le_word": "0x14400005",
+          "segment": "E03",
+          "original_file_offset": "0x216e0c"
+        },
+        {
+          "va": "0x80114b3c",
+          "u32le_word": "0x0c043f7c",
+          "segment": "E03",
+          "original_file_offset": "0x216e24"
+        },
+        {
+          "va": "0x80114b44",
+          "u32le_word": "0x0002182b",
+          "segment": "E03",
+          "original_file_offset": "0x216e2c"
+        },
+        {
+          "va": "0x8010fdfc",
+          "u32le_word": "0x25075eb8",
+          "segment": "E03",
+          "original_file_offset": "0x2120e4"
+        },
+        {
+          "va": "0x8010fe14",
+          "u32le_word": "0x10820003",
+          "segment": "E03",
+          "original_file_offset": "0x2120fc"
+        },
+        {
+          "va": "0x8010fe24",
+          "u32le_word": "0x90a30000",
+          "segment": "E03",
+          "original_file_offset": "0x21210c"
+        },
+        {
+          "va": "0x80111218",
+          "u32le_word": "0x9103a2d9",
+          "segment": "E03",
+          "original_file_offset": "0x213500"
+        },
+        {
+          "va": "0x80111248",
+          "u32le_word": "0x1062003a",
+          "segment": "E03",
+          "original_file_offset": "0x213530"
+        },
+        {
+          "va": "0x801112d4",
+          "u32le_word": "0x0c044314",
+          "segment": "E03",
+          "original_file_offset": "0x2135bc"
+        },
+        {
+          "va": "0x801112dc",
+          "u32le_word": "0x1280000b",
+          "segment": "E03",
+          "original_file_offset": "0x2135c4"
+        },
+        {
+          "va": "0x801112e0",
+          "u32le_word": "0x00402821",
+          "segment": "E03",
+          "original_file_offset": "0x2135c8"
+        },
+        {
+          "va": "0x801112fc",
+          "u32le_word": "0xa06c0000",
+          "segment": "E03",
+          "original_file_offset": "0x2135e4"
+        },
+        {
+          "va": "0x8011133c",
+          "u32le_word": "0x0c043f7c",
+          "segment": "E03",
+          "original_file_offset": "0x213624"
+        },
+        {
+          "va": "0x80111344",
+          "u32le_word": "0x1440ffc2",
+          "segment": "E03",
+          "original_file_offset": "0x21362c"
+        },
+        {
+          "va": "0x80111348",
+          "u32le_word": "0x24030007",
+          "segment": "E03",
+          "original_file_offset": "0x213630"
+        }
+      ]
+    },
+    {
+      "role": "Primary invalidation, failed buffer zeroing, and position getter",
+      "words": [
+        {
+          "va": "0x80113f14",
+          "u32le_word": "0xa0a0a746",
+          "segment": "E03",
+          "original_file_offset": "0x2161fc"
+        },
+        {
+          "va": "0x80113f18",
+          "u32le_word": "0xa220a73d",
+          "segment": "E03",
+          "original_file_offset": "0x216200"
+        },
+        {
+          "va": "0x80113f20",
+          "u32le_word": "0xa260a73f",
+          "segment": "E03",
+          "original_file_offset": "0x216208"
+        },
+        {
+          "va": "0x80113f2c",
+          "u32le_word": "0x0c044ed8",
+          "segment": "E03",
+          "original_file_offset": "0x216214"
+        },
+        {
+          "va": "0x80113f3c",
+          "u32le_word": "0x10620069",
+          "segment": "E03",
+          "original_file_offset": "0x216224"
+        },
+        {
+          "va": "0x80113f4c",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x216234"
+        },
+        {
+          "va": "0x80113f78",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x216260"
+        },
+        {
+          "va": "0x801140f4",
+          "u32le_word": "0xa223a73d",
+          "segment": "E03",
+          "original_file_offset": "0x2163dc"
+        },
+        {
+          "va": "0x80114114",
+          "u32le_word": "0xa262a73f",
+          "segment": "E03",
+          "original_file_offset": "0x2163fc"
+        },
+        {
+          "va": "0x801124f4",
+          "u32le_word": "0x9162a746",
+          "segment": "E03",
+          "original_file_offset": "0x2147dc"
+        }
+      ]
+    },
+    {
+      "role": "Single/VD regular cache behavior",
+      "words": [
+        {
+          "va": "0x80115fcc",
+          "u32le_word": "0x0c044485",
+          "segment": "E03",
+          "original_file_offset": "0x2182b4"
+        },
+        {
+          "va": "0x80115fdc",
+          "u32le_word": "0x1222001b",
+          "segment": "E03",
+          "original_file_offset": "0x2182c4"
+        },
+        {
+          "va": "0x80115fec",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x2182d4"
+        },
+        {
+          "va": "0x80116000",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x2182e8"
+        },
+        {
+          "va": "0x80116014",
+          "u32le_word": "0x0c03edd5",
+          "segment": "E03",
+          "original_file_offset": "0x2182fc"
+        },
+        {
+          "va": "0x80116104",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x2183ec"
+        },
+        {
+          "va": "0x80116108",
+          "u32le_word": "0x24040020",
+          "segment": "E03",
+          "original_file_offset": "0x2183f0"
+        },
+        {
+          "va": "0x8011611c",
+          "u32le_word": "0xa0c7a746",
+          "segment": "E03",
+          "original_file_offset": "0x218404"
+        },
+        {
+          "va": "0x80115d14",
+          "u32le_word": "0xa06c0000",
+          "segment": "E03",
+          "original_file_offset": "0x217ffc"
+        },
+        {
+          "va": "0x80115d48",
+          "u32le_word": "0x0c044485",
+          "segment": "E03",
+          "original_file_offset": "0x218030"
+        },
+        {
+          "va": "0x80115d60",
+          "u32le_word": "0xaa8f0003",
+          "segment": "E03",
+          "original_file_offset": "0x218048"
+        },
+        {
+          "va": "0x80115d70",
+          "u32le_word": "0xa28e0004",
+          "segment": "E03",
+          "original_file_offset": "0x218058"
+        },
+        {
+          "va": "0x80115d74",
+          "u32le_word": "0x16530057",
+          "segment": "E03",
+          "original_file_offset": "0x21805c"
+        },
+        {
+          "va": "0x80115d7c",
+          "u32le_word": "0x0c043d13",
+          "segment": "E03",
+          "original_file_offset": "0x218064"
+        },
+        {
+          "va": "0x80115d94",
+          "u32le_word": "0xa292a746",
+          "segment": "E03",
+          "original_file_offset": "0x21807c"
+        },
+        {
+          "va": "0x80115e70",
+          "u32le_word": "0xa07f0000",
+          "segment": "E03",
+          "original_file_offset": "0x218158"
+        },
+        {
+          "va": "0x80115ea4",
+          "u32le_word": "0x0c044485",
+          "segment": "E03",
+          "original_file_offset": "0x21818c"
+        },
+        {
+          "va": "0x80115ebc",
+          "u32le_word": "0xaa860003",
+          "segment": "E03",
+          "original_file_offset": "0x2181a4"
+        },
+        {
+          "va": "0x80115ec8",
+          "u32le_word": "0xa2830004",
+          "segment": "E03",
+          "original_file_offset": "0x2181b0"
+        },
+        {
+          "va": "0x80115ecc",
+          "u32le_word": "0x1253ffab",
+          "segment": "E03",
+          "original_file_offset": "0x2181b4"
+        }
+      ]
+    },
+    {
+      "role": "Dismount, power-off and native timeout reset",
+      "words": [
+        {
+          "va": "0x80110468",
+          "u32le_word": "0x0c0440d2",
+          "segment": "E03",
+          "original_file_offset": "0x212750"
+        },
+        {
+          "va": "0x80110478",
+          "u32le_word": "0x12020006",
+          "segment": "E03",
+          "original_file_offset": "0x212760"
+        },
+        {
+          "va": "0x80110494",
+          "u32le_word": "0x0c0440cb",
+          "segment": "E03",
+          "original_file_offset": "0x21277c"
+        },
+        {
+          "va": "0x8011049c",
+          "u32le_word": "0x1050fff8",
+          "segment": "E03",
+          "original_file_offset": "0x212784"
+        },
+        {
+          "va": "0x801104a0",
+          "u32le_word": "0x92235e76",
+          "segment": "E03",
+          "original_file_offset": "0x212788"
+        },
+        {
+          "va": "0x801104a4",
+          "u32le_word": "0x1470fff6",
+          "segment": "E03",
+          "original_file_offset": "0x21278c"
+        },
+        {
+          "va": "0x801104b4",
+          "u32le_word": "0x0c043e84",
+          "segment": "E03",
+          "original_file_offset": "0x21279c"
+        },
+        {
+          "va": "0x801104c0",
+          "u32le_word": "0xa2205e76",
+          "segment": "E03",
+          "original_file_offset": "0x2127a8"
+        },
+        {
+          "va": "0x80110b50",
+          "u32le_word": "0x0c0440cb",
+          "segment": "E03",
+          "original_file_offset": "0x212e38"
+        },
+        {
+          "va": "0x80110b60",
+          "u32le_word": "0x9225a2dc",
+          "segment": "E03",
+          "original_file_offset": "0x212e48"
+        },
+        {
+          "va": "0x80110b8c",
+          "u32le_word": "0x0c0440d2",
+          "segment": "E03",
+          "original_file_offset": "0x212e74"
+        },
+        {
+          "va": "0x80110b9c",
+          "u32le_word": "0x0c043e84",
+          "segment": "E03",
+          "original_file_offset": "0x212e84"
+        },
+        {
+          "va": "0x80110ba8",
+          "u32le_word": "0xa0d05e76",
+          "segment": "E03",
+          "original_file_offset": "0x212e90"
+        },
+        {
+          "va": "0x8010fa24",
+          "u32le_word": "0x0c043de3",
+          "segment": "E03",
+          "original_file_offset": "0x211d0c"
+        },
+        {
+          "va": "0x8010fa34",
+          "u32le_word": "0x0c043df4",
+          "segment": "E03",
+          "original_file_offset": "0x211d1c"
+        },
+        {
+          "va": "0x8010fa3c",
+          "u32le_word": "0x0c043d66",
+          "segment": "E03",
+          "original_file_offset": "0x211d24"
+        },
+        {
+          "va": "0x80110e54",
+          "u32le_word": "0x0c0496f8",
+          "segment": "E03",
+          "original_file_offset": "0x21313c"
+        },
+        {
+          "va": "0x80110e68",
+          "u32le_word": "0x31850100",
+          "segment": "E03",
+          "original_file_offset": "0x213150"
+        },
+        {
+          "va": "0x80110e7c",
+          "u32le_word": "0x10a0ffe8",
+          "segment": "E03",
+          "original_file_offset": "0x213164"
+        },
+        {
+          "va": "0x80110e94",
+          "u32le_word": "0x0c043df4",
+          "segment": "E03",
+          "original_file_offset": "0x21317c"
+        },
+        {
+          "va": "0x80110eb0",
+          "u32le_word": "0x9242a2d9",
+          "segment": "E03",
+          "original_file_offset": "0x213198"
+        },
+        {
+          "va": "0x80110eb8",
+          "u32le_word": "0x50510042",
+          "segment": "E03",
+          "original_file_offset": "0x2131a0"
+        },
+        {
+          "va": "0x80110ec4",
+          "u32le_word": "0x24030005",
+          "segment": "E03",
+          "original_file_offset": "0x2131ac"
+        },
+        {
+          "va": "0x80110fdc",
+          "u32le_word": "0x0c043d66",
+          "segment": "E03",
+          "original_file_offset": "0x2132c4"
+        },
+        {
+          "va": "0x80110ffc",
+          "u32le_word": "0x0c04425f",
+          "segment": "E03",
+          "original_file_offset": "0x2132e4"
+        },
+        {
+          "va": "0x80111008",
+          "u32le_word": "0x24030005",
+          "segment": "E03",
+          "original_file_offset": "0x2132f0"
+        }
+      ]
+    },
+    {
+      "role": "Lens-thread message table and targets",
+      "words": [
+        {
+          "va": "0x8011f0ac",
+          "u32le_word": "0x801169fc",
+          "segment": "E03",
+          "original_file_offset": "0x221394"
+        },
+        {
+          "va": "0x8011f0b0",
+          "u32le_word": "0x80116ae8",
+          "segment": "E03",
+          "original_file_offset": "0x221398"
+        },
+        {
+          "va": "0x8011f0b4",
+          "u32le_word": "0x80116acc",
+          "segment": "E03",
+          "original_file_offset": "0x22139c"
+        },
+        {
+          "va": "0x8011f0b8",
+          "u32le_word": "0x80116abc",
+          "segment": "E03",
+          "original_file_offset": "0x2213a0"
+        },
+        {
+          "va": "0x8011f0e4",
+          "u32le_word": "0x80116a1c",
+          "segment": "E03",
+          "original_file_offset": "0x2213cc"
+        },
+        {
+          "va": "0x8011f0e8",
+          "u32le_word": "0x801169ec",
+          "segment": "E03",
+          "original_file_offset": "0x2213d0"
+        },
+        {
+          "va": "0x8011f0ec",
+          "u32le_word": "0x80116a0c",
+          "segment": "E03",
+          "original_file_offset": "0x2213d4"
+        },
+        {
+          "va": "0x801169e4",
+          "u32le_word": "0x00800008",
+          "segment": "E03",
+          "original_file_offset": "0x218ccc"
+        },
+        {
+          "va": "0x801169ec",
+          "u32le_word": "0x0c043e84",
+          "segment": "E03",
+          "original_file_offset": "0x218cd4"
+        },
+        {
+          "va": "0x801169fc",
+          "u32le_word": "0x0c04425f",
+          "segment": "E03",
+          "original_file_offset": "0x218ce4"
+        },
+        {
+          "va": "0x80116a0c",
+          "u32le_word": "0x0c0442cd",
+          "segment": "E03",
+          "original_file_offset": "0x218cf4"
+        },
+        {
+          "va": "0x80116a1c",
+          "u32le_word": "0x0c044002",
+          "segment": "E03",
+          "original_file_offset": "0x218d04"
+        },
+        {
+          "va": "0x80116abc",
+          "u32le_word": "0x0c0457d4",
+          "segment": "E03",
+          "original_file_offset": "0x218da4"
+        },
+        {
+          "va": "0x80116ad0",
+          "u32le_word": "0x0c045723",
+          "segment": "E03",
+          "original_file_offset": "0x218db8"
+        },
+        {
+          "va": "0x80116ae8",
+          "u32le_word": "0x0c0451c0",
+          "segment": "E03",
+          "original_file_offset": "0x218dd0"
+        }
+      ]
+    }
+  ],
+  "reproduction": [
+    "python tools/check_lens_readiness.py .private/main-expanded.elf --output .private/lens-readiness/recheck.json",
+    "tools/check_lens_readiness.py exposes validate_report(document['replay']) without angr or firmware."
+  ],
+  "limitations": [
+    "The original MIPS exercises software state and selected calls with synthetic GPIO, power, queue, timer, LLC and response fixtures. No physical lens or camera data are sampled.",
+    "The search probe confirms upper gate forwarding and the modeled result, not actual transport completion. The native timeout cases take one defined event-mask path and model the nested restart.",
+    "Cache data and failure windows are demonstrated under sequential synthetic states. Timing, physical occurrence, interleavings, full hot-plug recovery and future AF implementation remain outside scope."
+  ]
+}

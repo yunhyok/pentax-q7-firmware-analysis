@@ -2,6 +2,10 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[C 색 행렬 재컴파일·재패킹](https://yunhyok.github.io/pentax-q7-firmware-analysis/recompiled-numeric-report.html): 96개 함수·4개 원본 호출부 사례가 일치했습니다. 고정 테이블 창 재인코딩으로 164바이트 C 코드를 원래 슬롯에 넣고 전체 448블록을 확인했습니다. 수정 이미지는 비공개 연구 경로에만 보관하며 카메라 수용은 미검증입니다.
+
+[저장 경계·렌즈 준비 상태](https://yunhyok.github.io/pentax-q7-firmware-analysis/storage-readiness-report.html): 첫 기록 직전까지 FCU 요청 3,331개, 별도 기록·비교 8사례와 사용자 영역 7사례를 재현했습니다. 렌즈 초기화·실패·리셋 17사례에서 AF 지원과 명령 허용, 캐시와 유효 상태의 차이를 추적했습니다.
+
 [촬영 색공간 UI 분석](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-ui-report.html): 선택 즉시 RAM 쓰기, 확정 시 유지, 취소 시 백업 복원을 원본 MIPS 6사례로 확인했습니다. setter 호출과 바이트 쓰기를 각각 18회 관측했고 K-3 Mark III의 공통 UI 제안과 차이를 정리했습니다. [근거·한계](colorspace-ui-report.html#validation)
 
 [Loader·렌즈 정책 기반 분석](https://yunhyok.github.io/pentax-q7-firmware-analysis/loader-lens-report.html): 카드 입력 검증과 설치 헤더 기반 섹션 맵, 렌즈 기능 비트맵·캐시·AF 정책·응답·완료를 연결했습니다. 렌즈 32건과 loader helper 114건, BurnNand 진입부를 합성 입력으로 재실행했습니다. 실제 NAND 기록·렌즈 이동은 미검증입니다. [근거·한계](loader-lens-report.html#validation)

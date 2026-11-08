@@ -1,0 +1,1362 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "routine": "ColorMatchingService_MatrixMultiplication",
+  "description": "Independent C reconstruction of the Q7 fixed-point Q13 3x3 matrix leaf; freestanding compilation and bounded original-MIPS caller equivalence.",
+  "arithmetic": {
+    "input": "Three O32 pointer arguments a0/a1/a2 for output, left and right. Each input is nine row-major signed 16-bit elements, each output element is the low 16 bits.",
+    "computation": "For each row/column, original MIPS multiplies signed halfwords, takes the low 32-bit accumulator, adds 0x1000 modulo 2^32, applies logical right shift 13, and stores a halfword.",
+    "alias": "The original snapshots both inputs in stack RAM before the first output store. The C reconstruction delays all destination writes until all dot products are evaluated, giving the same halfword-aligned RAM result even for partial overlap.",
+    "scope": "This is coefficient preparation, with no camera, image pixels, IO buffers or hardware programming in the replay."
+  },
+  "abi": {
+    "original": "The E03 and E04 carrier ELF headers have class 32, little-endian, machine 8 and e_flags 0x70001001. These flags specify MIPS32r2-family, O32, NOREORDER. These stripped carrier headers have no section table to declare an FP ABI. The tested leaf takes integer pointers and has no COP1 operation.",
+    "rebuilt": "Zig 0.15.2 / Clang 20.1.2 emits an ELF32 little-endian ET_REL object with the same e_flags. Its .MIPS.abiflags explicitly marks ISA 32 revision 2, 32-bit GPRs and 32-bit FP registers with hard-float ABI attribute 1. Only .text.q7_matrix_mul_q13 is used, with zero text relocations and no unresolved imports; .rel.pdr targets a non-loaded procedure-descriptor section.",
+    "isolation": "The original and reconstructed leaf are replayed at 0x8041bc90 in two separate in-memory projects. Only 164 bytes of a 236-byte bounded original function region change. The remaining 72 bytes are unchanged and excluded from the rebuilt execution guard.",
+    "guards": "The replay enforces executable intervals and allowed data reads/writes, compares ordered destination halfword stores and the surrounding memory, preserves the stack pointer and callee-saved GPR/FPR canaries, and checks the return address.",
+    "references": [
+      "https://raw.githubusercontent.com/llvm/llvm-project/main/llvm/include/llvm/BinaryFormat/ELF.h",
+      "https://s3-eu-west-1.amazonaws.com/downloads-mips/documents/MD00565-2B-MIPS32-QRC-01.01.pdf"
+    ]
+  },
+  "caller": {
+    "entry": "0x8041c180",
+    "selected": "Four synthetic configuration objects with styles 0, 1, 2 and Color Space values 0/1; non-null fifth output pointer, optional second pointer null.",
+    "action": "Execute from original MakeColorMatrix entry to its actual return. The caller uses real Q8 hue rotation, lookup tables, Q13 matrix calls and subsequent transforms. No hooks or stubs.",
+    "match": "Every caller case compares the actual leaf call sites, arguments and input hashes, ordered nonstack store addresses/sizes/values, full guarded output buffers and scratch, callee-preserved registers, and the fifth stack argument.",
+    "bounds": "These settings reach 14 Q13 calls for sRGB and 15 for AdobeRGB, including in-place calls. This does not exercise all picture-style or optional second-object branches."
+  },
+  "replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / VEX",
+    "build": {
+      "source": "source/reconstructed/q7_numeric.c",
+      "source_lf_sha256": "283cfa0196de71d81e9ca8cbde3a68b5f24961bdb05cbce0fe667e7100414582",
+      "compiler_version": "0.15.2",
+      "compiler_exe_sha256": "d408dd38eed3e5204af841bcebf70502a4dbbb8399a3a3262be55059370bc018",
+      "llvm_build": "clang version 20.1.2 (https://github.com/ziglang/zig-bootstrap 7ef74e656cf8ddbd6bf891a8475892aa1afa6891)",
+      "official_index": "https://ziglang.org/download/index.json",
+      "windows_archive_sha256": "3a0ed1e8799a2f8ce2a6e6290a9ff22e6906f8227865911fb7ddedc3cc14cb0c",
+      "command": [
+        "<verified zig.exe snapshot>",
+        "cc",
+        "-target",
+        "mipsel-freestanding-none",
+        "-mcpu=mips32r2+noabicalls",
+        "-mabi=o32",
+        "-mfp32",
+        "-fno-pic",
+        "-G0",
+        "-std=c11",
+        "-ffreestanding",
+        "-fno-builtin",
+        "-fno-stack-protector",
+        "-fno-unwind-tables",
+        "-fno-asynchronous-unwind-tables",
+        "-ffunction-sections",
+        "-Oz",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-c",
+        "-x",
+        "c",
+        "-",
+        "-o",
+        "q7_numeric.o"
+      ],
+      "source_via_stdin": true,
+      "object_sha256": "6cb0cb595a4c1a67494ec15b997a87ea1d00d9fca3cf7229ed00beb90ab0e452",
+      "text_sha256": "eb28d55d4814fc0734c6c23fe3e977d5be17e39cc3d9a8c873559ff34d03f458",
+      "text_section": ".text.q7_matrix_mul_q13",
+      "text_size": 164,
+      "elf": {
+        "elf_class": 32,
+        "byte_order": "little",
+        "machine": "EM_MIPS",
+        "type": "ET_REL",
+        "flags": "0x70001001",
+        "isa_level": 32,
+        "isa_revision": 2,
+        "gpr_bits": 32,
+        "fp_register_bits": 32,
+        "fp_abi_attribute": 1,
+        "unresolved_imports": 0,
+        "code_relocations": 0,
+        "metadata_relocations": [
+          [
+            ".rel.pdr",
+            ".pdr",
+            1
+          ]
+        ]
+      }
+    },
+    "original": {
+      "entry": "0x8041bc90",
+      "end_exclusive": "0x8041bd7c",
+      "bytes": 236,
+      "sha256": "5a8fe227ed47a9e1fa0a8a3484a542554ca44b4b00f8c734f7d90d2ea65c24d4",
+      "caller_entry": "0x8041c180",
+      "caller_end_exclusive": "0x8041c7dc",
+      "caller_sha256": "eeed58c00b64bcc3c6217725ac1f68a9a39e679b8c46861437a906af46f5e6e4",
+      "embedded_elf_offsets": [
+        "0x1026c0",
+        "0x2402c0"
+      ],
+      "carrier_e_flags": "0x70001001",
+      "carrier_fp_abi_attribute": null,
+      "unchanged_tail_bytes": 72
+    },
+    "scope": "Two code images use the same verified Q7 ELF snapshot. The second changes only the selected leaf text at its original address in host memory. The leaf and four original MakeColorMatrix calls execute with VEX and synthetic RAM, with no device or runtime hooks.",
+    "leaf_cases": [
+      {
+        "case": "identity-left",
+        "layout": "distinct",
+        "input_sha256": "4f3d0c12a8373bb769d6361cd48fe47a47e023e25d7809a5485f11c6a6cdba98",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-left",
+        "layout": "out-is-left",
+        "input_sha256": "36e6413b791e719e7ec03f8bb609655b7425f8e497b9a5e9a71f2aed6808422e",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-left",
+        "layout": "out-is-right",
+        "input_sha256": "a17c613804a7e4807ad2f033c6f3a78ce0019f91f036280e26b0ec1758bf2ceb",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-left",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "a17c613804a7e4807ad2f033c6f3a78ce0019f91f036280e26b0ec1758bf2ceb",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-left",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "4f3d0c12a8373bb769d6361cd48fe47a47e023e25d7809a5485f11c6a6cdba98",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-left",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "4c8fb8f7ee1fc7b93ff154370e65786fd64d214b69fb3c43871c7a1ca2a3f10a",
+        "output_sha256": "1da180f3fccd2c979dcd2a288c7e041aba8c2da32ba90235abda6890926780d4"
+      },
+      {
+        "case": "identity-left",
+        "layout": "all-three-are-same",
+        "input_sha256": "4c8fb8f7ee1fc7b93ff154370e65786fd64d214b69fb3c43871c7a1ca2a3f10a",
+        "output_sha256": "1da180f3fccd2c979dcd2a288c7e041aba8c2da32ba90235abda6890926780d4"
+      },
+      {
+        "case": "identity-left",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "9275a03410b48ca8fab764be0748a109b86e2fe3934eb94809d7a943920e1c13",
+        "output_sha256": "4450c35500c045d8abcc4628d826f4466d2f675efd52a2c4586e04367f9b4fca"
+      },
+      {
+        "case": "identity-right",
+        "layout": "distinct",
+        "input_sha256": "963afe16ca087124dcdbffc29cd0190488e6cb6be57c8d69f9cf0537c09d142a",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-right",
+        "layout": "out-is-left",
+        "input_sha256": "69336139129242bbfb65fafe2f37a4999e625198f92fa31af67ce099145e5599",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-right",
+        "layout": "out-is-right",
+        "input_sha256": "7aa91e92abecc761d89092252cc107f578a9cd9ea7330e166226bc6a26e856cd",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-right",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "7aa91e92abecc761d89092252cc107f578a9cd9ea7330e166226bc6a26e856cd",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-right",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "963afe16ca087124dcdbffc29cd0190488e6cb6be57c8d69f9cf0537c09d142a",
+        "output_sha256": "bf5498648c98ea49953e87166237112fe14d455a48d0c2d6ef49a049c8be217d"
+      },
+      {
+        "case": "identity-right",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "cc1c14131299cc037bf01745f070797c43b376609694937c87585bf6455d7a39",
+        "output_sha256": "a0c8d4baa90fd0b2e0a0bd5e9612890b573df520a11a55fdc11600d285af0dc5"
+      },
+      {
+        "case": "identity-right",
+        "layout": "all-three-are-same",
+        "input_sha256": "cc1c14131299cc037bf01745f070797c43b376609694937c87585bf6455d7a39",
+        "output_sha256": "a0c8d4baa90fd0b2e0a0bd5e9612890b573df520a11a55fdc11600d285af0dc5"
+      },
+      {
+        "case": "identity-right",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "cc8204f534e408e4eec373baf6dbc1edf45687df9a5a5b0185a1cf8876b40c23",
+        "output_sha256": "ac742dd95306556d4f85ceeaa1bed9cf838a1169dc832b9681aec784d769d81e"
+      },
+      {
+        "case": "zero",
+        "layout": "distinct",
+        "input_sha256": "b33e3b995eb7130073216cc4ad5b0ef9a574f9dd0367ba2d54fe8b5233c2229a",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "zero",
+        "layout": "out-is-left",
+        "input_sha256": "a67d9282f8175787d6563dd6b7aa4a769449c7f40e217f985fc1275c04987640",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "zero",
+        "layout": "out-is-right",
+        "input_sha256": "4c0e0dab2e84e0471ef49f8397eb8b313dd1bf4969a242ffdec6430ff40223dd",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "zero",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "4c0e0dab2e84e0471ef49f8397eb8b313dd1bf4969a242ffdec6430ff40223dd",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "zero",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "b33e3b995eb7130073216cc4ad5b0ef9a574f9dd0367ba2d54fe8b5233c2229a",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "zero",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "4c8fb8f7ee1fc7b93ff154370e65786fd64d214b69fb3c43871c7a1ca2a3f10a",
+        "output_sha256": "1da180f3fccd2c979dcd2a288c7e041aba8c2da32ba90235abda6890926780d4"
+      },
+      {
+        "case": "zero",
+        "layout": "all-three-are-same",
+        "input_sha256": "4c8fb8f7ee1fc7b93ff154370e65786fd64d214b69fb3c43871c7a1ca2a3f10a",
+        "output_sha256": "1da180f3fccd2c979dcd2a288c7e041aba8c2da32ba90235abda6890926780d4"
+      },
+      {
+        "case": "zero",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "152700bc5019cfc67da571aa73f665c81a59dc659c2ef441c4bbb8beb60c3c4c",
+        "output_sha256": "1f68615d163bb1c5d57a2e4c2ca00437616772a473813b2aec267d4b4da2c1fb"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "distinct",
+        "input_sha256": "f5d37cd0697a12305e59dff3c5682bd19b60e6406ac141c7e30da476139f0344",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "out-is-left",
+        "input_sha256": "14f171c41fa71d4faac2f389a204c07631b339a445b9efbed62d60cf0ad9113c",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "out-is-right",
+        "input_sha256": "d379c94e301c67737029d68598335b28ce787fbde5630e467a3e43805221236c",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "d379c94e301c67737029d68598335b28ce787fbde5630e467a3e43805221236c",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "f5d37cd0697a12305e59dff3c5682bd19b60e6406ac141c7e30da476139f0344",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "18c487eef7c8f5928a970460a163fbea48a02babe1656850d1ef366a2ffed2d5",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "all-three-are-same",
+        "input_sha256": "18c487eef7c8f5928a970460a163fbea48a02babe1656850d1ef366a2ffed2d5",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "positive-wrap",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "71917679042d76cfc4e9f9edece8e7e99bbd9441cc5fc5e87bb5224cad264e17",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "distinct",
+        "input_sha256": "7973903e25acad1265a07ec4598caf3493d771248b3268084f68589f78c4aaf3",
+        "output_sha256": "f1d3ea35eed90cf1092803cf02a681ec7fd5c4a3af1d005d08d317ba0270d264"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "out-is-left",
+        "input_sha256": "47d47220a6b87f53fd5fddc9eddbe64856740d1ba826fb1aef8320da68812ba4",
+        "output_sha256": "f1d3ea35eed90cf1092803cf02a681ec7fd5c4a3af1d005d08d317ba0270d264"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "out-is-right",
+        "input_sha256": "afd92b6f62fc1f50d9d7b368c6ef4993261c12a43eba28fe470e7bb84be52237",
+        "output_sha256": "f1d3ea35eed90cf1092803cf02a681ec7fd5c4a3af1d005d08d317ba0270d264"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "afd92b6f62fc1f50d9d7b368c6ef4993261c12a43eba28fe470e7bb84be52237",
+        "output_sha256": "f1d3ea35eed90cf1092803cf02a681ec7fd5c4a3af1d005d08d317ba0270d264"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "7973903e25acad1265a07ec4598caf3493d771248b3268084f68589f78c4aaf3",
+        "output_sha256": "f1d3ea35eed90cf1092803cf02a681ec7fd5c4a3af1d005d08d317ba0270d264"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "18c487eef7c8f5928a970460a163fbea48a02babe1656850d1ef366a2ffed2d5",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "all-three-are-same",
+        "input_sha256": "18c487eef7c8f5928a970460a163fbea48a02babe1656850d1ef366a2ffed2d5",
+        "output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+      },
+      {
+        "case": "negative-wrap",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "898affb4bbb61d2c9d33e3d6832fd36cb439b73563bb9edc31c19f6e9bc61409",
+        "output_sha256": "8291b6a0c3ab996c299386cbc70ff6e7f9af63decc2f2dfa6198ff40ea8d1647"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "distinct",
+        "input_sha256": "6b3681fbde635d1d930477901caa096065642a929369396596428eb7dd72a1f7",
+        "output_sha256": "073782b3db7090ba08daec90bc85021d0afc4efa0b649476fe83845e62c4ee0c"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "out-is-left",
+        "input_sha256": "873571f826af44f22efa0b964ea8dd80ae5c3bdc973c55d0f597c52995d64e52",
+        "output_sha256": "073782b3db7090ba08daec90bc85021d0afc4efa0b649476fe83845e62c4ee0c"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "out-is-right",
+        "input_sha256": "1f8fd884b93548dc0ea186de86aefcf862537ba28a74ae0862a507cb44dedc5c",
+        "output_sha256": "073782b3db7090ba08daec90bc85021d0afc4efa0b649476fe83845e62c4ee0c"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "1f8fd884b93548dc0ea186de86aefcf862537ba28a74ae0862a507cb44dedc5c",
+        "output_sha256": "073782b3db7090ba08daec90bc85021d0afc4efa0b649476fe83845e62c4ee0c"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "6b3681fbde635d1d930477901caa096065642a929369396596428eb7dd72a1f7",
+        "output_sha256": "073782b3db7090ba08daec90bc85021d0afc4efa0b649476fe83845e62c4ee0c"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "b51c1262a1e983bde519d202158aadb5322d3d83f64b4b496df657e9bdc89cd3",
+        "output_sha256": "f54741e16da311499fafb09c632004aad3a11409c3d2d8b8c3e0eb4f03e1cde5"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "all-three-are-same",
+        "input_sha256": "b51c1262a1e983bde519d202158aadb5322d3d83f64b4b496df657e9bdc89cd3",
+        "output_sha256": "f54741e16da311499fafb09c632004aad3a11409c3d2d8b8c3e0eb4f03e1cde5"
+      },
+      {
+        "case": "positive-half-step",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "eb3c84b74e00641372c4364b1c26fcef63e34e96aad7d2f7bea58f2e2c201342",
+        "output_sha256": "117ab4a1627be5130d90a1b79238d4d73831e54ba68185bdc53b576acc796e0f"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "distinct",
+        "input_sha256": "3cfb681908f90b883d775697ec4d8e563e0611d75645e1ec6a0e06240e258d2b",
+        "output_sha256": "778774d7b08c85e4c61fde48ffdec6f7b209fba9ee1ff8c9deed95a5895a3652"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "out-is-left",
+        "input_sha256": "b99d15d90f933280dd874abbd3694a71d48176e1927eec389799aae612f1d939",
+        "output_sha256": "778774d7b08c85e4c61fde48ffdec6f7b209fba9ee1ff8c9deed95a5895a3652"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "out-is-right",
+        "input_sha256": "19a69252fd878af53db8ea8d6c2de98850238b7727433b493f2a8a7bf6e04e91",
+        "output_sha256": "778774d7b08c85e4c61fde48ffdec6f7b209fba9ee1ff8c9deed95a5895a3652"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "19a69252fd878af53db8ea8d6c2de98850238b7727433b493f2a8a7bf6e04e91",
+        "output_sha256": "778774d7b08c85e4c61fde48ffdec6f7b209fba9ee1ff8c9deed95a5895a3652"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "3cfb681908f90b883d775697ec4d8e563e0611d75645e1ec6a0e06240e258d2b",
+        "output_sha256": "778774d7b08c85e4c61fde48ffdec6f7b209fba9ee1ff8c9deed95a5895a3652"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "b51c1262a1e983bde519d202158aadb5322d3d83f64b4b496df657e9bdc89cd3",
+        "output_sha256": "f54741e16da311499fafb09c632004aad3a11409c3d2d8b8c3e0eb4f03e1cde5"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "all-three-are-same",
+        "input_sha256": "b51c1262a1e983bde519d202158aadb5322d3d83f64b4b496df657e9bdc89cd3",
+        "output_sha256": "f54741e16da311499fafb09c632004aad3a11409c3d2d8b8c3e0eb4f03e1cde5"
+      },
+      {
+        "case": "negative-half-step",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "7d5f8d9e5d8d68866162ae1b53ad72fb9b1d9b1b4a3140f8387b00b2f0949109",
+        "output_sha256": "cee78d8ca040b7ef48c6ea3e41e74427665689a1290e41a158df66a0476c6374"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "distinct",
+        "input_sha256": "0b7cf67cc49be877fbe8ceb8a04389d159edd3410a303a9bc7c76b3148483dbb",
+        "output_sha256": "7207acb0e6a193be94afa3271cb57d2087f8ff2d8639c6f910b561f1a73ad489"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "out-is-left",
+        "input_sha256": "12664986ea3b2fcbe0798e59812e3a9f7ec32652cb28a3580ca8c53b8d7343df",
+        "output_sha256": "7207acb0e6a193be94afa3271cb57d2087f8ff2d8639c6f910b561f1a73ad489"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "out-is-right",
+        "input_sha256": "d3707c6421298fc429569a8519b08138afef4eb9a1b3db331b9f708fe502e897",
+        "output_sha256": "7207acb0e6a193be94afa3271cb57d2087f8ff2d8639c6f910b561f1a73ad489"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "d3707c6421298fc429569a8519b08138afef4eb9a1b3db331b9f708fe502e897",
+        "output_sha256": "7207acb0e6a193be94afa3271cb57d2087f8ff2d8639c6f910b561f1a73ad489"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "0b7cf67cc49be877fbe8ceb8a04389d159edd3410a303a9bc7c76b3148483dbb",
+        "output_sha256": "7207acb0e6a193be94afa3271cb57d2087f8ff2d8639c6f910b561f1a73ad489"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "328dc82c422f8353c5ff607523679713baa3c7e9856e048405f4ae00a730162d",
+        "output_sha256": "48675900e50b851119411412c65ebf61eba780c257368e7fbd6296ac3bb27b19"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "all-three-are-same",
+        "input_sha256": "328dc82c422f8353c5ff607523679713baa3c7e9856e048405f4ae00a730162d",
+        "output_sha256": "48675900e50b851119411412c65ebf61eba780c257368e7fbd6296ac3bb27b19"
+      },
+      {
+        "case": "low-halfword-wrap",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "dc068a53e2047d11aef790a8a69503775f5b64c82274ba91919d2f2fc93f431d",
+        "output_sha256": "8f48a375ea0542ff9d0130c1c21d065c95ccb5e2019fdf0bf98e27a5bdf00b11"
+      },
+      {
+        "case": "random-00",
+        "layout": "distinct",
+        "input_sha256": "06820fecce66d6678d4161b76dddc096fa3d45f66bd2b98f62073856e28f1ea5",
+        "output_sha256": "65d5374f2bc015b2f709bdf93df7116fb746d95f5408e6d7ea13c3e7e779c0ab"
+      },
+      {
+        "case": "random-01",
+        "layout": "out-is-left",
+        "input_sha256": "1252c9891dd342a96e30dd1bc754c7bfb2cf7796db96dccb5415f99b51b6dc56",
+        "output_sha256": "6dcf3bfd05aad5f4421c29f80020fc5148205e559c7896e78205a64491c2533a"
+      },
+      {
+        "case": "random-02",
+        "layout": "out-is-right",
+        "input_sha256": "a39c68af46db018d7b8f290e7fe956e6b9afdcd15e8ddc24f913cd6586bac702",
+        "output_sha256": "87e66892bb3015a4ad591c95ef436271d59e3d74b77c58b23d592c9b3e070955"
+      },
+      {
+        "case": "random-03",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "58680c83be57c19aef9573c261614290ca619442c8387fdc07bf313774b812fb",
+        "output_sha256": "903d91a76dea9f4d606607a344a00ec22db93dedb9406889f9dfca93590debd6"
+      },
+      {
+        "case": "random-04",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "a06a479ca9d590546797f610925f168a89498114b0cd097cb14fcc40ad7112b1",
+        "output_sha256": "2789ee6ded04947720a92e72e2e779510e61cb47d58d02bfb60d95bf436d969c"
+      },
+      {
+        "case": "random-05",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "72cd8dbd054dfbddfd973cc45eacfb6c169444453de31db303871f361c9b1a71",
+        "output_sha256": "81aafa134bb26881be42172f0eba58bffde05ab080474f241243b1bf39b07639"
+      },
+      {
+        "case": "random-06",
+        "layout": "all-three-are-same",
+        "input_sha256": "2f6cc2627fcc94c141f8a589c4f5a5b8118c1cb720056f31cdbcd898b1c2af43",
+        "output_sha256": "626354bdeeb4934563a4522bf2ec4bfc5d9647c9a549b4b09e90ecc2184a262d"
+      },
+      {
+        "case": "random-07",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "989e93cdf7b4e7683fc448d2f60805823a5044cd38cfee8317d29c5877e5fbec",
+        "output_sha256": "5daf47796fb9dfcb00b8fd857da22181ba24cf24bfcb60a7a2a496e5cdea3abb"
+      },
+      {
+        "case": "random-08",
+        "layout": "distinct",
+        "input_sha256": "6ff753d5c54c4905ac1e9431d393bf79bf0075894bb1b089eac7513be42b0b78",
+        "output_sha256": "8d31acc447b2841d74cae5a7cbebf0944d424bc57cbbefed4f9bab0d1ab8dab4"
+      },
+      {
+        "case": "random-09",
+        "layout": "out-is-left",
+        "input_sha256": "b251bb2512fe58967ff0ac9e5ab7e1175648d85dceb369909352fa1198fb7499",
+        "output_sha256": "8959397b9198f5b1bb8402ce6a29662b3a5a1d3c6bf36e0981cb51b2ea85c174"
+      },
+      {
+        "case": "random-10",
+        "layout": "out-is-right",
+        "input_sha256": "503613d33f3112066d737f4072ffac1e7ca5744aa08c2114e1d765f7445ecbf9",
+        "output_sha256": "84864be462848a0ceff8306d62fe9b652c7098594d7ab446e8af13d374d44330"
+      },
+      {
+        "case": "random-11",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "b213e60cede0c993a0c2abb2a529aaf6f21467db35560534625df55478b55332",
+        "output_sha256": "23aa7ebc83fbb716701d30d97e033fad31435a195775c4c893baa4faa781b75e"
+      },
+      {
+        "case": "random-12",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "f7c71e8544171ad64d011b88803e83f20b1c45f1ef208edace50f857d9448b63",
+        "output_sha256": "4cb0a2bbdfc1efcabb5840c0ba988d8f6e785525a5eafda8c3c33c2035fb4ee0"
+      },
+      {
+        "case": "random-13",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "d895d251747d0e8fde19c6618adfa4602e2c55f3594a86526f09481a7c089234",
+        "output_sha256": "b067fd1f049a0f9c19fed5b4312ba8d7367f82c9dd967084e7dd90343002758f"
+      },
+      {
+        "case": "random-14",
+        "layout": "all-three-are-same",
+        "input_sha256": "1e2d9cb2e925421af33067f8801de320430f4b2f1d3337a2bf649830b6779ead",
+        "output_sha256": "24eeb6069640ad994605194e7b770a59fe57c30c174873ca147a07cddf439202"
+      },
+      {
+        "case": "random-15",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "d29ec97b35d2b8be1b8d73986bdc06d8e7129ef42724e6b07b6c88d42f16a664",
+        "output_sha256": "1727eb3015a1ba85b437b710509426fecacf936f75fe9abc0e35da4f95e405b0"
+      },
+      {
+        "case": "random-16",
+        "layout": "distinct",
+        "input_sha256": "1347c54a213babfe156f77183909efbd9b0dd562e18b6dea61fba33bd5e10bba",
+        "output_sha256": "eaad708bdd5ea99e3c09009104f8323bd0966271df21293c4b95e9162d64b387"
+      },
+      {
+        "case": "random-17",
+        "layout": "out-is-left",
+        "input_sha256": "e4aeada510bdf15d24395baf84cd966d0aebb00f9d6ced9cf840e0e308e90856",
+        "output_sha256": "47e0076b9d6c6e88c201a32f2cff99a123e30b7b4b7e9859633ac9d807a97c8a"
+      },
+      {
+        "case": "random-18",
+        "layout": "out-is-right",
+        "input_sha256": "6f8b5ea5870cb64c886a9695fdfa6170afa60f7e63a39d0c3928e53da2ed863f",
+        "output_sha256": "eeeec812ec8cf512c608b3651448935cb59a9904d6a99616f4e529f152616cd0"
+      },
+      {
+        "case": "random-19",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "83e46efc9bd0ba4360c27f0f9d8093014b36b00a3c32a3c99c9ee346e6198ceb",
+        "output_sha256": "ddc33ae6566caf9ce27686a8ae2fa4376f41a774c487595de19e42d68d6cba27"
+      },
+      {
+        "case": "random-20",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "6952b4f41c28bd20b84605c4950dba14d8474125adbf6ce53031ea9978e15d2b",
+        "output_sha256": "0c8d6329ae0d15dbaeb954e07f5ce19ae45e4e9d02f81bcef31c8c2d91a6b4c3"
+      },
+      {
+        "case": "random-21",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "b1e83097f4a112b5d5cbf85a23f817c2355772f9a6d7fb7f40f65f79575d5636",
+        "output_sha256": "527eb12f7268b972eff08130762a065e17da0aad3f1106ffb5932aa58f719f0e"
+      },
+      {
+        "case": "random-22",
+        "layout": "all-three-are-same",
+        "input_sha256": "c7641415e7b576d3691a6d5762c9c4a60532595491cf9b3db67edde63986d8ee",
+        "output_sha256": "600dc81a1af50f67975f157235b2832e341679bf32300235321aa009b33a7193"
+      },
+      {
+        "case": "random-23",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "c5036c49eb45fe933d1a919ea4e98bc6dbadb7f040137d7aab094f8a9611ae75",
+        "output_sha256": "b96a1185341f912251543f689eae9318c37383f12541304353227bec06f2eaab"
+      },
+      {
+        "case": "random-24",
+        "layout": "distinct",
+        "input_sha256": "3b82c053451979f7a2014bea79e144b9952175d883b3b30a7adcf8ca5aff07a6",
+        "output_sha256": "9187a70a4d2309bd3bc2ce2d53db036a94302e31d4c67b397ec920821207bf10"
+      },
+      {
+        "case": "random-25",
+        "layout": "out-is-left",
+        "input_sha256": "2eb34591ede2e85e6b5bf79fb8ad48e40a814558e6b2a82971e069d2aa5cb677",
+        "output_sha256": "4ba5c7985de42475f004f4afd3926f74136081778d4291a316f6b157eb0f553c"
+      },
+      {
+        "case": "random-26",
+        "layout": "out-is-right",
+        "input_sha256": "4da379e34003a4c6a64ff7a8ecffa09beb1fcc38a7a7dfc82423a7604abd9eda",
+        "output_sha256": "e1abe68cfa8a3b2d56b3f39930fb265eb6a2c6debeff49f757f2c80fb49c952f"
+      },
+      {
+        "case": "random-27",
+        "layout": "out-overlaps-left-after",
+        "input_sha256": "863ddd22a167f625d99b1f42b09923fe5cbe67de4025e481c67356f76e9828b8",
+        "output_sha256": "485bdc3e80ea776bb1f7689c6d92a02ddeb6ebfa6795ef65fd8ed25da10e40ac"
+      },
+      {
+        "case": "random-28",
+        "layout": "out-overlaps-right-before",
+        "input_sha256": "06358705e9ceb3057939dec7af078a3368a38976aeff8572e1c186da888891ff",
+        "output_sha256": "d1e36ea23149c8f135fceed53b27625aabf59b0401b758b4c908f4f03f795128"
+      },
+      {
+        "case": "random-29",
+        "layout": "both-inputs-are-same",
+        "input_sha256": "62dcecdb5e1715d8e7b932efd33b4fb047d87834b97af1b0e6949d3c8854f58e",
+        "output_sha256": "81077e5ee24de187fd21db2fba60dd9c628ca78d863e7bf1a7049a1f9db1ac5e"
+      },
+      {
+        "case": "random-30",
+        "layout": "all-three-are-same",
+        "input_sha256": "ab56f86f0d310023ebb361814793bd52e14276dbfb2a91bc9a441819fa203069",
+        "output_sha256": "e996f7edb332c4e5123a9b24c7c73ef77e1b0b6cbfda5ac0d7603b1cc7342b2e"
+      },
+      {
+        "case": "random-31",
+        "layout": "three-partial-overlaps",
+        "input_sha256": "41aada1df57df91330ace646d1ca3fd312411b13cbb2af4ba2e830256118ab87",
+        "output_sha256": "ff7f8058d6c5975aaa64de982706e41261a388e9a92920739262553287151e2e"
+      }
+    ],
+    "caller_cases": [
+      {
+        "color_space": 0,
+        "style": 0,
+        "hue": 4,
+        "saturation": 4,
+        "call_sites": [
+          2151793332,
+          2151793400,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816
+        ],
+        "nonstack_stores": 210,
+        "call_inputs_sha256": "694084bb49055a62bee24763586f5cb05d6556da17b5d922c32d826b474e1ce3",
+        "guarded_outputs_sha256": "ad9d690d49cfe8f05162dc2a343de743d5fb062f02832c3b96a84bf3b966ee62"
+      },
+      {
+        "color_space": 1,
+        "style": 0,
+        "hue": 4,
+        "saturation": 4,
+        "call_sites": [
+          2151793332,
+          2151793400,
+          2151794324,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816
+        ],
+        "nonstack_stores": 210,
+        "call_inputs_sha256": "4cd86ebf3db31780a75f7c2398e05124a1065289e5106316f89a3a58535c643b",
+        "guarded_outputs_sha256": "9702506be3237adb967a2986794b27a75f4af8c1565f9b112cf65273d6e1f863"
+      },
+      {
+        "color_space": 0,
+        "style": 1,
+        "hue": 0,
+        "saturation": 8,
+        "call_sites": [
+          2151793332,
+          2151793400,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816
+        ],
+        "nonstack_stores": 210,
+        "call_inputs_sha256": "acdae12f3b2f34a774a601a1b66ad2c498fd364ce4edeb321b1cc5c3790628d4",
+        "guarded_outputs_sha256": "dca6ab095a0fd137342f2f1bdbe0e5d5c53038f18cd6bbbc2160b37de389e0c7"
+      },
+      {
+        "color_space": 1,
+        "style": 2,
+        "hue": 8,
+        "saturation": 0,
+        "call_sites": [
+          2151793332,
+          2151793400,
+          2151794324,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816,
+          2151793792,
+          2151793816
+        ],
+        "nonstack_stores": 210,
+        "call_inputs_sha256": "ad72207fde1ab18b39fd470ba2bc4bbe70690ae3e86bd5f1f4bc551189053a61",
+        "guarded_outputs_sha256": "8a18bdfcd920243ecd51fcccd83725cd78736c035ab4e343e62ab713b7215b44"
+      }
+    ],
+    "leaf_case_count": 96,
+    "caller_case_count": 4,
+    "substituted_calls": 58,
+    "ordered_leaf_store_count_per_image": 864
+  },
+  "selected_functions": [
+    {
+      "name": "ColorMatchingService_MatrixMultiplication",
+      "address": 2151791760,
+      "candidate_end": 2151791996,
+      "segment": "E04",
+      "decoded_offset": 3072528,
+      "size": 236,
+      "sha256": "5a8fe227ed47a9e1fa0a8a3484a542554ca44b4b00f8c734f7d90d2ea65c24d4",
+      "transfers": []
+    },
+    {
+      "name": "ColorMatchingService_HueShift",
+      "address": 2151792276,
+      "candidate_end": 2151792556,
+      "segment": "E04",
+      "decoded_offset": 3073044,
+      "size": 280,
+      "sha256": "58d9a70f10175d5c948673ea5fbb3c198d25d84135966b8e4f2febf785aec76d",
+      "transfers": []
+    },
+    {
+      "name": "ColorMatchingService_GetMakeUpMatrix",
+      "address": 2151792556,
+      "candidate_end": 2151792728,
+      "segment": "E04",
+      "decoded_offset": 3073324,
+      "size": 172,
+      "sha256": "6f1d880d7eb480bd81e80262d9b3c81e7c28dfdb1b05417f070ac0bac5dadeb9",
+      "transfers": [
+        {
+          "site": 2151792596,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "ColorMatchingService_GetMakeUpMatrix6",
+      "address": 2151792728,
+      "candidate_end": 2151792900,
+      "segment": "E04",
+      "decoded_offset": 3073496,
+      "size": 172,
+      "sha256": "a5b13d9d2c07402a7177fced871a83888c1272c7932569cdee35b57e66f10e69",
+      "transfers": [
+        {
+          "site": 2151792768,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "ColorMatchingService_IsAdobeRGB",
+      "address": 2151792900,
+      "candidate_end": 2151792924,
+      "segment": "E04",
+      "decoded_offset": 3073668,
+      "size": 24,
+      "sha256": "c2089b81db2c5d50b22945067003a2a2f4f7a732635134cd600a9564f1f389c3",
+      "transfers": []
+    },
+    {
+      "name": "ColorMatchingService_ConvetDevelopmentSensitivity",
+      "address": 2151792924,
+      "candidate_end": 2151793024,
+      "segment": "E04",
+      "decoded_offset": 3073692,
+      "size": 100,
+      "sha256": "97493d25407ed8f9d4cda63fb7dad1a9fb95ac392f2d414a3fc7293e74abf0c0",
+      "transfers": [
+        {
+          "site": 2151792956,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "ColorMatchingService_MakeColorMatrix",
+      "address": 2151793024,
+      "candidate_end": 2151794652,
+      "segment": "E04",
+      "decoded_offset": 3073792,
+      "size": 1628,
+      "sha256": "eeed58c00b64bcc3c6217725ac1f68a9a39e679b8c46861437a906af46f5e6e4",
+      "transfers": [
+        {
+          "site": 2151793084,
+          "word": "0c107041",
+          "kind": "call",
+          "target": 2151792900,
+          "target_names": [
+            "ColorMatchingService_IsAdobeRGB"
+          ]
+        },
+        {
+          "site": 2151793100,
+          "word": "0c107047",
+          "kind": "call",
+          "target": 2151792924,
+          "target_names": [
+            "ColorMatchingService_ConvetDevelopmentSensitivity"
+          ]
+        },
+        {
+          "site": 2151793136,
+          "word": "0c106feb",
+          "kind": "call",
+          "target": 2151792556,
+          "target_names": [
+            "ColorMatchingService_GetMakeUpMatrix"
+          ]
+        },
+        {
+          "site": 2151793188,
+          "word": "0c107016",
+          "kind": "call",
+          "target": 2151792728,
+          "target_names": [
+            "ColorMatchingService_GetMakeUpMatrix6"
+          ]
+        },
+        {
+          "site": 2151793316,
+          "word": "0c106fa5",
+          "kind": "call",
+          "target": 2151792276,
+          "target_names": [
+            "ColorMatchingService_HueShift"
+          ]
+        },
+        {
+          "site": 2151793332,
+          "word": "0c106f24",
+          "kind": "call",
+          "target": 2151791760,
+          "target_names": [
+            "ColorMatchingService_MatrixMultiplication"
+          ]
+        },
+        {
+          "site": 2151793400,
+          "word": "0c106f24",
+          "kind": "call",
+          "target": 2151791760,
+          "target_names": [
+            "ColorMatchingService_MatrixMultiplication"
+          ]
+        },
+        {
+          "site": 2151793792,
+          "word": "0c106f24",
+          "kind": "call",
+          "target": 2151791760,
+          "target_names": [
+            "ColorMatchingService_MatrixMultiplication"
+          ]
+        },
+        {
+          "site": 2151793816,
+          "word": "0c106f24",
+          "kind": "call",
+          "target": 2151791760,
+          "target_names": [
+            "ColorMatchingService_MatrixMultiplication"
+          ]
+        },
+        {
+          "site": 2151794324,
+          "word": "0c106f24",
+          "kind": "call",
+          "target": 2151791760,
+          "target_names": [
+            "ColorMatchingService_MatrixMultiplication"
+          ]
+        },
+        {
+          "site": 2151794428,
+          "word": "0c106f5f",
+          "kind": "call",
+          "target": 2151791996,
+          "target_names": [
+            "ColorMatchingService_MatrixMultiplicationForWBGain"
+          ]
+        },
+        {
+          "site": 2151794448,
+          "word": "0c0e1f84",
+          "kind": "call",
+          "target": 2151185936,
+          "target_names": [
+            "CDigitalFilterService_RetroToning"
+          ]
+        },
+        {
+          "site": 2151794588,
+          "word": "0c0e24a4",
+          "kind": "call",
+          "target": 2151191184,
+          "target_names": [
+            "CDigitalFilterService_ColorOffset"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "evidence": [
+    {
+      "role": "Input snapshot and O32 entry",
+      "words": [
+        {
+          "va": "0x8041bc90",
+          "u32le_word": "0x00a04821",
+          "segment": "E04",
+          "decoded_offset": "0x2ee210"
+        },
+        {
+          "va": "0x8041bc94",
+          "u32le_word": "0x27bdffd0",
+          "segment": "E04",
+          "decoded_offset": "0x2ee214"
+        },
+        {
+          "va": "0x8041bc98",
+          "u32le_word": "0x00805821",
+          "segment": "E04",
+          "decoded_offset": "0x2ee218"
+        },
+        {
+          "va": "0x8041bc9c",
+          "u32le_word": "0x00c04021",
+          "segment": "E04",
+          "decoded_offset": "0x2ee21c"
+        },
+        {
+          "va": "0x8041bcb4",
+          "u32le_word": "0x95870000",
+          "segment": "E04",
+          "decoded_offset": "0x2ee234"
+        },
+        {
+          "va": "0x8041bcb8",
+          "u32le_word": "0x94860000",
+          "segment": "E04",
+          "decoded_offset": "0x2ee238"
+        },
+        {
+          "va": "0x8041bcc8",
+          "u32le_word": "0xa4660018",
+          "segment": "E04",
+          "decoded_offset": "0x2ee248"
+        },
+        {
+          "va": "0x8041bccc",
+          "u32le_word": "0x1440fff5",
+          "segment": "E04",
+          "decoded_offset": "0x2ee24c"
+        },
+        {
+          "va": "0x8041bcd0",
+          "u32le_word": "0xa4670000",
+          "segment": "E04",
+          "decoded_offset": "0x2ee250"
+        }
+      ]
+    },
+    {
+      "role": "Signed multiply, low word, rounding, shift and halfword output",
+      "words": [
+        {
+          "va": "0x8041bce8",
+          "u32le_word": "0x00000013",
+          "segment": "E04",
+          "decoded_offset": "0x2ee268"
+        },
+        {
+          "va": "0x8041bd14",
+          "u32le_word": "0x84780000",
+          "segment": "E04",
+          "decoded_offset": "0x2ee294"
+        },
+        {
+          "va": "0x8041bd18",
+          "u32le_word": "0x844f0018",
+          "segment": "E04",
+          "decoded_offset": "0x2ee298"
+        },
+        {
+          "va": "0x8041bd28",
+          "u32le_word": "0x730f0000",
+          "segment": "E04",
+          "decoded_offset": "0x2ee2a8"
+        },
+        {
+          "va": "0x8041bd30",
+          "u32le_word": "0x00003812",
+          "segment": "E04",
+          "decoded_offset": "0x2ee2b0"
+        },
+        {
+          "va": "0x8041bd38",
+          "u32le_word": "0x24e21000",
+          "segment": "E04",
+          "decoded_offset": "0x2ee2b8"
+        },
+        {
+          "va": "0x8041bd48",
+          "u32le_word": "0x0002cb42",
+          "segment": "E04",
+          "decoded_offset": "0x2ee2c8"
+        },
+        {
+          "va": "0x8041bd54",
+          "u32le_word": "0xa5590000",
+          "segment": "E04",
+          "decoded_offset": "0x2ee2d4"
+        },
+        {
+          "va": "0x8041bd74",
+          "u32le_word": "0x03e00008",
+          "segment": "E04",
+          "decoded_offset": "0x2ee2f4"
+        },
+        {
+          "va": "0x8041bd78",
+          "u32le_word": "0x27bd0030",
+          "segment": "E04",
+          "decoded_offset": "0x2ee2f8"
+        }
+      ]
+    },
+    {
+      "role": "Original caller and both color-space routes",
+      "words": [
+        {
+          "va": "0x8041c180",
+          "u32le_word": "0x27bdff08",
+          "segment": "E04",
+          "decoded_offset": "0x2ee700"
+        },
+        {
+          "va": "0x8041c1b0",
+          "u32le_word": "0x8c8401fc",
+          "segment": "E04",
+          "decoded_offset": "0x2ee730"
+        },
+        {
+          "va": "0x8041c1bc",
+          "u32le_word": "0x0c107041",
+          "segment": "E04",
+          "decoded_offset": "0x2ee73c"
+        },
+        {
+          "va": "0x8041c2a4",
+          "u32le_word": "0x0c106fa5",
+          "segment": "E04",
+          "decoded_offset": "0x2ee824"
+        },
+        {
+          "va": "0x8041c2b4",
+          "u32le_word": "0x0c106f24",
+          "segment": "E04",
+          "decoded_offset": "0x2ee834"
+        },
+        {
+          "va": "0x8041c2f8",
+          "u32le_word": "0x0c106f24",
+          "segment": "E04",
+          "decoded_offset": "0x2ee878"
+        },
+        {
+          "va": "0x8041c428",
+          "u32le_word": "0x14c00098",
+          "segment": "E04",
+          "decoded_offset": "0x2ee9a8"
+        },
+        {
+          "va": "0x8041c468",
+          "u32le_word": "0x8fb00108",
+          "segment": "E04",
+          "decoded_offset": "0x2ee9e8"
+        },
+        {
+          "va": "0x8041c480",
+          "u32le_word": "0x0c106f24",
+          "segment": "E04",
+          "decoded_offset": "0x2eea00"
+        },
+        {
+          "va": "0x8041c498",
+          "u32le_word": "0x0c106f24",
+          "segment": "E04",
+          "decoded_offset": "0x2eea18"
+        },
+        {
+          "va": "0x8041c49c",
+          "u32le_word": "0x02002021",
+          "segment": "E04",
+          "decoded_offset": "0x2eea1c"
+        },
+        {
+          "va": "0x8041c528",
+          "u32le_word": "0x17e0ffd3",
+          "segment": "E04",
+          "decoded_offset": "0x2eeaa8"
+        },
+        {
+          "va": "0x8041c530",
+          "u32le_word": "0x8fa500fc",
+          "segment": "E04",
+          "decoded_offset": "0x2eeab0"
+        },
+        {
+          "va": "0x8041c5f8",
+          "u32le_word": "0x03e00008",
+          "segment": "E04",
+          "decoded_offset": "0x2eeb78"
+        },
+        {
+          "va": "0x8041c694",
+          "u32le_word": "0x0c106f24",
+          "segment": "E04",
+          "decoded_offset": "0x2eec14"
+        },
+        {
+          "va": "0x8041c698",
+          "u32le_word": "0x00802821",
+          "segment": "E04",
+          "decoded_offset": "0x2eec18"
+        }
+      ]
+    }
+  ],
+  "reproduction": [
+    "python tools/check_recompiled_numeric.py .private/input/fwdc603p.bin .private/main-expanded.elf --zig <pinned-zig.exe> --work-dir .private/recompiled-numeric/recheck --output .private/recompiled-numeric/recheck.json",
+    "tools/check_recompiled_numeric.py exposes validate_report(document['replay']) for standard-library metadata and mathematical reference checks.",
+    "python tools/check_numeric_package.py <original.bin> <pinned-analysis.elf> <pinned-q7_numeric.o> --output-dir .private/<new-package>"
+  ],
+  "limitations": [
+    "The C checker recompiles and replays one arithmetic leaf. The separate package checker inserts that pinned text into original fixed slots and verifies full software decoding; neither runs on a camera.",
+    "The tested external contract is aligned writable/readable RAM, O32 pointer arguments, and a bounded original caller. The C implementation need not reproduce original instruction scheduling or stack contents.",
+    "The code section is position-independent within this no-call/no-data leaf and has no executable relocation. The experiment does not establish placement rules for other compiled code.",
+    "The archive digest is the official Zig index entry. The already-installed compiler executable, source, resulting object/text and original inputs are pinned locally; the toolchain support directory is read-only and was not individually hashed."
+  ],
+  "comparison": {
+    "model": "PENTAX K-3 Mark III",
+    "commit": "cc954e41720a7098b0b6d53ece8c7471c7652082",
+    "files": {
+      "analysis/recompiled-kernels.json": "a009c9a76dbc1cc681c22e75d0f9dd5a70aaf85afc735e222a52826b3be47daa",
+      "analysis/recompiled-integration.json": "378e52ebf88b87920542fd26f72e56f4649f4caa838a8902df29889bc5fc9f02"
+    },
+    "scope": "Compare validation categories, not ABI or camera acceptance. K-3 matrix input/output domains are disjoint; Q7 includes overlap."
+  },
+  "package_attempt": {
+    "error": "recompressed payload needs 9916 bytes; slot has 9856",
+    "segment": "E04",
+    "block": 154,
+    "file_offset": "0x407ef8",
+    "file_end": "0x40abb4",
+    "virtual_address": "0x8041b740",
+    "virtual_end": "0x8041f16c",
+    "needed_bits": 79323,
+    "needed_bytes": 9916,
+    "capacity_bytes": 9856,
+    "patch_bytes": 164,
+    "output_written": false,
+    "method": "Existing repack_q7 token/table/slot-preserving encoder, no relocation",
+    "limits": "A rejected attempt, no output package created; does not prove that better compression or a validated new format is impossible."
+  },
+  "package_rebuild": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "object_sha256": "6cb0cb595a4c1a67494ec15b997a87ea1d00d9fca3cf7229ed00beb90ab0e452",
+    "text_sha256": "eb28d55d4814fc0734c6c23fe3e977d5be17e39cc3d9a8c873559ff34d03f458",
+    "output_sha256": "eb5d014b761f947b2bd1786651c56d039db8e0e281b7e96c5a8c79a93ad978d6",
+    "analysis_elf_sha256": "e2ee3f210e36fea1f69442f9a167f5090334a9c22a725fb913596004af3b0512",
+    "output_size": 18743520,
+    "patch_va": "0x8041bc90",
+    "patch_bytes": 164,
+    "decoded_difference_bytes": 142,
+    "decoded_e04_sha256": "1a36a17629701f337d4b32fff0347bfd2e0adfa4a302ec4273b0f0955fb5f186",
+    "blocks": [
+      {
+        "block": 154,
+        "file_offset": 4226808,
+        "file_end": 4238260,
+        "original_bits": 77993,
+        "new_bits": 78817,
+        "repaired_tokens": 95,
+        "windows": 21,
+        "replaced_tokens": 102,
+        "new_copy_tokens": 48,
+        "new_cross_block_copy_tokens": 16,
+        "method": "fixed-table repair windows",
+        "literal_repair_bits": 79323,
+        "segment": "E04",
+        "virtual_address": "0x8041b740",
+        "virtual_end": "0x8041f16c",
+        "capacity_bytes": 9856,
+        "used_bytes": 9853,
+        "zero_tail_bits": 31,
+        "header_and_tables_sha256": "a6d615551bd97c1010bd184f368511beca066f44181063778166843747fa45a1",
+        "payload_sha256": "9f6a3ed5d48cbcca43bcf4979d77de34a76e212884338eb96b49e850124dc070"
+      },
+      {
+        "block": 155,
+        "file_offset": 4238260,
+        "file_end": 4249680,
+        "original_bits": 78770,
+        "new_bits": 78813,
+        "repaired_tokens": 1,
+        "segment": "E04",
+        "virtual_address": "0x8041f16c",
+        "virtual_end": "0x80423380",
+        "capacity_bytes": 9856,
+        "used_bytes": 9852,
+        "zero_tail_bits": 35,
+        "header_and_tables_sha256": "4718bd145c76e76b525361542b82aac1e60befa570b79659d5f5c623b30bd3c1",
+        "payload_sha256": "596e9221a5bb70fcb53c53e174e0a6f39c64e80427aab373533b82f6c5ed465b"
+      }
+    ],
+    "total_blocks": 448,
+    "unchanged_blocks": 446,
+    "segments": 4,
+    "image_equals_replayed_overlay": true,
+    "all_decoded_bytes_and_layout_verified": true,
+    "footer_after": {
+      "identifiers": [
+        "ORION",
+        "KB538",
+        "77690"
+      ],
+      "stored_sum": 1702075501,
+      "calculated_sum": 1702075501,
+      "sum_matches": true,
+      "version_bytes": [
+        1,
+        1,
+        23,
+        10
+      ]
+    },
+    "limits": [
+      "Host software decoder and byte identity only; no camera hardware inflate or update acceptance.",
+      "Original tables, slots, ELF positions and file size retained; no general relocation or table regeneration.",
+      "The current fallback still requires literal codes and adequate space; unrepresentable or overflowing windows fail."
+    ]
+  }
+}

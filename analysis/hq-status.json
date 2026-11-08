@@ -1,27 +1,53 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "bc141e5dd5bdd856f780893da4a71f623ace7dbf",
-  "updated_at": "2026-11-08T15:52:25+09:00",
+  "baseline_commit": "3a8c1dbf69a15b35b8d0a36fcb94d30debe4df31",
+  "updated_at": "2026-11-08T16:25:40+09:00",
   "goals": {
     "rebuild": {
-      "status": "Original BurnNand prefix through native section-map return reproduced; file input, protection and map helpers verified offline",
+      "status": "Reconstructed Q13 C leaf passes 96 leaf/4 original-caller cases and fits fixed-table slots; 448-block research package exactly matches replayed image. Native BurnNand reached first program boundary with 3331 modeled storage requests.",
       "evidence": [
         "analysis/rebuild-evidence.json",
         "analysis/loader-foundation.json",
         "tools/repack_q7.py",
         "tools/check_burn_input.py",
-        "loader-lens-report.html"
+        "loader-lens-report.html",
+        "analysis/recompiled-numeric.json",
+        "tools/check_recompiled_numeric.py",
+        "tools/check_numeric_package.py",
+        "recompiled-numeric-report.html",
+        "analysis/loader-storage.json",
+        "tools/check_burn_storage.py",
+        "storage-readiness-report.html"
       ],
       "gaps": [
-        "Full BurnNand storage loop, subsequent integrity/recovery and real installed-media geometry",
-        "General insertion/deletion and relocation",
-        "Camera update recognition, flash, boot, capture and recovery"
+        "Full BurnNand storage/recovery loop and real installed-media geometry",
+        "Explanation of 281 native byte changes before first program request",
+        "General code insertion/deletion, relocation, and table regeneration",
+        "Camera update recognition, hardware inflate, flash, boot, capture and recovery"
       ],
       "next_actions": [
-        "Continue from section-map return to bounded storage callback boundaries using synthetic memory only",
-        "Verify native MD5 primitives separately from the modeled asynchronous hash-worker outcomes"
-      ]
+        "Trace original writes producing the first program buffer and storage-loop continuation in synthetic RAM",
+        "Verify native MD5 primitives separately from modeled asynchronous worker results"
+      ],
+      "counts": {
+        "native_C_leaf_cases": 96,
+        "native_caller_cases": 4,
+        "substituted_calls": 58,
+        "package_blocks": 448,
+        "changed_blocks": 2,
+        "decoded_changed_bytes": 142,
+        "modeled_storage_requests": 3331,
+        "program_cases": 8,
+        "user_range_cases": 7
+      },
+      "stable_evidence": {
+        "analysis/recompiled-numeric.json": "74f6290cf451d2c017cf62653d67a072328b2381b4a34420d565511cd231fdbb",
+        "analysis/loader-storage.json": "923e7bab3d95123074f75d7841d08ad4d83752b6c54f9dcb889aa843e3ef48f6",
+        "recompiled-numeric-report.html": "259429d7d32d340452fa4dd4e8dea886430abdad60bd3234485bb7b8472e1df9",
+        "storage-readiness-report.html": "9abeaedb730b301d9d527f29a0b63eb1cbdfbd51dd03b662271814a31faca687"
+      },
+      "hash_normalization": "UTF-8 LF bytes"
     },
     "raw_profile": {
       "status": "firmware color arithmetic and conditional MMIO paths documented; calibrated RAW profile unverified",
@@ -39,22 +65,34 @@
       ]
     },
     "autofocus": {
-      "status": "Lens discovery/capability, cached-data interpretation, AF policy consumption, request acknowledgement and live-view completion documented; 32 original-code cases passed",
+      "status": "Native readiness lifecycle replayed: AF-enable and upper command admission differ in failure/reset states; stale/zero/mixed-age VDRC and validity distinguished. Coordinator independently reproduced all17 new cases.",
       "evidence": [
         "analysis/lens-foundation.json",
         "tools/check_lens_policy.py",
         "loader-lens-report.html",
-        "analysis/portability-evidence.json"
+        "analysis/portability-evidence.json",
+        "analysis/lens-readiness.json",
+        "tools/check_lens_readiness.py",
+        "storage-readiness-report.html"
       ],
       "gaps": [
-        "Readiness-bit lifecycle and stale/failed lens-reply windows",
         "Continuous fault-injected AF scan/command/completion chain",
-        "Physical units and per-lens mechanical behavior"
+        "Scheduler interleavings and full timeout recovery beyond nested reentry",
+        "Physical units, actual response timing and per-lens mechanical behavior"
       ],
       "next_actions": [
-        "Replay initialization/readiness and failed lens replies",
-        "Trace safe synthetic AF search windows, limits and stop/dismount behavior; no immediate AF patch"
-      ]
+        "Trace bounded AF search/stop policy using validated cache and failure boundaries; no immediate AF patch"
+      ],
+      "counts": {
+        "new_lifecycle_cases": 17,
+        "original_words": 153,
+        "function_extents": 33
+      },
+      "stable_evidence": {
+        "analysis/lens-readiness.json": "9516435e4609576717f714d99e8ceeddc97b23fecd57914d680cfcf849025966",
+        "tools/check_lens_readiness.py": "9e4ef511f31b6e45fceba060895193fb210e24647d7e578c6a4af88f438e1ea1"
+      },
+      "hash_normalization": "UTF-8 LF bytes"
     },
     "ui_port": {
       "status": "Capture Color Space live-write/retain/rollback state model reproduced from native widgets and settings; six coordinator cases match worker replay",
@@ -91,6 +129,12 @@
     }
   },
   "new_findings": [
+    "C Q13 text164 bytes fits original236-byte function and preserves tested alias/O32 contract; 96leaf/4caller cases and58 nested calls match.",
+    "Fixed-table repair windows reduce E04#154 from rejected79323bits to78817bits; downstream#155 needs its own history-copy repair. Only142 decoded bytes in the164-byte intended range differ. Candidate package eb5d014b761f947b2bd1786651c56d039db8e0e281b7e96c5a8c79a93ad978d6 remains private.",
+    "Independent review found repeated-byte patches could create over110million candidates. Shared per-block cap1000000 now refuses excessive search before output; 762 exhaustive small cost-oracle cases pass.",
+    "Native storage preflight produced2691 op6 and640 op8 requests with modeled results; first op5 stopped before execution. Separate program/readback helper passes8cases; source buffer differs281bytes from incoming chunk.",
+    "Initialization regular-map denial returns7 and can set communication0x08 without a regular reply. Failed regular/spec cases can forward upper search with AF-enable0.",
+    "SingleRegular failure may retain valid1 with zero VDRC; VD-sync may retain or mix old and supplied prefix bytes; primary refresh can retain VDRC bytes with validity0. Full reset clears both values and flags.",
     "Q7 Color Space is live-write on focus, retain on confirm, backup-restore on cancel; initial activation and reopen also write the same byte. The HQ pending-only proposal is not original Q7 behavior.",
     "The UI replay runs native E3 entry, mode setup, widgets, key/focus, settings and selected terminal handlers; eight external boundaries are modeled.",
     "Card hash flag 0 selects two reads with actual-count/content comparison and at most two attempts; flag 1 uses a modeled hash worker. Equal short reads succeed only at this callback boundary.",
@@ -205,6 +249,51 @@
       "command": "humanize-korean official gates",
       "result": "1.9% change, golden PASS, no lost modality; coordinator finalizer accepted",
       "limits": "Native worker fallback, not Claude Opus"
+    },
+    {
+      "command": "check_recompiled_numeric.py: worker and coordinator independent compile/replay",
+      "result": "96 leaf,4 caller,58 substitutions; all metadata equal;35 words and7 function hashes/transfers reproduced",
+      "limits": "Selected integer RAM contract and caller settings; no hardware timing or pixels"
+    },
+    {
+      "command": "check_numeric_package.py with fixed-table bounded fallback",
+      "result": "448 blocks verified; candidate matches HQ independently reproduced SHA; rebuilt ELF exactly equals natively replayed overlay; native worker independently decoded all segments",
+      "limits": "Software decoder only; candidate binary stays private; no updater/boot"
+    },
+    {
+      "command": "check_burn_storage.py coordinator replay",
+      "result": "3331 ordered preflight requests,8 program/readback and7 range cases exactly match worker;83 words,8 typed/3 anonymous extents reproduced",
+      "limits": "FCU replies and installed geometry modeled; first actual op5 stopped"
+    },
+    {
+      "command": "check_lens_readiness.py coordinator replay",
+      "result": "7 startup,4 cache,4 reset/detect,2 timeout cases exactly match worker;153 words and33 function hashes/transfers reproduced",
+      "limits": "Synthetic link,GPIO,power,event inputs; nested timeout reentry modeled"
+    },
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "result": "32 passed including762 exhaustive small DP oracle cases, overlap/table/cap guards and existing output protection",
+      "limits": "Synthetic offline tooling checks"
+    },
+    {
+      "command": "humanize-korean official gates; coordinator finalizer",
+      "result": "0.5% character change;10.2% sentence touch;golden PASS;modality lost0;13 paragraphs preserved",
+      "limits": "Native worker fallback, not Claude Opus"
+    },
+    {
+      "command": "python tools/verify_report.py --firmware <original>",
+      "result": "All prior artifacts plus271 new words,7 numeric/33 lens/8 typed E01/3 anonymous extents and448 original blocks reproduced",
+      "limits": "Offline provenance and software reconstruction"
+    },
+    {
+      "command": "Browser QA of two new HTML reports",
+      "result": "Three numeric and four lifecycle SVGs inspected; anchor navigation and no document horizontal overflow at1265px",
+      "limits": "Desktop only; no camera UI/LCD"
+    },
+    {
+      "command": "humanize-korean original numeric prose gates after timeline clarification",
+      "result": "1.3% change;20.6% sentence touch;golden PASS;modality lost0",
+      "limits": "Editorial evidence only"
     }
   ],
   "artifacts": [
@@ -224,7 +313,19 @@
     "analysis/colorspace-ui.json",
     "tools/check_colorspace_ui.py",
     "tools/verify_colorspace_ui.py",
-    "colorspace-ui-report.html"
+    "colorspace-ui-report.html",
+    "analysis/recompiled-numeric.json",
+    "source/reconstructed/q7_numeric.c",
+    "tools/check_recompiled_numeric.py",
+    "tools/check_numeric_package.py",
+    "tools/fixed_table_encode.py",
+    "recompiled-numeric-report.html",
+    "analysis/loader-storage.json",
+    "analysis/lens-readiness.json",
+    "tools/check_burn_storage.py",
+    "tools/check_lens_readiness.py",
+    "tools/verify_lifecycle.py",
+    "storage-readiness-report.html"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
