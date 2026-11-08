@@ -2,9 +2,13 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[기록 헤더·MD5 경로](https://yunhyok.github.io/pentax-q7-firmware-analysis/loader-hash-report.html): 기록 버퍼의 281바이트 차이를 재구성하고 원본 MD5·작업자·카드 재시도를 연결했습니다. 합성 설치 헤더·미디어·큐 조건이며 카메라 기록은 실행하지 않았습니다.
+
+[Color Space 그리기 경로](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-render-report.html): 큐 갱신 4회, 텍스트 25줄, 강조 요청 20개와 아이콘 픽셀 쓰기 두 사례를 추적했습니다. 글리프·강조 도형의 최종 래스터와 LCD는 미검증입니다.
+
 [C 색 행렬 재컴파일·재패킹](https://yunhyok.github.io/pentax-q7-firmware-analysis/recompiled-numeric-report.html): 96개 함수·4개 원본 호출부 사례가 일치했습니다. 고정 테이블 창 재인코딩으로 164바이트 C 코드를 원래 슬롯에 넣고 전체 448블록을 확인했습니다. 수정 이미지는 비공개 연구 경로에만 보관하며 카메라 수용은 미검증입니다.
 
-[저장 경계·렌즈 준비 상태](https://yunhyok.github.io/pentax-q7-firmware-analysis/storage-readiness-report.html): 첫 기록 직전까지 FCU 요청 3,331개, 별도 기록·비교 8사례와 사용자 영역 7사례를 재현했습니다. 렌즈 초기화·실패·리셋 17사례에서 AF 지원과 명령 허용, 캐시와 유효 상태의 차이를 추적했습니다.
+[저장 경계·렌즈 준비 상태](https://yunhyok.github.io/pentax-q7-firmware-analysis/storage-readiness-report.html): FCU 진입에서 첫 op 5 처리 전까지 요청 3,331개, 별도 기록·비교 8사례와 사용자 영역 7사례를 재현했습니다. 렌즈 초기화·실패·리셋 17사례에서 AF 지원과 명령 허용, 캐시와 유효 상태의 차이를 추적했습니다.
 
 [촬영 색공간 UI 분석](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-ui-report.html): 선택 즉시 RAM 쓰기, 확정 시 유지, 취소 시 백업 복원을 원본 MIPS 6사례로 확인했습니다. setter 호출과 바이트 쓰기를 각각 18회 관측했고 K-3 Mark III의 공통 UI 제안과 차이를 정리했습니다. [근거·한계](colorspace-ui-report.html#validation)
 

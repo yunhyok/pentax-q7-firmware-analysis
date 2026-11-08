@@ -1,11 +1,11 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "365d0fcad7af3a1d7c7d5e1519ec7b6bb60d9e38",
-  "updated_at": "2026-11-08T16:58:35+09:00",
+  "baseline_commit": "fae70c2b8ee496880474c34df41d49b96576e639",
+  "updated_at": "2026-11-08T17:11:30+09:00",
   "goals": {
     "rebuild": {
-      "status": "Reconstructed Q13 C leaf passes 96 leaf/4 original-caller cases and fits fixed-table slots; 448-block research package exactly matches replayed image. Native BurnNand reached first program boundary with 3331 modeled storage requests.",
+      "status": "Native program-source281-byte changes explained by170 field events plus3072 byte-preserving copy events; native MD5 and card callback connected. Existing C fixed-table package and compiler results retained.",
       "evidence": [
         "analysis/rebuild-evidence.json",
         "analysis/loader-foundation.json",
@@ -18,17 +18,22 @@
         "recompiled-numeric-report.html",
         "analysis/loader-storage.json",
         "tools/check_burn_storage.py",
-        "storage-readiness-report.html"
+        "storage-readiness-report.html",
+        "analysis/header-hash.json",
+        "analysis/hash-card.json",
+        "tools/check_burn_header.py",
+        "tools/check_burn_hash.py",
+        "tools/check_hash_card.py",
+        "loader-hash-report.html"
       ],
       "gaps": [
         "Full BurnNand storage/recovery loop and real installed-media geometry",
-        "Explanation of 281 native byte changes before first program request",
         "General code insertion/deletion, relocation, and table regeneration",
         "Camera update recognition, hardware inflate, flash, boot, capture and recovery"
       ],
       "next_actions": [
-        "Trace original writes producing the first program buffer and storage-loop continuation in synthetic RAM",
-        "Verify native MD5 primitives separately from modeled asynchronous worker results"
+        "Continue original BurnNand storage/recovery loop in synthetic RAM, keeping FCU device boundary explicit",
+        "Investigate general insertion/deletion and relocation only against the proven fixed-slot representation"
       ],
       "counts": {
         "native_C_leaf_cases": 96,
@@ -39,13 +44,24 @@
         "decoded_changed_bytes": 142,
         "modeled_storage_requests": 3331,
         "program_cases": 8,
-        "user_range_cases": 7
+        "user_range_cases": 7,
+        "header_changed_bytes": 281,
+        "vex_memory_write_events": 3242,
+        "md5_primitive_cases": 26,
+        "hash_worker_cases": 8,
+        "hash_wrapper_cases": 9,
+        "native_hash_card_cases": 7,
+        "native_hash_card_transactions": 9,
+        "mbr_cases": 7
       },
       "stable_evidence": {
         "analysis/recompiled-numeric.json": "4ec1054854c538f06e8d3e6aaaa9767c4096d5a4b54c5e2a88754473ec5cf2b2",
         "analysis/loader-storage.json": "923e7bab3d95123074f75d7841d08ad4d83752b6c54f9dcb889aa843e3ef48f6",
         "recompiled-numeric-report.html": "ff5aef9870ab4c3b1f041d9b1e6ae5fa1a841beb4ecd2c14975b92db6076c4d0",
-        "storage-readiness-report.html": "b64ac07dadb4764c9045c2827b54be35ac80770ec5d0b46ea78de0e2374dd028"
+        "storage-readiness-report.html": "ee98e3f2792ad44c0322484d2a9e62255aaeecb1f89edcc2caac0066caf45c38",
+        "analysis/header-hash.json": "900796b1cd98b9f763158fc407d7692a4e984825bc686bcdced35697e93e5217",
+        "analysis/hash-card.json": "8d3af227905632a7d3f3beddc51621f6d3539ea8eecb6b3fca02478c5c8b09a0",
+        "loader-hash-report.html": "dad16ece82414eec300846b4c076fb101152446c5861d350d8d0a568c0e2c5b2"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -95,26 +111,32 @@
       "hash_normalization": "UTF-8 LF bytes"
     },
     "ui_port": {
-      "status": "Capture Color Space live-write/retain/rollback state model reproduced from native widgets and settings; six coordinator cases match worker replay",
+      "status": "Original refresh producer and one-message consumer, text staging/highlight requests and buffer roll reproduced; two native indexed-marker RAM draws verified. Coordinator results exactly match worker.",
       "evidence": [
         "analysis/colorspace-ui.json",
         "tools/check_colorspace_ui.py",
         "colorspace-ui-report.html",
-        "analysis/portability-evidence.json"
+        "analysis/portability-evidence.json",
+        "analysis/colorspace-render.json",
+        "tools/check_colorspace_render.py",
+        "colorspace-render-report.html"
       ],
       "gaps": [
-        "Physical switch and full RTOS event-queue delivery",
-        "Asynchronous string raster, exact final display buffer and physical LCD",
+        "Physical switches and full concurrent RTOS event delivery",
+        "Font glyph and focus-shape rasterization, palette RGB, DMA and physical LCD",
         "Persistent setting lifecycle and K-3 III design reimplementation"
       ],
       "next_actions": [
-        "Trace target-screen text and active-component rendering into bounded synthetic output",
-        "Preserve original Q7 immediate-write/rollback semantics explicitly or name deliberate UI behavior changes"
+        "Continue bounded glyph/shape rendering toward complete synthetic capture Color Space screen",
+        "Keep Q7 live-write/confirm-retain/cancel-restore semantics distinct from K3 pending selection"
       ],
       "stable_evidence": {
         "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
         "tools/check_colorspace_ui.py": "cfc5d3ffed73cd9e420e95813c7b2bfd86f2279be25f2fc620b2f5de2242cb64",
-        "colorspace-ui-report.html": "99260a63735e2742da5d94daa8a052491d83fc12dc2ca51a58a7903eeda98cf5"
+        "colorspace-ui-report.html": "7796b24701e10c01d8ad3b80e75991624c0e6ac348dad900aa66256d5599b02c",
+        "analysis/colorspace-render.json": "4aadc6b95302e05dac36ccf4b22c190315a3613f28d2237995db057b21a2039f",
+        "tools/check_colorspace_render.py": "b7e59987909a7ff4b561874ff7c58aed22bc4765dde2ce1f0ebc9234e837a509",
+        "colorspace-render-report.html": "034b48808b3b5b6437a8e808b48248cfba719698c4a9b7c922fc0b539f554deb"
       },
       "hash_normalization": "UTF-8 LF bytes",
       "reproduction_command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
@@ -124,11 +146,25 @@
         "setter_calls": 18,
         "ram_byte_stores": 18,
         "original_words": 180,
-        "function_extents": 56
+        "function_extents": 56,
+        "refreshes": 4,
+        "text_lines": 25,
+        "highlight_shape_commands": 20,
+        "buffer_rolls": 4,
+        "marker_pixel_cases": 2,
+        "marker_changed_bytes_per_case": 330,
+        "render_original_words": 139,
+        "render_function_extents": 47,
+        "resource_range_hashes": 38
       }
     }
   },
   "new_findings": [
+    "VEX event units are explicit:3242 writes from35 PCs;170 field events already reconstruct final SHA a13f08d3\u2026,3072 copy events do not alter any byte in this fixture. All281 differences lie below offset0x600.",
+    "MBR helper skips ID999 or span0; copies section fields to entry start/length and type byte1; only ID0 writes byte0=0x80. Seven full-buffer/guard cases pass; no filesystem/type inference.",
+    "Original MD5 passes26 cases, native manager8 and wrappers9; wrappers do not gate on modeled queue API status. Separate card7 cases run9 actual native MD5/compare worker transactions; no hash-result stub.",
+    "Color Space native refresh queue4 times stages25 text lines and20 highlight requests and rolls4 buffers. Only the selected marker is rasterized in two separate synthetic RAM cases with330 changed bytes each.",
+    "Rendering resources are address/length/hash metadata only. Original glyph units stop at GDI API; LayerSetFrameBuffer/Move continuation is static and DMA/LCD remains unverified.",
     "Review wording corrected: stop is FCU callee entry after JAL/delay slot and before op5 processing; lens RX copy uses configured command receive length, not measured wire length.",
     "Independent review correction: positive-wrap output matches but HI/LO differ(original0/0xc0000000,compiled0/0); original MakeColorMatrix has no MFHI/MFLO. Observation-only hooks are explicitly disclosed. No C/code/package change.",
     "C Q13 text164 bytes fits original236-byte function and preserves tested alias/O32 contract; 96leaf/4caller cases and58 nested calls match.",
@@ -306,6 +342,46 @@
       "command": "test_research_guards.py",
       "result": "4 tests PASS: real Windows dangling symlink rejected before inputs/build, malformed SHA/missing function and -O rejected",
       "limits": "Early path guard plus exclusive creation; no claim of protection against a concurrent hostile pathname replacement"
+    },
+    {
+      "command": "check_burn_header.py + independent native MBR subset",
+      "result": "281 changed bytes reconstructed;3242 VEX event trace; every3072 final-copy event byte-preserving;7 MBR cases passed",
+      "limits": "Synthetic installed header/geometry/FCU; first op5 handling not executed"
+    },
+    {
+      "command": "check_burn_hash.py and check_hash_card.py independent runs",
+      "result": "26+8+9 and7 callbacks/9 worker transactions exactly equal between coordinator and worker",
+      "limits": "Serialized synthetic queues, full80-byte successful reads; no real scheduler/media"
+    },
+    {
+      "command": "check_colorspace_render.py independent coordinator replay",
+      "result": "4 refreshes/25 text lines/20 shapes/4 rolls/2 indexed marker blits; complete metadata equal",
+      "limits": "Graphics staging/API models; only marker writes pixel indices; no LCD"
+    },
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "result": "37 passed including 10 report CLI dangling-link guards and VEX-event wording mutation rejection",
+      "limits": "Offline tools; early path check not concurrent hostile pathname replacement protection"
+    },
+    {
+      "command": "Browser QA of loader-hash-report.html and colorspace-render-report.html",
+      "result": "7 SVGs and navigation inspected; no horizontal document overflow at1265px",
+      "limits": "Desktop layout only"
+    },
+    {
+      "command": "Pinned K3 source comparison",
+      "result": "6 committed source bytes match recorded SHA256, including d44f5b0 actual Color Space/input evidence",
+      "limits": "No uncommitted K3 state used"
+    },
+    {
+      "command": "fae70c2 GitHub publication",
+      "result": "CI42461237206 and Pages42461236618 success; three public files HTTP200 and exact LF bytes",
+      "limits": "Offline evidence publication only"
+    },
+    {
+      "command": "python tools/verify_report.py --firmware <original>",
+      "result": "All prior reports plus311 new words,21typed/3anonymous E01 records,47 main functions and38 resource extents reproduced;448 original blocks and analysisELF also exact",
+      "limits": "Original-byte provenance and bounded offline execution; no camera hardware"
     }
   ],
   "artifacts": [
@@ -337,7 +413,17 @@
     "tools/check_burn_storage.py",
     "tools/check_lens_readiness.py",
     "tools/verify_lifecycle.py",
-    "storage-readiness-report.html"
+    "storage-readiness-report.html",
+    "analysis/header-hash.json",
+    "analysis/hash-card.json",
+    "analysis/colorspace-render.json",
+    "tools/check_burn_header.py",
+    "tools/check_burn_hash.py",
+    "tools/check_hash_card.py",
+    "tools/check_colorspace_render.py",
+    "tools/verify_io_followup.py",
+    "loader-hash-report.html",
+    "colorspace-render-report.html"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."

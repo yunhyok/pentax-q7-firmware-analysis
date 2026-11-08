@@ -1,0 +1,1726 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+  "scope": "Q7 v1.01 E01 card read callback with synthesized hash_flag=1 and full 64-byte payload plus 16-byte digest records.",
+  "callback": {
+    "pointer_table": "0x800a74dc",
+    "entry": "0x80019014",
+    "ready": "0x80019390",
+    "handle_pointer": "0x800a7770",
+    "hash_flag_offset": "0x1278",
+    "synthetic_input_bytes": 64,
+    "synthetic_trailing_digest_bytes": 16
+  },
+  "findings": {
+    "request": "The sCardFunc table points to the unnamed read callback. In the nonzero handle+0x1278 branch, the callback requests N+16 from FileX. When FileX returns success, the original code queues BurnHashInit, then BurnHashUpdate with actual_read-16 and BurnHashFanalize with destination+actual_read-16. Tested successful reads deliver all 80 bytes for N=64.",
+    "queues": "BurnHashInit/Update/Fanalize enqueue three-word requests with codes 0, 1, and 2 at handle+0x127c. The manager dispatches these to md5_init, md5_append and md5_finish. The original memcmp compares 16 bytes. It sends code 3 on equality and 4 on mismatch to handle+0x12b4, retaining the expected-digest pointer in the second word. Fanalize blocks on the reply queue and returns 1 iff the received first word equals 3.",
+    "retry": "Callback success returns 1 after freeing temporary RAM. Mismatch takes FileX relative seek with the original actual-read count, high word 0 and option 3, then can retry once. Two mismatches request seek twice before returning 0. A failed read or failed seek returns 0. The replay exercises first- and last-byte mismatches, a successful retry including changed synthetic payload, failed retry, initial read error, and read/seek errors after mismatch.",
+    "modeling": "Each callback result receive invokes an isolated native worker using the exact captured request words and copies of the actual destination and handle RAM at the same virtual addresses. After the original native compare and reply, a fixture stop-5 message ends the worker; the stop reply stays in the harness. Only the worker's actual reply 3/4 is delivered to the original blocking wrapper. This models serialized delivery and a fresh worker invocation per transaction."
+  },
+  "comparison": {
+    "independent_check": "tools/check_burn_hash.py",
+    "canonical_replay_sha256": "bb8ea40138303598b6d2c987f9c7824af7bcba3c932e483b90bb9e103340b8dd",
+    "native_primitive_cases": 26,
+    "native_worker_cases": 8,
+    "native_wrapper_cases": 9,
+    "algorithm_reference": {
+      "url": "https://www.rfc-editor.org/rfc/rfc1321#appendix-A.5",
+      "use": "Standard MD5 algorithm and published vectors such as abc; firmware policy is based on original E01 evidence."
+    }
+  },
+  "replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+    "scope": "Original E01 card callback, hash wrappers, hash manager, MD5 and digest comparison. Each blocking result receive serially runs the worker on a separate project/state loaded from the same pinned E01 bytes. The exact callback destination/handle RAM is copied; worker stack and register writes are discarded. Only a native reply 3 or 4 is delivered to the original callback wrapper. Stop 5 is a fixture message for ending the worker.",
+    "modeled_boundaries": {
+      "0x800632f4": "Deliver the fixture's full 80-byte data/digest record or read status 1 with actual count zero.",
+      "0x800622e0": "Record original file, distance, high word and mode and return fixture status. No FileX media I/O.",
+      "0x80034720": "Supply synthetic comparison RAM for the callback's allocation, including in flag-1 mode.",
+      "0x80048cf8": "Observe comparison RAM invalidation request without modifying cache.",
+      "0x80034d98": "Record the release of the synthetic comparison RAM.",
+      "0x80029fdc": "Capture original three-word records; do not run RTOS queue send.",
+      "0x80023524": "Deliver captured records, controlled worker stop, or the worker's native reply. No RTOS scheduling.",
+      "0x8004717c": "Accept diagnostic output without I/O."
+    },
+    "synthetic_payload_bytes": 64,
+    "trailing_digest_bytes": 16,
+    "cases": [
+      {
+        "name": "match",
+        "hash_flag": 1,
+        "result": 1,
+        "callback_events": [
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "free",
+            268447744,
+            463
+          ]
+        ],
+        "workers": [
+          {
+            "payload_variant": 0,
+            "mismatch_index": null,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                3,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              3,
+              268443712,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "name": "first-digest-byte-retry-match",
+        "hash_flag": 1,
+        "result": 1,
+        "callback_events": [
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "seek",
+            268460032,
+            80,
+            0,
+            3,
+            0
+          ],
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "free",
+            268447744,
+            463
+          ]
+        ],
+        "workers": [
+          {
+            "payload_variant": 0,
+            "mismatch_index": 0,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "4dd3f56bc197fd985d5965079b5e7148",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                4,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              4,
+              268443712,
+              0
+            ]
+          },
+          {
+            "payload_variant": 0,
+            "mismatch_index": null,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                3,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              3,
+              268443712,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "name": "last-digest-byte-retry-new-payload",
+        "hash_flag": 1,
+        "result": 1,
+        "callback_events": [
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "seek",
+            268460032,
+            80,
+            0,
+            3,
+            0
+          ],
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "free",
+            268447744,
+            463
+          ]
+        ],
+        "workers": [
+          {
+            "payload_variant": 0,
+            "mismatch_index": 15,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "b2d3f56bc197fd985d5965079b5e71b7",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                4,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              4,
+              268443712,
+              0
+            ]
+          },
+          {
+            "payload_variant": 1,
+            "mismatch_index": null,
+            "calculated_md5": "7cab2df47832fab18105250fbd6f26cc",
+            "supplied_md5": "7cab2df47832fab18105250fbd6f26cc",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                3,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              3,
+              268443712,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "name": "first-and-last-digest-byte-fail",
+        "hash_flag": 1,
+        "result": 0,
+        "callback_events": [
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "seek",
+            268460032,
+            80,
+            0,
+            3,
+            0
+          ],
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "seek",
+            268460032,
+            80,
+            0,
+            3,
+            0
+          ],
+          [
+            "free",
+            268447744,
+            519
+          ]
+        ],
+        "workers": [
+          {
+            "payload_variant": 0,
+            "mismatch_index": 0,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "4dd3f56bc197fd985d5965079b5e7148",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                4,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              4,
+              268443712,
+              0
+            ]
+          },
+          {
+            "payload_variant": 0,
+            "mismatch_index": 15,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "b2d3f56bc197fd985d5965079b5e71b7",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                4,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              4,
+              268443712,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "name": "digest-mismatch-seek-error",
+        "hash_flag": 1,
+        "result": 0,
+        "callback_events": [
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "seek",
+            268460032,
+            80,
+            0,
+            3,
+            1
+          ],
+          [
+            "free",
+            268447744,
+            454
+          ]
+        ],
+        "workers": [
+          {
+            "payload_variant": 0,
+            "mismatch_index": 15,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "b2d3f56bc197fd985d5965079b5e71b7",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                4,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              4,
+              268443712,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "name": "file-read-error",
+        "hash_flag": 1,
+        "result": 0,
+        "callback_events": [
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            0,
+            1
+          ],
+          [
+            "free",
+            268447744,
+            435
+          ]
+        ],
+        "workers": []
+      },
+      {
+        "name": "digest-mismatch-retry-read-error",
+        "hash_flag": 1,
+        "result": 0,
+        "callback_events": [
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            80,
+            0
+          ],
+          [
+            "seek",
+            268460032,
+            80,
+            0,
+            3,
+            0
+          ],
+          [
+            "read",
+            268460032,
+            268443648,
+            80,
+            0,
+            1
+          ],
+          [
+            "free",
+            268447744,
+            435
+          ]
+        ],
+        "workers": [
+          {
+            "payload_variant": 0,
+            "mismatch_index": 0,
+            "calculated_md5": "b2d3f56bc197fd985d5965079b5e7148",
+            "supplied_md5": "4dd3f56bc197fd985d5965079b5e7148",
+            "worker_requests": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                268443648,
+                64
+              ],
+              [
+                2,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "worker_replies": [
+              [
+                4,
+                268443712,
+                0
+              ],
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "delivered_reply": [
+              4,
+              268443712,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "engine": "angr 10.0.5 / VEX"
+  },
+  "selected_functions": [
+    {
+      "name": "sCardFunc.read callback (unnamed)",
+      "address": 2147586068,
+      "candidate_end": 2147586960,
+      "size": 892,
+      "segment": "E01",
+      "original_file_offset": "0x948c",
+      "sha256": "3bc0cd15045377c499ca322eb8fefa5bcfeec71147f92a85170e7641f9b99e42",
+      "extent_basis": "Callback pointer, MIPS prologue, last return branch/delay slot and next callback entry",
+      "transfers": [
+        {
+          "site": 2147586148,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147586196,
+          "word": "0c01233e",
+          "kind": "call",
+          "target": 2147781880,
+          "target_names": [
+            "CACHE_InvalidateDCacheRegionEx"
+          ]
+        },
+        {
+          "site": 2147586268,
+          "word": "0c018cbd",
+          "kind": "call",
+          "target": 2147889908,
+          "target_names": [
+            "_fx_file_read"
+          ]
+        },
+        {
+          "site": 2147586300,
+          "word": "0c006e90",
+          "kind": "call",
+          "target": 2147596864,
+          "target_names": [
+            "BurnHashInit"
+          ]
+        },
+        {
+          "site": 2147586320,
+          "word": "0c006e9d",
+          "kind": "call",
+          "target": 2147596916,
+          "target_names": [
+            "BurnHashUpdate"
+          ]
+        },
+        {
+          "site": 2147586340,
+          "word": "0c006eab",
+          "kind": "call",
+          "target": 2147596972,
+          "target_names": [
+            "BurnHashFanalize"
+          ]
+        },
+        {
+          "site": 2147586364,
+          "word": "0c0188b8",
+          "kind": "call",
+          "target": 2147885792,
+          "target_names": [
+            "_fx_file_relative_seek"
+          ]
+        },
+        {
+          "site": 2147586416,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586432,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147586500,
+          "word": "0c0188b8",
+          "kind": "call",
+          "target": 2147885792,
+          "target_names": [
+            "_fx_file_relative_seek"
+          ]
+        },
+        {
+          "site": 2147586524,
+          "word": "0c018cbd",
+          "kind": "call",
+          "target": 2147889908,
+          "target_names": [
+            "_fx_file_read"
+          ]
+        },
+        {
+          "site": 2147586624,
+          "word": "0c0188b8",
+          "kind": "call",
+          "target": 2147885792,
+          "target_names": [
+            "_fx_file_relative_seek"
+          ]
+        },
+        {
+          "site": 2147586660,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586700,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586724,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147586756,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586796,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586832,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586864,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586908,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147586944,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MD5 compression helper (unnamed)",
+      "address": 2147758300,
+      "candidate_end": 2147761372,
+      "size": 3072,
+      "segment": "E01",
+      "original_file_offset": "0x33554",
+      "sha256": "368dcae066b97584c73ff702b44913dcc2f48019fb2901fd0ac5a575235eb69d",
+      "extent_basis": "Original md5_append direct target and MIPS body ending before typed md5_init",
+      "transfers": []
+    },
+    {
+      "name": "BurnHashManager",
+      "address": 2147596340,
+      "candidate_end": 2147596864,
+      "size": 524,
+      "segment": "E01",
+      "original_file_offset": "0xbcac",
+      "sha256": "ead2d06567b7cf3de66a6914dc77bcd61bf28e917b2c06ea2fadc4c62f91ce46",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147596448,
+          "word": "0c008d49",
+          "kind": "call",
+          "target": 2147628324,
+          "target_names": [
+            "_tx_queue_receive"
+          ]
+        },
+        {
+          "site": 2147596504,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2147596588,
+          "word": "0c010f46",
+          "kind": "call",
+          "target": 2147761432,
+          "target_names": [
+            "md5_append"
+          ]
+        },
+        {
+          "site": 2147596604,
+          "word": "0c010f37",
+          "kind": "call",
+          "target": 2147761372,
+          "target_names": [
+            "md5_init"
+          ]
+        },
+        {
+          "site": 2147596624,
+          "word": "0c010f97",
+          "kind": "call",
+          "target": 2147761756,
+          "target_names": [
+            "md5_finish"
+          ]
+        },
+        {
+          "site": 2147596640,
+          "word": "0c022ecd",
+          "kind": "call",
+          "target": 2148055860,
+          "target_names": [
+            "memcmp"
+          ]
+        },
+        {
+          "site": 2147596668,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2147596696,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596708,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596748,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596784,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596792,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596812,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596832,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596848,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcf85c"
+      ]
+    },
+    {
+      "name": "BurnHashInit",
+      "address": 2147596864,
+      "candidate_end": 2147596916,
+      "size": 52,
+      "segment": "E01",
+      "original_file_offset": "0xbeb8",
+      "sha256": "eeb0e54b2e336b6fe26814e08adda6870ef81e5032921dd61c669183c28169c6",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147596892,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcdfcc"
+      ]
+    },
+    {
+      "name": "BurnHashUpdate",
+      "address": 2147596916,
+      "candidate_end": 2147596972,
+      "size": 56,
+      "segment": "E01",
+      "original_file_offset": "0xbeec",
+      "sha256": "e8fed156d0c850f04c939cbdc29def86b78b1fe5b6c7c9afb745db97031111e4",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147596948,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcc2ec"
+      ]
+    },
+    {
+      "name": "BurnHashFanalize",
+      "address": 2147596972,
+      "candidate_end": 2147597064,
+      "size": 92,
+      "segment": "E01",
+      "original_file_offset": "0xbf24",
+      "sha256": "3ebb9eaf7dce2c87b468fe987bccf709d606473fdf05407e78bf7923c46bec85",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147597012,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2147597028,
+          "word": "0c008d49",
+          "kind": "call",
+          "target": 2147628324,
+          "target_names": [
+            "_tx_queue_receive"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xd07fc"
+      ]
+    },
+    {
+      "name": "md5_init",
+      "address": 2147761372,
+      "candidate_end": 2147761432,
+      "size": 60,
+      "segment": "E01",
+      "original_file_offset": "0x34154",
+      "sha256": "6b480da74cbee187d05c1763b9f0fa212f83ef4af703783f1085f5217fdc582b",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcbaec"
+      ]
+    },
+    {
+      "name": "md5_append",
+      "address": 2147761432,
+      "candidate_end": 2147761756,
+      "size": 324,
+      "segment": "E01",
+      "original_file_offset": "0x34190",
+      "sha256": "302646591395d3b21a53a25233ae589c4aecfc8639ead57aae3824ee79ef4c7d",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147761568,
+          "word": "0c022ef3",
+          "kind": "call",
+          "target": 2148056012,
+          "target_names": [
+            "memcpy"
+          ]
+        },
+        {
+          "site": 2147761604,
+          "word": "0c010c37",
+          "kind": "call",
+          "target": 2147758300,
+          "target_names": []
+        },
+        {
+          "site": 2147761632,
+          "word": "0c010c37",
+          "kind": "call",
+          "target": 2147758300,
+          "target_names": []
+        },
+        {
+          "site": 2147761696,
+          "word": "08022ef3",
+          "kind": "jump",
+          "target": 2148056012,
+          "target_names": [
+            "memcpy"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xd15dc"
+      ]
+    },
+    {
+      "name": "md5_finish",
+      "address": 2147761756,
+      "candidate_end": 2147761968,
+      "size": 212,
+      "segment": "E01",
+      "original_file_offset": "0x342d4",
+      "sha256": "b138889654e63ab1a02a6ead872dc102636b299d2dfcc747e53d14755a7c94a2",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147761868,
+          "word": "0c010f46",
+          "kind": "call",
+          "target": 2147761432,
+          "target_names": [
+            "md5_append"
+          ]
+        },
+        {
+          "site": 2147761884,
+          "word": "0c010f46",
+          "kind": "call",
+          "target": 2147761432,
+          "target_names": [
+            "md5_append"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xccecc"
+      ]
+    },
+    {
+      "name": "memcmp",
+      "address": 2148055860,
+      "candidate_end": 2148056012,
+      "size": 152,
+      "segment": "E01",
+      "original_file_offset": "0x7bfac",
+      "sha256": "59bcdcc638e1703732e36d193ce5e79a08711cd2d31011d2a9f5f7760ed72a18",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcf51c"
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Original E01 STT_FUNC extents use st_size. The two unnamed function ranges are analyst bounds.",
+    "Direct-transfer words are a linear MIPS32 scan with delay slots; runtime reachability is limited to the separately replayed cases."
+  ],
+  "evidence": [
+    {
+      "role": "Original callback table, flag check, and FileX full-read branch",
+      "words": [
+        {
+          "va": "0x800a74dc",
+          "u32le_word": "0x80019014",
+          "segment": "E01",
+          "original_file_offset": "0x9794c"
+        },
+        {
+          "va": "0x800a74e0",
+          "u32le_word": "0x80019390",
+          "segment": "E01",
+          "original_file_offset": "0x97950"
+        },
+        {
+          "va": "0x80019014",
+          "u32le_word": "0x27bdffb0",
+          "segment": "E01",
+          "original_file_offset": "0x948c"
+        },
+        {
+          "va": "0x800190b0",
+          "u32le_word": "0x26fe0010",
+          "segment": "E01",
+          "original_file_offset": "0x9528"
+        },
+        {
+          "va": "0x800190c0",
+          "u32le_word": "0x8c857770",
+          "segment": "E01",
+          "original_file_offset": "0x9538"
+        },
+        {
+          "va": "0x800190c8",
+          "u32le_word": "0x90ab1278",
+          "segment": "E01",
+          "original_file_offset": "0x9540"
+        },
+        {
+          "va": "0x800190cc",
+          "u32le_word": "0x27a70018",
+          "segment": "E01",
+          "original_file_offset": "0x9544"
+        },
+        {
+          "va": "0x800190d0",
+          "u32le_word": "0x03cb880b",
+          "segment": "E01",
+          "original_file_offset": "0x9548"
+        },
+        {
+          "va": "0x800190dc",
+          "u32le_word": "0x0c018cbd",
+          "segment": "E01",
+          "original_file_offset": "0x9554"
+        },
+        {
+          "va": "0x800190e4",
+          "u32le_word": "0x14400073",
+          "segment": "E01",
+          "original_file_offset": "0x955c"
+        },
+        {
+          "va": "0x800190f0",
+          "u32le_word": "0x90981278",
+          "segment": "E01",
+          "original_file_offset": "0x9568"
+        },
+        {
+          "va": "0x800190f4",
+          "u32le_word": "0x53000031",
+          "segment": "E01",
+          "original_file_offset": "0x956c"
+        }
+      ]
+    },
+    {
+      "role": "Original callback hashes actual length minus trailer, then retries or frees",
+      "words": [
+        {
+          "va": "0x800190fc",
+          "u32le_word": "0x0c006e90",
+          "segment": "E01",
+          "original_file_offset": "0x9574"
+        },
+        {
+          "va": "0x80019104",
+          "u32le_word": "0x8fa30018",
+          "segment": "E01",
+          "original_file_offset": "0x957c"
+        },
+        {
+          "va": "0x80019110",
+          "u32le_word": "0x0c006e9d",
+          "segment": "E01",
+          "original_file_offset": "0x9588"
+        },
+        {
+          "va": "0x80019114",
+          "u32le_word": "0x2466fff0",
+          "segment": "E01",
+          "original_file_offset": "0x958c"
+        },
+        {
+          "va": "0x80019118",
+          "u32le_word": "0x8fbf0018",
+          "segment": "E01",
+          "original_file_offset": "0x9590"
+        },
+        {
+          "va": "0x80019120",
+          "u32le_word": "0x02bfc821",
+          "segment": "E01",
+          "original_file_offset": "0x9598"
+        },
+        {
+          "va": "0x80019124",
+          "u32le_word": "0x0c006eab",
+          "segment": "E01",
+          "original_file_offset": "0x959c"
+        },
+        {
+          "va": "0x80019128",
+          "u32le_word": "0x2725fff0",
+          "segment": "E01",
+          "original_file_offset": "0x95a0"
+        },
+        {
+          "va": "0x8001912c",
+          "u32le_word": "0x14400073",
+          "segment": "E01",
+          "original_file_offset": "0x95a4"
+        },
+        {
+          "va": "0x80019134",
+          "u32le_word": "0x8fa60018",
+          "segment": "E01",
+          "original_file_offset": "0x95ac"
+        },
+        {
+          "va": "0x80019138",
+          "u32le_word": "0x00003821",
+          "segment": "E01",
+          "original_file_offset": "0x95b0"
+        },
+        {
+          "va": "0x8001913c",
+          "u32le_word": "0x0c0188b8",
+          "segment": "E01",
+          "original_file_offset": "0x95b4"
+        },
+        {
+          "va": "0x80019140",
+          "u32le_word": "0xafb60010",
+          "segment": "E01",
+          "original_file_offset": "0x95b8"
+        },
+        {
+          "va": "0x80019144",
+          "u32le_word": "0x1440004c",
+          "segment": "E01",
+          "original_file_offset": "0x95bc"
+        },
+        {
+          "va": "0x8001914c",
+          "u32le_word": "0x2673ffff",
+          "segment": "E01",
+          "original_file_offset": "0x95c4"
+        },
+        {
+          "va": "0x80019154",
+          "u32le_word": "0x1679ffd9",
+          "segment": "E01",
+          "original_file_offset": "0x95cc"
+        },
+        {
+          "va": "0x80019170",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x95e8"
+        },
+        {
+          "va": "0x80019174",
+          "u32le_word": "0x24070207",
+          "segment": "E01",
+          "original_file_offset": "0x95ec"
+        },
+        {
+          "va": "0x80019188",
+          "u32le_word": "0x00001021",
+          "segment": "E01",
+          "original_file_offset": "0x9600"
+        },
+        {
+          "va": "0x8001928c",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x9704"
+        },
+        {
+          "va": "0x800192c4",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x973c"
+        },
+        {
+          "va": "0x80019310",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x9788"
+        },
+        {
+          "va": "0x8001931c",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0x9794"
+        }
+      ]
+    },
+    {
+      "role": "Native queue wrappers stage codes 0, 1, 2 and accept reply 3",
+      "words": [
+        {
+          "va": "0x8001ba48",
+          "u32le_word": "0x2484127c",
+          "segment": "E01",
+          "original_file_offset": "0xbec0"
+        },
+        {
+          "va": "0x8001ba5c",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbed4"
+        },
+        {
+          "va": "0x8001ba60",
+          "u32le_word": "0xafa00010",
+          "segment": "E01",
+          "original_file_offset": "0xbed8"
+        },
+        {
+          "va": "0x8001ba78",
+          "u32le_word": "0xafa50014",
+          "segment": "E01",
+          "original_file_offset": "0xbef0"
+        },
+        {
+          "va": "0x8001ba7c",
+          "u32le_word": "0xafa60018",
+          "segment": "E01",
+          "original_file_offset": "0xbef4"
+        },
+        {
+          "va": "0x8001ba84",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0xbefc"
+        },
+        {
+          "va": "0x8001ba94",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbf0c"
+        },
+        {
+          "va": "0x8001ba98",
+          "u32le_word": "0xafa20010",
+          "segment": "E01",
+          "original_file_offset": "0xbf10"
+        },
+        {
+          "va": "0x8001bab4",
+          "u32le_word": "0xafa50014",
+          "segment": "E01",
+          "original_file_offset": "0xbf2c"
+        },
+        {
+          "va": "0x8001bac0",
+          "u32le_word": "0x24070002",
+          "segment": "E01",
+          "original_file_offset": "0xbf38"
+        },
+        {
+          "va": "0x8001bad4",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbf4c"
+        },
+        {
+          "va": "0x8001badc",
+          "u32le_word": "0x260412b4",
+          "segment": "E01",
+          "original_file_offset": "0xbf54"
+        },
+        {
+          "va": "0x8001bae4",
+          "u32le_word": "0x0c008d49",
+          "segment": "E01",
+          "original_file_offset": "0xbf5c"
+        },
+        {
+          "va": "0x8001bae8",
+          "u32le_word": "0x2406ffff",
+          "segment": "E01",
+          "original_file_offset": "0xbf60"
+        },
+        {
+          "va": "0x8001baf4",
+          "u32le_word": "0x38620003",
+          "segment": "E01",
+          "original_file_offset": "0xbf6c"
+        }
+      ]
+    },
+    {
+      "role": "Native worker dispatch, MD5 append/finish and equality/mismatch replies",
+      "words": [
+        {
+          "va": "0x8001b884",
+          "u32le_word": "0x249612b4",
+          "segment": "E01",
+          "original_file_offset": "0xbcfc"
+        },
+        {
+          "va": "0x8001b88c",
+          "u32le_word": "0x2492127c",
+          "segment": "E01",
+          "original_file_offset": "0xbd04"
+        },
+        {
+          "va": "0x8001b8a0",
+          "u32le_word": "0x0c008d49",
+          "segment": "E01",
+          "original_file_offset": "0xbd18"
+        },
+        {
+          "va": "0x8001b8b0",
+          "u32le_word": "0x50640017",
+          "segment": "E01",
+          "original_file_offset": "0xbd28"
+        },
+        {
+          "va": "0x8001b8b8",
+          "u32le_word": "0x10600020",
+          "segment": "E01",
+          "original_file_offset": "0xbd30"
+        },
+        {
+          "va": "0x8001b8c0",
+          "u32le_word": "0x10650022",
+          "segment": "E01",
+          "original_file_offset": "0xbd38"
+        },
+        {
+          "va": "0x8001b8d8",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbd50"
+        },
+        {
+          "va": "0x8001b92c",
+          "u32le_word": "0x0c010f46",
+          "segment": "E01",
+          "original_file_offset": "0xbda4"
+        },
+        {
+          "va": "0x8001b93c",
+          "u32le_word": "0x0c010f37",
+          "segment": "E01",
+          "original_file_offset": "0xbdb4"
+        },
+        {
+          "va": "0x8001b950",
+          "u32le_word": "0x0c010f97",
+          "segment": "E01",
+          "original_file_offset": "0xbdc8"
+        },
+        {
+          "va": "0x8001b960",
+          "u32le_word": "0x0c022ecd",
+          "segment": "E01",
+          "original_file_offset": "0xbdd8"
+        },
+        {
+          "va": "0x8001b964",
+          "u32le_word": "0x24060010",
+          "segment": "E01",
+          "original_file_offset": "0xbddc"
+        },
+        {
+          "va": "0x8001b968",
+          "u32le_word": "0x14400008",
+          "segment": "E01",
+          "original_file_offset": "0xbde0"
+        },
+        {
+          "va": "0x8001b96c",
+          "u32le_word": "0x24090003",
+          "segment": "E01",
+          "original_file_offset": "0xbde4"
+        },
+        {
+          "va": "0x8001b97c",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbdf4"
+        },
+        {
+          "va": "0x8001b980",
+          "u32le_word": "0xafa90010",
+          "segment": "E01",
+          "original_file_offset": "0xbdf8"
+        },
+        {
+          "va": "0x8001b994",
+          "u32le_word": "0x240d0004",
+          "segment": "E01",
+          "original_file_offset": "0xbe0c"
+        },
+        {
+          "va": "0x8001b99c",
+          "u32le_word": "0xafad0010",
+          "segment": "E01",
+          "original_file_offset": "0xbe14"
+        },
+        {
+          "va": "0x8001ba30",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbea8"
+        },
+        {
+          "va": "0x80043dc4",
+          "u32le_word": "0x0c010c37",
+          "segment": "E01",
+          "original_file_offset": "0x3423c"
+        },
+        {
+          "va": "0x80043de0",
+          "u32le_word": "0x0c010c37",
+          "segment": "E01",
+          "original_file_offset": "0x34258"
+        }
+      ]
+    }
+  ],
+  "reproduction": "python tools/check_hash_card.py <original-Q7-v1.01-update> --output .private/hash-card/recheck.json",
+  "limitations": [
+    "The FileX, pool/cache and RTOS APIs listed in replay.modeled_boundaries are synthetic. No physical read, scheduler, concurrency, timing or NAND write is exercised.",
+    "Successful fixture reads are exactly 80 bytes. No short success, actual_read under 16, large chunk, asynchronous queue failure or full-file validation is inferred.",
+    "The callback hash flag is supplied as 1. This replay neither establishes where it becomes nonzero in a real update nor determines whether a particular package contains per-read digests.",
+    "MD5 equality at this callback boundary does not establish package authentication, loader acceptance, full burn or hardware behavior."
+  ]
+}

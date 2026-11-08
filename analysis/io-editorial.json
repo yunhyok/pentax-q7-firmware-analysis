@@ -1,0 +1,17 @@
+{
+  "skill": "humanize-korean2.3.2",
+  "route": "light",
+  "route_source": "route_hint",
+  "execution": "Native Codex worker plus coordinator finalizer; not Claude Opus",
+  "paragraphs": 19,
+  "input_sha256": "0c7f2e79389e7e4abab038d5e6d63a1076b2618652508d87ca9b72961becd55a",
+  "output_sha256": "16cd78015d78e9772fdaaf18d8db54d9e1a48793fe03cc3a402c87c8ad73a1af",
+  "change_rate_percent": 1.0,
+  "sentence_touch_rate_percent": 16.4,
+  "golden": "PASS",
+  "modality_lost": 0,
+  "self_check": "6/6",
+  "grade": "B",
+  "finalizer": "corrected: remove only from modeled queue APIs; actual fixture models other declared boundaries",
+  "scope": "First paragraph numeric machine-state extension; next10 header/hash and final8 Color Space render paragraphs. FCU entry after JAL/delay slot explicitly distinguished from op5 execution."
+}

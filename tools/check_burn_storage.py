@@ -150,7 +150,7 @@ def base_state(project, angr, address, args, *, stack_size=0x1000, handle_size=0
     return state
 
 
-def replay_prefix(project, angr, firmware):
+def replay_prefix(project, angr, firmware, *, observe=None):
     card_reads, selectors, allocations, schedule, first = [], [], [], [], {}
     position, heap = CARD_OFFSET, HEAP
 
@@ -213,6 +213,8 @@ def replay_prefix(project, angr, firmware):
                           (0x124C, PRIMARY), (0x126C, 1)):
         put_u32(st, HANDLE+offset, value)
     st.memory.store(HANDLE+0x1268, b"\x01")
+    if observe is not None:
+        observe(st)
     sim = project.factory.simgr(st, save_unconstrained=True)
     sim.explore(find=lambda s: s.addr == STORAGE and num(s, s.regs.a1) not in (6, 8), avoid=RETURN, n=150000)
     assert len(sim.found) == 1 and not sim.active and not sim.errored and not sim.avoid and not sim.unconstrained, sim

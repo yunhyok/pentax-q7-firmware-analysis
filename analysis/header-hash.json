@@ -1,0 +1,4695 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+  "scope": "Native first-program header-write attribution, MD5 arithmetic and queue worker/wrapper boundaries in synthetic RAM. No physical storage or RTOS scheduling.",
+  "header_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+    "engine": "angr 10.0.5 / VEX",
+    "trace": {
+      "source": {
+        "incoming_sha256": "7e8bacdadfd57f7f2d6044d433f9a0ade5fa920a57c779a0cbdc6393366b15df",
+        "program_source_sha256": "a13f08d36e17dc3bfb9deb769d3e1eab95acfb48bfa437ac734d069c72720e29",
+        "changed_byte_count": 281
+      },
+      "first_program_request": {
+        "return_address": "0x80011e10",
+        "arguments": [
+          "0x10000000",
+          "0x5",
+          "0x0",
+          "0x100",
+          "0x10010000",
+          "0x70007a98",
+          "0x10"
+        ]
+      },
+      "event_encoding": "VEX memory-write events, not logical store-instruction executions; SWL/SWR may expand into byte events",
+      "event_count": 3242,
+      "before_copy_events": 170,
+      "final_copy_events": 3072,
+      "final_copy_byte_preserving": true,
+      "changed_ranges_end_exclusive": [
+        [
+          532,
+          533
+        ],
+        [
+          568,
+          792
+        ],
+        [
+          936,
+          980
+        ],
+        [
+          1470,
+          1471
+        ],
+        [
+          1474,
+          1475
+        ],
+        [
+          1479,
+          1481
+        ],
+        [
+          1483,
+          1484
+        ],
+        [
+          1490,
+          1491
+        ],
+        [
+          1494,
+          1495
+        ],
+        [
+          1498,
+          1499
+        ],
+        [
+          1506,
+          1507
+        ],
+        [
+          1511,
+          1512
+        ],
+        [
+          1522,
+          1523
+        ],
+        [
+          1527,
+          1528
+        ]
+      ],
+      "mbr_offset": 1024,
+      "partition_fields": [
+        {
+          "id": 0,
+          "raw_byte0": 128,
+          "raw_byte4": 1,
+          "raw_u32_at8": 81920,
+          "raw_u32_at12": 24576
+        },
+        {
+          "id": 1,
+          "raw_byte0": 128,
+          "raw_byte4": 1,
+          "raw_u32_at8": 13280,
+          "raw_u32_at12": 68640
+        },
+        {
+          "id": 2,
+          "raw_byte0": 128,
+          "raw_byte4": 1,
+          "raw_u32_at8": 106496,
+          "raw_u32_at12": 4096
+        },
+        {
+          "id": 3,
+          "raw_byte0": 128,
+          "raw_byte4": 1,
+          "raw_u32_at8": 110592,
+          "raw_u32_at12": 53248
+        }
+      ],
+      "fields": {
+        "0x214": 79360,
+        "0x310": 640,
+        "0x314": 384,
+        "0x3a8": 1,
+        "0x3ac": 0
+      },
+      "groups": [
+        {
+          "pc": "0x80012fcc",
+          "events": 1,
+          "min_offset": 936,
+          "end_exclusive": 940,
+          "offset_size_data_sha256": "67fd73e2f278ef2d5c4f864c68d425bdaeb5602635835e4276d310fe8551d046"
+        },
+        {
+          "pc": "0x80012fd0",
+          "events": 1,
+          "min_offset": 940,
+          "end_exclusive": 944,
+          "offset_size_data_sha256": "d8f91bb396488a627cf2cb6cbae867055a4cb2ebb1e184c7e6b0e530c23ff6e4"
+        },
+        {
+          "pc": "0x80013e88",
+          "events": 384,
+          "min_offset": 0,
+          "end_exclusive": 1524,
+          "offset_size_data_sha256": "7f9fad3c2201ddda4f7cb95fc8f4e77111d331d1ec175cec7f70571200083841"
+        },
+        {
+          "pc": "0x80013e8c",
+          "events": 384,
+          "min_offset": 0,
+          "end_exclusive": 1524,
+          "offset_size_data_sha256": "6c0bed4c48e1f968958074a4000c18724193602648ca02d42e498a1f9ef3873e"
+        },
+        {
+          "pc": "0x80013e90",
+          "events": 384,
+          "min_offset": 4,
+          "end_exclusive": 1528,
+          "offset_size_data_sha256": "c03f481cadc22db0f6a2fa5a8f49eccc9694daa18339362c824bb2a127a4a8e8"
+        },
+        {
+          "pc": "0x80013e94",
+          "events": 384,
+          "min_offset": 4,
+          "end_exclusive": 1528,
+          "offset_size_data_sha256": "974f585f442e05e4929a91647d612e36f49a7fcb938358139fa951b21282b7df"
+        },
+        {
+          "pc": "0x80013e98",
+          "events": 384,
+          "min_offset": 8,
+          "end_exclusive": 1532,
+          "offset_size_data_sha256": "41fbfe7322c84a394f105f752ba173c7f63fb87bfd2b79808225dbbbf0191246"
+        },
+        {
+          "pc": "0x80013e9c",
+          "events": 384,
+          "min_offset": 8,
+          "end_exclusive": 1532,
+          "offset_size_data_sha256": "905fd554dd546e91ae60705663022f74e15f76a0e5426fb85bc1e5720993735d"
+        },
+        {
+          "pc": "0x80013ea0",
+          "events": 384,
+          "min_offset": 12,
+          "end_exclusive": 1536,
+          "offset_size_data_sha256": "a831ec1a62cbeb95167225a230a0e645d03103104c0071ad9112143d2a89f335"
+        },
+        {
+          "pc": "0x80013ea4",
+          "events": 384,
+          "min_offset": 12,
+          "end_exclusive": 1536,
+          "offset_size_data_sha256": "e76f0c29fcf2c15c9069cb86f3190583c22466ff2c234035a9cd1e611b9ab798"
+        },
+        {
+          "pc": "0x8001a3ec",
+          "events": 1,
+          "min_offset": 1470,
+          "end_exclusive": 1471,
+          "offset_size_data_sha256": "71e22dc6461724f83b9e93cb590ab7339e707ae65eaee6dc68ab0db3d7a808ba"
+        },
+        {
+          "pc": "0x8001a410",
+          "events": 16,
+          "min_offset": 1480,
+          "end_exclusive": 1530,
+          "offset_size_data_sha256": "2efdf99c5638cd3e4e3b8627a5220a5193d0cec5dccc42ec3999473b1f8bdd4a"
+        },
+        {
+          "pc": "0x8001a414",
+          "events": 16,
+          "min_offset": 1478,
+          "end_exclusive": 1528,
+          "offset_size_data_sha256": "58190436b035196662d6a8a35b503b610558852524255a1c36be1fe9ee3b624e"
+        },
+        {
+          "pc": "0x8001a420",
+          "events": 16,
+          "min_offset": 1484,
+          "end_exclusive": 1534,
+          "offset_size_data_sha256": "4f72e131557ab8ffbe1e13db7ed4703d427acf1b3097e3aa7a319f30071e0498"
+        },
+        {
+          "pc": "0x8001a424",
+          "events": 16,
+          "min_offset": 1482,
+          "end_exclusive": 1532,
+          "offset_size_data_sha256": "b7d8912e8ab225198d6269e485eecac0cb47d1a483a7e23ef06ab2b59985fa1f"
+        },
+        {
+          "pc": "0x8001a428",
+          "events": 4,
+          "min_offset": 1474,
+          "end_exclusive": 1523,
+          "offset_size_data_sha256": "f30d1f4dc75440ec208dda02378792d29e87c18dd9b7f9f1be458f76b2072310"
+        },
+        {
+          "pc": "0x8001a95c",
+          "events": 1,
+          "min_offset": 532,
+          "end_exclusive": 536,
+          "offset_size_data_sha256": "38ece4fda1261fef8405d2076e5169a509cda11dc19b92cd3abaa4e6b00431c1"
+        },
+        {
+          "pc": "0x8001ac48",
+          "events": 2,
+          "min_offset": 944,
+          "end_exclusive": 964,
+          "offset_size_data_sha256": "c6e376341990b32e490424cca12d0466a9ffbafcf409e62a91ed57f57639ae09"
+        },
+        {
+          "pc": "0x8001ac4c",
+          "events": 2,
+          "min_offset": 948,
+          "end_exclusive": 968,
+          "offset_size_data_sha256": "636d888358e6c33dc24f224f2b0195833542697e3f72677b746b7c3e82ab58ee"
+        },
+        {
+          "pc": "0x8001ac50",
+          "events": 2,
+          "min_offset": 952,
+          "end_exclusive": 972,
+          "offset_size_data_sha256": "0c0addaf56b33b6ae13b44982a73d594f1adcb2b08d50eaff728bca1449ce96a"
+        },
+        {
+          "pc": "0x8001ac54",
+          "events": 2,
+          "min_offset": 956,
+          "end_exclusive": 976,
+          "offset_size_data_sha256": "b9033450b592dff16914a4268f9e3d2eed3dd97597dfe5c0339f6e169abdfd01"
+        },
+        {
+          "pc": "0x8001ac68",
+          "events": 1,
+          "min_offset": 976,
+          "end_exclusive": 980,
+          "offset_size_data_sha256": "8b5c7a8f096927e0aac2dacc90ed5578a7047ccdecb8324be5efc136f148b669"
+        },
+        {
+          "pc": "0x8001ac8c",
+          "events": 13,
+          "min_offset": 568,
+          "end_exclusive": 764,
+          "offset_size_data_sha256": "87c637509eff5e5b860e7c99aec251c73968c088950f337529b21da95c82938a"
+        },
+        {
+          "pc": "0x8001ac90",
+          "events": 13,
+          "min_offset": 572,
+          "end_exclusive": 768,
+          "offset_size_data_sha256": "385edb7e7ed00812d3b355cddc8d22bfb1c02ac91f960dcb24ececf466110619"
+        },
+        {
+          "pc": "0x8001ac94",
+          "events": 13,
+          "min_offset": 576,
+          "end_exclusive": 772,
+          "offset_size_data_sha256": "b5b5aede56337ff3001d2215021fb019ab3c18e1e1cea7871eaf01945d6be0e1"
+        },
+        {
+          "pc": "0x8001ac98",
+          "events": 13,
+          "min_offset": 580,
+          "end_exclusive": 776,
+          "offset_size_data_sha256": "0080d624b3b49cf95d926eddd3ed02403df51d3cbc6f2454d1e95c06ec3ae777"
+        },
+        {
+          "pc": "0x8001acb0",
+          "events": 1,
+          "min_offset": 780,
+          "end_exclusive": 784,
+          "offset_size_data_sha256": "487ddc1ef3435f02d30fccd028277f5efbb00682d2970c9bfe8eae5010879fe5"
+        },
+        {
+          "pc": "0x8001acb4",
+          "events": 1,
+          "min_offset": 776,
+          "end_exclusive": 780,
+          "offset_size_data_sha256": "be5b840eea457d5b7083fc753baa3468f4f6e4589fd33322f91c5f4c009cdcca"
+        },
+        {
+          "pc": "0x8001af50",
+          "events": 1,
+          "min_offset": 784,
+          "end_exclusive": 788,
+          "offset_size_data_sha256": "600dbb227a8279e38755d96e5baa88b707bc59280a3bb786c06c221eb676e159"
+        },
+        {
+          "pc": "0x8001af54",
+          "events": 1,
+          "min_offset": 788,
+          "end_exclusive": 792,
+          "offset_size_data_sha256": "71e984f32182b97754e4b2da26e512f3c42c4f867b57da8de0a5deb00d3bcf88"
+        },
+        {
+          "pc": "0x8001af58",
+          "events": 1,
+          "min_offset": 560,
+          "end_exclusive": 564,
+          "offset_size_data_sha256": "c259b612d4d0e6de53db4ec5828eee9ed2ecf8ab80c9e7c84026479cb02ff302"
+        },
+        {
+          "pc": "0x8001af78",
+          "events": 8,
+          "min_offset": 792,
+          "end_exclusive": 908,
+          "offset_size_data_sha256": "93b9227f00c4a99b3fca42670db68a5a45dfbbf28fef6c3425c98eaf4fb7409d"
+        },
+        {
+          "pc": "0x8001af7c",
+          "events": 8,
+          "min_offset": 796,
+          "end_exclusive": 912,
+          "offset_size_data_sha256": "f7b5aa2c0a568683d8247c5210ac5db0ec09d1cf242ef2b4369aa83b53027afb"
+        },
+        {
+          "pc": "0x8001af80",
+          "events": 8,
+          "min_offset": 800,
+          "end_exclusive": 916,
+          "offset_size_data_sha256": "e5d6b5837d7d054a96055d618f20dca5f191ee627b35c06f14f6ae9f72f99fd8"
+        },
+        {
+          "pc": "0x8001af84",
+          "events": 8,
+          "min_offset": 804,
+          "end_exclusive": 920,
+          "offset_size_data_sha256": "6462a4e559a4c56395f1c1ad1773aeebff5a87e5a78de9434125b1571b403d4c"
+        }
+      ]
+    },
+    "mbr_cases": [
+      {
+        "partition_id": 999,
+        "span": 1,
+        "writes": false,
+        "boot_byte": 165,
+        "length": null,
+        "start": null
+      },
+      {
+        "partition_id": 999,
+        "span": 0,
+        "writes": false,
+        "boot_byte": 165,
+        "length": null,
+        "start": null
+      },
+      {
+        "partition_id": 0,
+        "span": 1,
+        "writes": true,
+        "boot_byte": 128,
+        "length": 2596069104,
+        "start": 305419896
+      },
+      {
+        "partition_id": 1,
+        "span": 1,
+        "writes": true,
+        "boot_byte": 165,
+        "length": 2596069104,
+        "start": 305419896
+      },
+      {
+        "partition_id": 2,
+        "span": 1,
+        "writes": true,
+        "boot_byte": 165,
+        "length": 2596069104,
+        "start": 305419896
+      },
+      {
+        "partition_id": 3,
+        "span": 1,
+        "writes": true,
+        "boot_byte": 165,
+        "length": 2596069104,
+        "start": 305419896
+      },
+      {
+        "partition_id": 2,
+        "span": 0,
+        "writes": false,
+        "boot_byte": 165,
+        "length": null,
+        "start": null
+      }
+    ],
+    "modeled_prefix": {
+      "0x80034720": "allocate zeroed synthetic heap",
+      "0x80048cf8": "cache maintenance no-op",
+      "0x80034d98": "free no-op",
+      "0x8004717c": "diagnostic log no-op",
+      "0x8001a444": "header diagnostic no-op",
+      "0x80019014": "card callback supplies original package bytes",
+      "0x8008495c": "existing-media header returns synthetic installed header",
+      "0x80083744": "synthetic zone geometry",
+      "0x8008249c": "operation 6 fills 16 spare bytes with FF and returns 0; operation 8 returns 0"
+    },
+    "modeled_mbr": {
+      "0x8004717c": "diagnostic log no-op"
+    }
+  },
+  "hash_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+    "engine": "angr 10.0.5 / VEX",
+    "primitive_hooks": [],
+    "primitive_cases": [
+      {
+        "length": 0,
+        "chunks": [
+          0
+        ],
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "length": 0,
+        "chunks": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "length": 1,
+        "chunks": [
+          1
+        ],
+        "digest": "8666683506aacd900bbd5a74ac4edf68"
+      },
+      {
+        "length": 1,
+        "chunks": [
+          0,
+          0,
+          1,
+          0
+        ],
+        "digest": "8666683506aacd900bbd5a74ac4edf68"
+      },
+      {
+        "length": 3,
+        "chunks": [
+          3
+        ],
+        "digest": "900150983cd24fb0d6963f7d28e17f72"
+      },
+      {
+        "length": 3,
+        "chunks": [
+          0,
+          1,
+          2,
+          0
+        ],
+        "digest": "900150983cd24fb0d6963f7d28e17f72"
+      },
+      {
+        "length": 55,
+        "chunks": [
+          55
+        ],
+        "digest": "8394913b3d23a641aa7023c80c66aeaf"
+      },
+      {
+        "length": 55,
+        "chunks": [
+          0,
+          18,
+          37,
+          0
+        ],
+        "digest": "8394913b3d23a641aa7023c80c66aeaf"
+      },
+      {
+        "length": 56,
+        "chunks": [
+          56
+        ],
+        "digest": "7efe2afe10a824ceaa3496b25fce4f9d"
+      },
+      {
+        "length": 56,
+        "chunks": [
+          0,
+          18,
+          38,
+          0
+        ],
+        "digest": "7efe2afe10a824ceaa3496b25fce4f9d"
+      },
+      {
+        "length": 63,
+        "chunks": [
+          63
+        ],
+        "digest": "32c88182c6e5d7accb121cef65f871b1"
+      },
+      {
+        "length": 63,
+        "chunks": [
+          0,
+          21,
+          42,
+          0
+        ],
+        "digest": "32c88182c6e5d7accb121cef65f871b1"
+      },
+      {
+        "length": 64,
+        "chunks": [
+          64
+        ],
+        "digest": "28aa88a813bd746d8a82a4d4e93f4709"
+      },
+      {
+        "length": 64,
+        "chunks": [
+          0,
+          21,
+          43,
+          0
+        ],
+        "digest": "28aa88a813bd746d8a82a4d4e93f4709"
+      },
+      {
+        "length": 65,
+        "chunks": [
+          65
+        ],
+        "digest": "7c8aad2427050a5a041a45fdd9245935"
+      },
+      {
+        "length": 65,
+        "chunks": [
+          0,
+          21,
+          44,
+          0
+        ],
+        "digest": "7c8aad2427050a5a041a45fdd9245935"
+      },
+      {
+        "length": 119,
+        "chunks": [
+          119
+        ],
+        "digest": "63c4288289dbf2167bec2bcd0d71c13a"
+      },
+      {
+        "length": 119,
+        "chunks": [
+          0,
+          39,
+          80,
+          0
+        ],
+        "digest": "63c4288289dbf2167bec2bcd0d71c13a"
+      },
+      {
+        "length": 120,
+        "chunks": [
+          120
+        ],
+        "digest": "24b4fbb6a2060673c53baf8f6e6621dd"
+      },
+      {
+        "length": 120,
+        "chunks": [
+          0,
+          40,
+          80,
+          0
+        ],
+        "digest": "24b4fbb6a2060673c53baf8f6e6621dd"
+      },
+      {
+        "length": 127,
+        "chunks": [
+          127
+        ],
+        "digest": "2d39050f32309346d096424433979284"
+      },
+      {
+        "length": 127,
+        "chunks": [
+          0,
+          42,
+          85,
+          0
+        ],
+        "digest": "2d39050f32309346d096424433979284"
+      },
+      {
+        "length": 128,
+        "chunks": [
+          128
+        ],
+        "digest": "49ce277f27b45ac6a1d908af8b9936e1"
+      },
+      {
+        "length": 128,
+        "chunks": [
+          0,
+          42,
+          86,
+          0
+        ],
+        "digest": "49ce277f27b45ac6a1d908af8b9936e1"
+      },
+      {
+        "length": 129,
+        "chunks": [
+          129
+        ],
+        "digest": "7052d538809756266ab868aab3105596"
+      },
+      {
+        "length": 129,
+        "chunks": [
+          0,
+          43,
+          86,
+          0
+        ],
+        "digest": "7052d538809756266ab868aab3105596"
+      }
+    ],
+    "worker_cases": [
+      {
+        "name": "empty",
+        "length": 0,
+        "normalized_pointer": "0x10005000",
+        "digest": "d41d8cd98f00b204e9800998ecf8427e",
+        "expected_digest": "d41d8cd98f00b204e9800998ecf8427e",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            268455936,
+            0
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            3,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "abc",
+        "length": 3,
+        "normalized_pointer": "0x10005000",
+        "digest": "900150983cd24fb0d6963f7d28e17f72",
+        "expected_digest": "900150983cd24fb0d6963f7d28e17f72",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            268455936,
+            3
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            3,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "split",
+        "length": 129,
+        "normalized_pointer": "0x10005000",
+        "digest": "7052d538809756266ab868aab3105596",
+        "expected_digest": "7052d538809756266ab868aab3105596",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            268455936,
+            0
+          ],
+          [
+            1,
+            268455936,
+            43
+          ],
+          [
+            1,
+            268455979,
+            86
+          ],
+          [
+            1,
+            268456065,
+            0
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            3,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "mismatch-first",
+        "length": 65,
+        "normalized_pointer": "0x10005000",
+        "digest": "7c8aad2427050a5a041a45fdd9245935",
+        "expected_digest": "838aad2427050a5a041a45fdd9245935",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            268455936,
+            65
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            4,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "mismatch-last",
+        "length": 65,
+        "normalized_pointer": "0x10005000",
+        "digest": "7c8aad2427050a5a041a45fdd9245935",
+        "expected_digest": "7c8aad2427050a5a041a45fdd92459ca",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            268455936,
+            0
+          ],
+          [
+            1,
+            268455936,
+            21
+          ],
+          [
+            1,
+            268455957,
+            44
+          ],
+          [
+            1,
+            268456001,
+            0
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            4,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "clear-bit29",
+        "length": 65,
+        "normalized_pointer": "0x10005000",
+        "digest": "7c8aad2427050a5a041a45fdd9245935",
+        "expected_digest": "7c8aad2427050a5a041a45fdd9245935",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            805326848,
+            65
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            3,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "set-bit31",
+        "length": 65,
+        "normalized_pointer": "0xd0005000",
+        "digest": "7c8aad2427050a5a041a45fdd9245935",
+        "expected_digest": "7c8aad2427050a5a041a45fdd9245935",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1342197760,
+            0
+          ],
+          [
+            1,
+            1342197760,
+            21
+          ],
+          [
+            1,
+            1342197781,
+            44
+          ],
+          [
+            1,
+            1342197825,
+            0
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            3,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "unknown-command",
+        "length": 56,
+        "normalized_pointer": "0x10005000",
+        "digest": "7efe2afe10a824ceaa3496b25fce4f9d",
+        "expected_digest": "7efe2afe10a824ceaa3496b25fce4f9d",
+        "requests": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            153,
+            305419896,
+            2882400000
+          ],
+          [
+            1,
+            268455936,
+            0
+          ],
+          [
+            1,
+            268455936,
+            18
+          ],
+          [
+            1,
+            268455954,
+            38
+          ],
+          [
+            1,
+            268455992,
+            0
+          ],
+          [
+            2,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "replies": [
+          [
+            3,
+            268460032,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ]
+        ]
+      }
+    ],
+    "wrapper_cases": [
+      {
+        "name": "init",
+        "function": "0x8001ba40",
+        "request": [
+          0,
+          0,
+          0
+        ],
+        "send_status": 0,
+        "receive_status": null,
+        "reply": null,
+        "result": 1
+      },
+      {
+        "name": "init-send-status",
+        "function": "0x8001ba40",
+        "request": [
+          0,
+          0,
+          0
+        ],
+        "send_status": 7,
+        "receive_status": null,
+        "reply": null,
+        "result": 1
+      },
+      {
+        "name": "append",
+        "function": "0x8001ba74",
+        "request": [
+          1,
+          268455936,
+          129
+        ],
+        "send_status": 0,
+        "receive_status": null,
+        "reply": null,
+        "result": 1
+      },
+      {
+        "name": "append-send-status",
+        "function": "0x8001ba74",
+        "request": [
+          1,
+          268455936,
+          129
+        ],
+        "send_status": 7,
+        "receive_status": null,
+        "reply": null,
+        "result": 1
+      },
+      {
+        "name": "finish-match",
+        "function": "0x8001baac",
+        "request": [
+          2,
+          268460032,
+          0
+        ],
+        "send_status": 0,
+        "receive_status": 0,
+        "reply": 3,
+        "result": 1
+      },
+      {
+        "name": "finish-mismatch",
+        "function": "0x8001baac",
+        "request": [
+          2,
+          268460032,
+          0
+        ],
+        "send_status": 0,
+        "receive_status": 0,
+        "reply": 4,
+        "result": 0
+      },
+      {
+        "name": "finish-stop",
+        "function": "0x8001baac",
+        "request": [
+          2,
+          268460032,
+          0
+        ],
+        "send_status": 0,
+        "receive_status": 0,
+        "reply": 5,
+        "result": 0
+      },
+      {
+        "name": "finish-zero",
+        "function": "0x8001baac",
+        "request": [
+          2,
+          268460032,
+          0
+        ],
+        "send_status": 0,
+        "receive_status": 0,
+        "reply": 0,
+        "result": 0
+      },
+      {
+        "name": "finish-statuses-ignored",
+        "function": "0x8001baac",
+        "request": [
+          2,
+          268460032,
+          0
+        ],
+        "send_status": 7,
+        "receive_status": 9,
+        "reply": 3,
+        "result": 1
+      }
+    ],
+    "modeled_worker_wrappers": {
+      "0x80029fdc": "capture three-word queue message and return fixture status",
+      "0x80023524": "supply next three-word queue message and return fixture status",
+      "0x8004717c": "diagnostic log no-op"
+    }
+  },
+  "findings": {
+    "header": "3242 VEX write events: 170 preceding map/header/MBR events reproduce the final program-source SHA256; 3072 final copy events move the first1536 bytes without further change in this fixture.",
+    "map_size": "Original +0x214=0x1367b, +0x224=0x982 and rounded code span0xa00 give 0x1367b+0x982-0xa00+3=0x13600. The +3 is an original instruction, not an inferred sector rule.",
+    "copied_fields": "Installed-header +0x310/+0x314 become640/384; +0x230 and installed[0x318,0x398) copy without final difference. Section0 copies36 bytes to+0x3b0; sections1..6 copy216 bytes to+0x238. Synthetic geometry stores1/0 at+0x3a8/+0x3ac.",
+    "partition": "MBR base=incoming.u32[0x200]*512=0x400. Section+0xc ID999 or +4 span0 skips. Valid fixture IDs0..3 use16-byte entries at+0x1be. Section+0x14 goes to entry+8; +0x10 goes to entry+12; entry+4=1; only ID0 forces entry+0=0x80.",
+    "hash": "Original MD5 init/append/finish, compression helper, memcpy and memcmp execute without primitive substitutions. Worker queues/log are modeled. Commands0/1/2 initialize/append/finish; comparison sends3/4; stop5 echoes and exits; unknown command loops.",
+    "pointer": "Append uses(p|0x80000000) if p&0x40000000, else(p&0xdfffffff). Both branches use separately mapped synthetic addresses; no cache/MMU equivalence claim.",
+    "wrapper": "Init/Update ignore modeled queue status and return1. Fanalize ignores modeled send/receive status and tests reply word==3. No real RTOS failure or stale-queue behavior claim."
+  },
+  "boot_selected_functions": [
+    {
+      "name": "BurnNand",
+      "address": 2147558996,
+      "candidate_end": 2147570036,
+      "size": 11040,
+      "segment": "E01",
+      "original_file_offset": "0x2acc",
+      "sha256": "d0db0044b5ba3d939e3341538fb84b94748f2f47d1bb041e45b338ba928b512c",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147559104,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147559116,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147559136,
+          "word": "0c021257",
+          "kind": "call",
+          "target": 2148026716,
+          "target_names": [
+            "FcuMediaInfoGetHeader"
+          ]
+        },
+        {
+          "site": 2147559292,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147559416,
+          "word": "0c021257",
+          "kind": "call",
+          "target": 2148026716,
+          "target_names": [
+            "FcuMediaInfoGetHeader"
+          ]
+        },
+        {
+          "site": 2147559516,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147559656,
+          "word": "0c0047c0",
+          "kind": "call",
+          "target": 2147557120,
+          "target_names": [
+            "NandUserAreaBackup"
+          ]
+        },
+        {
+          "site": 2147559684,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147559704,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147559808,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147559820,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147559996,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147560012,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147560024,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147560040,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147560060,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147560488,
+          "word": "0c004702",
+          "kind": "call",
+          "target": 2147556360,
+          "target_names": []
+        },
+        {
+          "site": 2147560540,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147560560,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147560588,
+          "word": "0c00476a",
+          "kind": "call",
+          "target": 2147556776,
+          "target_names": []
+        },
+        {
+          "site": 2147560616,
+          "word": "0c0046bc",
+          "kind": "call",
+          "target": 2147556080,
+          "target_names": []
+        },
+        {
+          "site": 2147560644,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147560744,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147560772,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147560892,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147560936,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147561064,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561088,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561108,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561128,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561160,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561176,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561208,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147561252,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147561276,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147561288,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561308,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561332,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561368,
+          "word": "0c020dd1",
+          "kind": "call",
+          "target": 2148022084,
+          "target_names": [
+            "FcuGetZonesConfig"
+          ]
+        },
+        {
+          "site": 2147561448,
+          "word": "0c0069c4",
+          "kind": "call",
+          "target": 2147591952,
+          "target_names": [
+            "BurnGetSectionsMap"
+          ]
+        },
+        {
+          "site": 2147561496,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147561532,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147561592,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561636,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147561720,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561796,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147561848,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147561868,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147561976,
+          "word": "0c004702",
+          "kind": "call",
+          "target": 2147556360,
+          "target_names": []
+        },
+        {
+          "site": 2147562044,
+          "word": "0c004612",
+          "kind": "call",
+          "target": 2147555400,
+          "target_names": []
+        },
+        {
+          "site": 2147562180,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147562428,
+          "word": "03c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147562468,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147562496,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147562524,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147562548,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147562572,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147562608,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147562652,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147562696,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147562716,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147562736,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147562772,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147562892,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147562920,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147562940,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147562976,
+          "word": "0c0046bc",
+          "kind": "call",
+          "target": 2147556080,
+          "target_names": []
+        },
+        {
+          "site": 2147563072,
+          "word": "0c004702",
+          "kind": "call",
+          "target": 2147556360,
+          "target_names": []
+        },
+        {
+          "site": 2147563148,
+          "word": "0c004612",
+          "kind": "call",
+          "target": 2147555400,
+          "target_names": []
+        },
+        {
+          "site": 2147563188,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147563324,
+          "word": "02e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147563344,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147563372,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147563460,
+          "word": "0c0045f4",
+          "kind": "call",
+          "target": 2147555280,
+          "target_names": [
+            "BlockUserArea"
+          ]
+        },
+        {
+          "site": 2147563512,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147563648,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147563688,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147563732,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147563760,
+          "word": "0c004702",
+          "kind": "call",
+          "target": 2147556360,
+          "target_names": []
+        },
+        {
+          "site": 2147563832,
+          "word": "0c004612",
+          "kind": "call",
+          "target": 2147555400,
+          "target_names": []
+        },
+        {
+          "site": 2147563872,
+          "word": "0c00476a",
+          "kind": "call",
+          "target": 2147556776,
+          "target_names": []
+        },
+        {
+          "site": 2147563904,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147563936,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147563964,
+          "word": "0c0046bc",
+          "kind": "call",
+          "target": 2147556080,
+          "target_names": []
+        },
+        {
+          "site": 2147564024,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147564200,
+          "word": "0c00476a",
+          "kind": "call",
+          "target": 2147556776,
+          "target_names": []
+        },
+        {
+          "site": 2147564404,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147564424,
+          "word": "0c0046bc",
+          "kind": "call",
+          "target": 2147556080,
+          "target_names": []
+        },
+        {
+          "site": 2147564460,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147564492,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147564528,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147564556,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147564608,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147564652,
+          "word": "0c004702",
+          "kind": "call",
+          "target": 2147556360,
+          "target_names": []
+        },
+        {
+          "site": 2147564688,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147564768,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147565048,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147565080,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147565144,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565248,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565268,
+          "word": "0c0046bc",
+          "kind": "call",
+          "target": 2147556080,
+          "target_names": []
+        },
+        {
+          "site": 2147565320,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565344,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565520,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147565588,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147565608,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147565656,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147565672,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565708,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565736,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565752,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565800,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147565836,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147565956,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147566108,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147566152,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147566172,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147566220,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566240,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147566268,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566284,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566328,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147566348,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147566452,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147566472,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566504,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147566696,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566720,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566744,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566768,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566800,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566828,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147566848,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147566896,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147566952,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566976,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147566996,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567052,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147567084,
+          "word": "0c0046bc",
+          "kind": "call",
+          "target": 2147556080,
+          "target_names": []
+        },
+        {
+          "site": 2147567100,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567128,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567148,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567188,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147567224,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567252,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567264,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567296,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567372,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567400,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567440,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567472,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567536,
+          "word": "0c0048de",
+          "kind": "call",
+          "target": 2147558264,
+          "target_names": [
+            "NandUserAreaRestore"
+          ]
+        },
+        {
+          "site": 2147567580,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567608,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567620,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567636,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567656,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567684,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567712,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567764,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147567792,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567820,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147567936,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147567976,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147568108,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147568148,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147568168,
+          "word": "0c022ecd",
+          "kind": "call",
+          "target": 2148055860,
+          "target_names": [
+            "memcmp"
+          ]
+        },
+        {
+          "site": 2147568204,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147568272,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568312,
+          "word": "0c022f4d",
+          "kind": "call",
+          "target": 2148056372,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2147568356,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568372,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147568404,
+          "word": "0c0046bc",
+          "kind": "call",
+          "target": 2147556080,
+          "target_names": []
+        },
+        {
+          "site": 2147568420,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568448,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568468,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568484,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568524,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568588,
+          "word": "0c00d1c8",
+          "kind": "call",
+          "target": 2147698464,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2147568680,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147568716,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568752,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568776,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568784,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568808,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568828,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568856,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568884,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568916,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147568952,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147568972,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569000,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569016,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2147569168,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569184,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569200,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569252,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569288,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147569488,
+          "word": "0c020927",
+          "kind": "call",
+          "target": 2148017308,
+          "target_names": [
+            "FcuNandOperation"
+          ]
+        },
+        {
+          "site": 2147569532,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569552,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569580,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569592,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569624,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569640,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569672,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569728,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569756,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569792,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569820,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569852,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569860,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569888,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569916,
+          "word": "0c00d366",
+          "kind": "call",
+          "target": 2147700120,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2147569936,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147569964,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcbcbc"
+      ]
+    },
+    {
+      "name": "BurnGetSectionsMap",
+      "address": 2147591952,
+      "candidate_end": 2147594548,
+      "size": 2596,
+      "segment": "E01",
+      "original_file_offset": "0xab88",
+      "sha256": "bdbc77bc97c78f7bcf0e567be17867f970ae850bf980153694237a9ec8b733f0",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147592028,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147592044,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147592052,
+          "word": "0c006911",
+          "kind": "call",
+          "target": 2147591236,
+          "target_names": [
+            "PrintBootHeaderProperties"
+          ]
+        },
+        {
+          "site": 2147592068,
+          "word": "0c00697e",
+          "kind": "call",
+          "target": 2147591672,
+          "target_names": [
+            "InitRecoverSection"
+          ]
+        },
+        {
+          "site": 2147592152,
+          "word": "0c021c48",
+          "kind": "call",
+          "target": 2148036896,
+          "target_names": [
+            "RtcTimer"
+          ]
+        },
+        {
+          "site": 2147592160,
+          "word": "0c00876b",
+          "kind": "call",
+          "target": 2147622316,
+          "target_names": [
+            "OsThreadSleepMS"
+          ]
+        },
+        {
+          "site": 2147592168,
+          "word": "0c00ad38",
+          "kind": "call",
+          "target": 2147661024,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2147592176,
+          "word": "0c021b44",
+          "kind": "call",
+          "target": 2148035856,
+          "target_names": [
+            "RtcGetTime"
+          ]
+        },
+        {
+          "site": 2147592184,
+          "word": "0c022684",
+          "kind": "call",
+          "target": 2148047376,
+          "target_names": [
+            "srand"
+          ]
+        },
+        {
+          "site": 2147592196,
+          "word": "0c022672",
+          "kind": "call",
+          "target": 2148047304,
+          "target_names": [
+            "rand"
+          ]
+        },
+        {
+          "site": 2147592204,
+          "word": "0c00ad38",
+          "kind": "call",
+          "target": 2147661024,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2147592268,
+          "word": "0c00876b",
+          "kind": "call",
+          "target": 2147622316,
+          "target_names": [
+            "OsThreadSleepMS"
+          ]
+        },
+        {
+          "site": 2147592304,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147592896,
+          "word": "0c0068a9",
+          "kind": "call",
+          "target": 2147590820,
+          "target_names": [
+            "IsSectionProtected"
+          ]
+        },
+        {
+          "site": 2147592920,
+          "word": "0c0068a9",
+          "kind": "call",
+          "target": 2147590820,
+          "target_names": [
+            "IsSectionProtected"
+          ]
+        },
+        {
+          "site": 2147592940,
+          "word": "0c0068a9",
+          "kind": "call",
+          "target": 2147590820,
+          "target_names": [
+            "IsSectionProtected"
+          ]
+        },
+        {
+          "site": 2147592960,
+          "word": "0c0068a9",
+          "kind": "call",
+          "target": 2147590820,
+          "target_names": [
+            "IsSectionProtected"
+          ]
+        },
+        {
+          "site": 2147592984,
+          "word": "0c0068a9",
+          "kind": "call",
+          "target": 2147590820,
+          "target_names": [
+            "IsSectionProtected"
+          ]
+        },
+        {
+          "site": 2147593004,
+          "word": "0c0068a9",
+          "kind": "call",
+          "target": 2147590820,
+          "target_names": [
+            "IsSectionProtected"
+          ]
+        },
+        {
+          "site": 2147593028,
+          "word": "0c0068a9",
+          "kind": "call",
+          "target": 2147590820,
+          "target_names": [
+            "IsSectionProtected"
+          ]
+        },
+        {
+          "site": 2147593124,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147593152,
+          "word": "0c0068ea",
+          "kind": "call",
+          "target": 2147591080,
+          "target_names": [
+            "UpdatePartitionInMBRTable"
+          ]
+        },
+        {
+          "site": 2147593168,
+          "word": "0c0068ea",
+          "kind": "call",
+          "target": 2147591080,
+          "target_names": [
+            "UpdatePartitionInMBRTable"
+          ]
+        },
+        {
+          "site": 2147593184,
+          "word": "0c0068ea",
+          "kind": "call",
+          "target": 2147591080,
+          "target_names": [
+            "UpdatePartitionInMBRTable"
+          ]
+        },
+        {
+          "site": 2147593200,
+          "word": "0c0068ea",
+          "kind": "call",
+          "target": 2147591080,
+          "target_names": [
+            "UpdatePartitionInMBRTable"
+          ]
+        },
+        {
+          "site": 2147593216,
+          "word": "0c0068ea",
+          "kind": "call",
+          "target": 2147591080,
+          "target_names": [
+            "UpdatePartitionInMBRTable"
+          ]
+        },
+        {
+          "site": 2147593232,
+          "word": "0c0068ea",
+          "kind": "call",
+          "target": 2147591080,
+          "target_names": [
+            "UpdatePartitionInMBRTable"
+          ]
+        },
+        {
+          "site": 2147593248,
+          "word": "0c0068ea",
+          "kind": "call",
+          "target": 2147591080,
+          "target_names": [
+            "UpdatePartitionInMBRTable"
+          ]
+        },
+        {
+          "site": 2147593400,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147593600,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147593608,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147593796,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147593920,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147593972,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594156,
+          "word": "0c0069bb",
+          "kind": "call",
+          "target": 2147591916,
+          "target_names": [
+            "GetSectionFromBootHeader"
+          ]
+        },
+        {
+          "site": 2147594172,
+          "word": "0c0069bb",
+          "kind": "call",
+          "target": 2147591916,
+          "target_names": [
+            "GetSectionFromBootHeader"
+          ]
+        },
+        {
+          "site": 2147594220,
+          "word": "0c0069bb",
+          "kind": "call",
+          "target": 2147591916,
+          "target_names": [
+            "GetSectionFromBootHeader"
+          ]
+        },
+        {
+          "site": 2147594256,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594268,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594288,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594312,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594392,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594408,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594420,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594440,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594460,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594480,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594500,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594524,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147594532,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xce45c"
+      ]
+    },
+    {
+      "name": "UpdatePartitionInMBRTable",
+      "address": 2147591080,
+      "candidate_end": 2147591236,
+      "size": 156,
+      "segment": "E01",
+      "original_file_offset": "0xa820",
+      "sha256": "d61e65378bc4aff0fa3d10857dbcf3a05ce09cbdc2fdac142d334698ab857b5e",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147591164,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcbb0c"
+      ]
+    },
+    {
+      "name": "GetSectionFromBootHeader",
+      "address": 2147591916,
+      "candidate_end": 2147591952,
+      "size": 36,
+      "segment": "E01",
+      "original_file_offset": "0xab64",
+      "sha256": "21030cc2229ff4e630bf92e474c3da9ba832fc8b56b596ab555a4c15ba73ea4e",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcfe2c"
+      ]
+    },
+    {
+      "name": "BurnHashManager",
+      "address": 2147596340,
+      "candidate_end": 2147596864,
+      "size": 524,
+      "segment": "E01",
+      "original_file_offset": "0xbcac",
+      "sha256": "ead2d06567b7cf3de66a6914dc77bcd61bf28e917b2c06ea2fadc4c62f91ce46",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147596448,
+          "word": "0c008d49",
+          "kind": "call",
+          "target": 2147628324,
+          "target_names": [
+            "_tx_queue_receive"
+          ]
+        },
+        {
+          "site": 2147596504,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2147596588,
+          "word": "0c010f46",
+          "kind": "call",
+          "target": 2147761432,
+          "target_names": [
+            "md5_append"
+          ]
+        },
+        {
+          "site": 2147596604,
+          "word": "0c010f37",
+          "kind": "call",
+          "target": 2147761372,
+          "target_names": [
+            "md5_init"
+          ]
+        },
+        {
+          "site": 2147596624,
+          "word": "0c010f97",
+          "kind": "call",
+          "target": 2147761756,
+          "target_names": [
+            "md5_finish"
+          ]
+        },
+        {
+          "site": 2147596640,
+          "word": "0c022ecd",
+          "kind": "call",
+          "target": 2148055860,
+          "target_names": [
+            "memcmp"
+          ]
+        },
+        {
+          "site": 2147596668,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2147596696,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596708,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596748,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596784,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596792,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596812,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596832,
+          "word": "0c011c5f",
+          "kind": "call",
+          "target": 2147774844,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2147596848,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcf85c"
+      ]
+    },
+    {
+      "name": "BurnHashInit",
+      "address": 2147596864,
+      "candidate_end": 2147596916,
+      "size": 52,
+      "segment": "E01",
+      "original_file_offset": "0xbeb8",
+      "sha256": "eeb0e54b2e336b6fe26814e08adda6870ef81e5032921dd61c669183c28169c6",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147596892,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcdfcc"
+      ]
+    },
+    {
+      "name": "BurnHashUpdate",
+      "address": 2147596916,
+      "candidate_end": 2147596972,
+      "size": 56,
+      "segment": "E01",
+      "original_file_offset": "0xbeec",
+      "sha256": "e8fed156d0c850f04c939cbdc29def86b78b1fe5b6c7c9afb745db97031111e4",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147596948,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcc2ec"
+      ]
+    },
+    {
+      "name": "BurnHashFanalize",
+      "address": 2147596972,
+      "candidate_end": 2147597064,
+      "size": 92,
+      "segment": "E01",
+      "original_file_offset": "0xbf24",
+      "sha256": "3ebb9eaf7dce2c87b468fe987bccf709d606473fdf05407e78bf7923c46bec85",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147597012,
+          "word": "0c00a7f7",
+          "kind": "call",
+          "target": 2147655644,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2147597028,
+          "word": "0c008d49",
+          "kind": "call",
+          "target": 2147628324,
+          "target_names": [
+            "_tx_queue_receive"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xd07fc"
+      ]
+    },
+    {
+      "name": "md5_init",
+      "address": 2147761372,
+      "candidate_end": 2147761432,
+      "size": 60,
+      "segment": "E01",
+      "original_file_offset": "0x34154",
+      "sha256": "6b480da74cbee187d05c1763b9f0fa212f83ef4af703783f1085f5217fdc582b",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcbaec"
+      ]
+    },
+    {
+      "name": "md5_append",
+      "address": 2147761432,
+      "candidate_end": 2147761756,
+      "size": 324,
+      "segment": "E01",
+      "original_file_offset": "0x34190",
+      "sha256": "302646591395d3b21a53a25233ae589c4aecfc8639ead57aae3824ee79ef4c7d",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147761568,
+          "word": "0c022ef3",
+          "kind": "call",
+          "target": 2148056012,
+          "target_names": [
+            "memcpy"
+          ]
+        },
+        {
+          "site": 2147761604,
+          "word": "0c010c37",
+          "kind": "call",
+          "target": 2147758300,
+          "target_names": []
+        },
+        {
+          "site": 2147761632,
+          "word": "0c010c37",
+          "kind": "call",
+          "target": 2147758300,
+          "target_names": []
+        },
+        {
+          "site": 2147761696,
+          "word": "08022ef3",
+          "kind": "jump",
+          "target": 2148056012,
+          "target_names": [
+            "memcpy"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xd15dc"
+      ]
+    },
+    {
+      "name": "md5_finish",
+      "address": 2147761756,
+      "candidate_end": 2147761968,
+      "size": 212,
+      "segment": "E01",
+      "original_file_offset": "0x342d4",
+      "sha256": "b138889654e63ab1a02a6ead872dc102636b299d2dfcc747e53d14755a7c94a2",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [
+        {
+          "site": 2147761868,
+          "word": "0c010f46",
+          "kind": "call",
+          "target": 2147761432,
+          "target_names": [
+            "md5_append"
+          ]
+        },
+        {
+          "site": 2147761884,
+          "word": "0c010f46",
+          "kind": "call",
+          "target": 2147761432,
+          "target_names": [
+            "md5_append"
+          ]
+        }
+      ],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xccecc"
+      ]
+    },
+    {
+      "name": "memcmp",
+      "address": 2148055860,
+      "candidate_end": 2148056012,
+      "size": 152,
+      "segment": "E01",
+      "original_file_offset": "0x7bfac",
+      "sha256": "59bcdcc638e1703732e36d193ce5e79a08711cd2d31011d2a9f5f7760ed72a18",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcf51c"
+      ]
+    },
+    {
+      "name": "memcpy",
+      "address": 2148056012,
+      "candidate_end": 2148056372,
+      "size": 360,
+      "segment": "E01",
+      "original_file_offset": "0x7c044",
+      "sha256": "a722e12836b024e8a5a0182fdc97bfa05a14292aac9a21f5ed61dcc3fb7b8594",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "transfers": [],
+      "section_index": 13,
+      "section_name": ".text",
+      "pt_load_index": 1,
+      "symbol_table_original_file_offsets": [
+        "0xcc7cc"
+      ]
+    }
+  ],
+  "boot_anonymous_ranges": [
+    {
+      "name": "MD5 compression helper",
+      "address": 2147758300,
+      "candidate_end": 2147761372,
+      "size": 3072,
+      "segment": "E01",
+      "original_file_offset": "0x33554",
+      "sha256": "368dcae066b97584c73ff702b44913dcc2f48019fb2901fd0ac5a575235eb69d",
+      "extent_basis": "Analyst bounds from entry, return and adjacent md5_init STT_FUNC",
+      "transfers": []
+    }
+  ],
+  "evidence": [
+    {
+      "role": "Native program-buffer writes, one witness per observed instruction",
+      "words": [
+        {
+          "va": "0x80012fcc",
+          "u32le_word": "0xace403a8",
+          "segment": "E01",
+          "original_file_offset": "0x3444"
+        },
+        {
+          "va": "0x80012fd0",
+          "u32le_word": "0xacf803ac",
+          "segment": "E01",
+          "original_file_offset": "0x3448"
+        },
+        {
+          "va": "0x80013e88",
+          "u32le_word": "0xa8cd0003",
+          "segment": "E01",
+          "original_file_offset": "0x4300"
+        },
+        {
+          "va": "0x80013e8c",
+          "u32le_word": "0xb8cd0000",
+          "segment": "E01",
+          "original_file_offset": "0x4304"
+        },
+        {
+          "va": "0x80013e90",
+          "u32le_word": "0xa8d30007",
+          "segment": "E01",
+          "original_file_offset": "0x4308"
+        },
+        {
+          "va": "0x80013e94",
+          "u32le_word": "0xb8d30004",
+          "segment": "E01",
+          "original_file_offset": "0x430c"
+        },
+        {
+          "va": "0x80013e98",
+          "u32le_word": "0xa8c5000b",
+          "segment": "E01",
+          "original_file_offset": "0x4310"
+        },
+        {
+          "va": "0x80013e9c",
+          "u32le_word": "0xb8c50008",
+          "segment": "E01",
+          "original_file_offset": "0x4314"
+        },
+        {
+          "va": "0x80013ea0",
+          "u32le_word": "0xa8cc000f",
+          "segment": "E01",
+          "original_file_offset": "0x4318"
+        },
+        {
+          "va": "0x80013ea4",
+          "u32le_word": "0xb8cc000c",
+          "segment": "E01",
+          "original_file_offset": "0x431c"
+        },
+        {
+          "va": "0x8001a3ec",
+          "u32le_word": "0xa24601be",
+          "segment": "E01",
+          "original_file_offset": "0xa864"
+        },
+        {
+          "va": "0x8001a410",
+          "u32le_word": "0xa8a901c9",
+          "segment": "E01",
+          "original_file_offset": "0xa888"
+        },
+        {
+          "va": "0x8001a414",
+          "u32le_word": "0xb8a901c6",
+          "segment": "E01",
+          "original_file_offset": "0xa88c"
+        },
+        {
+          "va": "0x8001a420",
+          "u32le_word": "0xa8a801cd",
+          "segment": "E01",
+          "original_file_offset": "0xa898"
+        },
+        {
+          "va": "0x8001a424",
+          "u32le_word": "0xb8a801ca",
+          "segment": "E01",
+          "original_file_offset": "0xa89c"
+        },
+        {
+          "va": "0x8001a428",
+          "u32le_word": "0xa0a701c2",
+          "segment": "E01",
+          "original_file_offset": "0xa8a0"
+        },
+        {
+          "va": "0x8001a95c",
+          "u32le_word": "0xae820214",
+          "segment": "E01",
+          "original_file_offset": "0xadd4"
+        },
+        {
+          "va": "0x8001ac48",
+          "u32le_word": "0xad020000",
+          "segment": "E01",
+          "original_file_offset": "0xb0c0"
+        },
+        {
+          "va": "0x8001ac4c",
+          "u32le_word": "0xad090004",
+          "segment": "E01",
+          "original_file_offset": "0xb0c4"
+        },
+        {
+          "va": "0x8001ac50",
+          "u32le_word": "0xad160008",
+          "segment": "E01",
+          "original_file_offset": "0xb0c8"
+        },
+        {
+          "va": "0x8001ac54",
+          "u32le_word": "0xad1e000c",
+          "segment": "E01",
+          "original_file_offset": "0xb0cc"
+        },
+        {
+          "va": "0x8001ac68",
+          "u32le_word": "0xad0a0000",
+          "segment": "E01",
+          "original_file_offset": "0xb0e0"
+        },
+        {
+          "va": "0x8001ac8c",
+          "u32le_word": "0xacec0000",
+          "segment": "E01",
+          "original_file_offset": "0xb104"
+        },
+        {
+          "va": "0x8001ac90",
+          "u32le_word": "0xacf10004",
+          "segment": "E01",
+          "original_file_offset": "0xb108"
+        },
+        {
+          "va": "0x8001ac94",
+          "u32le_word": "0xacf30008",
+          "segment": "E01",
+          "original_file_offset": "0xb10c"
+        },
+        {
+          "va": "0x8001ac98",
+          "u32le_word": "0xaceb000c",
+          "segment": "E01",
+          "original_file_offset": "0xb110"
+        },
+        {
+          "va": "0x8001acb0",
+          "u32le_word": "0xacee0004",
+          "segment": "E01",
+          "original_file_offset": "0xb128"
+        },
+        {
+          "va": "0x8001acb4",
+          "u32le_word": "0xaced0000",
+          "segment": "E01",
+          "original_file_offset": "0xb12c"
+        },
+        {
+          "va": "0x8001af50",
+          "u32le_word": "0xae920310",
+          "segment": "E01",
+          "original_file_offset": "0xb3c8"
+        },
+        {
+          "va": "0x8001af54",
+          "u32le_word": "0xae8f0314",
+          "segment": "E01",
+          "original_file_offset": "0xb3cc"
+        },
+        {
+          "va": "0x8001af58",
+          "u32le_word": "0xae8e0230",
+          "segment": "E01",
+          "original_file_offset": "0xb3d0"
+        },
+        {
+          "va": "0x8001af78",
+          "u32le_word": "0xacc20000",
+          "segment": "E01",
+          "original_file_offset": "0xb3f0"
+        },
+        {
+          "va": "0x8001af7c",
+          "u32le_word": "0xacc30004",
+          "segment": "E01",
+          "original_file_offset": "0xb3f4"
+        },
+        {
+          "va": "0x8001af80",
+          "u32le_word": "0xacc40008",
+          "segment": "E01",
+          "original_file_offset": "0xb3f8"
+        },
+        {
+          "va": "0x8001af84",
+          "u32le_word": "0xacd1000c",
+          "segment": "E01",
+          "original_file_offset": "0xb3fc"
+        }
+      ]
+    },
+    {
+      "role": "Section map size arithmetic and header destinations",
+      "words": [
+        {
+          "va": "0x8001a938",
+          "u32le_word": "0x8e8f0224",
+          "segment": "E01",
+          "original_file_offset": "0xadb0"
+        },
+        {
+          "va": "0x8001a93c",
+          "u32le_word": "0x8e8d0214",
+          "segment": "E01",
+          "original_file_offset": "0xadb4"
+        },
+        {
+          "va": "0x8001a940",
+          "u32le_word": "0x01e47023",
+          "segment": "E01",
+          "original_file_offset": "0xadb8"
+        },
+        {
+          "va": "0x8001a948",
+          "u32le_word": "0x25820003",
+          "segment": "E01",
+          "original_file_offset": "0xadc0"
+        },
+        {
+          "va": "0x8001a950",
+          "u32le_word": "0x24afffff",
+          "segment": "E01",
+          "original_file_offset": "0xadc8"
+        },
+        {
+          "va": "0x8001a954",
+          "u32le_word": "0x01f5001b",
+          "segment": "E01",
+          "original_file_offset": "0xadcc"
+        },
+        {
+          "va": "0x8001a95c",
+          "u32le_word": "0xae820214",
+          "segment": "E01",
+          "original_file_offset": "0xadd4"
+        },
+        {
+          "va": "0x8001ac44",
+          "u32le_word": "0x24c60010",
+          "segment": "E01",
+          "original_file_offset": "0xb0bc"
+        },
+        {
+          "va": "0x8001ac88",
+          "u32le_word": "0x24c60010",
+          "segment": "E01",
+          "original_file_offset": "0xb100"
+        }
+      ]
+    },
+    {
+      "role": "Partition gate and field mapping",
+      "words": [
+        {
+          "va": "0x8001a3bc",
+          "u32le_word": "0x8cd0000c",
+          "segment": "E01",
+          "original_file_offset": "0xa834"
+        },
+        {
+          "va": "0x8001a3c0",
+          "u32le_word": "0x240203e7",
+          "segment": "E01",
+          "original_file_offset": "0xa838"
+        },
+        {
+          "va": "0x8001a3c8",
+          "u32le_word": "0x12020018",
+          "segment": "E01",
+          "original_file_offset": "0xa840"
+        },
+        {
+          "va": "0x8001a3d0",
+          "u32le_word": "0x8cc30004",
+          "segment": "E01",
+          "original_file_offset": "0xa848"
+        },
+        {
+          "va": "0x8001a3d8",
+          "u32le_word": "0x10600014",
+          "segment": "E01",
+          "original_file_offset": "0xa850"
+        },
+        {
+          "va": "0x8001a3e0",
+          "u32le_word": "0x56000004",
+          "segment": "E01",
+          "original_file_offset": "0xa858"
+        },
+        {
+          "va": "0x8001a404",
+          "u32le_word": "0x8e290014",
+          "segment": "E01",
+          "original_file_offset": "0xa87c"
+        },
+        {
+          "va": "0x8001a408",
+          "u32le_word": "0x00105100",
+          "segment": "E01",
+          "original_file_offset": "0xa880"
+        },
+        {
+          "va": "0x8001a418",
+          "u32le_word": "0x8e280010",
+          "segment": "E01",
+          "original_file_offset": "0xa890"
+        }
+      ]
+    },
+    {
+      "role": "Hash queues, dispatcher and native digest calls",
+      "words": [
+        {
+          "va": "0x8001b884",
+          "u32le_word": "0x249612b4",
+          "segment": "E01",
+          "original_file_offset": "0xbcfc"
+        },
+        {
+          "va": "0x8001b88c",
+          "u32le_word": "0x2492127c",
+          "segment": "E01",
+          "original_file_offset": "0xbd04"
+        },
+        {
+          "va": "0x8001b8a0",
+          "u32le_word": "0x0c008d49",
+          "segment": "E01",
+          "original_file_offset": "0xbd18"
+        },
+        {
+          "va": "0x8001b8a4",
+          "u32le_word": "0x2406ffff",
+          "segment": "E01",
+          "original_file_offset": "0xbd1c"
+        },
+        {
+          "va": "0x8001b8b0",
+          "u32le_word": "0x50640017",
+          "segment": "E01",
+          "original_file_offset": "0xbd28"
+        },
+        {
+          "va": "0x8001b8b8",
+          "u32le_word": "0x10600020",
+          "segment": "E01",
+          "original_file_offset": "0xbd30"
+        },
+        {
+          "va": "0x8001b8c0",
+          "u32le_word": "0x10650022",
+          "segment": "E01",
+          "original_file_offset": "0xbd38"
+        },
+        {
+          "va": "0x8001b8c8",
+          "u32le_word": "0x1466fff4",
+          "segment": "E01",
+          "original_file_offset": "0xbd40"
+        },
+        {
+          "va": "0x8001b8d8",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbd50"
+        },
+        {
+          "va": "0x8001b914",
+          "u32le_word": "0x3c038000",
+          "segment": "E01",
+          "original_file_offset": "0xbd8c"
+        },
+        {
+          "va": "0x8001b918",
+          "u32le_word": "0x00883824",
+          "segment": "E01",
+          "original_file_offset": "0xbd90"
+        },
+        {
+          "va": "0x8001b91c",
+          "u32le_word": "0x14e00002",
+          "segment": "E01",
+          "original_file_offset": "0xbd94"
+        },
+        {
+          "va": "0x8001b920",
+          "u32le_word": "0x00832825",
+          "segment": "E01",
+          "original_file_offset": "0xbd98"
+        },
+        {
+          "va": "0x8001b924",
+          "u32le_word": "0x00972824",
+          "segment": "E01",
+          "original_file_offset": "0xbd9c"
+        },
+        {
+          "va": "0x8001b92c",
+          "u32le_word": "0x0c010f46",
+          "segment": "E01",
+          "original_file_offset": "0xbda4"
+        },
+        {
+          "va": "0x8001b93c",
+          "u32le_word": "0x0c010f37",
+          "segment": "E01",
+          "original_file_offset": "0xbdb4"
+        },
+        {
+          "va": "0x8001b950",
+          "u32le_word": "0x0c010f97",
+          "segment": "E01",
+          "original_file_offset": "0xbdc8"
+        },
+        {
+          "va": "0x8001b960",
+          "u32le_word": "0x0c022ecd",
+          "segment": "E01",
+          "original_file_offset": "0xbdd8"
+        },
+        {
+          "va": "0x8001b964",
+          "u32le_word": "0x24060010",
+          "segment": "E01",
+          "original_file_offset": "0xbddc"
+        },
+        {
+          "va": "0x8001b968",
+          "u32le_word": "0x14400008",
+          "segment": "E01",
+          "original_file_offset": "0xbde0"
+        },
+        {
+          "va": "0x8001b97c",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbdf4"
+        },
+        {
+          "va": "0x8001b980",
+          "u32le_word": "0xafa90010",
+          "segment": "E01",
+          "original_file_offset": "0xbdf8"
+        },
+        {
+          "va": "0x8001b994",
+          "u32le_word": "0x240d0004",
+          "segment": "E01",
+          "original_file_offset": "0xbe0c"
+        },
+        {
+          "va": "0x8001ba30",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbea8"
+        }
+      ]
+    },
+    {
+      "role": "Hash wrapper message words and ignored queue status",
+      "words": [
+        {
+          "va": "0x8001ba48",
+          "u32le_word": "0x2484127c",
+          "segment": "E01",
+          "original_file_offset": "0xbec0"
+        },
+        {
+          "va": "0x8001ba5c",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbed4"
+        },
+        {
+          "va": "0x8001ba68",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0xbee0"
+        },
+        {
+          "va": "0x8001ba78",
+          "u32le_word": "0xafa50014",
+          "segment": "E01",
+          "original_file_offset": "0xbef0"
+        },
+        {
+          "va": "0x8001ba7c",
+          "u32le_word": "0xafa60018",
+          "segment": "E01",
+          "original_file_offset": "0xbef4"
+        },
+        {
+          "va": "0x8001ba84",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0xbefc"
+        },
+        {
+          "va": "0x8001ba94",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbf0c"
+        },
+        {
+          "va": "0x8001baa0",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0xbf18"
+        },
+        {
+          "va": "0x8001bab4",
+          "u32le_word": "0xafa50014",
+          "segment": "E01",
+          "original_file_offset": "0xbf2c"
+        },
+        {
+          "va": "0x8001bac0",
+          "u32le_word": "0x24070002",
+          "segment": "E01",
+          "original_file_offset": "0xbf38"
+        },
+        {
+          "va": "0x8001bac4",
+          "u32le_word": "0x2484127c",
+          "segment": "E01",
+          "original_file_offset": "0xbf3c"
+        },
+        {
+          "va": "0x8001bad4",
+          "u32le_word": "0x0c00a7f7",
+          "segment": "E01",
+          "original_file_offset": "0xbf4c"
+        },
+        {
+          "va": "0x8001bae4",
+          "u32le_word": "0x0c008d49",
+          "segment": "E01",
+          "original_file_offset": "0xbf5c"
+        },
+        {
+          "va": "0x8001baf4",
+          "u32le_word": "0x38620003",
+          "segment": "E01",
+          "original_file_offset": "0xbf6c"
+        },
+        {
+          "va": "0x8001bafc",
+          "u32le_word": "0x2c420001",
+          "segment": "E01",
+          "original_file_offset": "0xbf74"
+        }
+      ]
+    },
+    {
+      "role": "MD5 primitive entries and count/padding path",
+      "words": [
+        {
+          "va": "0x80043cdc",
+          "u32le_word": "0x3c0a1032",
+          "segment": "E01",
+          "original_file_offset": "0x34154"
+        },
+        {
+          "va": "0x80043d18",
+          "u32le_word": "0x27bdffd0",
+          "segment": "E01",
+          "original_file_offset": "0x34190"
+        },
+        {
+          "va": "0x80043d34",
+          "u32le_word": "0xafbf0028",
+          "segment": "E01",
+          "original_file_offset": "0x341ac"
+        },
+        {
+          "va": "0x80043d48",
+          "u32le_word": "0x00c08021",
+          "segment": "E01",
+          "original_file_offset": "0x341c0"
+        },
+        {
+          "va": "0x80043d60",
+          "u32le_word": "0x8e430004",
+          "segment": "E01",
+          "original_file_offset": "0x341d8"
+        },
+        {
+          "va": "0x80043e5c",
+          "u32le_word": "0x27bdffd8",
+          "segment": "E01",
+          "original_file_offset": "0x342d4"
+        },
+        {
+          "va": "0x80043e78",
+          "u32le_word": "0x27a60010",
+          "segment": "E01",
+          "original_file_offset": "0x342f0"
+        },
+        {
+          "va": "0x80043ed4",
+          "u32le_word": "0x27a50010",
+          "segment": "E01",
+          "original_file_offset": "0x3434c"
+        },
+        {
+          "va": "0x80043ef4",
+          "u32le_word": "0x00f02021",
+          "segment": "E01",
+          "original_file_offset": "0x3436c"
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "title": "RFC1321 algorithm and A.5 vectors",
+      "url": "https://www.rfc-editor.org/rfc/rfc1321#appendix-A.5",
+      "use": "Algorithm and empty/abc vectors only; no security inference."
+    }
+  ],
+  "comparison": {
+    "k3_commit": "a736ff253a1c528e31c08afa23ad4ebe37d1fbbb",
+    "sources": [
+      {
+        "path": "analysis/update-resource-evidence.json",
+        "sha256": "afa9d428e6bf7bbd3a8225ec0e1cfca2d1f87ca822a76bc1b6893cecd9d6bd99",
+        "url": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/a736ff253a1c528e31c08afa23ad4ebe37d1fbbb/analysis/update-resource-evidence.json"
+      },
+      {
+        "path": "analysis/dispatch-af.html",
+        "sha256": "147c140444125b0c688420c9b16689553522da5aa7f3f2e40d41c4c73f44f2dd",
+        "url": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/a736ff253a1c528e31c08afa23ad4ebe37d1fbbb/analysis/dispatch-af.html"
+      }
+    ],
+    "notes": [
+      "Comparison uses pinned K-3 III loader and numeric integration evidence; no descriptor, instruction, hash or compression compatibility is inferred."
+    ],
+    "numeric_reference": {
+      "commit": "cc954e41720a7098b0b6d53ece8c7471c7652082",
+      "path": "analysis/recompiled-integration.json",
+      "sha256": "378e52ebf88b87920542fd26f72e56f4649f4caa838a8902df29889bc5fc9f02"
+    }
+  },
+  "limitations": [
+    "Installed header, geometry and FCU results are synthetic; stop at FCU callee entry after JAL/delay slot and before operation5 handling. No physical storage writes.",
+    "No full BurnNand recovery loop, RTOS interleavings, actual caches, hardware acceptance, camera boot or capture.",
+    "VEX SWL/SWR event count is engine-specific; byte result checked separately. Native field assignments do not identify a filesystem.",
+    "Finite synthetic digest inputs; real package hash-flag choice and full-file acceptance remain separate.",
+    "Full firmware, resource bytes, decompilation, compiled object and update candidate remain private."
+  ]
+}

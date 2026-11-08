@@ -29,6 +29,8 @@ from build_numeric_report import main as build_numeric
 from build_lifecycle_report import main as build_lifecycle
 from verify_lifecycle import verify as verify_lifecycle
 from verify_recompiled_followup import verify as verify_numeric
+from build_io_followup import build_loader as build_hash, build_render
+from verify_io_followup import verify as verify_io
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -137,6 +139,9 @@ def verify_deep(firmware):
     verify_numeric()
     verify_html(ROOT / "storage-readiness-report.html", build_lifecycle)
     verify_lifecycle()
+    verify_html(ROOT / "loader-hash-report.html", build_hash)
+    verify_html(ROOT / "colorspace-render-report.html", build_render)
+    verify_io()
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode
@@ -157,6 +162,7 @@ def verify_deep(firmware):
         verify_colorspace(firmware, outputs)
         verify_numeric(firmware, outputs)
         verify_lifecycle(firmware, outputs)
+        verify_io(firmware, outputs)
         assert trace(firmware, read("deep-selected-functions.json"), outputs) == deep, "deep transfer mismatch"
         assert trace(firmware, read("selected-functions.json")) == read("threadx-shutter-transfers.json")
         segments = [(va, firmware[offset:offset+size]) for offset,va,size in PLAIN]
