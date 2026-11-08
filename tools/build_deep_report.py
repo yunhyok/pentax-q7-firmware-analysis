@@ -17,6 +17,8 @@ def diagram(key, title, nodes, edges, height, caption):
         tx, ty, *_ = nodes[target]
         if x == tx:
             path = f"M{x+135} {y+72} L{tx+135} {ty}"
+        elif tx < x:
+            path = f"M{x} {y+36} L{tx+270} {ty+36}"
         else:
             path = f"M{x+270} {y+36} L{tx} {ty+36}"
         parts.append(f'<path class="edge {"uncertain" if dashed else ""}" d="{path}" marker-end="url(#{key}-arrow)"/>')

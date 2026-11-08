@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "b02c42ed03942fb4a50aacff9c32914cde93a13f",
-  "updated_at": "2026-11-08T15:31:14+09:00",
+  "baseline_commit": "bc141e5dd5bdd856f780893da4a71f623ace7dbf",
+  "updated_at": "2026-11-08T15:52:25+09:00",
   "goals": {
     "rebuild": {
       "status": "Original BurnNand prefix through native section-map return reproduced; file input, protection and map helpers verified offline",
@@ -57,23 +57,42 @@
       ]
     },
     "ui_port": {
-      "status": "Common sRGB/AdobeRGB selector under active original-code investigation; existing icon/display ABI evidence retained",
+      "status": "Capture Color Space live-write/retain/rollback state model reproduced from native widgets and settings; six coordinator cases match worker replay",
       "evidence": [
-        "analysis/portability-evidence.json",
-        "tools/check_q7_portability.py"
+        "analysis/colorspace-ui.json",
+        "tools/check_colorspace_ui.py",
+        "colorspace-ui-report.html",
+        "analysis/portability-evidence.json"
       ],
       "gaps": [
-        "K-3 III design reimplementation",
-        "Menu event/state integration",
-        "Resource relocation, full-screen redraw and physical display"
+        "Physical switch and full RTOS event-queue delivery",
+        "Asynchronous string raster, exact final display buffer and physical LCD",
+        "Persistent setting lifecycle and K-3 III design reimplementation"
       ],
       "next_actions": [
-        "Trace the common sRGB/AdobeRGB selector from input to pending/current state, confirmation/cancel, setters and text/focus rendering.",
-        "Use HQ semantic UI contract; do not equate numeric events or ABI across models."
-      ]
+        "Trace target-screen text and active-component rendering into bounded synthetic output",
+        "Preserve original Q7 immediate-write/rollback semantics explicitly or name deliberate UI behavior changes"
+      ],
+      "stable_evidence": {
+        "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
+        "tools/check_colorspace_ui.py": "5aa71c16b5668f9a70a60c1fbc2034b0f8d0cf40b1fc2636ced95598a317b375",
+        "colorspace-ui-report.html": "99260a63735e2742da5d94daa8a052491d83fc12dc2ca51a58a7903eeda98cf5"
+      },
+      "hash_normalization": "UTF-8 LF bytes",
+      "reproduction_command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
+      "counts": {
+        "cases": 6,
+        "steps": 28,
+        "setter_calls": 18,
+        "ram_byte_stores": 18,
+        "original_words": 180,
+        "function_extents": 56
+      }
     }
   },
   "new_findings": [
+    "Q7 Color Space is live-write on focus, retain on confirm, backup-restore on cancel; initial activation and reopen also write the same byte. The HQ pending-only proposal is not original Q7 behavior.",
+    "The UI replay runs native E3 entry, mode setup, widgets, key/focus, settings and selected terminal handlers; eight external boundaries are modeled.",
     "Card hash flag 0 selects two reads with actual-count/content comparison and at most two attempts; flag 1 uses a modeled hash worker. Equal short reads succeed only at this callback boundary.",
     "Native BurnNand prologue reaches native section-map return using original payload bytes and a synthetic installed header/geometry; no storage writes executed.",
     "Section3 protection uses header-mode and handle-protect bytes; section6 and generic sections use different payload/span conditions.",
@@ -166,6 +185,26 @@
       "command": "humanize-korean official gates",
       "result": "3.1% character change; golden PASS; no lost modality; nine paragraphs preserved",
       "limits": "Native worker + coordinator finalizer, not Claude Opus"
+    },
+    {
+      "command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
+      "result": "Coordinator independently reproduced all six cases and exactly matched worker metadata; 18 setter calls and 18 native setting-byte stores",
+      "limits": "Synthetic RAM, translated events, eight modeled external boundaries; 15 adjacent guard bytes preserved"
+    },
+    {
+      "command": "python tools/verify_report.py --firmware <original>",
+      "result": "Color Space180 original words and56 function hashes/transfers reproduced with prior reports",
+      "limits": "Offline original-firmware evidence"
+    },
+    {
+      "command": "Browser rendering of colorspace-ui-report.html",
+      "result": "Three SVG diagrams, anchor navigation, leftward arrow fix; no overflow at1265px",
+      "limits": "Desktop only; rendered research document, not camera UI"
+    },
+    {
+      "command": "humanize-korean official gates",
+      "result": "1.9% change, golden PASS, no lost modality; coordinator finalizer accepted",
+      "limits": "Native worker fallback, not Claude Opus"
     }
   ],
   "artifacts": [
@@ -181,7 +220,11 @@
     "tools/check_burn_input.py",
     "tools/check_lens_policy.py",
     "tools/verify_foundations.py",
-    "loader-lens-report.html"
+    "loader-lens-report.html",
+    "analysis/colorspace-ui.json",
+    "tools/check_colorspace_ui.py",
+    "tools/verify_colorspace_ui.py",
+    "colorspace-ui-report.html"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."

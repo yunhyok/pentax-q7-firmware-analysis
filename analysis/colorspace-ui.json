@@ -1,0 +1,6285 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Capture Color Space in Q7 firmware 1.01. Bounded original MIPS replay and static evidence for the E3 submenu, distinct from playback/RAW-development Color Space.",
+  "sources": {
+    "ricoh_q7_manual": {
+      "url": "https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf",
+      "printed_pages": [
+        14,
+        20,
+        66,
+        78
+      ],
+      "observations": "General menu navigation, E3 item 13 Color Space with sRGB default, filename prefixes, and the two supported options."
+    },
+    "semantic_contract": {
+      "model": "PENTAX K-3 Mark III",
+      "repository_path": "analysis/ui-port-contract.json",
+      "sha256": "1ea0add86485e88421577ec13340500a395484f192acd01f4a8ef4ced6452363",
+      "use": "Read-only shared action vocabulary, not a Q7 numeric ABI or state model.",
+      "commit": "cc954e41720a7098b0b6d53ece8c7471c7652082"
+    },
+    "k3_color_replay": {
+      "commit": "cc954e41720a7098b0b6d53ece8c7471c7652082",
+      "repository_path": "analysis/colorspace-message-checks.json",
+      "sha256": "1acc4f054dc80152c033cc3c20562aae0a052db4039c928b629157868ceba776"
+    }
+  },
+  "findings": {
+    "entry": "CustomMenu3Mode_HandleSwitchDown 0x80a438f4 uses its event jump table at 0x8080c198. For the focused E3 row ID 0x01b29002, event 12 reaches CaptureModeTool_GetCustomSubMenuId 0x809e1c80 with (kind 0x0c, line 1). Native mode metadata initialized by 0x80a8784c resolves to 0x53. Custom item 13's 8-byte entry 0x80807f48 holds user-data halfword 0x00d7 at +2 and points to the Color Space title array.",
+    "event": "UiSwitchInformation_IsOnEdge 0x80ae0530 indexes the switch-index table at 0x809bd094, and Get4wayKeyOnEdge 0x80ae0614 scans UI IDs 11,12,10,9 through that same table. Raw UI IDs 3,8,9,10,11,12 map to switch indices 5,10,11,12,13,14. The native replay starts from translated event IDs and an already focused parent row. UiService_Perform 0x80adf734 offers the event to GuiComponent_OfferKeyEvent before forwarding an unconsumed event to its listener.",
+    "focus": "ColorSpaceSetMode_BuildUp 0x80a847e0 builds type-1 canvas IDs 0x0191d000 (root), 0x0191d001 (sRGB) and 0x0191d002 (AdobeRGB). Both navigation IDs 9 and 10 link each option to its peer. GuiCanvas_OfferKeyEvent 0x80aca4dc resolves the peer, deactivates old focus, changes the focus pointer, then activates the new component. The GUI listener forwards focus through UiService_OnFocus 0x80adfe58 and CaptureModeBase_OnFocus 0x80a8bed0 to 0x80a84f88.",
+    "state": "0x80a850f0 reads setting ID 0xd7 and copies the returned byte to backup 0x80bed850. Initial focus 0x80a84efc maps root 0x0191d000 to the AdobeRGB widget only if that byte equals 1, otherwise sRGB. 0x80a84f88 records focus at 0x80b63168 and immediately calls DataHelper_SetUserData(0xd7,0/1) on either option, even at initial focus. The 0/1 bank-0 value is live before confirm, with a separate backup byte for rollback.",
+    "storage": "DataHelper_SetUserData 0x80430d08 and GetUserData 0x80430cb4 reach 0x8010ec04 and 0x8010ec28. For ID below 0x100 they call UserDataInfo_SetMenuValue/GetMenuValue 0x80127cfc/0x80127d1c with bank 0. Effective address is 0x8153c288+0x6e4+0xd7=0x8153ca43. The setter is an unconditional sb, including same-value calls. Dedicated DataHelper_Get/SetColorSpace 0x8043374c/0x80433768 use the same ID. ColorMatchingService_IsAdobeRGB 0x8041c104 matches 1.",
+    "terminal": "Mode jump table 0x8080f194 dispatches events 8 and 11 to the parent-mode request path without another setting write. Event 3 runs CancelSetting 0x80a84f30 and sends quit argument 1. Event 5 restores then takes the parent-mode path, and 25 restores then requests 0x6f. CancelSetting always writes the saved byte. Replay covers events 8 and 3, and the reopen case takes initial focus from the surviving RAM value.",
+    "naming": "A focus setter falls through to MediaService_SetDCFObjectFreeCharsStandard 0x803ff388, which rereads 0xd7 and selects mode 0 for zero and mode 1 for nonzero before the lower media call. Initial focus and changed selection reach that boundary. 0x80a84f30 itself does not call this DCF helper. The offline trace does not determine later filename policy after quit or mode changes.",
+    "contract_delta": "For a Q7-faithful adapter, model open/save, immediate focus preview in menu RAM, retain on confirm, restore on cancel, and read again on reopening. The HQ pending-only and changed-confirm-write rules are design proposals and differ from the observed Q7 path. Q7 events, storage IDs, object offsets and resource handles are local to this firmware."
+  },
+  "rendering": {
+    "table": "arcntColorSpaceSetModeTable 0x8080753c, records of 16 bytes (widget ID, type, argument/resource pointer, fourth field).",
+    "labels": [
+      {
+        "role": "title",
+        "widget": "0x0191d005",
+        "type": 9,
+        "language_table": "0x8092dab0"
+      },
+      {
+        "role": "sRGB option",
+        "widget": "0x0191d00b",
+        "type": 9,
+        "language_table": "0x8092d830"
+      },
+      {
+        "role": "AdobeRGB option",
+        "widget": "0x0191d010",
+        "type": 9,
+        "language_table": "0x8092d510"
+      },
+      {
+        "role": "sRGB guide",
+        "widget": "0x0191d00d",
+        "type": 9,
+        "language_table": "0x8092cf08"
+      },
+      {
+        "role": "AdobeRGB guide",
+        "widget": "0x0191d012",
+        "type": 9,
+        "language_table": "0x8092c860"
+      },
+      {
+        "role": "cancel",
+        "widget": "0x0191d014",
+        "type": 9,
+        "language_table": "0x809b86e8"
+      },
+      {
+        "role": "OK",
+        "widget": "0x0191d019",
+        "type": 9,
+        "language_table": "0x809b917c"
+      }
+    ],
+    "focus_art": "BuildUp attaches active draw components 0x0191d00c/09/0d for sRGB and 0x0191d011/0e/12 for AdobeRGB. GuiCanvas_Active 0x80aca908 and InActive 0x80aca3d4 set the active draw list visible or hidden through GuiComponent_SetVisible. Native replay checks the selected widget and native component lookup; visibility/pixel output is not sampled.",
+    "route": "GuiStringLabel_SetStringTable stores the language table, Update copies changed string info to its current state, and GuiStringLabel_Write dispatches to WriteStringInfo 0x80ad2254. That routine reaches ResourceString_DrawStringAlign / DrawString / DrawStringChangeColor, depending on label settings. ResourceString_DrawStringAlignChangeColor 0x80ac5ff8 loads the current locale and uses it to index the language table. The replay runs real label creation and position/size setup, but does not run the asynchronous refresh or raster path."
+  },
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "scope": "Original E3 switch handler at a focused row, capture mode registration/entry, widget construction, canvas activation/key dispatch/focus, mode confirm/cancel, and real menu getter/setter instructions against synthetic RAM. Queue reception, display/update and hardware boundaries are modeled.",
+    "modeled_boundaries": {
+      "0x800ee804": "Allocate zeroed synthetic GUI heap at the requested size.",
+      "0x80433354": "Bypass mode-entry DataHelper_UpdateUserData / arrange-mode display update. This call's effects are outside the replay.",
+      "0x80adfeb8": "Accept UI service queue requests. The harness performs the original root activation explicitly.",
+      "0x80125c24": "Accept the UI start wakeup without an RTOS thread.",
+      "0x809dc650": "Accept capture-thread notification. For mode requests the harness observes the original record and clears it as the receiver would consume it.",
+      "0x809dc714": "Record the event-3 CaptureMode quit request without running the full capture-mode teardown.",
+      "0x8024df84": "Observe DCF API boundary after the original prefix-selection routines, without touching media.",
+      "0x80adf240": "Model external UI stop by clearing the root and running flag. The harness deactivates the original widget tree before the original mode-end callback."
+    },
+    "cases": [
+      {
+        "case": "srgb-to-adobergb-confirm",
+        "initial": 0,
+        "selected": 1,
+        "steps": [
+          {
+            "action": "open",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "choose",
+            "key": 10,
+            "gui_consumed": true,
+            "getter": 1,
+            "backup": 0,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": null
+          },
+          {
+            "action": "confirm",
+            "key": 8,
+            "gui_consumed": false,
+            "getter": 1,
+            "backup": 0,
+            "focused_widget": 26333186,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": [
+              35,
+              1,
+              8,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "close",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 0,
+            "focused_widget": null,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": null
+          },
+          {
+            "action": "reopen",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "case": "adobergb-to-srgb-confirm",
+        "initial": 1,
+        "selected": 0,
+        "steps": [
+          {
+            "action": "open",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "choose",
+            "key": 9,
+            "gui_consumed": true,
+            "getter": 0,
+            "backup": 1,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": null
+          },
+          {
+            "action": "confirm",
+            "key": 8,
+            "gui_consumed": false,
+            "getter": 0,
+            "backup": 1,
+            "focused_widget": 26333185,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": [
+              35,
+              1,
+              8,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "close",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 1,
+            "focused_widget": null,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": null
+          },
+          {
+            "action": "reopen",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "case": "srgb-to-adobergb-cancel",
+        "initial": 0,
+        "selected": 1,
+        "steps": [
+          {
+            "action": "open",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "choose",
+            "key": 10,
+            "gui_consumed": true,
+            "getter": 1,
+            "backup": 0,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": null
+          },
+          {
+            "action": "cancel",
+            "key": 3,
+            "gui_consumed": false,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [],
+            "mode_request": [
+              "quit",
+              1
+            ]
+          },
+          {
+            "action": "close",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": null,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": null
+          },
+          {
+            "action": "reopen",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "case": "adobergb-to-srgb-cancel",
+        "initial": 1,
+        "selected": 0,
+        "steps": [
+          {
+            "action": "open",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "choose",
+            "key": 9,
+            "gui_consumed": true,
+            "getter": 0,
+            "backup": 1,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": null
+          },
+          {
+            "action": "cancel",
+            "key": 3,
+            "gui_consumed": false,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [],
+            "mode_request": [
+              "quit",
+              1
+            ]
+          },
+          {
+            "action": "close",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": null,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": null
+          },
+          {
+            "action": "reopen",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "case": "srgb-same-value-confirm",
+        "initial": 0,
+        "selected": 0,
+        "steps": [
+          {
+            "action": "open",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "confirm",
+            "key": 8,
+            "gui_consumed": false,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333185,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": [
+              35,
+              1,
+              8,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "close",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": null,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": null
+          },
+          {
+            "action": "reopen",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 0,
+            "backup": 0,
+            "focused_widget": 26333185,
+            "setter_calls": [
+              [
+                215,
+                0
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                0
+              ]
+            ],
+            "dcf_modes": [
+              0
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "case": "adobergb-same-value-confirm",
+        "initial": 1,
+        "selected": 1,
+        "steps": [
+          {
+            "action": "open",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "confirm",
+            "key": 8,
+            "gui_consumed": false,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333186,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": [
+              35,
+              1,
+              8,
+              0,
+              0
+            ]
+          },
+          {
+            "action": "close",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": null,
+            "setter_calls": [],
+            "setting_byte_stores": [],
+            "dcf_modes": [],
+            "mode_request": null
+          },
+          {
+            "action": "reopen",
+            "key": null,
+            "gui_consumed": null,
+            "getter": 1,
+            "backup": 1,
+            "focused_widget": 26333186,
+            "setter_calls": [
+              [
+                215,
+                1
+              ]
+            ],
+            "setting_byte_stores": [
+              [
+                2169752131,
+                1,
+                1
+              ]
+            ],
+            "dcf_modes": [
+              1
+            ],
+            "mode_request": [
+              83,
+              1,
+              12,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "case_count": 6,
+    "setter_call_count": 18,
+    "setting_byte_store_count": 18,
+    "engine": "angr 10.0.5 / VEX"
+  },
+  "selected_functions": [
+    {
+      "name": "UserDataService_SetMenuValue",
+      "address": 2148592644,
+      "candidate_end": 2148592680,
+      "file_offset": 2166508,
+      "size": 36,
+      "sha256": "d8aac38334222c209a365d59593b846de0ac82bc57959a03f00ce5eff2eda5d8",
+      "transfers": [
+        {
+          "site": 2148592664,
+          "word": "08049ded",
+          "kind": "jump",
+          "target": 2148693940,
+          "target_names": [
+            "UserDataInfo_SetCommonMenuValue"
+          ]
+        },
+        {
+          "site": 2148592672,
+          "word": "08049f3f",
+          "kind": "jump",
+          "target": 2148695292,
+          "target_names": [
+            "UserDataInfo_SetMenuValue"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UserDataService_GetMenuValue",
+      "address": 2148592680,
+      "candidate_end": 2148592740,
+      "file_offset": 2166544,
+      "size": 60,
+      "sha256": "d6206edeb5f9c320e27873670acf340ed5822cff676ca73fe324693b7ab69bfd",
+      "transfers": [
+        {
+          "site": 2148592700,
+          "word": "0c049df2",
+          "kind": "call",
+          "target": 2148693960,
+          "target_names": [
+            "UserDataInfo_GetCommonMenuValue"
+          ]
+        },
+        {
+          "site": 2148592720,
+          "word": "0c049f47",
+          "kind": "call",
+          "target": 2148695324,
+          "target_names": [
+            "UserDataInfo_GetMenuValue"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UserDataInfo_SetMenuValue",
+      "address": 2148695292,
+      "candidate_end": 2148695324,
+      "file_offset": 2269156,
+      "size": 32,
+      "sha256": "b91371988976ed14e4cd4b64ce4bb955ee8e155e3c4e283532b303fc75a55590",
+      "transfers": []
+    },
+    {
+      "name": "UserDataInfo_GetMenuValue",
+      "address": 2148695324,
+      "candidate_end": 2148695356,
+      "file_offset": 2269188,
+      "size": 32,
+      "sha256": "1fb85898ec4e4cfc00c2254d87ebd80438990fe88402d7a801ac0a06efef358d",
+      "transfers": []
+    },
+    {
+      "name": "SwitchInformation_GetLocation",
+      "address": 2151649640,
+      "candidate_end": 2151649676,
+      "segment": "E04",
+      "decoded_offset": 2930408,
+      "size": 36,
+      "sha256": "81a1bd4ed5e5590e1910715ed37d735339070ea34e04bf9df0970eee12a83b95",
+      "transfers": []
+    },
+    {
+      "name": "SwitchInformationService_IsOnEdge",
+      "address": 2151650780,
+      "candidate_end": 2151650884,
+      "segment": "E04",
+      "decoded_offset": 2931548,
+      "size": 104,
+      "sha256": "145b0fa759574ed951c167debdc41ecce78870b2378458a889d2b3827403c7b6",
+      "transfers": [
+        {
+          "site": 2151650832,
+          "word": "0c0fe45a",
+          "kind": "call",
+          "target": 2151649640,
+          "target_names": [
+            "SwitchInformation_GetLocation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MediaService_SetDCFObjectFreeChars",
+      "address": 2151674568,
+      "candidate_end": 2151674760,
+      "segment": "E04",
+      "decoded_offset": 2955336,
+      "size": 192,
+      "sha256": "7be9f43e9ad94bd00b420b55307e3d7b739d5a34034036a3589ec860f7e52e08",
+      "transfers": [
+        {
+          "site": 2151674664,
+          "word": "0c0937e1",
+          "kind": "call",
+          "target": 2149900164,
+          "target_names": [
+            "I43_SetDCFFreeChars"
+          ]
+        },
+        {
+          "site": 2151674716,
+          "word": "0c0937e1",
+          "kind": "call",
+          "target": 2149900164,
+          "target_names": [
+            "I43_SetDCFFreeChars"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MediaService_SetDCFObjectFreeCharsStandard",
+      "address": 2151674760,
+      "candidate_end": 2151674812,
+      "segment": "E04",
+      "decoded_offset": 2955528,
+      "size": 52,
+      "sha256": "9b0550c3ebbe2713d56b042a69e1ed2d5a62ed1a214a487bb4001effcc84eb61",
+      "transfers": [
+        {
+          "site": 2151674768,
+          "word": "0c043b0a",
+          "kind": "call",
+          "target": 2148592680,
+          "target_names": [
+            "UserDataService_GetMenuValue"
+          ]
+        },
+        {
+          "site": 2151674788,
+          "word": "080ffcb2",
+          "kind": "jump",
+          "target": 2151674568,
+          "target_names": [
+            "MediaService_SetDCFObjectFreeChars"
+          ]
+        },
+        {
+          "site": 2151674804,
+          "word": "080ffcb2",
+          "kind": "jump",
+          "target": 2151674568,
+          "target_names": [
+            "MediaService_SetDCFObjectFreeChars"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ColorMatchingService_IsAdobeRGB",
+      "address": 2151792900,
+      "candidate_end": 2151792924,
+      "segment": "E04",
+      "decoded_offset": 3073668,
+      "size": 24,
+      "sha256": "c2089b81db2c5d50b22945067003a2a2f4f7a732635134cd600a9564f1f389c3",
+      "transfers": []
+    },
+    {
+      "name": "DataHelper_GetUserData",
+      "address": 2151877812,
+      "candidate_end": 2151877840,
+      "segment": "E04",
+      "decoded_offset": 3158580,
+      "size": 28,
+      "sha256": "274be3992d4856c4c6df1f4880d8b44147eb97b62000f3c5daa865fbf1983490",
+      "transfers": [
+        {
+          "site": 2151877820,
+          "word": "0c043b0a",
+          "kind": "call",
+          "target": 2148592680,
+          "target_names": [
+            "UserDataService_GetMenuValue"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DataHelper_SetUserData",
+      "address": 2151877896,
+      "candidate_end": 2151877904,
+      "segment": "E04",
+      "decoded_offset": 3158664,
+      "size": 8,
+      "sha256": "099d85339e8ea7cb412671cddd7018476b76ba67efa0a9cbd691ba0b655f4a55",
+      "transfers": [
+        {
+          "site": 2151877896,
+          "word": "08043b01",
+          "kind": "jump",
+          "target": 2148592644,
+          "target_names": [
+            "UserDataService_SetMenuValue"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DataHelper_UpdateUserData",
+      "address": 2151887700,
+      "candidate_end": 2151887708,
+      "segment": "E04",
+      "decoded_offset": 3168468,
+      "size": 8,
+      "sha256": "6f1be79262757433a618a35ef4a4608cf5c13d712599f82a6fb4b867b5b1890a",
+      "transfers": [
+        {
+          "site": 2151887700,
+          "word": "0810ccc9",
+          "kind": "jump",
+          "target": 2151887652,
+          "target_names": [
+            "DataHelper_UpdateArrangeModeActive"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DataHelper_GetColorSpace",
+      "address": 2151888716,
+      "candidate_end": 2151888744,
+      "segment": "E04",
+      "decoded_offset": 3169484,
+      "size": 28,
+      "sha256": "d41dd5eba222bea2b93a36a3201d47073ee9a9a09075c3d1cc70faa7cdc011f2",
+      "transfers": [
+        {
+          "site": 2151888724,
+          "word": "0c10c32d",
+          "kind": "call",
+          "target": 2151877812,
+          "target_names": [
+            "DataHelper_GetUserData"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DataHelper_SetColorSpace",
+      "address": 2151888744,
+      "candidate_end": 2151888760,
+      "segment": "E04",
+      "decoded_offset": 3169512,
+      "size": 16,
+      "sha256": "381e085a318e603ec22891b4bc8e1cdf0a86afcbe5543a3a9658ba7636401cdc",
+      "transfers": [
+        {
+          "site": 2151888752,
+          "word": "0810c342",
+          "kind": "jump",
+          "target": 2151877896,
+          "target_names": [
+            "DataHelper_SetUserData"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HandleCaptureMode_GetInterface",
+      "address": 2157822548,
+      "candidate_end": 2157822560,
+      "segment": "E06-text",
+      "decoded_offset": 2004436,
+      "size": 12,
+      "sha256": "7f7436d8278a0614f9659809c5760282ebbac4dc1b48b01bb0c088529c8cbcca",
+      "transfers": []
+    },
+    {
+      "name": "HandleCaptureMode_OnNotifyChangeMode",
+      "address": 2157823584,
+      "candidate_end": 2157823764,
+      "segment": "E06-text",
+      "decoded_offset": 2005472,
+      "size": 180,
+      "sha256": "4b8e403cde2c8ba37e7f63556ab01e99cd391b09e34e0d652a29cd3c28b1de83",
+      "transfers": [
+        {
+          "site": 2157823696,
+          "word": "0c277194",
+          "kind": "call",
+          "target": 2157823568,
+          "target_names": [
+            "CapApp_EventFlagSet"
+          ]
+        },
+        {
+          "site": 2157823736,
+          "word": "0c2b7b4f",
+          "kind": "call",
+          "target": 2158882108,
+          "target_names": [
+            "UiService_SetFilterButton"
+          ]
+        },
+        {
+          "site": 2157823748,
+          "word": "0c2b7b4f",
+          "kind": "call",
+          "target": 2158882108,
+          "target_names": [
+            "UiService_SetFilterButton"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HandleCaptureMode_OnNotifyQuit",
+      "address": 2157823764,
+      "candidate_end": 2157824600,
+      "segment": "E06-text",
+      "decoded_offset": 2005652,
+      "size": 836,
+      "sha256": "6573424ede7ab5e75d4177c9aa9474e0b7105eae8214511ba12b3799ccb7edfe",
+      "transfers": [
+        {
+          "site": 2157823952,
+          "word": "0c10dec0",
+          "kind": "call",
+          "target": 2151906048,
+          "target_names": [
+            "DataHelper_GetShootingGuideDisplayTime"
+          ]
+        },
+        {
+          "site": 2157824056,
+          "word": "0c277194",
+          "kind": "call",
+          "target": 2157823568,
+          "target_names": [
+            "CapApp_EventFlagSet"
+          ]
+        },
+        {
+          "site": 2157824148,
+          "word": "0c277198",
+          "kind": "call",
+          "target": 2157823584,
+          "target_names": [
+            "HandleCaptureMode_OnNotifyChangeMode"
+          ]
+        },
+        {
+          "site": 2157824184,
+          "word": "0c0f135f",
+          "kind": "call",
+          "target": 2151435644,
+          "target_names": [
+            "CaptureApplicationBase_WaitComplete4thBoot"
+          ]
+        },
+        {
+          "site": 2157824192,
+          "word": "0c0f1357",
+          "kind": "call",
+          "target": 2151435612,
+          "target_names": [
+            "CaptureApplicationBase_WaitCompleteMount"
+          ]
+        },
+        {
+          "site": 2157824200,
+          "word": "0c2785a0",
+          "kind": "call",
+          "target": 2157844096,
+          "target_names": [
+            "CaptureMediaUiState_IsMediaStateEnablePlayback"
+          ]
+        },
+        {
+          "site": 2157824236,
+          "word": "0c277095",
+          "kind": "call",
+          "target": 2157822548,
+          "target_names": [
+            "HandleCaptureMode_GetInterface"
+          ]
+        },
+        {
+          "site": 2157824264,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2157824380,
+          "word": "0c2785a0",
+          "kind": "call",
+          "target": 2157844096,
+          "target_names": [
+            "CaptureMediaUiState_IsMediaStateEnablePlayback"
+          ]
+        },
+        {
+          "site": 2157824412,
+          "word": "0c277098",
+          "kind": "call",
+          "target": 2157822560,
+          "target_names": [
+            "CapApp_GetMenuTabLastMemory"
+          ]
+        },
+        {
+          "site": 2157824440,
+          "word": "0c277198",
+          "kind": "call",
+          "target": 2157823584,
+          "target_names": [
+            "HandleCaptureMode_OnNotifyChangeMode"
+          ]
+        },
+        {
+          "site": 2157824456,
+          "word": "0c10c1b1",
+          "kind": "call",
+          "target": 2151876292,
+          "target_names": [
+            "DataHelper_IsMovieMode"
+          ]
+        },
+        {
+          "site": 2157824544,
+          "word": "0c277095",
+          "kind": "call",
+          "target": 2157822548,
+          "target_names": [
+            "HandleCaptureMode_GetInterface"
+          ]
+        },
+        {
+          "site": 2157824572,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeTool_GetTopMenuId",
+      "address": 2157845084,
+      "candidate_end": 2157845256,
+      "segment": "E06-text",
+      "decoded_offset": 2026972,
+      "size": 172,
+      "sha256": "5375faf8d964de451eec6181cbdaf8c21ae4c7e8f5f0e2d2837f73d4fc783102",
+      "transfers": [
+        {
+          "site": 2157845116,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeTool_GetCustomSubMenuId",
+      "address": 2157845632,
+      "candidate_end": 2157845764,
+      "segment": "E06-text",
+      "decoded_offset": 2027520,
+      "size": 132,
+      "sha256": "1fd2cdafad9fa0b9abd1797f41208291e4c4902eeb5f1d3b1b2285b5a880f659",
+      "transfers": [
+        {
+          "site": 2157845692,
+          "word": "0c2a2f92",
+          "kind": "call",
+          "target": 2158542408,
+          "target_names": [
+            "CaptureModeBase_GetMenuKind"
+          ]
+        },
+        {
+          "site": 2157845708,
+          "word": "0c2a2f99",
+          "kind": "call",
+          "target": 2158542436,
+          "target_names": [
+            "CaptureModeBase_GetMenuLineNumber"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeTool_GetCustomMenuItemUserDataID",
+      "address": 2157845820,
+      "candidate_end": 2157845876,
+      "segment": "E06-text",
+      "decoded_offset": 2027708,
+      "size": 56,
+      "sha256": "77bbd7486d3cc3a2fe6a049d41660c2d50645763f8d66573d8fddf34b5fbd22c",
+      "transfers": []
+    },
+    {
+      "name": "CustomMenu3Mode_HandleSwitchDown",
+      "address": 2158246132,
+      "candidate_end": 2158246636,
+      "segment": "E06-text",
+      "decoded_offset": 2428020,
+      "size": 504,
+      "sha256": "82127907447e601e4d615fdaff73d21a43c2b9bb0aef32a9973cb37c311d1967",
+      "transfers": [
+        {
+          "site": 2158246180,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158246192,
+          "word": "0c277095",
+          "kind": "call",
+          "target": 2157822548,
+          "target_names": [
+            "HandleCaptureMode_GetInterface"
+          ]
+        },
+        {
+          "site": 2158246220,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158246272,
+          "word": "0c10e3fe",
+          "kind": "call",
+          "target": 2151911416,
+          "target_names": [
+            "DataHelper_IsDebugMode"
+          ]
+        },
+        {
+          "site": 2158246300,
+          "word": "0c278638",
+          "kind": "call",
+          "target": 2157844704,
+          "target_names": [
+            "CaptureModeTool_GetNextMenuTab"
+          ]
+        },
+        {
+          "site": 2158246324,
+          "word": "0c10e3fe",
+          "kind": "call",
+          "target": 2151911416,
+          "target_names": [
+            "DataHelper_IsDebugMode"
+          ]
+        },
+        {
+          "site": 2158246404,
+          "word": "03000008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158246464,
+          "word": "01200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158246472,
+          "word": "0c277095",
+          "kind": "call",
+          "target": 2157822548,
+          "target_names": [
+            "HandleCaptureMode_GetInterface"
+          ]
+        },
+        {
+          "site": 2158246484,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158246500,
+          "word": "0c277095",
+          "kind": "call",
+          "target": 2157822548,
+          "target_names": [
+            "HandleCaptureMode_GetInterface"
+          ]
+        },
+        {
+          "site": 2158246512,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158246540,
+          "word": "0c278720",
+          "kind": "call",
+          "target": 2157845632,
+          "target_names": [
+            "CaptureModeTool_GetCustomSubMenuId"
+          ]
+        },
+        {
+          "site": 2158246560,
+          "word": "0c278720",
+          "kind": "call",
+          "target": 2157845632,
+          "target_names": [
+            "CaptureModeTool_GetCustomSubMenuId"
+          ]
+        },
+        {
+          "site": 2158246580,
+          "word": "0c278720",
+          "kind": "call",
+          "target": 2157845632,
+          "target_names": [
+            "CaptureModeTool_GetCustomSubMenuId"
+          ]
+        },
+        {
+          "site": 2158246600,
+          "word": "0c278720",
+          "kind": "call",
+          "target": 2157845632,
+          "target_names": [
+            "CaptureModeTool_GetCustomSubMenuId"
+          ]
+        },
+        {
+          "site": 2158246620,
+          "word": "0c278720",
+          "kind": "call",
+          "target": 2157845632,
+          "target_names": [
+            "CaptureModeTool_GetCustomSubMenuId"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ColorSpaceSetMode_BuildUp",
+      "address": 2158512096,
+      "candidate_end": 2158513868,
+      "segment": "E06-text",
+      "decoded_offset": 2693984,
+      "size": 1772,
+      "sha256": "4d94a2d9f1235096d238ea183b880c6968631ba30fcf36875876eb419eeeb8af",
+      "transfers": [
+        {
+          "site": 2158512152,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512164,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512176,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512188,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512200,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512212,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512224,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512236,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512248,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512260,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512272,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512284,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512304,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512316,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512328,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512340,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512352,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512364,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512372,
+          "word": "0c2b1e80",
+          "kind": "call",
+          "target": 2158787072,
+          "target_names": [
+            "GuiGrid_OsdBlkHarfSizeY"
+          ]
+        },
+        {
+          "site": 2158512388,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512400,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512412,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512420,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512428,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512440,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512452,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512464,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512476,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158512488,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158512500,
+          "word": "0c2b1e77",
+          "kind": "call",
+          "target": 2158787036,
+          "target_names": [
+            "GuiGrid_OsdYPitch"
+          ]
+        },
+        {
+          "site": 2158512520,
+          "word": "0c2b1e82",
+          "kind": "call",
+          "target": 2158787080,
+          "target_names": [
+            "GuiCompBuilder_SetGuiComponentInfoTable"
+          ]
+        },
+        {
+          "site": 2158512548,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512576,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512604,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512632,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512660,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512688,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512720,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512752,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512780,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512808,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512836,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512864,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512896,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512924,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512952,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158512980,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513008,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513036,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513064,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513092,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513120,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513148,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513176,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513204,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513232,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513260,
+          "word": "0c2b1ef8",
+          "kind": "call",
+          "target": 2158787552,
+          "target_names": [
+            "GuiCompBuilder_CreateGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513276,
+          "word": "0c2b24bd",
+          "kind": "call",
+          "target": 2158793460,
+          "target_names": [
+            "GuiCanvas_SetSubComponentMaxCount"
+          ]
+        },
+        {
+          "site": 2158513288,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513300,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513312,
+          "word": "0c2b24bd",
+          "kind": "call",
+          "target": 2158793460,
+          "target_names": [
+            "GuiCanvas_SetSubComponentMaxCount"
+          ]
+        },
+        {
+          "site": 2158513324,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513336,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513348,
+          "word": "0c2b24bd",
+          "kind": "call",
+          "target": 2158793460,
+          "target_names": [
+            "GuiCanvas_SetSubComponentMaxCount"
+          ]
+        },
+        {
+          "site": 2158513360,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513372,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513384,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513396,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513408,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513420,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513432,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513444,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513456,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513468,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513480,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513492,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513504,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513516,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513528,
+          "word": "0c2b24e0",
+          "kind": "call",
+          "target": 2158793600,
+          "target_names": [
+            "GuiCanvas_AddGuiComponent"
+          ]
+        },
+        {
+          "site": 2158513540,
+          "word": "0c2b24f8",
+          "kind": "call",
+          "target": 2158793696,
+          "target_names": [
+            "GuiCanvas_SetActiveDrawComponentMaxCount"
+          ]
+        },
+        {
+          "site": 2158513552,
+          "word": "0c2b251b",
+          "kind": "call",
+          "target": 2158793836,
+          "target_names": [
+            "GuiCanvas_AddActiveDrawComponent"
+          ]
+        },
+        {
+          "site": 2158513564,
+          "word": "0c2b251b",
+          "kind": "call",
+          "target": 2158793836,
+          "target_names": [
+            "GuiCanvas_AddActiveDrawComponent"
+          ]
+        },
+        {
+          "site": 2158513576,
+          "word": "0c2b251b",
+          "kind": "call",
+          "target": 2158793836,
+          "target_names": [
+            "GuiCanvas_AddActiveDrawComponent"
+          ]
+        },
+        {
+          "site": 2158513588,
+          "word": "0c2b24f8",
+          "kind": "call",
+          "target": 2158793696,
+          "target_names": [
+            "GuiCanvas_SetActiveDrawComponentMaxCount"
+          ]
+        },
+        {
+          "site": 2158513600,
+          "word": "0c2b251b",
+          "kind": "call",
+          "target": 2158793836,
+          "target_names": [
+            "GuiCanvas_AddActiveDrawComponent"
+          ]
+        },
+        {
+          "site": 2158513612,
+          "word": "0c2b251b",
+          "kind": "call",
+          "target": 2158793836,
+          "target_names": [
+            "GuiCanvas_AddActiveDrawComponent"
+          ]
+        },
+        {
+          "site": 2158513624,
+          "word": "0c2b251b",
+          "kind": "call",
+          "target": 2158793836,
+          "target_names": [
+            "GuiCanvas_AddActiveDrawComponent"
+          ]
+        },
+        {
+          "site": 2158513636,
+          "word": "0c2b2533",
+          "kind": "call",
+          "target": 2158793932,
+          "target_names": [
+            "GuiCanvas_SetNextGuiComponentMaxCount"
+          ]
+        },
+        {
+          "site": 2158513652,
+          "word": "0c2b2556",
+          "kind": "call",
+          "target": 2158794072,
+          "target_names": [
+            "GuiCanvas_AddNextComponent"
+          ]
+        },
+        {
+          "site": 2158513668,
+          "word": "0c2b2556",
+          "kind": "call",
+          "target": 2158794072,
+          "target_names": [
+            "GuiCanvas_AddNextComponent"
+          ]
+        },
+        {
+          "site": 2158513680,
+          "word": "0c2b2533",
+          "kind": "call",
+          "target": 2158793932,
+          "target_names": [
+            "GuiCanvas_SetNextGuiComponentMaxCount"
+          ]
+        },
+        {
+          "site": 2158513696,
+          "word": "0c2b2556",
+          "kind": "call",
+          "target": 2158794072,
+          "target_names": [
+            "GuiCanvas_AddNextComponent"
+          ]
+        },
+        {
+          "site": 2158513712,
+          "word": "0c2b2556",
+          "kind": "call",
+          "target": 2158794072,
+          "target_names": [
+            "GuiCanvas_AddNextComponent"
+          ]
+        },
+        {
+          "site": 2158513720,
+          "word": "0c2786db",
+          "kind": "call",
+          "target": 2157845356,
+          "target_names": [
+            "CaptureModeTool_GetCustomMenuItemNumber"
+          ]
+        },
+        {
+          "site": 2158513736,
+          "word": "0c2786c2",
+          "kind": "call",
+          "target": 2157845256,
+          "target_names": [
+            "CaptureModeTool_GetNextCustomSubMenuNumber"
+          ]
+        },
+        {
+          "site": 2158513752,
+          "word": "0c2786c2",
+          "kind": "call",
+          "target": 2157845256,
+          "target_names": [
+            "CaptureModeTool_GetNextCustomSubMenuNumber"
+          ]
+        },
+        {
+          "site": 2158513764,
+          "word": "0c278741",
+          "kind": "call",
+          "target": 2157845764,
+          "target_names": [
+            "CaptureModeTool_GetCustomMenuItemIconId"
+          ]
+        },
+        {
+          "site": 2158513776,
+          "word": "0c2b36db",
+          "kind": "call",
+          "target": 2158812012,
+          "target_names": [
+            "GuiIconLabel_SetIconID"
+          ]
+        },
+        {
+          "site": 2158513784,
+          "word": "0c278741",
+          "kind": "call",
+          "target": 2157845764,
+          "target_names": [
+            "CaptureModeTool_GetCustomMenuItemIconId"
+          ]
+        },
+        {
+          "site": 2158513796,
+          "word": "0c2b36db",
+          "kind": "call",
+          "target": 2158812012,
+          "target_names": [
+            "GuiIconLabel_SetIconID"
+          ]
+        },
+        {
+          "site": 2158513804,
+          "word": "0c278741",
+          "kind": "call",
+          "target": 2157845764,
+          "target_names": [
+            "CaptureModeTool_GetCustomMenuItemIconId"
+          ]
+        },
+        {
+          "site": 2158513860,
+          "word": "082b36db",
+          "kind": "jump",
+          "target": 2158812012,
+          "target_names": [
+            "GuiIconLabel_SetIconID"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ColorSpaceSetMode_EndMode",
+      "address": 2158513884,
+      "candidate_end": 2158513916,
+      "segment": "E06-text",
+      "decoded_offset": 2695772,
+      "size": 32,
+      "sha256": "348239630c985924f1219d36e51c00c0367833c02b272dba09a3907b1d65b4c5",
+      "transfers": [
+        {
+          "site": 2158513892,
+          "word": "0c2b7c90",
+          "kind": "call",
+          "target": 2158883392,
+          "target_names": [
+            "UiService_Stop"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ColorSpaceSetMode_HandleInitialFocus",
+      "address": 2158513916,
+      "candidate_end": 2158513968,
+      "segment": "E06-text",
+      "decoded_offset": 2695804,
+      "size": 52,
+      "sha256": "4e4bdc8ecfdfb67b4c67dac0a6185d5796cd31653785dd7d35daca8f06b73ede",
+      "transfers": []
+    },
+    {
+      "name": "ColorSpaceSetMode_CancelSetting",
+      "address": 2158513968,
+      "candidate_end": 2158513984,
+      "segment": "E06-text",
+      "decoded_offset": 2695856,
+      "size": 16,
+      "sha256": "8f3e3e3889b7a6aca3368e3cb297f5085c9d59edfc7fc9254b79e90ffce55233",
+      "transfers": [
+        {
+          "site": 2158513976,
+          "word": "0810c342",
+          "kind": "jump",
+          "target": 2151877896,
+          "target_names": [
+            "DataHelper_SetUserData"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ColorSpaceSetMode_HandleFocus",
+      "address": 2158514056,
+      "candidate_end": 2158514140,
+      "segment": "E06-text",
+      "decoded_offset": 2695944,
+      "size": 84,
+      "sha256": "a35ed8a9bd5fcdcb277712ecc1179cdceff81396b4f0197d24cebe539c59487f",
+      "transfers": [
+        {
+          "site": 2158514120,
+          "word": "0c10c342",
+          "kind": "call",
+          "target": 2151877896,
+          "target_names": [
+            "DataHelper_SetUserData"
+          ]
+        },
+        {
+          "site": 2158514132,
+          "word": "080ffce2",
+          "kind": "jump",
+          "target": 2151674760,
+          "target_names": [
+            "MediaService_SetDCFObjectFreeCharsStandard"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ColorSpaceSetMode_HandleSwitchDown",
+      "address": 2158514148,
+      "candidate_end": 2158514408,
+      "segment": "E06-text",
+      "decoded_offset": 2696036,
+      "size": 260,
+      "sha256": "4c723a34d86d9574072eb749a559354b00725ccb2c0119ef96f64198da5fe618",
+      "transfers": [
+        {
+          "site": 2158514196,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158514208,
+          "word": "0c277095",
+          "kind": "call",
+          "target": 2157822548,
+          "target_names": [
+            "HandleCaptureMode_GetInterface"
+          ]
+        },
+        {
+          "site": 2158514236,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158514264,
+          "word": "0c2a13cc",
+          "kind": "call",
+          "target": 2158513968,
+          "target_names": [
+            "ColorSpaceSetMode_CancelSetting"
+          ]
+        },
+        {
+          "site": 2158514272,
+          "word": "0c2a2f92",
+          "kind": "call",
+          "target": 2158542408,
+          "target_names": [
+            "CaptureModeBase_GetMenuKind"
+          ]
+        },
+        {
+          "site": 2158514280,
+          "word": "0c278697",
+          "kind": "call",
+          "target": 2157845084,
+          "target_names": [
+            "CaptureModeTool_GetTopMenuId"
+          ]
+        },
+        {
+          "site": 2158514316,
+          "word": "0c2a13cc",
+          "kind": "call",
+          "target": 2158513968,
+          "target_names": [
+            "ColorSpaceSetMode_CancelSetting"
+          ]
+        },
+        {
+          "site": 2158514336,
+          "word": "0c278701",
+          "kind": "call",
+          "target": 2157845508,
+          "target_names": [
+            "CaptureModeTool_GetNextCustomSubMenu"
+          ]
+        },
+        {
+          "site": 2158514356,
+          "word": "0c278701",
+          "kind": "call",
+          "target": 2157845508,
+          "target_names": [
+            "CaptureModeTool_GetNextCustomSubMenu"
+          ]
+        },
+        {
+          "site": 2158514372,
+          "word": "0c2a13cc",
+          "kind": "call",
+          "target": 2158513968,
+          "target_names": [
+            "ColorSpaceSetMode_CancelSetting"
+          ]
+        },
+        {
+          "site": 2158514380,
+          "word": "0c277095",
+          "kind": "call",
+          "target": 2157822548,
+          "target_names": [
+            "HandleCaptureMode_GetInterface"
+          ]
+        },
+        {
+          "site": 2158514392,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "ColorSpaceSetMode_StartMode",
+      "address": 2158514416,
+      "candidate_end": 2158514712,
+      "segment": "E06-text",
+      "decoded_offset": 2696304,
+      "size": 296,
+      "sha256": "2baff4cbe871f16e52dc21c2a71e8b75a4e6491a647bc135ab194a098f0e5007",
+      "transfers": [
+        {
+          "site": 2158514456,
+          "word": "0c10c32d",
+          "kind": "call",
+          "target": 2151877812,
+          "target_names": [
+            "DataHelper_GetUserData"
+          ]
+        },
+        {
+          "site": 2158514476,
+          "word": "0c2b21c6",
+          "kind": "call",
+          "target": 2158790424,
+          "target_names": [
+            "GuiComponent_GetComponent"
+          ]
+        },
+        {
+          "site": 2158514492,
+          "word": "0c2b21c6",
+          "kind": "call",
+          "target": 2158790424,
+          "target_names": [
+            "GuiComponent_GetComponent"
+          ]
+        },
+        {
+          "site": 2158514508,
+          "word": "0c2b233c",
+          "kind": "call",
+          "target": 2158791920,
+          "target_names": [
+            "GuiComponent_GetSize"
+          ]
+        },
+        {
+          "site": 2158514520,
+          "word": "0c2b233c",
+          "kind": "call",
+          "target": 2158791920,
+          "target_names": [
+            "GuiComponent_GetSize"
+          ]
+        },
+        {
+          "site": 2158514528,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158514556,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158514576,
+          "word": "0c2b1e6e",
+          "kind": "call",
+          "target": 2158787000,
+          "target_names": [
+            "GuiGrid_OsdX"
+          ]
+        },
+        {
+          "site": 2158514596,
+          "word": "0c2b1e71",
+          "kind": "call",
+          "target": 2158787012,
+          "target_names": [
+            "GuiGrid_OsdY"
+          ]
+        },
+        {
+          "site": 2158514624,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158514640,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158514648,
+          "word": "0c2b7a34",
+          "kind": "call",
+          "target": 2158880976,
+          "target_names": [
+            "UiService_SetRootCanvas"
+          ]
+        },
+        {
+          "site": 2158514656,
+          "word": "0c2b8056",
+          "kind": "call",
+          "target": 2158887256,
+          "target_names": [
+            "UiService_Start"
+          ]
+        },
+        {
+          "site": 2158514664,
+          "word": "0c2b7fff",
+          "kind": "call",
+          "target": 2158886908,
+          "target_names": [
+            "UiService_EnableScreenOn"
+          ]
+        },
+        {
+          "site": 2158514696,
+          "word": "0c2a11f8",
+          "kind": "call",
+          "target": 2158512096,
+          "target_names": [
+            "ColorSpaceSetMode_BuildUp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeBase_Initialize",
+      "address": 2158524492,
+      "candidate_end": 2158541224,
+      "segment": "E06-text",
+      "decoded_offset": 2706380,
+      "size": 16732,
+      "sha256": "49ee5f1853d9e723ea5b8f8a9570ff9ad683e347b4ff45f13a6224b7b3a8bfbd",
+      "transfers": [
+        {
+          "site": 2158524656,
+          "word": "0c2a1e0c",
+          "kind": "call",
+          "target": 2158524464,
+          "target_names": [
+            "CaptureModeBase_InitializeCaptureModeBaseUiHandler"
+          ]
+        },
+        {
+          "site": 2158524836,
+          "word": "0c2a1e0c",
+          "kind": "call",
+          "target": 2158524464,
+          "target_names": [
+            "CaptureModeBase_InitializeCaptureModeBaseUiHandler"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeBase_StartMode",
+      "address": 2158541320,
+      "candidate_end": 2158541620,
+      "segment": "E06-text",
+      "decoded_offset": 2723208,
+      "size": 300,
+      "sha256": "09ba4863f23dc3728b197c9b8b60b49f949401a7cbb699076acca40ade8237ba",
+      "transfers": [
+        {
+          "site": 2158541352,
+          "word": "0c2b7a47",
+          "kind": "call",
+          "target": 2158881052,
+          "target_names": [
+            "UiService_SetUiEventListener"
+          ]
+        },
+        {
+          "site": 2158541512,
+          "word": "0c10ccd5",
+          "kind": "call",
+          "target": 2151887700,
+          "target_names": [
+            "DataHelper_UpdateUserData"
+          ]
+        },
+        {
+          "site": 2158541592,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158541600,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeBase_GetMenuKind",
+      "address": 2158542408,
+      "candidate_end": 2158542436,
+      "segment": "E06-text",
+      "decoded_offset": 2724296,
+      "size": 28,
+      "sha256": "cc1b922eba40b0fc38fdd282a855c8b992775cac4e994d4f39546c9eaf2a7928",
+      "transfers": []
+    },
+    {
+      "name": "CaptureModeBase_GetMenuLineNumber",
+      "address": 2158542436,
+      "candidate_end": 2158542488,
+      "segment": "E06-text",
+      "decoded_offset": 2724324,
+      "size": 52,
+      "sha256": "6d563d038c4e0ee03e5d3471624bb74a532af7056acc66801a3fbc7621b4589f",
+      "transfers": [
+        {
+          "site": 2158542444,
+          "word": "0c2a2f85",
+          "kind": "call",
+          "target": 2158542356,
+          "target_names": [
+            "CaptureModeBase_GetModeProperty"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeBase_OnInitialFocus",
+      "address": 2158542488,
+      "candidate_end": 2158542544,
+      "segment": "E06-text",
+      "decoded_offset": 2724376,
+      "size": 56,
+      "sha256": "feb019293e455dc87f7ca794023991e9ca79ff3e6e50e15cea6148be27b726dd",
+      "transfers": [
+        {
+          "site": 2158542524,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeBase_OnFocus",
+      "address": 2158542544,
+      "candidate_end": 2158542696,
+      "segment": "E06-text",
+      "decoded_offset": 2724432,
+      "size": 152,
+      "sha256": "8987bd8d43dc0767a563cb6da1e7c8a90b91d2b35b508d7621eeb2f3c9ce9947",
+      "transfers": [
+        {
+          "site": 2158542672,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158542680,
+          "word": "0c27770e",
+          "kind": "call",
+          "target": 2157829176,
+          "target_names": [
+            "HandleCaptureMode_OnNotifyCommand"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CaptureModeBase_OnSwitchDown",
+      "address": 2158542760,
+      "candidate_end": 2158542912,
+      "segment": "E06-text",
+      "decoded_offset": 2724648,
+      "size": 152,
+      "sha256": "244c1c60476547278df32e7898b4f56bd6b8d2b989d1dcab11e18cc755d54040",
+      "transfers": [
+        {
+          "site": 2158542888,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158542896,
+          "word": "0c27770e",
+          "kind": "call",
+          "target": 2157829176,
+          "target_names": [
+            "HandleCaptureMode_OnNotifyCommand"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ResourceString_DrawStringAlignChangeColor",
+      "address": 2158780408,
+      "candidate_end": 2158780916,
+      "segment": "E06-text",
+      "decoded_offset": 2962296,
+      "size": 508,
+      "sha256": "cd1f328c746b5af689347658e96f3289bbf3c3c402c42c72511fc12758a8d020",
+      "transfers": [
+        {
+          "site": 2158780492,
+          "word": "0c10f0fc",
+          "kind": "call",
+          "target": 2151924720,
+          "target_names": [
+            "ScreenOsdLayer_GetDrawBufferId"
+          ]
+        },
+        {
+          "site": 2158780504,
+          "word": "0c2b17c8",
+          "kind": "call",
+          "target": 2158780192,
+          "target_names": [
+            "ResourceString_SetFontSize"
+          ]
+        },
+        {
+          "site": 2158780512,
+          "word": "0c10f0e3",
+          "kind": "call",
+          "target": 2151924620,
+          "target_names": [
+            "ScreenOsdLayer_SetTextColor"
+          ]
+        },
+        {
+          "site": 2158780552,
+          "word": "0c2b165c",
+          "kind": "call",
+          "target": 2158778736,
+          "target_names": [
+            "FontDecoder_GetFontHeight"
+          ]
+        },
+        {
+          "site": 2158780640,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2158780732,
+          "word": "0c10f111",
+          "kind": "call",
+          "target": 2151924804,
+          "target_names": [
+            "ScreenOsdLayer_TransDrawPointForScreenMode"
+          ]
+        },
+        {
+          "site": 2158780748,
+          "word": "0c10f148",
+          "kind": "call",
+          "target": 2151925024,
+          "target_names": [
+            "ScreenOsdLayer_TransDrawSizeForScreenMode"
+          ]
+        },
+        {
+          "site": 2158780764,
+          "word": "0c09ae6e",
+          "kind": "call",
+          "target": 2150021560,
+          "target_names": [
+            "I43_SetMemLocationPtr"
+          ]
+        },
+        {
+          "site": 2158780808,
+          "word": "0c0a7ae4",
+          "kind": "call",
+          "target": 2150230928,
+          "target_names": [
+            "I43_OSDDrawText"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ResourceString_DrawStringAlign",
+      "address": 2158780916,
+      "candidate_end": 2158781176,
+      "segment": "E06-text",
+      "decoded_offset": 2962804,
+      "size": 260,
+      "sha256": "c7ea47cd03aee8fa239f0f29f13fcf980c2e8594e06f8d6325b382bdff5c29d3",
+      "transfers": [
+        {
+          "site": 2158781000,
+          "word": "0c10f0b0",
+          "kind": "call",
+          "target": 2151924416,
+          "target_names": [
+            "ScreenOsdLayer_GetFontBodyColor"
+          ]
+        },
+        {
+          "site": 2158781048,
+          "word": "0c2b17fe",
+          "kind": "call",
+          "target": 2158780408,
+          "target_names": [
+            "ResourceString_DrawStringAlignChangeColor"
+          ]
+        },
+        {
+          "site": 2158781152,
+          "word": "0810f004",
+          "kind": "jump",
+          "target": 2151923728,
+          "target_names": [
+            "ScreenOsdLayer_SetFontColorPallet"
+          ]
+        },
+        {
+          "site": 2158781160,
+          "word": "0c10f004",
+          "kind": "call",
+          "target": 2151923728,
+          "target_names": [
+            "ScreenOsdLayer_SetFontColorPallet"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ResourceString_DrawStringChangeColor",
+      "address": 2158781176,
+      "candidate_end": 2158781516,
+      "segment": "E06-text",
+      "decoded_offset": 2963064,
+      "size": 340,
+      "sha256": "0bc2dadb5649e135292ec131d0e88e2b5e2ace90ee2fce4a4cca6b4438ff70e3",
+      "transfers": [
+        {
+          "site": 2158781232,
+          "word": "0c10f0fc",
+          "kind": "call",
+          "target": 2151924720,
+          "target_names": [
+            "ScreenOsdLayer_GetDrawBufferId"
+          ]
+        },
+        {
+          "site": 2158781240,
+          "word": "0c2b17c8",
+          "kind": "call",
+          "target": 2158780192,
+          "target_names": [
+            "ResourceString_SetFontSize"
+          ]
+        },
+        {
+          "site": 2158781248,
+          "word": "0c10f0e3",
+          "kind": "call",
+          "target": 2151924620,
+          "target_names": [
+            "ScreenOsdLayer_SetTextColor"
+          ]
+        },
+        {
+          "site": 2158781288,
+          "word": "0c2b165c",
+          "kind": "call",
+          "target": 2158778736,
+          "target_names": [
+            "FontDecoder_GetFontHeight"
+          ]
+        },
+        {
+          "site": 2158781316,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2158781404,
+          "word": "0c10f111",
+          "kind": "call",
+          "target": 2151924804,
+          "target_names": [
+            "ScreenOsdLayer_TransDrawPointForScreenMode"
+          ]
+        },
+        {
+          "site": 2158781436,
+          "word": "0c0a7ad6",
+          "kind": "call",
+          "target": 2150230872,
+          "target_names": [
+            "I43_DBTextOut"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ResourceString_DrawString",
+      "address": 2158781516,
+      "candidate_end": 2158781696,
+      "segment": "E06-text",
+      "decoded_offset": 2963404,
+      "size": 180,
+      "sha256": "c2194a0aa88837437ea1bfc36ec591928b8a6a03cb078020605f5844e06b1763",
+      "transfers": [
+        {
+          "site": 2158781568,
+          "word": "0c10f0b0",
+          "kind": "call",
+          "target": 2151924416,
+          "target_names": [
+            "ScreenOsdLayer_GetFontBodyColor"
+          ]
+        },
+        {
+          "site": 2158781600,
+          "word": "0c2b18be",
+          "kind": "call",
+          "target": 2158781176,
+          "target_names": [
+            "ResourceString_DrawStringChangeColor"
+          ]
+        },
+        {
+          "site": 2158781672,
+          "word": "0810f004",
+          "kind": "jump",
+          "target": 2151923728,
+          "target_names": [
+            "ScreenOsdLayer_SetFontColorPallet"
+          ]
+        },
+        {
+          "site": 2158781680,
+          "word": "0c10f004",
+          "kind": "call",
+          "target": 2151923728,
+          "target_names": [
+            "ScreenOsdLayer_SetFontColorPallet"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GuiCompBuilder_CreateGuiComponent",
+      "address": 2158787552,
+      "candidate_end": 2158789352,
+      "segment": "E06-text",
+      "decoded_offset": 2969440,
+      "size": 1800,
+      "sha256": "4e8536ac4b9d4f8e4fd03732ef74f253a2315396b4ae6d52317133898eed42db",
+      "transfers": [
+        {
+          "site": 2158787668,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2158787756,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158787772,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2158787788,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158787808,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158787820,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158787836,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158787852,
+          "word": "0c2b2363",
+          "kind": "call",
+          "target": 2158792076,
+          "target_names": [
+            "GuiComponent_SetSize"
+          ]
+        },
+        {
+          "site": 2158787868,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158787888,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158787900,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158787916,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158787944,
+          "word": "0c2b1ed3",
+          "kind": "call",
+          "target": 2158787404,
+          "target_names": [
+            "GuiCompBuilder_CreateHistogram"
+          ]
+        },
+        {
+          "site": 2158787972,
+          "word": "0c2b1ed3",
+          "kind": "call",
+          "target": 2158787404,
+          "target_names": [
+            "GuiCompBuilder_CreateHistogram"
+          ]
+        },
+        {
+          "site": 2158787988,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788008,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788020,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788036,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788060,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788076,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788088,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788104,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788116,
+          "word": "0c2b6985",
+          "kind": "call",
+          "target": 2158863892,
+          "target_names": [
+            "GuiProgressBar_SetLevel"
+          ]
+        },
+        {
+          "site": 2158788132,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788148,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788160,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788172,
+          "word": "0c2b6822",
+          "kind": "call",
+          "target": 2158862472,
+          "target_names": [
+            "GuiPolygonLine_SetColor"
+          ]
+        },
+        {
+          "site": 2158788188,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788204,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788216,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788228,
+          "word": "0c2b6664",
+          "kind": "call",
+          "target": 2158860688,
+          "target_names": [
+            "GuiSlashLine_SetColor"
+          ]
+        },
+        {
+          "site": 2158788244,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788268,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788284,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788296,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788312,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788336,
+          "word": "0c2b5fa9",
+          "kind": "call",
+          "target": 2158853796,
+          "target_names": [
+            "GuiFrame_SetFrameInfo"
+          ]
+        },
+        {
+          "site": 2158788352,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788368,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788380,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788396,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788416,
+          "word": "0c2b5d15",
+          "kind": "call",
+          "target": 2158851156,
+          "target_names": [
+            "GuiLine_SetLineInfo"
+          ]
+        },
+        {
+          "site": 2158788432,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788448,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788460,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788476,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788496,
+          "word": "0c2b591c",
+          "kind": "call",
+          "target": 2158847088,
+          "target_names": [
+            "GuiValueLabel_SetValue"
+          ]
+        },
+        {
+          "site": 2158788512,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788528,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788540,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788556,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788568,
+          "word": "0c2b518e",
+          "kind": "call",
+          "target": 2158839352,
+          "target_names": [
+            "GuiAsciiItem_SetAsciiList"
+          ]
+        },
+        {
+          "site": 2158788584,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788600,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788612,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788628,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788640,
+          "word": "0c2b569f",
+          "kind": "call",
+          "target": 2158844540,
+          "target_names": [
+            "GuiAsciiLabel_SetAsciiList"
+          ]
+        },
+        {
+          "site": 2158788656,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788672,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788684,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788700,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788712,
+          "word": "0c2b4d25",
+          "kind": "call",
+          "target": 2158834836,
+          "target_names": [
+            "GuiValueLinkStringLabel_SetValueLinkStringInfo"
+          ]
+        },
+        {
+          "site": 2158788728,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788744,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788756,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788772,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788784,
+          "word": "0c2b516c",
+          "kind": "call",
+          "target": 2158839216,
+          "target_names": [
+            "GuiValueLinkStringItem_SetValueLinkStringInfo"
+          ]
+        },
+        {
+          "site": 2158788800,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788816,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788828,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788844,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788856,
+          "word": "0c2b4826",
+          "kind": "call",
+          "target": 2158829720,
+          "target_names": [
+            "GuiStringLabel_SetStringTable"
+          ]
+        },
+        {
+          "site": 2158788872,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788888,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788900,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788916,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158788928,
+          "word": "0c2b434d",
+          "kind": "call",
+          "target": 2158824756,
+          "target_names": [
+            "GuiStringItem_SetStringTable"
+          ]
+        },
+        {
+          "site": 2158788944,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158788960,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158788972,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158788988,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158789000,
+          "word": "0c2b431e",
+          "kind": "call",
+          "target": 2158824568,
+          "target_names": [
+            "GuiCharLinkIconLabel_SetCharLinkIconInfo"
+          ]
+        },
+        {
+          "site": 2158789016,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158789032,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158789044,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158789060,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158789072,
+          "word": "0c2b3fae",
+          "kind": "call",
+          "target": 2158821048,
+          "target_names": [
+            "GuiValueLinkIconLabel_SetValueLinkIconInfo"
+          ]
+        },
+        {
+          "site": 2158789088,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158789104,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158789116,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158789132,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158789144,
+          "word": "0c2b3ca3",
+          "kind": "call",
+          "target": 2158817932,
+          "target_names": [
+            "GuiValueLinkIconItem_SetValueLinkIconInfo"
+          ]
+        },
+        {
+          "site": 2158789160,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158789176,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158789188,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158789204,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158789216,
+          "word": "0c2b36db",
+          "kind": "call",
+          "target": 2158812012,
+          "target_names": [
+            "GuiIconLabel_SetIconID"
+          ]
+        },
+        {
+          "site": 2158789232,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158789248,
+          "word": "0c2b1eab",
+          "kind": "call",
+          "target": 2158787244,
+          "target_names": [
+            "GuiCompBuilder_BuildComponent"
+          ]
+        },
+        {
+          "site": 2158789260,
+          "word": "0c2b20ba",
+          "kind": "call",
+          "target": 2158789352,
+          "target_names": [
+            "GuiComponent_Initialize"
+          ]
+        },
+        {
+          "site": 2158789276,
+          "word": "0c2b22b5",
+          "kind": "call",
+          "target": 2158791380,
+          "target_names": [
+            "GuiComponent_SetPoint"
+          ]
+        },
+        {
+          "site": 2158789288,
+          "word": "0c2b3203",
+          "kind": "call",
+          "target": 2158807052,
+          "target_names": [
+            "GuiIconItem_SetIconID"
+          ]
+        },
+        {
+          "site": 2158789304,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        },
+        {
+          "site": 2158789328,
+          "word": "0c2b1e85",
+          "kind": "call",
+          "target": 2158787092,
+          "target_names": [
+            "GuiCompBuilder_AllocBuffer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GuiComponent_OfferKeyEvent",
+      "address": 2158790036,
+      "candidate_end": 2158790132,
+      "segment": "E06-text",
+      "decoded_offset": 2971924,
+      "size": 96,
+      "sha256": "52c096db05e58fc3103bc53c97cab72f23ee70115bb10f58fdc009eafefbe61d",
+      "transfers": [
+        {
+          "site": 2158790104,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "GuiComponent_OnFocus",
+      "address": 2158792880,
+      "candidate_end": 2158792928,
+      "segment": "E06-text",
+      "decoded_offset": 2974768,
+      "size": 48,
+      "sha256": "c45e6a334d661c9d95eebee8f600d32b935957cdeca82ba12ec8de05bf7caaab",
+      "transfers": [
+        {
+          "site": 2158792920,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "GuiCanvas_AddNextComponent",
+      "address": 2158794072,
+      "candidate_end": 2158794172,
+      "segment": "E06-text",
+      "decoded_offset": 2975960,
+      "size": 100,
+      "sha256": "f1d6ce06e1ce01627fd5fcfd762d837c4cac3f1693b349c4da309fe0080bcd5e",
+      "transfers": []
+    },
+    {
+      "name": "GuiCanvas_InActive",
+      "address": 2158797780,
+      "candidate_end": 2158798044,
+      "segment": "E06-text",
+      "decoded_offset": 2979668,
+      "size": 264,
+      "sha256": "bde1740952f8f49fa749c3e7f73cc47863ae2ae63e1398a9e8bed820d3374575",
+      "transfers": [
+        {
+          "site": 2158797912,
+          "word": "0c2b2157",
+          "kind": "call",
+          "target": 2158789980,
+          "target_names": [
+            "GuiComponent_InActive"
+          ]
+        },
+        {
+          "site": 2158797980,
+          "word": "0c2b21fe",
+          "kind": "call",
+          "target": 2158790648,
+          "target_names": [
+            "GuiComponent_SetVisible"
+          ]
+        },
+        {
+          "site": 2158798008,
+          "word": "0c2b282c",
+          "kind": "call",
+          "target": 2158796976,
+          "target_names": [
+            "GuiCanvas_IsActive"
+          ]
+        },
+        {
+          "site": 2158798028,
+          "word": "0c2b2438",
+          "kind": "call",
+          "target": 2158792928,
+          "target_names": [
+            "GuiComponent_OnLostFocus"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GuiCanvas_OfferKeyEvent",
+      "address": 2158798044,
+      "candidate_end": 2158798620,
+      "segment": "E06-text",
+      "decoded_offset": 2979932,
+      "size": 576,
+      "sha256": "411d5f6714b8afca48f0898c377b52dbbf56b84b79a4d3eeeaff1018db480fc0",
+      "transfers": [
+        {
+          "site": 2158798084,
+          "word": "0c2b2414",
+          "kind": "call",
+          "target": 2158792784,
+          "target_names": [
+            "GuiComponent_SetGuiEventID"
+          ]
+        },
+        {
+          "site": 2158798176,
+          "word": "0c2b2188",
+          "kind": "call",
+          "target": 2158790176,
+          "target_names": [
+            "GuiComponent_IsInvalidGuiSwitchEventId"
+          ]
+        },
+        {
+          "site": 2158798196,
+          "word": "0c2b2165",
+          "kind": "call",
+          "target": 2158790036,
+          "target_names": [
+            "GuiComponent_OfferKeyEvent"
+          ]
+        },
+        {
+          "site": 2158798244,
+          "word": "0c2b21a0",
+          "kind": "call",
+          "target": 2158790272,
+          "target_names": [
+            "GuiComponent_GetNextComponent"
+          ]
+        },
+        {
+          "site": 2158798356,
+          "word": "0c2b217d",
+          "kind": "call",
+          "target": 2158790132,
+          "target_names": [
+            "GuiComponent_IsActivable"
+          ]
+        },
+        {
+          "site": 2158798380,
+          "word": "0c2b224d",
+          "kind": "call",
+          "target": 2158790964,
+          "target_names": [
+            "GuiComponent_IsEnable"
+          ]
+        },
+        {
+          "site": 2158798396,
+          "word": "0c2b21e6",
+          "kind": "call",
+          "target": 2158790552,
+          "target_names": [
+            "GuiComponent_IsVisible"
+          ]
+        },
+        {
+          "site": 2158798532,
+          "word": "0c2b2157",
+          "kind": "call",
+          "target": 2158789980,
+          "target_names": [
+            "GuiComponent_InActive"
+          ]
+        },
+        {
+          "site": 2158798580,
+          "word": "0c2b2157",
+          "kind": "call",
+          "target": 2158789980,
+          "target_names": [
+            "GuiComponent_InActive"
+          ]
+        },
+        {
+          "site": 2158798604,
+          "word": "0c2b2149",
+          "kind": "call",
+          "target": 2158789924,
+          "target_names": [
+            "GuiComponent_Active"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GuiCanvas_GetNextComponent",
+      "address": 2158798620,
+      "candidate_end": 2158798740,
+      "segment": "E06-text",
+      "decoded_offset": 2980508,
+      "size": 120,
+      "sha256": "5b107d07f68982329d84868c638df3fd58e692b54083789b6c8352ad6d682264",
+      "transfers": []
+    },
+    {
+      "name": "GuiCanvas_Active",
+      "address": 2158799112,
+      "candidate_end": 2158799432,
+      "segment": "E06-text",
+      "decoded_offset": 2981000,
+      "size": 320,
+      "sha256": "0f308e65327cb68aeba544ae90b792e9e29c702b2a3dab18c2ffc3727dae9107",
+      "transfers": [
+        {
+          "site": 2158799204,
+          "word": "0c2b224d",
+          "kind": "call",
+          "target": 2158790964,
+          "target_names": [
+            "GuiComponent_IsEnable"
+          ]
+        },
+        {
+          "site": 2158799236,
+          "word": "0c2b28f5",
+          "kind": "call",
+          "target": 2158797780,
+          "target_names": [
+            "GuiCanvas_InActive"
+          ]
+        },
+        {
+          "site": 2158799284,
+          "word": "0c2b21fe",
+          "kind": "call",
+          "target": 2158790648,
+          "target_names": [
+            "GuiComponent_SetVisible"
+          ]
+        },
+        {
+          "site": 2158799312,
+          "word": "0c2b29e5",
+          "kind": "call",
+          "target": 2158798740,
+          "target_names": [
+            "GuiCanvas_GetFocusComponent"
+          ]
+        },
+        {
+          "site": 2158799368,
+          "word": "082b2149",
+          "kind": "jump",
+          "target": 2158789924,
+          "target_names": [
+            "GuiComponent_Active"
+          ]
+        },
+        {
+          "site": 2158799408,
+          "word": "082b242c",
+          "kind": "jump",
+          "target": 2158792880,
+          "target_names": [
+            "GuiComponent_OnFocus"
+          ]
+        },
+        {
+          "site": 2158799416,
+          "word": "0c2b242c",
+          "kind": "call",
+          "target": 2158792880,
+          "target_names": [
+            "GuiComponent_OnFocus"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GuiStringLabel_Update",
+      "address": 2158829596,
+      "candidate_end": 2158829720,
+      "segment": "E06-text",
+      "decoded_offset": 3011484,
+      "size": 124,
+      "sha256": "c619069139686d559692434e8ca82fd960cc89f4297b9b44a9f552c5ef0331eb",
+      "transfers": [
+        {
+          "site": 2158829668,
+          "word": "0c2b476c",
+          "kind": "call",
+          "target": 2158828976,
+          "target_names": [
+            "GuiStringLabel_IsUpdateStringInfo"
+          ]
+        },
+        {
+          "site": 2158829692,
+          "word": "0c2b47cd",
+          "kind": "call",
+          "target": 2158829364,
+          "target_names": [
+            "GuiStringLabel_CopyStringInfo"
+          ]
+        },
+        {
+          "site": 2158829712,
+          "word": "082b23dc",
+          "kind": "jump",
+          "target": 2158792560,
+          "target_names": [
+            "GuiComponent_SetRefreshRequest"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GuiStringLabel_SetStringTable",
+      "address": 2158829720,
+      "candidate_end": 2158829764,
+      "segment": "E06-text",
+      "decoded_offset": 3011608,
+      "size": 44,
+      "sha256": "92ff4a41ae34c495be2ef3799870360aefc413fa860cfe4101a0e6074aa4bae2",
+      "transfers": []
+    },
+    {
+      "name": "GuiStringLabel_WriteStringInfo",
+      "address": 2158830164,
+      "candidate_end": 2158830828,
+      "segment": "E06-text",
+      "decoded_offset": 3012052,
+      "size": 664,
+      "sha256": "ecc41f7e1e10aae25ca2b656eb513c2acb31a763387c6c02003abcb923852089",
+      "transfers": [
+        {
+          "site": 2158830460,
+          "word": "0c2b187d",
+          "kind": "call",
+          "target": 2158780916,
+          "target_names": [
+            "ResourceString_DrawStringAlign"
+          ]
+        },
+        {
+          "site": 2158830576,
+          "word": "082b1913",
+          "kind": "jump",
+          "target": 2158781516,
+          "target_names": [
+            "ResourceString_DrawString"
+          ]
+        },
+        {
+          "site": 2158830616,
+          "word": "0c2b17fe",
+          "kind": "call",
+          "target": 2158780408,
+          "target_names": [
+            "ResourceString_DrawStringAlignChangeColor"
+          ]
+        },
+        {
+          "site": 2158830672,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2158830720,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2158830804,
+          "word": "082b18be",
+          "kind": "jump",
+          "target": 2158781176,
+          "target_names": [
+            "ResourceString_DrawStringChangeColor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GuiStringLabel_Write",
+      "address": 2158830828,
+      "candidate_end": 2158830892,
+      "segment": "E06-text",
+      "decoded_offset": 3012716,
+      "size": 64,
+      "sha256": "f0eac4f9368b8e42b722562b166874a0f0afcf4e4bf4847935f5c44ad91a389e",
+      "transfers": [
+        {
+          "site": 2158830884,
+          "word": "082b4895",
+          "kind": "jump",
+          "target": 2158830164,
+          "target_names": [
+            "GuiStringLabel_WriteStringInfo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UiService_Perform",
+      "address": 2158884660,
+      "candidate_end": 2158886432,
+      "segment": "E06-text",
+      "decoded_offset": 3066548,
+      "size": 1772,
+      "sha256": "30c737ffd611f8d3c36db5c1c063169c943d97659bd4be8b4712583c46eac9d1",
+      "transfers": [
+        {
+          "site": 2158884868,
+          "word": "0c0496f8",
+          "kind": "call",
+          "target": 2148686816,
+          "target_names": [
+            "EventFlag_Wait"
+          ]
+        },
+        {
+          "site": 2158884884,
+          "word": "0c04973b",
+          "kind": "call",
+          "target": 2148687084,
+          "target_names": [
+            "MessageQueue_Receive"
+          ]
+        },
+        {
+          "site": 2158884908,
+          "word": "0c2b7a5a",
+          "kind": "call",
+          "target": 2158881128,
+          "target_names": [
+            "UiService_SyncGet"
+          ]
+        },
+        {
+          "site": 2158885008,
+          "word": "0c2b7a5e",
+          "kind": "call",
+          "target": 2158881144,
+          "target_names": [
+            "UiService_SyncPut"
+          ]
+        },
+        {
+          "site": 2158885028,
+          "word": "0c049709",
+          "kind": "call",
+          "target": 2148686884,
+          "target_names": [
+            "EventFlag_Set"
+          ]
+        },
+        {
+          "site": 2158885044,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2158885140,
+          "word": "0c2b2414",
+          "kind": "call",
+          "target": 2158792784,
+          "target_names": [
+            "GuiComponent_SetGuiEventID"
+          ]
+        },
+        {
+          "site": 2158885152,
+          "word": "0c2b2149",
+          "kind": "call",
+          "target": 2158789924,
+          "target_names": [
+            "GuiComponent_Active"
+          ]
+        },
+        {
+          "site": 2158885160,
+          "word": "0c2b7cc0",
+          "kind": "call",
+          "target": 2158883584,
+          "target_names": [
+            "UiService_DoRefresh"
+          ]
+        },
+        {
+          "site": 2158885208,
+          "word": "0c049709",
+          "kind": "call",
+          "target": 2148686884,
+          "target_names": [
+            "EventFlag_Set"
+          ]
+        },
+        {
+          "site": 2158885240,
+          "word": "0c2b7cc0",
+          "kind": "call",
+          "target": 2158883584,
+          "target_names": [
+            "UiService_DoRefresh"
+          ]
+        },
+        {
+          "site": 2158885280,
+          "word": "0c2b7cc0",
+          "kind": "call",
+          "target": 2158883584,
+          "target_names": [
+            "UiService_DoRefresh"
+          ]
+        },
+        {
+          "site": 2158885296,
+          "word": "0c2b7c49",
+          "kind": "call",
+          "target": 2158883108,
+          "target_names": [
+            "UiService_DoStop"
+          ]
+        },
+        {
+          "site": 2158885312,
+          "word": "0c10e4df",
+          "kind": "call",
+          "target": 2151912316,
+          "target_names": [
+            "ScreenControl_ClearOsdLayer"
+          ]
+        },
+        {
+          "site": 2158885336,
+          "word": "0c10ea78",
+          "kind": "call",
+          "target": 2151918048,
+          "target_names": [
+            "ScreenControl_Update"
+          ]
+        },
+        {
+          "site": 2158885360,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158885428,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158885456,
+          "word": "0c049824",
+          "kind": "call",
+          "target": 2148688016,
+          "target_names": [
+            "Semaphore_Lock"
+          ]
+        },
+        {
+          "site": 2158885844,
+          "word": "0c04982c",
+          "kind": "call",
+          "target": 2148688048,
+          "target_names": [
+            "Semaphore_Unlock"
+          ]
+        },
+        {
+          "site": 2158885852,
+          "word": "0c2b8403",
+          "kind": "call",
+          "target": 2158891020,
+          "target_names": [
+            "UiSwitchTranslator_Translate"
+          ]
+        },
+        {
+          "site": 2158885876,
+          "word": "0c2b7cc0",
+          "kind": "call",
+          "target": 2158883584,
+          "target_names": [
+            "UiService_DoRefresh"
+          ]
+        },
+        {
+          "site": 2158885916,
+          "word": "0c2b2165",
+          "kind": "call",
+          "target": 2158790036,
+          "target_names": [
+            "GuiComponent_OfferKeyEvent"
+          ]
+        },
+        {
+          "site": 2158885932,
+          "word": "0c2b7dba",
+          "kind": "call",
+          "target": 2158884584,
+          "target_names": [
+            "UiService_GetUiSwitchEvent"
+          ]
+        },
+        {
+          "site": 2158885980,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158885988,
+          "word": "0c2b857d",
+          "kind": "call",
+          "target": 2158892532,
+          "target_names": [
+            "UiSwitchTranslator_Pop"
+          ]
+        },
+        {
+          "site": 2158886112,
+          "word": "01000008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158886128,
+          "word": "0c10ea42",
+          "kind": "call",
+          "target": 2151917832,
+          "target_names": [
+            "ScreenControl_ScreenOff"
+          ]
+        },
+        {
+          "site": 2158886152,
+          "word": "0c2b7bb9",
+          "kind": "call",
+          "target": 2158882532,
+          "target_names": [
+            "UiService_DoSetBlink"
+          ]
+        },
+        {
+          "site": 2158886168,
+          "word": "0c2b7cc0",
+          "kind": "call",
+          "target": 2158883584,
+          "target_names": [
+            "UiService_DoRefresh"
+          ]
+        },
+        {
+          "site": 2158886184,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158886208,
+          "word": "0c2b7a9f",
+          "kind": "call",
+          "target": 2158881404,
+          "target_names": [
+            "UiService_DoSetBlinkPipLayer"
+          ]
+        },
+        {
+          "site": 2158886224,
+          "word": "0c10ea57",
+          "kind": "call",
+          "target": 2151917916,
+          "target_names": [
+            "ScreenControl_ScreenOn"
+          ]
+        },
+        {
+          "site": 2158886240,
+          "word": "0c2b814c",
+          "kind": "call",
+          "target": 2158888240,
+          "target_names": [
+            "UiSwitchInformation_IsOnEdge"
+          ]
+        },
+        {
+          "site": 2158886268,
+          "word": "0c2b8158",
+          "kind": "call",
+          "target": 2158888288,
+          "target_names": [
+            "UiSwitchInformation_IsOffEdge"
+          ]
+        },
+        {
+          "site": 2158886292,
+          "word": "0c2b8140",
+          "kind": "call",
+          "target": 2158888192,
+          "target_names": [
+            "UiSwitchInformation_IsOff"
+          ]
+        },
+        {
+          "site": 2158886308,
+          "word": "0c2b8126",
+          "kind": "call",
+          "target": 2158888088,
+          "target_names": [
+            "UiSwitchInformation_IsOn"
+          ]
+        },
+        {
+          "site": 2158886348,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158886384,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2158886408,
+          "word": "0c2b7ade",
+          "kind": "call",
+          "target": 2158881656,
+          "target_names": [
+            "UiService_SetUiTimer"
+          ]
+        },
+        {
+          "site": 2158886416,
+          "word": "0c2b7cc0",
+          "kind": "call",
+          "target": 2158883584,
+          "target_names": [
+            "UiService_DoRefresh"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UiService_OnFocus",
+      "address": 2158886488,
+      "candidate_end": 2158886520,
+      "segment": "E06-text",
+      "decoded_offset": 3068376,
+      "size": 32,
+      "sha256": "c5356aaad38a9fd7de6503f6d5963ce965710f98b9d6b025b9acac4d1a8c2394",
+      "transfers": [
+        {
+          "site": 2158886512,
+          "word": "03200008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "UiSwitchInformation_IsOnEdge",
+      "address": 2158888240,
+      "candidate_end": 2158888288,
+      "segment": "E06-text",
+      "decoded_offset": 3070128,
+      "size": 48,
+      "sha256": "f6c9d66b597b4c87c367dc1cb408cce4d2c04698cacd267bea144d2a16216a52",
+      "transfers": [
+        {
+          "site": 2158888268,
+          "word": "0c0fe577",
+          "kind": "call",
+          "target": 2151650780,
+          "target_names": [
+            "SwitchInformationService_IsOnEdge"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UiSwitchInformation_Get4wayKeyOnEdge",
+      "address": 2158888468,
+      "candidate_end": 2158888912,
+      "segment": "E06-text",
+      "decoded_offset": 3070356,
+      "size": 444,
+      "sha256": "87ece20fc46446bd7f2a82eab1d84e86d4febac2e075f662f4cfd9e0bbfc7495",
+      "transfers": [
+        {
+          "site": 2158888620,
+          "word": "0c0fe577",
+          "kind": "call",
+          "target": 2151650780,
+          "target_names": [
+            "SwitchInformationService_IsOnEdge"
+          ]
+        },
+        {
+          "site": 2158888664,
+          "word": "0c0fe543",
+          "kind": "call",
+          "target": 2151650572,
+          "target_names": [
+            "SwitchInformationService_IsOn"
+          ]
+        },
+        {
+          "site": 2158888680,
+          "word": "0c0fe543",
+          "kind": "call",
+          "target": 2151650572,
+          "target_names": [
+            "SwitchInformationService_IsOn"
+          ]
+        },
+        {
+          "site": 2158888696,
+          "word": "0c0fe543",
+          "kind": "call",
+          "target": 2151650572,
+          "target_names": [
+            "SwitchInformationService_IsOn"
+          ]
+        },
+        {
+          "site": 2158888712,
+          "word": "0c0fe543",
+          "kind": "call",
+          "target": 2151650572,
+          "target_names": [
+            "SwitchInformationService_IsOn"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UiSwitchTranslator_Translate",
+      "address": 2158891020,
+      "candidate_end": 2158892532,
+      "segment": "E06-text",
+      "decoded_offset": 3072908,
+      "size": 1512,
+      "sha256": "c403e95c57d3fa152b9f1b270b7b460ee303dcfccda2ea9542bddc03e17efc7d",
+      "transfers": [
+        {
+          "site": 2158891236,
+          "word": "0c2b8126",
+          "kind": "call",
+          "target": 2158888088,
+          "target_names": [
+            "UiSwitchInformation_IsOn"
+          ]
+        },
+        {
+          "site": 2158891252,
+          "word": "0c2b8158",
+          "kind": "call",
+          "target": 2158888288,
+          "target_names": [
+            "UiSwitchInformation_IsOffEdge"
+          ]
+        },
+        {
+          "site": 2158891272,
+          "word": "0c2b814c",
+          "kind": "call",
+          "target": 2158888240,
+          "target_names": [
+            "UiSwitchInformation_IsOnEdge"
+          ]
+        },
+        {
+          "site": 2158891332,
+          "word": "0c2b81f4",
+          "kind": "call",
+          "target": 2158888912,
+          "target_names": [
+            "UiSwitchInformation_Get4wayKeyOffEdge"
+          ]
+        },
+        {
+          "site": 2158891344,
+          "word": "0c2b8185",
+          "kind": "call",
+          "target": 2158888468,
+          "target_names": [
+            "UiSwitchInformation_Get4wayKeyOnEdge"
+          ]
+        },
+        {
+          "site": 2158891440,
+          "word": "0c2b823e",
+          "kind": "call",
+          "target": 2158889208,
+          "target_names": [
+            "UiSwitchInformation_IsChange"
+          ]
+        },
+        {
+          "site": 2158891636,
+          "word": "0c2b8126",
+          "kind": "call",
+          "target": 2158888088,
+          "target_names": [
+            "UiSwitchInformation_IsOn"
+          ]
+        },
+        {
+          "site": 2158891900,
+          "word": "0c2b814c",
+          "kind": "call",
+          "target": 2158888240,
+          "target_names": [
+            "UiSwitchInformation_IsOnEdge"
+          ]
+        },
+        {
+          "site": 2158891920,
+          "word": "0c2b8126",
+          "kind": "call",
+          "target": 2158888088,
+          "target_names": [
+            "UiSwitchInformation_IsOn"
+          ]
+        },
+        {
+          "site": 2158892092,
+          "word": "0c2b814c",
+          "kind": "call",
+          "target": 2158888240,
+          "target_names": [
+            "UiSwitchInformation_IsOnEdge"
+          ]
+        },
+        {
+          "site": 2158892112,
+          "word": "0c2b8158",
+          "kind": "call",
+          "target": 2158888288,
+          "target_names": [
+            "UiSwitchInformation_IsOffEdge"
+          ]
+        },
+        {
+          "site": 2158892272,
+          "word": "0c2b8164",
+          "kind": "call",
+          "target": 2158888336,
+          "target_names": [
+            "UiSwitchInformation_GetValue"
+          ]
+        },
+        {
+          "site": 2158892408,
+          "word": "0c2b8158",
+          "kind": "call",
+          "target": 2158888288,
+          "target_names": [
+            "UiSwitchInformation_IsOffEdge"
+          ]
+        },
+        {
+          "site": 2158892524,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "evidence": [
+    {
+      "role": "E3 row and requested child mode",
+      "words": [
+        {
+          "va": "0x807fe41c",
+          "u32le_word": "0x01b29002",
+          "segment": "E06-text",
+          "decoded_offset": "0xb79c"
+        },
+        {
+          "va": "0x80807f48",
+          "u32le_word": "0x00d70436",
+          "segment": "E06-text",
+          "decoded_offset": "0x152c8"
+        },
+        {
+          "va": "0x80807f4c",
+          "u32le_word": "0x8092dab0",
+          "segment": "E06-text",
+          "decoded_offset": "0x152cc"
+        },
+        {
+          "va": "0x8080c1c8",
+          "u32le_word": "0x80a439d0",
+          "segment": "E06-text",
+          "decoded_offset": "0x19548"
+        },
+        {
+          "va": "0x8080c20c",
+          "u32le_word": "0x80a43ad8",
+          "segment": "E06-text",
+          "decoded_offset": "0x1958c"
+        },
+        {
+          "va": "0x80a43920",
+          "u32le_word": "0x8ca40000",
+          "segment": "E06-text",
+          "decoded_offset": "0x250ca0"
+        },
+        {
+          "va": "0x80a43970",
+          "u32le_word": "0x8d692f24",
+          "segment": "E06-text",
+          "decoded_offset": "0x250cf0"
+        },
+        {
+          "va": "0x80a43a00",
+          "u32le_word": "0x8f380000",
+          "segment": "E06-text",
+          "decoded_offset": "0x250d80"
+        },
+        {
+          "va": "0x80a43ad8",
+          "u32le_word": "0x2404000c",
+          "segment": "E06-text",
+          "decoded_offset": "0x250e58"
+        },
+        {
+          "va": "0x80a43adc",
+          "u32le_word": "0x0c278720",
+          "segment": "E06-text",
+          "decoded_offset": "0x250e5c"
+        },
+        {
+          "va": "0x80a43ae0",
+          "u32le_word": "0x24050001",
+          "segment": "E06-text",
+          "decoded_offset": "0x250e60"
+        },
+        {
+          "va": "0x809e1cbc",
+          "u32le_word": "0x0c2a2f92",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ef03c"
+        },
+        {
+          "va": "0x809e1ccc",
+          "u32le_word": "0x0c2a2f99",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ef04c"
+        },
+        {
+          "va": "0x80a8be60",
+          "u32le_word": "0x8c82004c",
+          "segment": "E06-text",
+          "decoded_offset": "0x2991e0"
+        },
+        {
+          "va": "0x80a8b760",
+          "u32le_word": "0xa3c61cd8",
+          "segment": "E06-text",
+          "decoded_offset": "0x298ae0"
+        },
+        {
+          "va": "0x80a8b780",
+          "u32le_word": "0xafd11cd4",
+          "segment": "E06-text",
+          "decoded_offset": "0x298b00"
+        },
+        {
+          "va": "0x809dc6bc",
+          "u32le_word": "0xac72c670",
+          "segment": "E06-text",
+          "decoded_offset": "0x1e9a3c"
+        }
+      ]
+    },
+    {
+      "role": "Input index, edge reader and canvas-first dispatch",
+      "words": [
+        {
+          "va": "0x809bd084",
+          "u32le_word": "0x0000000b",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca404"
+        },
+        {
+          "va": "0x809bd088",
+          "u32le_word": "0x0000000c",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca408"
+        },
+        {
+          "va": "0x809bd08c",
+          "u32le_word": "0x0000000a",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca40c"
+        },
+        {
+          "va": "0x809bd090",
+          "u32le_word": "0x00000009",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca410"
+        },
+        {
+          "va": "0x809bd0a0",
+          "u32le_word": "0x00000005",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca420"
+        },
+        {
+          "va": "0x809bd0b4",
+          "u32le_word": "0x0000000a",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca434"
+        },
+        {
+          "va": "0x809bd0b8",
+          "u32le_word": "0x0000000b",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca438"
+        },
+        {
+          "va": "0x809bd0bc",
+          "u32le_word": "0x0000000c",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca43c"
+        },
+        {
+          "va": "0x809bd0c0",
+          "u32le_word": "0x0000000d",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca440"
+        },
+        {
+          "va": "0x809bd0c4",
+          "u32le_word": "0x0000000e",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca444"
+        },
+        {
+          "va": "0x80ae054c",
+          "u32le_word": "0x0c0fe577",
+          "segment": "E06-text",
+          "decoded_offset": "0x2ed8cc"
+        },
+        {
+          "va": "0x803f9624",
+          "u32le_word": "0x9066000b",
+          "segment": "E04",
+          "decoded_offset": "0x2cbba4"
+        },
+        {
+          "va": "0x80ae06a8",
+          "u32le_word": "0x8cc50000",
+          "segment": "E06-text",
+          "decoded_offset": "0x2eda28"
+        },
+        {
+          "va": "0x80ae06ac",
+          "u32le_word": "0x0c0fe577",
+          "segment": "E06-text",
+          "decoded_offset": "0x2eda2c"
+        },
+        {
+          "va": "0x80adfc1c",
+          "u32le_word": "0x0c2b2165",
+          "segment": "E06-text",
+          "decoded_offset": "0x2ecf9c"
+        },
+        {
+          "va": "0x80adfc24",
+          "u32le_word": "0x1440000f",
+          "segment": "E06-text",
+          "decoded_offset": "0x2ecfa4"
+        },
+        {
+          "va": "0x80adfc2c",
+          "u32le_word": "0x0c2b7dba",
+          "segment": "E06-text",
+          "decoded_offset": "0x2ecfac"
+        },
+        {
+          "va": "0x80ac85bc",
+          "u32le_word": "0x8cc20050",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d593c"
+        },
+        {
+          "va": "0x80ac85d8",
+          "u32le_word": "0x0040f809",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d5958"
+        },
+        {
+          "va": "0x80b7b338",
+          "u32le_word": "0x809bcf2c",
+          "segment": "E06-data",
+          "decoded_offset": "0x18738"
+        },
+        {
+          "va": "0x809bcf7c",
+          "u32le_word": "0x80aca4dc",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca2fc"
+        }
+      ]
+    },
+    {
+      "role": "Mode callback registration and listener chain",
+      "words": [
+        {
+          "va": "0x80a8a524",
+          "u32le_word": "0x264d50f0",
+          "segment": "E06-text",
+          "decoded_offset": "0x2978a4"
+        },
+        {
+          "va": "0x80a8a530",
+          "u32le_word": "0xaecd10e4",
+          "segment": "E06-text",
+          "decoded_offset": "0x2978b0"
+        },
+        {
+          "va": "0x80a8a55c",
+          "u32le_word": "0x264d4efc",
+          "segment": "E06-text",
+          "decoded_offset": "0x2978dc"
+        },
+        {
+          "va": "0x80a8a568",
+          "u32le_word": "0xaeed0a60",
+          "segment": "E06-text",
+          "decoded_offset": "0x2978e8"
+        },
+        {
+          "va": "0x80a8a56c",
+          "u32le_word": "0x24624f88",
+          "segment": "E06-text",
+          "decoded_offset": "0x2978ec"
+        },
+        {
+          "va": "0x80a8a578",
+          "u32le_word": "0xaee20a64",
+          "segment": "E06-text",
+          "decoded_offset": "0x2978f8"
+        },
+        {
+          "va": "0x80a8a580",
+          "u32le_word": "0x25a34fe4",
+          "segment": "E06-text",
+          "decoded_offset": "0x297900"
+        },
+        {
+          "va": "0x80a8a58c",
+          "u32le_word": "0xaee30a70",
+          "segment": "E06-text",
+          "decoded_offset": "0x29790c"
+        },
+        {
+          "va": "0x80a8ba94",
+          "u32le_word": "0xac86fc18",
+          "segment": "E06-text",
+          "decoded_offset": "0x298e14"
+        },
+        {
+          "va": "0x80a8ba98",
+          "u32le_word": "0xac470004",
+          "segment": "E06-text",
+          "decoded_offset": "0x298e18"
+        },
+        {
+          "va": "0x80a8bb18",
+          "u32le_word": "0x03200008",
+          "segment": "E06-text",
+          "decoded_offset": "0x298e98"
+        },
+        {
+          "va": "0x809bd04c",
+          "u32le_word": "0x80adfe20",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca3cc"
+        },
+        {
+          "va": "0x809bd050",
+          "u32le_word": "0x80adfe58",
+          "segment": "E06-text",
+          "decoded_offset": "0x1ca3d0"
+        },
+        {
+          "va": "0x8080f3d0",
+          "u32le_word": "0x80a8be98",
+          "segment": "E06-text",
+          "decoded_offset": "0x1c750"
+        },
+        {
+          "va": "0x8080f3d4",
+          "u32le_word": "0x80a8bed0",
+          "segment": "E06-text",
+          "decoded_offset": "0x1c754"
+        },
+        {
+          "va": "0x80ac90c0",
+          "u32le_word": "0x8c820004",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d6440"
+        },
+        {
+          "va": "0x80ac90d8",
+          "u32le_word": "0x03200008",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d6458"
+        },
+        {
+          "va": "0x80adfe5c",
+          "u32le_word": "0x8c59e658",
+          "segment": "E06-text",
+          "decoded_offset": "0x2ed1dc"
+        },
+        {
+          "va": "0x80adfe70",
+          "u32le_word": "0x03200008",
+          "segment": "E06-text",
+          "decoded_offset": "0x2ed1f0"
+        },
+        {
+          "va": "0x80a8bf20",
+          "u32le_word": "0x8cb9fc1c",
+          "segment": "E06-text",
+          "decoded_offset": "0x2992a0"
+        },
+        {
+          "va": "0x80a8bf50",
+          "u32le_word": "0x03200008",
+          "segment": "E06-text",
+          "decoded_offset": "0x2992d0"
+        },
+        {
+          "va": "0x80a8bff8",
+          "u32le_word": "0x8cb9fc28",
+          "segment": "E06-text",
+          "decoded_offset": "0x299378"
+        },
+        {
+          "va": "0x80a8c028",
+          "u32le_word": "0x03200008",
+          "segment": "E06-text",
+          "decoded_offset": "0x2993a8"
+        }
+      ]
+    },
+    {
+      "role": "Option canvas and peer-navigation links",
+      "words": [
+        {
+          "va": "0x8080753c",
+          "u32le_word": "0x0191d000",
+          "segment": "E06-text",
+          "decoded_offset": "0x148bc"
+        },
+        {
+          "va": "0x8080754c",
+          "u32le_word": "0x0191d001",
+          "segment": "E06-text",
+          "decoded_offset": "0x148cc"
+        },
+        {
+          "va": "0x8080755c",
+          "u32le_word": "0x0191d002",
+          "segment": "E06-text",
+          "decoded_offset": "0x148dc"
+        },
+        {
+          "va": "0x80a84984",
+          "u32le_word": "0x2484753c",
+          "segment": "E06-text",
+          "decoded_offset": "0x291d04"
+        },
+        {
+          "va": "0x80a84988",
+          "u32le_word": "0x0c2b1e82",
+          "segment": "E06-text",
+          "decoded_offset": "0x291d08"
+        },
+        {
+          "va": "0x80a849ac",
+          "u32le_word": "0x3604d001",
+          "segment": "E06-text",
+          "decoded_offset": "0x291d2c"
+        },
+        {
+          "va": "0x80a849c8",
+          "u32le_word": "0x3604d002",
+          "segment": "E06-text",
+          "decoded_offset": "0x291d48"
+        },
+        {
+          "va": "0x80a84df4",
+          "u32le_word": "0x0c2b2556",
+          "segment": "E06-text",
+          "decoded_offset": "0x292174"
+        },
+        {
+          "va": "0x80a84df8",
+          "u32le_word": "0x24050009",
+          "segment": "E06-text",
+          "decoded_offset": "0x292178"
+        },
+        {
+          "va": "0x80a84e04",
+          "u32le_word": "0x0c2b2556",
+          "segment": "E06-text",
+          "decoded_offset": "0x292184"
+        },
+        {
+          "va": "0x80a84e08",
+          "u32le_word": "0x2405000a",
+          "segment": "E06-text",
+          "decoded_offset": "0x292188"
+        },
+        {
+          "va": "0x80a84e20",
+          "u32le_word": "0x0c2b2556",
+          "segment": "E06-text",
+          "decoded_offset": "0x2921a0"
+        },
+        {
+          "va": "0x80a84e24",
+          "u32le_word": "0x24050009",
+          "segment": "E06-text",
+          "decoded_offset": "0x2921a4"
+        },
+        {
+          "va": "0x80a84e30",
+          "u32le_word": "0x0c2b2556",
+          "segment": "E06-text",
+          "decoded_offset": "0x2921b0"
+        },
+        {
+          "va": "0x80a84e34",
+          "u32le_word": "0x2405000a",
+          "segment": "E06-text",
+          "decoded_offset": "0x2921b4"
+        },
+        {
+          "va": "0x80ac95a4",
+          "u32le_word": "0xac440000",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d6924"
+        },
+        {
+          "va": "0x80ac95a8",
+          "u32le_word": "0xac450004",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d6928"
+        },
+        {
+          "va": "0x80aca77c",
+          "u32le_word": "0x51440003",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7afc"
+        },
+        {
+          "va": "0x80aca5a4",
+          "u32le_word": "0x0c2b21a0",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7924"
+        },
+        {
+          "va": "0x80aca6c4",
+          "u32le_word": "0x0c2b2157",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7a44"
+        },
+        {
+          "va": "0x80aca6e4",
+          "u32le_word": "0xae320004",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7a64"
+        },
+        {
+          "va": "0x80aca70c",
+          "u32le_word": "0x0c2b2149",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7a8c"
+        }
+      ]
+    },
+    {
+      "role": "Opening backup, initial focus, immediate menu setter",
+      "words": [
+        {
+          "va": "0x80a85118",
+          "u32le_word": "0x0c10c32d",
+          "segment": "E06-text",
+          "decoded_offset": "0x292498"
+        },
+        {
+          "va": "0x80a8511c",
+          "u32le_word": "0x240400d7",
+          "segment": "E06-text",
+          "decoded_offset": "0x29249c"
+        },
+        {
+          "va": "0x80a85130",
+          "u32le_word": "0xa182d850",
+          "segment": "E06-text",
+          "decoded_offset": "0x2924b0"
+        },
+        {
+          "va": "0x80a84f04",
+          "u32le_word": "0x10820003",
+          "segment": "E06-text",
+          "decoded_offset": "0x292284"
+        },
+        {
+          "va": "0x80a84f18",
+          "u32le_word": "0x9087d850",
+          "segment": "E06-text",
+          "decoded_offset": "0x292298"
+        },
+        {
+          "va": "0x80a84f20",
+          "u32le_word": "0x38e30001",
+          "segment": "E06-text",
+          "decoded_offset": "0x2922a0"
+        },
+        {
+          "va": "0x80a84f24",
+          "u32le_word": "0x00c3200b",
+          "segment": "E06-text",
+          "decoded_offset": "0x2922a4"
+        },
+        {
+          "va": "0x80a84f98",
+          "u32le_word": "0x3503d001",
+          "segment": "E06-text",
+          "decoded_offset": "0x292318"
+        },
+        {
+          "va": "0x80a84fa0",
+          "u32le_word": "0x00002821",
+          "segment": "E06-text",
+          "decoded_offset": "0x292320"
+        },
+        {
+          "va": "0x80a84fa4",
+          "u32le_word": "0x240400d7",
+          "segment": "E06-text",
+          "decoded_offset": "0x292324"
+        },
+        {
+          "va": "0x80a84fa8",
+          "u32le_word": "0x3507d002",
+          "segment": "E06-text",
+          "decoded_offset": "0x292328"
+        },
+        {
+          "va": "0x80a84fb0",
+          "u32le_word": "0xac463168",
+          "segment": "E06-text",
+          "decoded_offset": "0x292330"
+        },
+        {
+          "va": "0x80a84fb8",
+          "u32le_word": "0x24050001",
+          "segment": "E06-text",
+          "decoded_offset": "0x292338"
+        },
+        {
+          "va": "0x80a84fc8",
+          "u32le_word": "0x0c10c342",
+          "segment": "E06-text",
+          "decoded_offset": "0x292348"
+        },
+        {
+          "va": "0x80a84fd4",
+          "u32le_word": "0x080ffce2",
+          "segment": "E06-text",
+          "decoded_offset": "0x292354"
+        }
+      ]
+    },
+    {
+      "role": "Setting bank routing and native storage",
+      "words": [
+        {
+          "va": "0x80430cbc",
+          "u32le_word": "0x0c043b0a",
+          "segment": "E04",
+          "decoded_offset": "0x30323c"
+        },
+        {
+          "va": "0x80430d08",
+          "u32le_word": "0x08043b01",
+          "segment": "E04",
+          "decoded_offset": "0x303288"
+        },
+        {
+          "va": "0x80433754",
+          "u32le_word": "0x0c10c32d",
+          "segment": "E04",
+          "decoded_offset": "0x305cd4"
+        },
+        {
+          "va": "0x80433758",
+          "u32le_word": "0x240400d7",
+          "segment": "E04",
+          "decoded_offset": "0x305cd8"
+        },
+        {
+          "va": "0x80433770",
+          "u32le_word": "0x0810c342",
+          "segment": "E04",
+          "decoded_offset": "0x305cf0"
+        },
+        {
+          "va": "0x80433774",
+          "u32le_word": "0x240400d7",
+          "segment": "E04",
+          "decoded_offset": "0x305cf4"
+        },
+        {
+          "va": "0x8010ec08",
+          "u32le_word": "0x28820100",
+          "segment": "E03",
+          "original_file_offset": "0x210ef0"
+        },
+        {
+          "va": "0x8010ec20",
+          "u32le_word": "0x08049f3f",
+          "segment": "E03",
+          "original_file_offset": "0x210f08"
+        },
+        {
+          "va": "0x8010ec38",
+          "u32le_word": "0x00002821",
+          "segment": "E03",
+          "original_file_offset": "0x210f20"
+        },
+        {
+          "va": "0x8010ec50",
+          "u32le_word": "0x0c049f47",
+          "segment": "E03",
+          "original_file_offset": "0x210f38"
+        },
+        {
+          "va": "0x80127cfc",
+          "u32le_word": "0x240802a8",
+          "segment": "E03",
+          "original_file_offset": "0x229fe4"
+        },
+        {
+          "va": "0x80127d04",
+          "u32le_word": "0x3c098154",
+          "segment": "E03",
+          "original_file_offset": "0x229fec"
+        },
+        {
+          "va": "0x80127d08",
+          "u32le_word": "0x2523c288",
+          "segment": "E03",
+          "original_file_offset": "0x229ff0"
+        },
+        {
+          "va": "0x80127d18",
+          "u32le_word": "0xa0c506e4",
+          "segment": "E03",
+          "original_file_offset": "0x22a000"
+        },
+        {
+          "va": "0x80127d38",
+          "u32le_word": "0x90a206e4",
+          "segment": "E03",
+          "original_file_offset": "0x22a020"
+        },
+        {
+          "va": "0x8041c104",
+          "u32le_word": "0x38830001",
+          "segment": "E04",
+          "decoded_offset": "0x2ee684"
+        }
+      ]
+    },
+    {
+      "role": "Confirm retains live byte, cancel writes saved byte",
+      "words": [
+        {
+          "va": "0x8080f1a0",
+          "u32le_word": "0x80a850c4",
+          "segment": "E06-text",
+          "decoded_offset": "0x1c520"
+        },
+        {
+          "va": "0x8080f1a8",
+          "u32le_word": "0x80a85058",
+          "segment": "E06-text",
+          "decoded_offset": "0x1c528"
+        },
+        {
+          "va": "0x8080f1b4",
+          "u32le_word": "0x80a85060",
+          "segment": "E06-text",
+          "decoded_offset": "0x1c534"
+        },
+        {
+          "va": "0x8080f1c0",
+          "u32le_word": "0x80a85060",
+          "segment": "E06-text",
+          "decoded_offset": "0x1c540"
+        },
+        {
+          "va": "0x8080f1f8",
+          "u32le_word": "0x80a8508c",
+          "segment": "E06-text",
+          "decoded_offset": "0x1c578"
+        },
+        {
+          "va": "0x80a85014",
+          "u32le_word": "0x00800008",
+          "segment": "E06-text",
+          "decoded_offset": "0x292394"
+        },
+        {
+          "va": "0x80a85060",
+          "u32le_word": "0x0c2a2f92",
+          "segment": "E06-text",
+          "decoded_offset": "0x2923e0"
+        },
+        {
+          "va": "0x80a85068",
+          "u32le_word": "0x0c278697",
+          "segment": "E06-text",
+          "decoded_offset": "0x2923e8"
+        },
+        {
+          "va": "0x80a8508c",
+          "u32le_word": "0x0c2a13cc",
+          "segment": "E06-text",
+          "decoded_offset": "0x29240c"
+        },
+        {
+          "va": "0x80a850c4",
+          "u32le_word": "0x0c2a13cc",
+          "segment": "E06-text",
+          "decoded_offset": "0x292444"
+        },
+        {
+          "va": "0x80a850d4",
+          "u32le_word": "0x8c500004",
+          "segment": "E06-text",
+          "decoded_offset": "0x292454"
+        },
+        {
+          "va": "0x80a850dc",
+          "u32le_word": "0x24040001",
+          "segment": "E06-text",
+          "decoded_offset": "0x29245c"
+        },
+        {
+          "va": "0x80a84f34",
+          "u32le_word": "0x9045d850",
+          "segment": "E06-text",
+          "decoded_offset": "0x2922b4"
+        },
+        {
+          "va": "0x80a84f38",
+          "u32le_word": "0x0810c342",
+          "segment": "E06-text",
+          "decoded_offset": "0x2922b8"
+        },
+        {
+          "va": "0x80a84f3c",
+          "u32le_word": "0x240400d7",
+          "segment": "E06-text",
+          "decoded_offset": "0x2922bc"
+        },
+        {
+          "va": "0x80a84ee4",
+          "u32le_word": "0x0c2b7c90",
+          "segment": "E06-text",
+          "decoded_offset": "0x292264"
+        }
+      ]
+    },
+    {
+      "role": "Separate DCF side effect of focus",
+      "words": [
+        {
+          "va": "0x803ff390",
+          "u32le_word": "0x0c043b0a",
+          "segment": "E04",
+          "decoded_offset": "0x2d1910"
+        },
+        {
+          "va": "0x803ff394",
+          "u32le_word": "0x240400d7",
+          "segment": "E04",
+          "decoded_offset": "0x2d1914"
+        },
+        {
+          "va": "0x803ff398",
+          "u32le_word": "0x14400004",
+          "segment": "E04",
+          "decoded_offset": "0x2d1918"
+        },
+        {
+          "va": "0x803ff3a4",
+          "u32le_word": "0x080ffcb2",
+          "segment": "E04",
+          "decoded_offset": "0x2d1924"
+        },
+        {
+          "va": "0x803ff3b0",
+          "u32le_word": "0x24040001",
+          "segment": "E04",
+          "decoded_offset": "0x2d1930"
+        },
+        {
+          "va": "0x803ff3b4",
+          "u32le_word": "0x080ffcb2",
+          "segment": "E04",
+          "decoded_offset": "0x2d1934"
+        },
+        {
+          "va": "0x803ff35c",
+          "u32le_word": "0x0c0937e1",
+          "segment": "E04",
+          "decoded_offset": "0x2d18dc"
+        },
+        {
+          "va": "0x803ff360",
+          "u32le_word": "0xa1274e6b",
+          "segment": "E04",
+          "decoded_offset": "0x2d18e0"
+        },
+        {
+          "va": "0x803ff370",
+          "u32le_word": "0x90a20004",
+          "segment": "E04",
+          "decoded_offset": "0x2d18f0"
+        },
+        {
+          "va": "0x803ff378",
+          "u32le_word": "0x8c63cd44",
+          "segment": "E04",
+          "decoded_offset": "0x2d18f8"
+        }
+      ]
+    },
+    {
+      "role": "Color Space title, option, help and action label bindings",
+      "words": [
+        {
+          "va": "0x8080758c",
+          "u32le_word": "0x0191d005",
+          "segment": "E06-text",
+          "decoded_offset": "0x1490c"
+        },
+        {
+          "va": "0x80807590",
+          "u32le_word": "0x00000009",
+          "segment": "E06-text",
+          "decoded_offset": "0x14910"
+        },
+        {
+          "va": "0x80807594",
+          "u32le_word": "0x8092dab0",
+          "segment": "E06-text",
+          "decoded_offset": "0x14914"
+        },
+        {
+          "va": "0x808075ec",
+          "u32le_word": "0x0191d00b",
+          "segment": "E06-text",
+          "decoded_offset": "0x1496c"
+        },
+        {
+          "va": "0x808075f0",
+          "u32le_word": "0x00000009",
+          "segment": "E06-text",
+          "decoded_offset": "0x14970"
+        },
+        {
+          "va": "0x808075f4",
+          "u32le_word": "0x8092d830",
+          "segment": "E06-text",
+          "decoded_offset": "0x14974"
+        },
+        {
+          "va": "0x8080760c",
+          "u32le_word": "0x0191d00d",
+          "segment": "E06-text",
+          "decoded_offset": "0x1498c"
+        },
+        {
+          "va": "0x80807614",
+          "u32le_word": "0x8092cf08",
+          "segment": "E06-text",
+          "decoded_offset": "0x14994"
+        },
+        {
+          "va": "0x8080763c",
+          "u32le_word": "0x0191d010",
+          "segment": "E06-text",
+          "decoded_offset": "0x149bc"
+        },
+        {
+          "va": "0x80807640",
+          "u32le_word": "0x00000009",
+          "segment": "E06-text",
+          "decoded_offset": "0x149c0"
+        },
+        {
+          "va": "0x80807644",
+          "u32le_word": "0x8092d510",
+          "segment": "E06-text",
+          "decoded_offset": "0x149c4"
+        },
+        {
+          "va": "0x8080765c",
+          "u32le_word": "0x0191d012",
+          "segment": "E06-text",
+          "decoded_offset": "0x149dc"
+        },
+        {
+          "va": "0x80807664",
+          "u32le_word": "0x8092c860",
+          "segment": "E06-text",
+          "decoded_offset": "0x149e4"
+        },
+        {
+          "va": "0x8080767c",
+          "u32le_word": "0x0191d014",
+          "segment": "E06-text",
+          "decoded_offset": "0x149fc"
+        },
+        {
+          "va": "0x80807684",
+          "u32le_word": "0x809b86e8",
+          "segment": "E06-text",
+          "decoded_offset": "0x14a04"
+        },
+        {
+          "va": "0x808076cc",
+          "u32le_word": "0x0191d019",
+          "segment": "E06-text",
+          "decoded_offset": "0x14a4c"
+        },
+        {
+          "va": "0x808076d4",
+          "u32le_word": "0x809b917c",
+          "segment": "E06-text",
+          "decoded_offset": "0x14a54"
+        }
+      ]
+    },
+    {
+      "role": "Native focus decoration and string renderer",
+      "words": [
+        {
+          "va": "0x80a84d84",
+          "u32le_word": "0x0c2b24f8",
+          "segment": "E06-text",
+          "decoded_offset": "0x292104"
+        },
+        {
+          "va": "0x80a84d90",
+          "u32le_word": "0x0c2b251b",
+          "segment": "E06-text",
+          "decoded_offset": "0x292110"
+        },
+        {
+          "va": "0x80a84d9c",
+          "u32le_word": "0x0c2b251b",
+          "segment": "E06-text",
+          "decoded_offset": "0x29211c"
+        },
+        {
+          "va": "0x80a84da8",
+          "u32le_word": "0x0c2b251b",
+          "segment": "E06-text",
+          "decoded_offset": "0x292128"
+        },
+        {
+          "va": "0x80a84db4",
+          "u32le_word": "0x0c2b24f8",
+          "segment": "E06-text",
+          "decoded_offset": "0x292134"
+        },
+        {
+          "va": "0x80a84dc0",
+          "u32le_word": "0x0c2b251b",
+          "segment": "E06-text",
+          "decoded_offset": "0x292140"
+        },
+        {
+          "va": "0x80a84dcc",
+          "u32le_word": "0x0c2b251b",
+          "segment": "E06-text",
+          "decoded_offset": "0x29214c"
+        },
+        {
+          "va": "0x80a84dd8",
+          "u32le_word": "0x0c2b251b",
+          "segment": "E06-text",
+          "decoded_offset": "0x292158"
+        },
+        {
+          "va": "0x80aca49c",
+          "u32le_word": "0x0c2b21fe",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d781c"
+        },
+        {
+          "va": "0x80aca4a0",
+          "u32le_word": "0x00002021",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7820"
+        },
+        {
+          "va": "0x80aca9b4",
+          "u32le_word": "0x0c2b21fe",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7d34"
+        },
+        {
+          "va": "0x80aca9b8",
+          "u32le_word": "0x24040001",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d7d38"
+        },
+        {
+          "va": "0x80ad20c0",
+          "u32le_word": "0xac640004",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df440"
+        },
+        {
+          "va": "0x80ad2054",
+          "u32le_word": "0x26110058",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df3d4"
+        },
+        {
+          "va": "0x80ad207c",
+          "u32le_word": "0x0c2b47cd",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df3fc"
+        },
+        {
+          "va": "0x80ad2524",
+          "u32le_word": "0x082b4895",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df8a4"
+        },
+        {
+          "va": "0x80ad22e0",
+          "u32le_word": "0x8e110004",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df660"
+        },
+        {
+          "va": "0x80ad237c",
+          "u32le_word": "0x0c2b187d",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df6fc"
+        },
+        {
+          "va": "0x80ad23f0",
+          "u32le_word": "0x082b1913",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df770"
+        },
+        {
+          "va": "0x80ad24d4",
+          "u32le_word": "0x082b18be",
+          "segment": "E06-text",
+          "decoded_offset": "0x2df854"
+        },
+        {
+          "va": "0x80ac606c",
+          "u32le_word": "0x8d8bb32c",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d33ec"
+        },
+        {
+          "va": "0x80ac6078",
+          "u32le_word": "0x8d270000",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d33f8"
+        },
+        {
+          "va": "0x80ac6088",
+          "u32le_word": "0x0c2b165c",
+          "segment": "E06-text",
+          "decoded_offset": "0x2d3408"
+        }
+      ]
+    }
+  ],
+  "reproduction": [
+    "python tools/check_colorspace_ui.py .private/main-expanded.elf --output .private/colorspace-ui/recheck.json",
+    "The checker imports angr only for replay; validate_report accepts the replay object without angr or firmware."
+  ],
+  "limitations": [
+    "The native execution begins at translated events, with the E3 parent row preselected in synthetic RAM. Physical switch wiring, scanner timing, event queues and asynchronous capture/display thread scheduling remain outside the replay.",
+    "The menu RAM bank and DCF calls are distinct. This replay does not execute persistent settings storage, media creation, camera power cycling or any physical camera action.",
+    "The resource pointers, widget types and static drawing chain do not establish a final LCD frame, pixel format/stride for this screen, or a portable asset ABI.",
+    "The cross-model comparison reuses only the feature meaning and proposed action vocabulary; Q7 implementation details do not identify the K-3 Mark III or K-3 II UI ABI."
+  ]
+}
