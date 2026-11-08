@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "7cd3a1ad9997848bcc99d8895e409036f8669161",
-  "updated_at": "2026-11-08T19:35:43+09:00",
+  "baseline_commit": "e9b7d41fee81b9aa61b001971893f084c73694f3",
+  "updated_at": "2026-11-08T19:37:18+09:00",
   "goals": {
     "rebuild": {
       "status": "MAIN upper23fixtures plus two separately initialized native Burn prefixes: original FileX open stops before NAND op2; modeled open/geometry proceeds through installed-header op6/op4 models to first card FileX read entry. E01 terminal remains separately validated. No actual storage or update acceptance.",
@@ -614,7 +614,8 @@
     "scope": "Conditional native OSD context selection and seeded-ID provenance",
     "validation": "Private and publicCLI3control observations independently exact;86original words/16ranges verified from original and decoded ELF. Full original448block/ELF/inventory reproduction and50unit tests PASS; new conditional SVG inspected at1265px without horizontal overflow.",
     "remaining": "Actual setup/allocator/font state and continuous refresh-to-pixel remain open; GDI bodies and device are modeled.",
-    "editorial": "5paragraphs light5.9%character35.3%sentence,goldenPASS,modality0,B6/6; rootfinalizeraccept. Prior attrs limits separately clarified syntheticID provenance."
+    "editorial": "5paragraphs light5.9%character35.3%sentence,goldenPASS,modality0,B6/6; rootfinalizeraccept. Prior attrs limits separately clarified syntheticID provenance.",
+    "publication": "e9b7d41: CI/Pages success;4HTTP200 files exactly match candidate. Public research frozen for HQ release selection."
   },
   "validation_runs": [
     {
@@ -680,5 +681,57 @@
     "role": "Parameter0x1bc sets the active draw context; the historical refresh hook returns0 and skips it.",
     "validation": "Original SetOsd tail-call, parameter and setter source inspected; only role strings and local constant name changed, all replay observations identical.",
     "remaining": "Followup3controls prove native selection under supplied registry; actual startup/allocation still open."
+  },
+  "release_candidate": {
+    "artifact_commit": "e9b7d41fee81b9aa61b001971893f084c73694f3",
+    "public_files_frozen_after_this_status": true,
+    "release_owner": "HQ; Q7 manager does not create tags, releases or assets",
+    "published": {
+      "ci": 42472113261,
+      "pages": 42472113130,
+      "conclusions": "success",
+      "http_commit_equal_paths": [
+        "colorspace-attributes-report.html",
+        "analysis/context-binding.json",
+        "tools/check_context_binding.py",
+        "analysis/hq-status.json"
+      ]
+    },
+    "validation": {
+      "unit_tests": 50,
+      "original_firmware_reproduction": "PASS:448blocks,analysisELF,full published inventory and original source witnesses",
+      "latest_native_replays": "MAINprefix2 and contextbinding3 independently reproduced by worker and Q7 manager; publicCLI observations exact",
+      "html": "All deterministic builders and links pass; added context SVG inspected at1265px without overflow",
+      "tracked_artifact_scan": "No tracked .bin/.elf/.o/.obj/.dll/.exe/.pyc, .private/ or _workspace/"
+    },
+    "review_state": {
+      "hq_accepted": [
+        "2e307e9 basic-glyph clarification with2e8b source/2fullframes",
+        "a7636ca MAIN23 staging/wrapper"
+      ],
+      "hq_independent_review_complete_root_rerun_pending": [
+        "ca124cc attributes/scaled plus7cd3a1a selector-role correction"
+      ],
+      "hq_independent_review_in_progress": [
+        "e42db39 MAIN Burn prefixes"
+      ],
+      "hq_independent_review_not_yet_completed": [
+        "e9b7d41 conditional context binding"
+      ]
+    },
+    "remaining": [
+      "Actual firmware recognition/flash/boot/capture/recovery",
+      "MAIN storage response and full card-read/selector1/map/program path",
+      "Actual UI startup allocation/font state and continuous refresh-to-pixel/LCD",
+      "Physical AF/lens transport and actual actuator completion"
+    ],
+    "next_private_work": "Small original layer0 default registration/allocation study; unpublished and excluded from this candidate",
+    "reproduction": [
+      "python -m unittest discover -s tests -v",
+      "python tools/pentax_lz.py --self-test",
+      "python tools/verify_report.py --firmware <original fwdc603p.bin>",
+      "python tools/check_main_burn.py <original> <expanded ELF> --output <new private JSON>",
+      "python tools/check_context_binding.py <original> <expanded ELF> --output <new private JSON>"
+    ]
   }
 }
