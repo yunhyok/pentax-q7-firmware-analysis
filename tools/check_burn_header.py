@@ -156,6 +156,8 @@ def validate_report(report):
     assert sum(hi-lo for lo, hi in CHANGED_RANGES) == 281
     assert t["mbr_offset"] == 0x400 and t["partition_fields"] == PARTITIONS
     assert {int(g["pc"], 16): g["events"] for g in t["groups"]} == EVENT_COUNTS
+    # Pin complete ordered groups, including ranges, event digests and duplicate PCs.
+    assert sha256(json.dumps(t["groups"], sort_keys=True, separators=(",", ":")).encode()).hexdigest() == "591c7ef56c0127b96c01b56671af4b735c6ba9aee3b57f91ef940d47cec98250"
     assert t["fields"] == {"0x214": 0x13600, "0x310": 640, "0x314": 384, "0x3a8": 1, "0x3ac": 0}
     assert report["mbr_cases"] == mbr_reference()
 
