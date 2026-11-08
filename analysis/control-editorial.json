@@ -1,0 +1,17 @@
+{
+  "skill": "humanize-korean 2.3.2",
+  "route": "light",
+  "run_id": "2026-11-08-005-76dd",
+  "change_rate_percent": 2.1,
+  "golden": "PASS",
+  "lost_modality_pairs": 0,
+  "scope": "8 narrative paragraphs; technical fields and limits preserved",
+  "post_review_clarifications": [
+    "Marked u8 versus u32 fields explicitly in pseudocode.",
+    "Showed payload-to-object setter before the dirty-gated FC1 writer.",
+    "Used parameter ID 4 instead of assigning physical quality semantics.",
+    "Corrected topology after original-code replay: enabled auxiliary ID 0x1f clears phase to zero, yielding four passes.",
+    "Verified derived-constructor format masks including branch-likely delay slots: T is 1,1,0,1 and all four FC1 flag words are zero.",
+    "Separated replayed topology and range from static task-dependent final flags; disclosed skipped FIPLIB tail."
+  ]
+}

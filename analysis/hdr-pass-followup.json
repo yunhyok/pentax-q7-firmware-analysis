@@ -1,0 +1,6076 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Q7 v1.01 successful merged HDR IpuToneMapRgb with a fresh type-0 path, format 0x0f01, normal processor defaults and the default auxiliary ID 0x1f version 0xc descriptor.",
+  "coordinates": "Word locations are decoded segment offsets. E03 word locations use original firmware file offsets.",
+  "fresh_hdr": {
+    "processor_mode": 0,
+    "cbc_mode": 0,
+    "ipu_input_type": 6,
+    "ipu_output_type": 8,
+    "fiplib_input_format": 13,
+    "fiplib_output_format": 1,
+    "category": 0,
+    "fiplib_phase": 0,
+    "topology_level": 1,
+    "topology_locations": [
+      0,
+      6,
+      10,
+      5
+    ],
+    "wrapper_kind": 0,
+    "pass_classes": [
+      "1x0",
+      "1x1",
+      "5x1",
+      "0x1"
+    ],
+    "T": [
+      1,
+      1,
+      0,
+      1
+    ],
+    "count": 4,
+    "start": 0,
+    "end_exclusive": 4,
+    "final_index": 3
+  },
+  "evidence": [
+    {
+      "id": "fresh_processor_defaults",
+      "observation": "The type-0 path constructs a separate CImageProcessor. Its constructor starts with N=1, start/end=0, dirty bits 3 and clears 26 parameters from processor+0x25c. This clears ID 4 at +0x26c, mode ID 0xa at +0x284, CBC ID 0xb at +0x288 and the import gate at +0x2b0. Its SetDefaults installs only filters 0xf and 0x19, and the new translator's +8 API field starts zero.",
+      "words": [
+        {
+          "va": "0x801bcda8",
+          "u32le_word": "0x0c074225",
+          "segment": "E04",
+          "decoded_offset": "0x8f328"
+        },
+        {
+          "va": "0x801bcdb4",
+          "u32le_word": "0xae020880",
+          "segment": "E04",
+          "decoded_offset": "0x8f334"
+        },
+        {
+          "va": "0x801d08ac",
+          "u32le_word": "0x0c00362f",
+          "segment": "E04",
+          "decoded_offset": "0xa2e2c"
+        },
+        {
+          "va": "0x801d08b8",
+          "u32le_word": "0x0c0ce0fe",
+          "segment": "E04",
+          "decoded_offset": "0xa2e38"
+        },
+        {
+          "va": "0x80338444",
+          "u32le_word": "0x24030003",
+          "segment": "E04",
+          "decoded_offset": "0x20a9c4"
+        },
+        {
+          "va": "0x80338454",
+          "u32le_word": "0x24040001",
+          "segment": "E04",
+          "decoded_offset": "0x20a9d4"
+        },
+        {
+          "va": "0x8033845c",
+          "u32le_word": "0xae830324",
+          "segment": "E04",
+          "decoded_offset": "0x20a9dc"
+        },
+        {
+          "va": "0x80338470",
+          "u32le_word": "0xae840308",
+          "segment": "E04",
+          "decoded_offset": "0x20a9f0"
+        },
+        {
+          "va": "0x803384a4",
+          "u32le_word": "0xae80030c",
+          "segment": "E04",
+          "decoded_offset": "0x20aa24"
+        },
+        {
+          "va": "0x803384a8",
+          "u32le_word": "0xae800310",
+          "segment": "E04",
+          "decoded_offset": "0x20aa28"
+        },
+        {
+          "va": "0x803384e4",
+          "u32le_word": "0x0c0d252c",
+          "segment": "E04",
+          "decoded_offset": "0x20aa64"
+        },
+        {
+          "va": "0x803384fc",
+          "u32le_word": "0xae910254",
+          "segment": "E04",
+          "decoded_offset": "0x20aa7c"
+        },
+        {
+          "va": "0x80338514",
+          "u32le_word": "0x24030024",
+          "segment": "E04",
+          "decoded_offset": "0x20aa94"
+        },
+        {
+          "va": "0x8033851c",
+          "u32le_word": "0xac400048",
+          "segment": "E04",
+          "decoded_offset": "0x20aa9c"
+        },
+        {
+          "va": "0x80338528",
+          "u32le_word": "0x0461fffb",
+          "segment": "E04",
+          "decoded_offset": "0x20aaa8"
+        },
+        {
+          "va": "0x80338570",
+          "u32le_word": "0x02801021",
+          "segment": "E04",
+          "decoded_offset": "0x20aaf0"
+        },
+        {
+          "va": "0x80338574",
+          "u32le_word": "0x24030019",
+          "segment": "E04",
+          "decoded_offset": "0x20aaf4"
+        },
+        {
+          "va": "0x80338578",
+          "u32le_word": "0x2463ffff",
+          "segment": "E04",
+          "decoded_offset": "0x20aaf8"
+        },
+        {
+          "va": "0x8033857c",
+          "u32le_word": "0xac40025c",
+          "segment": "E04",
+          "decoded_offset": "0x20aafc"
+        },
+        {
+          "va": "0x80338580",
+          "u32le_word": "0x0461fffd",
+          "segment": "E04",
+          "decoded_offset": "0x20ab00"
+        },
+        {
+          "va": "0x80338584",
+          "u32le_word": "0x24420004",
+          "segment": "E04",
+          "decoded_offset": "0x20ab04"
+        },
+        {
+          "va": "0x80338634",
+          "u32le_word": "0x0c0ce0bd",
+          "segment": "E04",
+          "decoded_offset": "0x20abb4"
+        },
+        {
+          "va": "0x803494d0",
+          "u32le_word": "0xae000008",
+          "segment": "E04",
+          "decoded_offset": "0x21ba50"
+        }
+      ]
+    },
+    {
+      "id": "hdr_mutators_and_submit",
+      "observation": "The HDR type-0 caller uses the filter/format/scale/buffer setup traced in S1. All SetParam IDs available in IpuSubmit are 1, 2, 3, 5, 6, 7, 0xd and 0xe. SetImage installs descriptors at +0x10+4*kind, sets the dirty bit and changes the state, leaving the tracked parameters intact. IpuSubmit calls Commit on the same processor. CheckLimitationsBeforeCommit only clears +0x298 when +0x26c is nonzero. Commit's optional mode import gate is clear on the fresh path.",
+      "words": [
+        {
+          "va": "0x80b1c18c",
+          "u32le_word": "0x00002021",
+          "segment": "E06-text",
+          "decoded_offset": "0x32950c"
+        },
+        {
+          "va": "0x80b1c194",
+          "u32le_word": "0x0c06e4a5",
+          "segment": "E06-text",
+          "decoded_offset": "0x329514"
+        },
+        {
+          "va": "0x80b1c1b0",
+          "u32le_word": "0x0c07087a",
+          "segment": "E06-text",
+          "decoded_offset": "0x329530"
+        },
+        {
+          "va": "0x80b1c25c",
+          "u32le_word": "0x0c07087a",
+          "segment": "E06-text",
+          "decoded_offset": "0x3295dc"
+        },
+        {
+          "va": "0x80b1c2e0",
+          "u32le_word": "0x0c07087a",
+          "segment": "E06-text",
+          "decoded_offset": "0x329660"
+        },
+        {
+          "va": "0x80b1c304",
+          "u32le_word": "0x0c06e82d",
+          "segment": "E06-text",
+          "decoded_offset": "0x329684"
+        },
+        {
+          "va": "0x80b1c314",
+          "u32le_word": "0x0c06e716",
+          "segment": "E06-text",
+          "decoded_offset": "0x329694"
+        },
+        {
+          "va": "0x80b1c328",
+          "u32le_word": "0x0c06ed09",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296a8"
+        },
+        {
+          "va": "0x80b1c330",
+          "u32le_word": "0x0c0720f2",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296b0"
+        },
+        {
+          "va": "0x801d0b70",
+          "u32le_word": "0x24050005",
+          "segment": "E04",
+          "decoded_offset": "0xa30f0"
+        },
+        {
+          "va": "0x801d0b74",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa30f4"
+        },
+        {
+          "va": "0x801d0bfc",
+          "u32le_word": "0x24050002",
+          "segment": "E04",
+          "decoded_offset": "0xa317c"
+        },
+        {
+          "va": "0x801d0c00",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa3180"
+        },
+        {
+          "va": "0x801d0c18",
+          "u32le_word": "0x24050003",
+          "segment": "E04",
+          "decoded_offset": "0xa3198"
+        },
+        {
+          "va": "0x801d0c1c",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa319c"
+        },
+        {
+          "va": "0x801d0c58",
+          "u32le_word": "0x24050005",
+          "segment": "E04",
+          "decoded_offset": "0xa31d8"
+        },
+        {
+          "va": "0x801d0c5c",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa31dc"
+        },
+        {
+          "va": "0x801d0d80",
+          "u32le_word": "0x24050002",
+          "segment": "E04",
+          "decoded_offset": "0xa3300"
+        },
+        {
+          "va": "0x801d0d84",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa3304"
+        },
+        {
+          "va": "0x801d0d9c",
+          "u32le_word": "0x24050003",
+          "segment": "E04",
+          "decoded_offset": "0xa331c"
+        },
+        {
+          "va": "0x801d0da0",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa3320"
+        },
+        {
+          "va": "0x801d0df8",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa3378"
+        },
+        {
+          "va": "0x801d0dfc",
+          "u32le_word": "0x24050006",
+          "segment": "E04",
+          "decoded_offset": "0xa337c"
+        },
+        {
+          "va": "0x801d0e08",
+          "u32le_word": "0x0c0cdf45",
+          "segment": "E04",
+          "decoded_offset": "0xa3388"
+        },
+        {
+          "va": "0x801d0e18",
+          "u32le_word": "0x0c0cdf45",
+          "segment": "E04",
+          "decoded_offset": "0xa3398"
+        },
+        {
+          "va": "0x801d0e1c",
+          "u32le_word": "0x24060002",
+          "segment": "E04",
+          "decoded_offset": "0xa339c"
+        },
+        {
+          "va": "0x801d0fa4",
+          "u32le_word": "0x24050007",
+          "segment": "E04",
+          "decoded_offset": "0xa3524"
+        },
+        {
+          "va": "0x801d0fa8",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa3528"
+        },
+        {
+          "va": "0x801d0fc4",
+          "u32le_word": "0x0c0ce9ee",
+          "segment": "E04",
+          "decoded_offset": "0xa3544"
+        },
+        {
+          "va": "0x801d10e8",
+          "u32le_word": "0x24050001",
+          "segment": "E04",
+          "decoded_offset": "0xa3668"
+        },
+        {
+          "va": "0x801d10ec",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa366c"
+        },
+        {
+          "va": "0x801d11d0",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa3750"
+        },
+        {
+          "va": "0x801d11d4",
+          "u32le_word": "0x2405000d",
+          "segment": "E04",
+          "decoded_offset": "0xa3754"
+        },
+        {
+          "va": "0x801d11e0",
+          "u32le_word": "0x0c0cdfb8",
+          "segment": "E04",
+          "decoded_offset": "0xa3760"
+        },
+        {
+          "va": "0x801d11e4",
+          "u32le_word": "0x2405000e",
+          "segment": "E04",
+          "decoded_offset": "0xa3764"
+        },
+        {
+          "va": "0x80337d18",
+          "u32le_word": "0x00063080",
+          "segment": "E04",
+          "decoded_offset": "0x20a298"
+        },
+        {
+          "va": "0x80337d24",
+          "u32le_word": "0x00c49021",
+          "segment": "E04",
+          "decoded_offset": "0x20a2a4"
+        },
+        {
+          "va": "0x80337db0",
+          "u32le_word": "0xae510010",
+          "segment": "E04",
+          "decoded_offset": "0x20a330"
+        },
+        {
+          "va": "0x80337db4",
+          "u32le_word": "0xae070320",
+          "segment": "E04",
+          "decoded_offset": "0x20a334"
+        },
+        {
+          "va": "0x80337f0c",
+          "u32le_word": "0x00052880",
+          "segment": "E04",
+          "decoded_offset": "0x20a48c"
+        },
+        {
+          "va": "0x80337f20",
+          "u32le_word": "0xac46025c",
+          "segment": "E04",
+          "decoded_offset": "0x20a4a0"
+        },
+        {
+          "va": "0x80337b7c",
+          "u32le_word": "0x8c83026c",
+          "segment": "E04",
+          "decoded_offset": "0x20a0fc"
+        },
+        {
+          "va": "0x8033a7d4",
+          "u32le_word": "0x8c8202b0",
+          "segment": "E04",
+          "decoded_offset": "0x20cd54"
+        },
+        {
+          "va": "0x8033a7d8",
+          "u32le_word": "0x144001f8",
+          "segment": "E04",
+          "decoded_offset": "0x20cd58"
+        },
+        {
+          "va": "0x8033afc4",
+          "u32le_word": "0x8e500284",
+          "segment": "E04",
+          "decoded_offset": "0x20d544"
+        },
+        {
+          "va": "0x8033afe0",
+          "u32le_word": "0xae500284",
+          "segment": "E04",
+          "decoded_offset": "0x20d560"
+        }
+      ]
+    },
+    {
+      "id": "topology_inputs",
+      "observation": "HDR format 0x0f01 becomes input descriptor type 6 and output type 8 via the IpuSubmit format tables. PrepareCalculations maps those types to FIPLIB bytes +6=0xd and +7=1. A zero processor parameter ID 4 fails the 0xd1ab0 signature and yields category byte +9=0. Absent filter ID 0x1d leaves byte +8 and S=byte +1 zero. Absent ID 0x1e preserves the two halfword defaults +0x16f4/+0x171a=0. The enabled HDR auxiliary ID 0x1f uses slot +0x174 and clears input+0x1738. Its +0x105c halfword is copied to input+0x173a. HdrImageMixing supplies 0xa0 in its default auxiliary descriptor. Translator+8 yields API byte +0x19=0 so OverrideInputAPI leaves these values unchanged.",
+      "words": [
+        {
+          "va": "0x80b29ddc",
+          "u32le_word": "0x24060f01",
+          "segment": "E06-text",
+          "decoded_offset": "0x33715c"
+        },
+        {
+          "va": "0x801d0af4",
+          "u32le_word": "0x7ce83a00",
+          "segment": "E04",
+          "decoded_offset": "0xa3074"
+        },
+        {
+          "va": "0x801d0b08",
+          "u32le_word": "0x30f700ff",
+          "segment": "E04",
+          "decoded_offset": "0xa3088"
+        },
+        {
+          "va": "0x801d0b10",
+          "u32le_word": "0x3110000f",
+          "segment": "E04",
+          "decoded_offset": "0xa3090"
+        },
+        {
+          "va": "0x801d0c70",
+          "u32le_word": "0x0c07417c",
+          "segment": "E04",
+          "decoded_offset": "0xa31f0"
+        },
+        {
+          "va": "0x801d0c94",
+          "u32le_word": "0x0c027edc",
+          "segment": "E04",
+          "decoded_offset": "0xa3214"
+        },
+        {
+          "va": "0x801d060c",
+          "u32le_word": "0x2503477c",
+          "segment": "E04",
+          "decoded_offset": "0xa2b8c"
+        },
+        {
+          "va": "0x801d0614",
+          "u32le_word": "0x8ca40000",
+          "segment": "E04",
+          "decoded_offset": "0xa2b94"
+        },
+        {
+          "va": "0x801d47b8",
+          "u32le_word": "0x801d0668",
+          "segment": "E04",
+          "decoded_offset": "0xa6d38"
+        },
+        {
+          "va": "0x801d066c",
+          "u32le_word": "0x24020006",
+          "segment": "E04",
+          "decoded_offset": "0xa2bec"
+        },
+        {
+          "va": "0x801d0cc4",
+          "u32le_word": "0x0c0741ae",
+          "segment": "E04",
+          "decoded_offset": "0xa3244"
+        },
+        {
+          "va": "0x801d47c0",
+          "u32le_word": "0x801d0700",
+          "segment": "E04",
+          "decoded_offset": "0xa6d40"
+        },
+        {
+          "va": "0x801d0704",
+          "u32le_word": "0x24020008",
+          "segment": "E04",
+          "decoded_offset": "0xa2c84"
+        },
+        {
+          "va": "0x801d0ce8",
+          "u32le_word": "0x0c027edc",
+          "segment": "E04",
+          "decoded_offset": "0xa3268"
+        },
+        {
+          "va": "0x8033ad5c",
+          "u32le_word": "0x8e470010",
+          "segment": "E04",
+          "decoded_offset": "0x20d2dc"
+        },
+        {
+          "va": "0x8033ad60",
+          "u32le_word": "0x8e46026c",
+          "segment": "E04",
+          "decoded_offset": "0x20d2e0"
+        },
+        {
+          "va": "0x8033ad80",
+          "u32le_word": "0x0160f809",
+          "segment": "E04",
+          "decoded_offset": "0x20d300"
+        },
+        {
+          "va": "0x8033ad84",
+          "u32le_word": "0x26450048",
+          "segment": "E04",
+          "decoded_offset": "0x20d304"
+        },
+        {
+          "va": "0x80349870",
+          "u32le_word": "0x24061790",
+          "segment": "E04",
+          "decoded_offset": "0x21bdf0"
+        },
+        {
+          "va": "0x80349888",
+          "u32le_word": "0xa22a1738",
+          "segment": "E04",
+          "decoded_offset": "0x21be08"
+        },
+        {
+          "va": "0x80349940",
+          "u32le_word": "0x0c0d3241",
+          "segment": "E04",
+          "decoded_offset": "0x21bec0"
+        },
+        {
+          "va": "0x80349944",
+          "u32le_word": "0x8e640068",
+          "segment": "E04",
+          "decoded_offset": "0x21bec4"
+        },
+        {
+          "va": "0x80349948",
+          "u32le_word": "0xa2220006",
+          "segment": "E04",
+          "decoded_offset": "0x21bec8"
+        },
+        {
+          "va": "0x8034994c",
+          "u32le_word": "0x0c0d328f",
+          "segment": "E04",
+          "decoded_offset": "0x21becc"
+        },
+        {
+          "va": "0x80349950",
+          "u32le_word": "0x8ea40068",
+          "segment": "E04",
+          "decoded_offset": "0x21bed0"
+        },
+        {
+          "va": "0x80349954",
+          "u32le_word": "0xa2220007",
+          "segment": "E04",
+          "decoded_offset": "0x21bed4"
+        },
+        {
+          "va": "0x80349964",
+          "u32le_word": "0x8e490168",
+          "segment": "E04",
+          "decoded_offset": "0x21bee4"
+        },
+        {
+          "va": "0x80349968",
+          "u32le_word": "0xa62016f4",
+          "segment": "E04",
+          "decoded_offset": "0x21bee8"
+        },
+        {
+          "va": "0x80349970",
+          "u32le_word": "0xa620171a",
+          "segment": "E04",
+          "decoded_offset": "0x21bef0"
+        },
+        {
+          "va": "0x8034997c",
+          "u32le_word": "0x11200004",
+          "segment": "E04",
+          "decoded_offset": "0x21befc"
+        },
+        {
+          "va": "0x80349990",
+          "u32le_word": "0x8e460174",
+          "segment": "E04",
+          "decoded_offset": "0x21bf10"
+        },
+        {
+          "va": "0x8034999c",
+          "u32le_word": "0x924a017c",
+          "segment": "E04",
+          "decoded_offset": "0x21bf1c"
+        },
+        {
+          "va": "0x803499a4",
+          "u32le_word": "0x5149017c",
+          "segment": "E04",
+          "decoded_offset": "0x21bf24"
+        },
+        {
+          "va": "0x8034a028",
+          "u32le_word": "0x94c2105c",
+          "segment": "E04",
+          "decoded_offset": "0x21c5a8"
+        },
+        {
+          "va": "0x8034a034",
+          "u32le_word": "0xa622173a",
+          "segment": "E04",
+          "decoded_offset": "0x21c5b4"
+        },
+        {
+          "va": "0x8034a064",
+          "u32le_word": "0xa2201738",
+          "segment": "E04",
+          "decoded_offset": "0x21c5e4"
+        },
+        {
+          "va": "0x80b18014",
+          "u32le_word": "0x2406001f",
+          "segment": "E06-text",
+          "decoded_offset": "0x325394"
+        },
+        {
+          "va": "0x80b18018",
+          "u32le_word": "0x2407000c",
+          "segment": "E06-text",
+          "decoded_offset": "0x325398"
+        },
+        {
+          "va": "0x80b18020",
+          "u32le_word": "0x24051060",
+          "segment": "E06-text",
+          "decoded_offset": "0x3253a0"
+        },
+        {
+          "va": "0x80b18024",
+          "u32le_word": "0x0c2c6d5b",
+          "segment": "E06-text",
+          "decoded_offset": "0x3253a4"
+        },
+        {
+          "va": "0x80b18130",
+          "u32le_word": "0x241600a0",
+          "segment": "E06-text",
+          "decoded_offset": "0x3254b0"
+        },
+        {
+          "va": "0x80b1813c",
+          "u32le_word": "0xa616105c",
+          "segment": "E06-text",
+          "decoded_offset": "0x3254bc"
+        },
+        {
+          "va": "0x80349af0",
+          "u32le_word": "0x8e5000b4",
+          "segment": "E04",
+          "decoded_offset": "0x21c070"
+        },
+        {
+          "va": "0x80349af4",
+          "u32le_word": "0x1200003c",
+          "segment": "E04",
+          "decoded_offset": "0x21c074"
+        },
+        {
+          "va": "0x80349be8",
+          "u32le_word": "0x8ed90008",
+          "segment": "E04",
+          "decoded_offset": "0x21c168"
+        },
+        {
+          "va": "0x80349bec",
+          "u32le_word": "0x37f61ab0",
+          "segment": "E04",
+          "decoded_offset": "0x21c16c"
+        },
+        {
+          "va": "0x80349bf0",
+          "u32le_word": "0x02969824",
+          "segment": "E04",
+          "decoded_offset": "0x21c170"
+        },
+        {
+          "va": "0x80349bf4",
+          "u32le_word": "0x1276002c",
+          "segment": "E04",
+          "decoded_offset": "0x21c174"
+        },
+        {
+          "va": "0x80349bf8",
+          "u32le_word": "0xa2390019",
+          "segment": "E04",
+          "decoded_offset": "0x21c178"
+        },
+        {
+          "va": "0x80349bfc",
+          "u32le_word": "0xa2200009",
+          "segment": "E04",
+          "decoded_offset": "0x21c17c"
+        },
+        {
+          "va": "0x80349c34",
+          "u32le_word": "0x0805f27e",
+          "segment": "E04",
+          "decoded_offset": "0x21c1b4"
+        },
+        {
+          "va": "0x8034c920",
+          "u32le_word": "0x2503abd8",
+          "segment": "E04",
+          "decoded_offset": "0x21eea0"
+        },
+        {
+          "va": "0x8035abf0",
+          "u32le_word": "0x8034c96c",
+          "segment": "E04",
+          "decoded_offset": "0x22d170"
+        },
+        {
+          "va": "0x8034c970",
+          "u32le_word": "0x2402000d",
+          "segment": "E04",
+          "decoded_offset": "0x21eef0"
+        },
+        {
+          "va": "0x8034ca5c",
+          "u32le_word": "0x2503ac2c",
+          "segment": "E04",
+          "decoded_offset": "0x21efdc"
+        },
+        {
+          "va": "0x8035ac40",
+          "u32le_word": "0x8034ca88",
+          "segment": "E04",
+          "decoded_offset": "0x22d1c0"
+        },
+        {
+          "va": "0x8034ca8c",
+          "u32le_word": "0x24020001",
+          "segment": "E04",
+          "decoded_offset": "0x21f00c"
+        },
+        {
+          "va": "0x8017add4",
+          "u32le_word": "0x90a30019",
+          "segment": "E04",
+          "decoded_offset": "0x4d354"
+        }
+      ]
+    },
+    {
+      "id": "four_pass_topology",
+      "observation": "FipLibCalculate resets the topology before CalcNPasses and builds returned wrappers from that result. For category 0 and output format 1, DefineBasicTopology copies input+0x1738=0 into topology+0x88. The maximum of its two zero halfwords initially sets topology+0x8c=0. CreateTopology promotes that zero to 1 while +0x88 is zero, instantiates locations 0 and 6, then adds 10 and 5. These four locations use IPU topology and wrapper kind 0. The category-0 high-quality adjustment updates properties on existing locations without adding or removing a pass.",
+      "words": [
+        {
+          "va": "0x8017ca7c",
+          "u32le_word": "0x0c05eb60",
+          "segment": "E04",
+          "decoded_offset": "0x4effc"
+        },
+        {
+          "va": "0x8017ca90",
+          "u32le_word": "0x0c05ebcd",
+          "segment": "E04",
+          "decoded_offset": "0x4f010"
+        },
+        {
+          "va": "0x8017caf8",
+          "u32le_word": "0xaed30000",
+          "segment": "E04",
+          "decoded_offset": "0x4f078"
+        },
+        {
+          "va": "0x8017d158",
+          "u32le_word": "0xac800044",
+          "segment": "E04",
+          "decoded_offset": "0x4f6d8"
+        },
+        {
+          "va": "0x8017d318",
+          "u32le_word": "0xac860090",
+          "segment": "E04",
+          "decoded_offset": "0x4f898"
+        },
+        {
+          "va": "0x8017d320",
+          "u32le_word": "0xace40094",
+          "segment": "E04",
+          "decoded_offset": "0x4f8a0"
+        },
+        {
+          "va": "0x8017d32c",
+          "u32le_word": "0xace20098",
+          "segment": "E04",
+          "decoded_offset": "0x4f8ac"
+        },
+        {
+          "va": "0x8017d338",
+          "u32le_word": "0xace6009c",
+          "segment": "E04",
+          "decoded_offset": "0x4f8b8"
+        },
+        {
+          "va": "0x8017d344",
+          "u32le_word": "0x30690011",
+          "segment": "E04",
+          "decoded_offset": "0x4f8c4"
+        },
+        {
+          "va": "0x8017d348",
+          "u32le_word": "0x1520000c",
+          "segment": "E04",
+          "decoded_offset": "0x4f8c8"
+        },
+        {
+          "va": "0x8017d3a8",
+          "u32le_word": "0x94a6171a",
+          "segment": "E04",
+          "decoded_offset": "0x4f928"
+        },
+        {
+          "va": "0x8017d3ac",
+          "u32le_word": "0x94b916f4",
+          "segment": "E04",
+          "decoded_offset": "0x4f92c"
+        },
+        {
+          "va": "0x8017d3d4",
+          "u32le_word": "0x2cc40006",
+          "segment": "E04",
+          "decoded_offset": "0x4f954"
+        },
+        {
+          "va": "0x8017d3d8",
+          "u32le_word": "0x54800014",
+          "segment": "E04",
+          "decoded_offset": "0x4f958"
+        },
+        {
+          "va": "0x8017d418",
+          "u32le_word": "0x90ae1738",
+          "segment": "E04",
+          "decoded_offset": "0x4f998"
+        },
+        {
+          "va": "0x8017d41c",
+          "u32le_word": "0xa0ee0088",
+          "segment": "E04",
+          "decoded_offset": "0x4f99c"
+        },
+        {
+          "va": "0x8017d42c",
+          "u32le_word": "0xa0e0008c",
+          "segment": "E04",
+          "decoded_offset": "0x4f9ac"
+        },
+        {
+          "va": "0x8017e9b4",
+          "u32le_word": "0x90840088",
+          "segment": "E04",
+          "decoded_offset": "0x50f34"
+        },
+        {
+          "va": "0x8017e9b8",
+          "u32le_word": "0x14800033",
+          "segment": "E04",
+          "decoded_offset": "0x50f38"
+        },
+        {
+          "va": "0x8017e9bc",
+          "u32le_word": "0x9282008c",
+          "segment": "E04",
+          "decoded_offset": "0x50f3c"
+        },
+        {
+          "va": "0x8017e9c0",
+          "u32le_word": "0x50400001",
+          "segment": "E04",
+          "decoded_offset": "0x50f40"
+        },
+        {
+          "va": "0x8017e9c4",
+          "u32le_word": "0x24020001",
+          "segment": "E04",
+          "decoded_offset": "0x50f44"
+        },
+        {
+          "va": "0x8017e9d4",
+          "u32le_word": "0xa282008c",
+          "segment": "E04",
+          "decoded_offset": "0x50f54"
+        },
+        {
+          "va": "0x8017eaf4",
+          "u32le_word": "0x1465ffee",
+          "segment": "E04",
+          "decoded_offset": "0x51074"
+        },
+        {
+          "va": "0x8017eb00",
+          "u32le_word": "0x0c05f82b",
+          "segment": "E04",
+          "decoded_offset": "0x51080"
+        },
+        {
+          "va": "0x8017eb04",
+          "u32le_word": "0xafa00010",
+          "segment": "E04",
+          "decoded_offset": "0x51084"
+        },
+        {
+          "va": "0x8017eb14",
+          "u32le_word": "0x0c05f82b",
+          "segment": "E04",
+          "decoded_offset": "0x51094"
+        },
+        {
+          "va": "0x8017eb18",
+          "u32le_word": "0xafa30014",
+          "segment": "E04",
+          "decoded_offset": "0x51098"
+        },
+        {
+          "va": "0x8017ea24",
+          "u32le_word": "0x92840088",
+          "segment": "E04",
+          "decoded_offset": "0x50fa4"
+        },
+        {
+          "va": "0x8017ea28",
+          "u32le_word": "0x14800023",
+          "segment": "E04",
+          "decoded_offset": "0x50fa8"
+        },
+        {
+          "va": "0x8017ea3c",
+          "u32le_word": "0x0c05f82b",
+          "segment": "E04",
+          "decoded_offset": "0x50fbc"
+        },
+        {
+          "va": "0x8017ea40",
+          "u32le_word": "0xafae0040",
+          "segment": "E04",
+          "decoded_offset": "0x50fc0"
+        },
+        {
+          "va": "0x8017ea50",
+          "u32le_word": "0x0c05f82b",
+          "segment": "E04",
+          "decoded_offset": "0x50fd0"
+        },
+        {
+          "va": "0x8017ea54",
+          "u32le_word": "0xafaf0044",
+          "segment": "E04",
+          "decoded_offset": "0x50fd4"
+        },
+        {
+          "va": "0x8017eadc",
+          "u32le_word": "0x00039080",
+          "segment": "E04",
+          "decoded_offset": "0x5105c"
+        },
+        {
+          "va": "0x8017eae0",
+          "u32le_word": "0x27135c00",
+          "segment": "E04",
+          "decoded_offset": "0x51060"
+        },
+        {
+          "va": "0x8017eaec",
+          "u32le_word": "0x02000008",
+          "segment": "E04",
+          "decoded_offset": "0x5106c"
+        },
+        {
+          "va": "0x801b5c00",
+          "u32le_word": "0x8017eb7c",
+          "segment": "E04",
+          "decoded_offset": "0x88180"
+        },
+        {
+          "va": "0x8017eb88",
+          "u32le_word": "0x0c05f52d",
+          "segment": "E04",
+          "decoded_offset": "0x51108"
+        },
+        {
+          "va": "0x8017eb94",
+          "u32le_word": "0x106000b3",
+          "segment": "E04",
+          "decoded_offset": "0x51114"
+        },
+        {
+          "va": "0x8017ee64",
+          "u32le_word": "0x0c05f53a",
+          "segment": "E04",
+          "decoded_offset": "0x513e4"
+        },
+        {
+          "va": "0x8017d50c",
+          "u32le_word": "0x9082008c",
+          "segment": "E04",
+          "decoded_offset": "0x4fa8c"
+        },
+        {
+          "va": "0x8017d510",
+          "u32le_word": "0x1440000b",
+          "segment": "E04",
+          "decoded_offset": "0x4fa90"
+        },
+        {
+          "va": "0x8017e118",
+          "u32le_word": "0x358b201c",
+          "segment": "E04",
+          "decoded_offset": "0x50698"
+        },
+        {
+          "va": "0x8017e120",
+          "u32le_word": "0x154001bd",
+          "segment": "E04",
+          "decoded_offset": "0x506a0"
+        },
+        {
+          "va": "0x8017e818",
+          "u32le_word": "0x0c13d83d",
+          "segment": "E04",
+          "decoded_offset": "0x50d98"
+        },
+        {
+          "va": "0x8017e95c",
+          "u32le_word": "0x0c13d83d",
+          "segment": "E04",
+          "decoded_offset": "0x50edc"
+        },
+        {
+          "va": "0x8017e1e8",
+          "u32le_word": "0x0c05f052",
+          "segment": "E04",
+          "decoded_offset": "0x50768"
+        },
+        {
+          "va": "0x8017e51c",
+          "u32le_word": "0xae440048",
+          "segment": "E04",
+          "decoded_offset": "0x50a9c"
+        },
+        {
+          "va": "0x8017e540",
+          "u32le_word": "0x0c05f052",
+          "segment": "E04",
+          "decoded_offset": "0x50ac0"
+        },
+        {
+          "va": "0x8017e54c",
+          "u32le_word": "0xae510004",
+          "segment": "E04",
+          "decoded_offset": "0x50acc"
+        },
+        {
+          "va": "0x8017e194",
+          "u32le_word": "0xae650044",
+          "segment": "E04",
+          "decoded_offset": "0x50714"
+        },
+        {
+          "va": "0x8017c160",
+          "u32le_word": "0x00002821",
+          "segment": "E04",
+          "decoded_offset": "0x4e6e0"
+        },
+        {
+          "va": "0x8017c17c",
+          "u32le_word": "0x0c05f03a",
+          "segment": "E04",
+          "decoded_offset": "0x4e6fc"
+        },
+        {
+          "va": "0x8017c0ec",
+          "u32le_word": "0xac850004",
+          "segment": "E04",
+          "decoded_offset": "0x4e66c"
+        },
+        {
+          "va": "0x8017cbe0",
+          "u32le_word": "0xae280014",
+          "segment": "E04",
+          "decoded_offset": "0x4f160"
+        }
+      ]
+    },
+    {
+      "id": "pass_classes_and_input_ports",
+      "observation": "InstantiatePasses maps locations 0, 6, 10 and 5 to embedded classes 1x0, 1x1, 5x1 and 0x1 respectively. FipLibInit installs their vtables. GetPassTopologyParams returns topology object+0x84, with bundle+4 pointing to topology object+0x18, the source of T. The base constructor initializes this word to zero. The derived constructor tests the format. For locations 0, 6 and 5, input format 0xd takes the mask-0x2010 store of 1. Location 10 supplies format 0x12, which takes the earlier mask-0x023e000c store of 0. The resulting T sequence is [1,1,0,1], independent of the IPU wrapper kind.",
+      "words": [
+        {
+          "va": "0x8017b004",
+          "u32le_word": "0x8c830000",
+          "segment": "E04",
+          "decoded_offset": "0x4d584"
+        },
+        {
+          "va": "0x8017b01c",
+          "u32le_word": "0x25495b78",
+          "segment": "E04",
+          "decoded_offset": "0x4d59c"
+        },
+        {
+          "va": "0x8017b028",
+          "u32le_word": "0x00c00008",
+          "segment": "E04",
+          "decoded_offset": "0x4d5a8"
+        },
+        {
+          "va": "0x801b5b78",
+          "u32le_word": "0x8017b104",
+          "segment": "E04",
+          "decoded_offset": "0x880f8"
+        },
+        {
+          "va": "0x8017b118",
+          "u32le_word": "0x118b0004",
+          "segment": "E04",
+          "decoded_offset": "0x4d698"
+        },
+        {
+          "va": "0x8017b11c",
+          "u32le_word": "0x26421b98",
+          "segment": "E04",
+          "decoded_offset": "0x4d69c"
+        },
+        {
+          "va": "0x801b5b90",
+          "u32le_word": "0x8017b0c4",
+          "segment": "E04",
+          "decoded_offset": "0x88110"
+        },
+        {
+          "va": "0x8017b0c8",
+          "u32le_word": "0x26422598",
+          "segment": "E04",
+          "decoded_offset": "0x4d648"
+        },
+        {
+          "va": "0x801b5ba0",
+          "u32le_word": "0x8017b07c",
+          "segment": "E04",
+          "decoded_offset": "0x88120"
+        },
+        {
+          "va": "0x8017b080",
+          "u32le_word": "0x26425798",
+          "segment": "E04",
+          "decoded_offset": "0x4d600"
+        },
+        {
+          "va": "0x801b5b8c",
+          "u32le_word": "0x8017b0d4",
+          "segment": "E04",
+          "decoded_offset": "0x8810c"
+        },
+        {
+          "va": "0x8017b0d8",
+          "u32le_word": "0x26421198",
+          "segment": "E04",
+          "decoded_offset": "0x4d658"
+        },
+        {
+          "va": "0x8017b0e0",
+          "u32le_word": "0xac820000",
+          "segment": "E04",
+          "decoded_offset": "0x4d660"
+        },
+        {
+          "va": "0x8017c8a4",
+          "u32le_word": "0x26041198",
+          "segment": "E04",
+          "decoded_offset": "0x4ee24"
+        },
+        {
+          "va": "0x8017c8ac",
+          "u32le_word": "0x0c05dbb0",
+          "segment": "E04",
+          "decoded_offset": "0x4ee2c"
+        },
+        {
+          "va": "0x8017c8b0",
+          "u32le_word": "0x24060001",
+          "segment": "E04",
+          "decoded_offset": "0x4ee30"
+        },
+        {
+          "va": "0x8017c8b8",
+          "u32le_word": "0x247fed00",
+          "segment": "E04",
+          "decoded_offset": "0x4ee38"
+        },
+        {
+          "va": "0x8017c8bc",
+          "u32le_word": "0xae1f1198",
+          "segment": "E04",
+          "decoded_offset": "0x4ee3c"
+        },
+        {
+          "va": "0x8017c8d8",
+          "u32le_word": "0xae181b98",
+          "segment": "E04",
+          "decoded_offset": "0x4ee58"
+        },
+        {
+          "va": "0x8017c8f4",
+          "u32le_word": "0xae0e2598",
+          "segment": "E04",
+          "decoded_offset": "0x4ee74"
+        },
+        {
+          "va": "0x8017c980",
+          "u32le_word": "0xae045798",
+          "segment": "E04",
+          "decoded_offset": "0x4ef00"
+        },
+        {
+          "va": "0x8051f17c",
+          "u32le_word": "0x8017bc80",
+          "segment": "E04",
+          "decoded_offset": "0x3f16fc"
+        },
+        {
+          "va": "0x8051d5b4",
+          "u32le_word": "0x80171758",
+          "segment": "E04",
+          "decoded_offset": "0x3efb34"
+        },
+        {
+          "va": "0x8051f0dc",
+          "u32le_word": "0x80177468",
+          "segment": "E04",
+          "decoded_offset": "0x3f165c"
+        },
+        {
+          "va": "0x8051ed24",
+          "u32le_word": "0x801788b0",
+          "segment": "E04",
+          "decoded_offset": "0x3f12a4"
+        },
+        {
+          "va": "0x8017e820",
+          "u32le_word": "0x8e630098",
+          "segment": "E04",
+          "decoded_offset": "0x50da0"
+        },
+        {
+          "va": "0x8017e834",
+          "u32le_word": "0xafa30010",
+          "segment": "E04",
+          "decoded_offset": "0x50db4"
+        },
+        {
+          "va": "0x8017e968",
+          "u32le_word": "0x2409000d",
+          "segment": "E04",
+          "decoded_offset": "0x50ee8"
+        },
+        {
+          "va": "0x8017e980",
+          "u32le_word": "0xafa90010",
+          "segment": "E04",
+          "decoded_offset": "0x50f00"
+        },
+        {
+          "va": "0x8017e1d4",
+          "u32le_word": "0x241f0012",
+          "segment": "E04",
+          "decoded_offset": "0x50754"
+        },
+        {
+          "va": "0x8017e1e4",
+          "u32le_word": "0xafbf0010",
+          "segment": "E04",
+          "decoded_offset": "0x50764"
+        },
+        {
+          "va": "0x8017e52c",
+          "u32le_word": "0x8e6b0098",
+          "segment": "E04",
+          "decoded_offset": "0x50aac"
+        },
+        {
+          "va": "0x8017e544",
+          "u32le_word": "0xafab0010",
+          "segment": "E04",
+          "decoded_offset": "0x50ac4"
+        },
+        {
+          "va": "0x8017c280",
+          "u32le_word": "0x00641804",
+          "segment": "E04",
+          "decoded_offset": "0x4e800"
+        },
+        {
+          "va": "0x8017c284",
+          "u32le_word": "0x3711000c",
+          "segment": "E04",
+          "decoded_offset": "0x4e804"
+        },
+        {
+          "va": "0x8017c288",
+          "u32le_word": "0x00717824",
+          "segment": "E04",
+          "decoded_offset": "0x4e808"
+        },
+        {
+          "va": "0x8017c28c",
+          "u32le_word": "0x55e0000d",
+          "segment": "E04",
+          "decoded_offset": "0x4e80c"
+        },
+        {
+          "va": "0x8017c290",
+          "u32le_word": "0xae400018",
+          "segment": "E04",
+          "decoded_offset": "0x4e810"
+        },
+        {
+          "va": "0x8017c294",
+          "u32le_word": "0x30790203",
+          "segment": "E04",
+          "decoded_offset": "0x4e814"
+        },
+        {
+          "va": "0x8017c298",
+          "u32le_word": "0x5720000f",
+          "segment": "E04",
+          "decoded_offset": "0x4e818"
+        },
+        {
+          "va": "0x8017c2a0",
+          "u32le_word": "0x307f2010",
+          "segment": "E04",
+          "decoded_offset": "0x4e820"
+        },
+        {
+          "va": "0x8017c2a4",
+          "u32le_word": "0x57e00001",
+          "segment": "E04",
+          "decoded_offset": "0x4e824"
+        },
+        {
+          "va": "0x8017c2a8",
+          "u32le_word": "0xae440018",
+          "segment": "E04",
+          "decoded_offset": "0x4e828"
+        },
+        {
+          "va": "0x8017c180",
+          "u32le_word": "0xafa00014",
+          "segment": "E04",
+          "decoded_offset": "0x4e700"
+        },
+        {
+          "va": "0x8017c0f4",
+          "u32le_word": "0x8fa50014",
+          "segment": "E04",
+          "decoded_offset": "0x4e674"
+        },
+        {
+          "va": "0x8017c104",
+          "u32le_word": "0xac850018",
+          "segment": "E04",
+          "decoded_offset": "0x4e684"
+        },
+        {
+          "va": "0x8017c190",
+          "u32le_word": "0x26440084",
+          "segment": "E04",
+          "decoded_offset": "0x4e710"
+        },
+        {
+          "va": "0x8017c1a0",
+          "u32le_word": "0x26450018",
+          "segment": "E04",
+          "decoded_offset": "0x4e720"
+        },
+        {
+          "va": "0x8017c1ac",
+          "u32le_word": "0xac850004",
+          "segment": "E04",
+          "decoded_offset": "0x4e72c"
+        },
+        {
+          "va": "0x8017c1bc",
+          "u32le_word": "0xae420084",
+          "segment": "E04",
+          "decoded_offset": "0x4e73c"
+        },
+        {
+          "va": "0x8051f2a4",
+          "u32le_word": "0x8017c38c",
+          "segment": "E04",
+          "decoded_offset": "0x3f1824"
+        },
+        {
+          "va": "0x8051f2a8",
+          "u32le_word": "0x8017c138",
+          "segment": "E04",
+          "decoded_offset": "0x3f1828"
+        },
+        {
+          "va": "0x8051f2b0",
+          "u32le_word": "0x8017c304",
+          "segment": "E04",
+          "decoded_offset": "0x3f1830"
+        },
+        {
+          "va": "0x8051f2b8",
+          "u32le_word": "0x8017c2f4",
+          "segment": "E04",
+          "decoded_offset": "0x3f1838"
+        },
+        {
+          "va": "0x8051f2bc",
+          "u32le_word": "0x8051f408",
+          "segment": "E04",
+          "decoded_offset": "0x3f183c"
+        },
+        {
+          "va": "0x8051f40c",
+          "u32le_word": "0x24820084",
+          "segment": "E04",
+          "decoded_offset": "0x3f198c"
+        },
+        {
+          "va": "0x8017c3ec",
+          "u32le_word": "0x24850008",
+          "segment": "E04",
+          "decoded_offset": "0x4e96c"
+        },
+        {
+          "va": "0x8017e574",
+          "u32le_word": "0x0100f809",
+          "segment": "E04",
+          "decoded_offset": "0x50af4"
+        },
+        {
+          "va": "0x8017e59c",
+          "u32le_word": "0x01c0f809",
+          "segment": "E04",
+          "decoded_offset": "0x50b1c"
+        },
+        {
+          "va": "0x8017ebbc",
+          "u32le_word": "0x00e0f809",
+          "segment": "E04",
+          "decoded_offset": "0x5113c"
+        },
+        {
+          "va": "0x8017ebd8",
+          "u32le_word": "0x0100f809",
+          "segment": "E04",
+          "decoded_offset": "0x51158"
+        },
+        {
+          "va": "0x8017ec1c",
+          "u32le_word": "0x0060f809",
+          "segment": "E04",
+          "decoded_offset": "0x5119c"
+        }
+      ]
+    },
+    {
+      "id": "commit_index_and_direct_go",
+      "observation": "Commit's mode-0 branch records N from FIPLIB, sets start=0 and end=N, then builds the IPU task for wrapper kind 0. With a valid task slot, TranslateFilters marks index 3 final because N-1=3. The task commit loop and PrepareSubimages select the same task. Commit skips CBC creation when +0x288=0. Go sets driver CBC mode 0, supplies range [0,4), and invokes CIpuTask::Go on the nonnull task slots on the direct branch. The last such index is 3 on the successful path with all four IPU tasks created.",
+      "words": [
+        {
+          "va": "0x8033ad1c",
+          "u32le_word": "0x8e540324",
+          "segment": "E04",
+          "decoded_offset": "0x20d29c"
+        },
+        {
+          "va": "0x8033ad20",
+          "u32le_word": "0x32910001",
+          "segment": "E04",
+          "decoded_offset": "0x20d2a0"
+        },
+        {
+          "va": "0x8033ad28",
+          "u32le_word": "0x8e440284",
+          "segment": "E04",
+          "decoded_offset": "0x20d2a8"
+        },
+        {
+          "va": "0x8033ad80",
+          "u32le_word": "0x0160f809",
+          "segment": "E04",
+          "decoded_offset": "0x20d300"
+        },
+        {
+          "va": "0x8033ad8c",
+          "u32le_word": "0x8e440284",
+          "segment": "E04",
+          "decoded_offset": "0x20d30c"
+        },
+        {
+          "va": "0x8033ad90",
+          "u32le_word": "0x8d470000",
+          "segment": "E04",
+          "decoded_offset": "0x20d310"
+        },
+        {
+          "va": "0x8033ad9c",
+          "u32le_word": "0xae470308",
+          "segment": "E04",
+          "decoded_offset": "0x20d31c"
+        },
+        {
+          "va": "0x8033ae6c",
+          "u32le_word": "0x1480005d",
+          "segment": "E04",
+          "decoded_offset": "0x20d3ec"
+        },
+        {
+          "va": "0x8033ae78",
+          "u32le_word": "0xae40030c",
+          "segment": "E04",
+          "decoded_offset": "0x20d3f8"
+        },
+        {
+          "va": "0x8033ae7c",
+          "u32le_word": "0xae420310",
+          "segment": "E04",
+          "decoded_offset": "0x20d3fc"
+        },
+        {
+          "va": "0x8033ae80",
+          "u32le_word": "0x0c0ce410",
+          "segment": "E04",
+          "decoded_offset": "0x20d400"
+        },
+        {
+          "va": "0x803390a8",
+          "u32le_word": "0x8e32030c",
+          "segment": "E04",
+          "decoded_offset": "0x20b628"
+        },
+        {
+          "va": "0x803390ac",
+          "u32le_word": "0x8e230310",
+          "segment": "E04",
+          "decoded_offset": "0x20b62c"
+        },
+        {
+          "va": "0x80339170",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x20b6f0"
+        },
+        {
+          "va": "0x80339180",
+          "u32le_word": "0xae620204",
+          "segment": "E04",
+          "decoded_offset": "0x20b700"
+        },
+        {
+          "va": "0x8033943c",
+          "u32le_word": "0x8e830308",
+          "segment": "E04",
+          "decoded_offset": "0x20b9bc"
+        },
+        {
+          "va": "0x8033945c",
+          "u32le_word": "0x8e300204",
+          "segment": "E04",
+          "decoded_offset": "0x20b9dc"
+        },
+        {
+          "va": "0x80339470",
+          "u32le_word": "0x11800041",
+          "segment": "E04",
+          "decoded_offset": "0x20b9f0"
+        },
+        {
+          "va": "0x80339478",
+          "u32le_word": "0x2462ffff",
+          "segment": "E04",
+          "decoded_offset": "0x20b9f8"
+        },
+        {
+          "va": "0x80339498",
+          "u32le_word": "0x02dff00a",
+          "segment": "E04",
+          "decoded_offset": "0x20ba18"
+        },
+        {
+          "va": "0x8033aee0",
+          "u32le_word": "0x8e51030c",
+          "segment": "E04",
+          "decoded_offset": "0x20d460"
+        },
+        {
+          "va": "0x8033aee4",
+          "u32le_word": "0x8e430310",
+          "segment": "E04",
+          "decoded_offset": "0x20d464"
+        },
+        {
+          "va": "0x8033af48",
+          "u32le_word": "0x0c0ce97d",
+          "segment": "E04",
+          "decoded_offset": "0x20d4c8"
+        },
+        {
+          "va": "0x8033a60c",
+          "u32le_word": "0x8c870310",
+          "segment": "E04",
+          "decoded_offset": "0x20cb8c"
+        },
+        {
+          "va": "0x8033a61c",
+          "u32le_word": "0x8c920200",
+          "segment": "E04",
+          "decoded_offset": "0x20cb9c"
+        },
+        {
+          "va": "0x8033af50",
+          "u32le_word": "0x8e4f0288",
+          "segment": "E04",
+          "decoded_offset": "0x20d4d0"
+        },
+        {
+          "va": "0x8033af5c",
+          "u32le_word": "0x11e0000e",
+          "segment": "E04",
+          "decoded_offset": "0x20d4dc"
+        },
+        {
+          "va": "0x80b1c340",
+          "u32le_word": "0x0c0729d4",
+          "segment": "E06-text",
+          "decoded_offset": "0x3296c0"
+        },
+        {
+          "va": "0x801bcf48",
+          "u32le_word": "0xacab0050",
+          "segment": "E04",
+          "decoded_offset": "0x8f4c8"
+        },
+        {
+          "va": "0x801bce2c",
+          "u32le_word": "0x0c074297",
+          "segment": "E04",
+          "decoded_offset": "0x8f3ac"
+        },
+        {
+          "va": "0x801bce30",
+          "u32le_word": "0x8e040880",
+          "segment": "E04",
+          "decoded_offset": "0x8f3b0"
+        },
+        {
+          "va": "0x801d0a5c",
+          "u32le_word": "0x080ce2f3",
+          "segment": "E04",
+          "decoded_offset": "0xa2fdc"
+        },
+        {
+          "va": "0x80338c24",
+          "u32le_word": "0x0c0cd0e0",
+          "segment": "E04",
+          "decoded_offset": "0x20b1a4"
+        },
+        {
+          "va": "0x80338c28",
+          "u32le_word": "0x92450288",
+          "segment": "E04",
+          "decoded_offset": "0x20b1a8"
+        },
+        {
+          "va": "0x80338c30",
+          "u32le_word": "0x8e45030c",
+          "segment": "E04",
+          "decoded_offset": "0x20b1b0"
+        },
+        {
+          "va": "0x80338c38",
+          "u32le_word": "0x8e460310",
+          "segment": "E04",
+          "decoded_offset": "0x20b1b8"
+        },
+        {
+          "va": "0x80338db4",
+          "u32le_word": "0x8e4c0288",
+          "segment": "E04",
+          "decoded_offset": "0x20b334"
+        },
+        {
+          "va": "0x80338dbc",
+          "u32le_word": "0x8e430310",
+          "segment": "E04",
+          "decoded_offset": "0x20b33c"
+        },
+        {
+          "va": "0x80338d18",
+          "u32le_word": "0x8e040204",
+          "segment": "E04",
+          "decoded_offset": "0x20b298"
+        },
+        {
+          "va": "0x80338cfc",
+          "u32le_word": "0x0c0d4674",
+          "segment": "E04",
+          "decoded_offset": "0x20b27c"
+        },
+        {
+          "va": "0x80338d00",
+          "u32le_word": "0x8e040204",
+          "segment": "E04",
+          "decoded_offset": "0x20b280"
+        }
+      ]
+    }
+  ],
+  "selected_functions": [
+    {
+      "name": "_ZN15CImageProcessorC1Ev",
+      "address": 2150859768,
+      "candidate_end": 2150860428,
+      "segment": "E04",
+      "decoded_offset": 2140536,
+      "size": 660,
+      "sha256": "74dc0c40ac4e5acca052a3d1076cdfb733a497ef0966a88a0f676655287e8b5b",
+      "transfers": [
+        {
+          "site": 2150859800,
+          "word": "0c02b448",
+          "kind": "call",
+          "target": 2148192544,
+          "target_names": [
+            "_ZN11CObservableC2Ev"
+          ]
+        },
+        {
+          "site": 2150859808,
+          "word": "0c02da90",
+          "kind": "call",
+          "target": 2148231744,
+          "target_names": [
+            "_ZN9CObserverC2Ev"
+          ]
+        },
+        {
+          "site": 2150859992,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150860004,
+          "word": "0c0d252c",
+          "kind": "call",
+          "target": 2150929584,
+          "target_names": [
+            "_ZN14CTranslatorC12C1Ev"
+          ]
+        },
+        {
+          "site": 2150860024,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150860036,
+          "word": "0c0cc16a",
+          "kind": "call",
+          "target": 2150827432,
+          "target_names": [
+            "_ZN10CIpuConfigC1Ev"
+          ]
+        },
+        {
+          "site": 2150860208,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150860228,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150860260,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150860276,
+          "word": "0c0cc16a",
+          "kind": "call",
+          "target": 2150827432,
+          "target_names": [
+            "_ZN10CIpuConfigC1Ev"
+          ]
+        },
+        {
+          "site": 2150860328,
+          "word": "0c0ccf8e",
+          "kind": "call",
+          "target": 2150841912,
+          "target_names": [
+            "_ZN10CIpuDriver9GetDriverEv"
+          ]
+        },
+        {
+          "site": 2150860340,
+          "word": "0c0ce0bd",
+          "kind": "call",
+          "target": 2150859508,
+          "target_names": [
+            "_ZN15CImageProcessor11SetDefaultsEv"
+          ]
+        },
+        {
+          "site": 2150860356,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150860376,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor11SetDefaultsEv",
+      "address": 2150859508,
+      "candidate_end": 2150859768,
+      "segment": "E04",
+      "decoded_offset": 2140276,
+      "size": 260,
+      "sha256": "927f0e056887cd1503d4985d42031ec1937a24ed7e89a05883ad22dfd75f3bd8",
+      "transfers": [
+        {
+          "site": 2150859652,
+          "word": "0c0ce042",
+          "kind": "call",
+          "target": 2150859016,
+          "target_names": [
+            "_ZN15CImageProcessor9SetFilterEPvm"
+          ]
+        },
+        {
+          "site": 2150859728,
+          "word": "0c0ce042",
+          "kind": "call",
+          "target": 2150859016,
+          "target_names": [
+            "_ZN15CImageProcessor9SetFilterEPvm"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN14CTranslatorC12C1Ev",
+      "address": 2150929584,
+      "candidate_end": 2150929636,
+      "segment": "E04",
+      "decoded_offset": 2210352,
+      "size": 52,
+      "sha256": "b35c6a3f3665dbb0134a6f544d0a4914bcb6eafb06bd453a8c12e248d75525ef",
+      "transfers": [
+        {
+          "site": 2150929596,
+          "word": "0c0cc732",
+          "kind": "call",
+          "target": 2150833352,
+          "target_names": [
+            "_ZN11CTranslatorC2Ev"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuToneMapRgb",
+      "address": 2159132932,
+      "candidate_end": 2159134224,
+      "segment": "E06-text",
+      "decoded_offset": 3314820,
+      "size": 1292,
+      "sha256": "5b55a77c848f6820895258c1001f814e96426c9de7a232721247cd6cf965c78c",
+      "transfers": [
+        {
+          "site": 2159133004,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2159133056,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2159133076,
+          "word": "0c06e4a5",
+          "kind": "call",
+          "target": 2149290644,
+          "target_names": [
+            "PathCreate"
+          ]
+        },
+        {
+          "site": 2159133104,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133124,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133168,
+          "word": "0c2c7c48",
+          "kind": "call",
+          "target": 2159145248,
+          "target_names": [
+            "MemAlloc"
+          ]
+        },
+        {
+          "site": 2159133196,
+          "word": "0c2c6d5b",
+          "kind": "call",
+          "target": 2159129964,
+          "target_names": [
+            "SetFilterHeader"
+          ]
+        },
+        {
+          "site": 2159133276,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133300,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133316,
+          "word": "0c0707d9",
+          "kind": "call",
+          "target": 2149326692,
+          "target_names": [
+            "PathImageProcessingCreate"
+          ]
+        },
+        {
+          "site": 2159133408,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133432,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133444,
+          "word": "0c06e82d",
+          "kind": "call",
+          "target": 2149294260,
+          "target_names": [
+            "PathSetFormat"
+          ]
+        },
+        {
+          "site": 2159133460,
+          "word": "0c06e716",
+          "kind": "call",
+          "target": 2149293144,
+          "target_names": [
+            "PathSetScale"
+          ]
+        },
+        {
+          "site": 2159133480,
+          "word": "0c06ed09",
+          "kind": "call",
+          "target": 2149299236,
+          "target_names": [
+            "PathSetBuffers"
+          ]
+        },
+        {
+          "site": 2159133488,
+          "word": "0c0720f2",
+          "kind": "call",
+          "target": 2149352392,
+          "target_names": [
+            "PathSubmit"
+          ]
+        },
+        {
+          "site": 2159133504,
+          "word": "0c0729d4",
+          "kind": "call",
+          "target": 2149361488,
+          "target_names": [
+            "PathGo"
+          ]
+        },
+        {
+          "site": 2159133520,
+          "word": "0c072a4a",
+          "kind": "call",
+          "target": 2149361960,
+          "target_names": [
+            "PathWait"
+          ]
+        },
+        {
+          "site": 2159133544,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        },
+        {
+          "site": 2159133556,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2159133592,
+          "word": "0c03f232",
+          "kind": "call",
+          "target": 2148518088,
+          "target_names": [
+            "__udivdi3"
+          ]
+        },
+        {
+          "site": 2159133608,
+          "word": "0c2c624c",
+          "kind": "call",
+          "target": 2159118640,
+          "target_names": [
+            "DebugProfUpdateCounter"
+          ]
+        },
+        {
+          "site": 2159133640,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133676,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133692,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        },
+        {
+          "site": 2159133724,
+          "word": "0c2c807f",
+          "kind": "call",
+          "target": 2159149564,
+          "target_names": [
+            "MemFree"
+          ]
+        },
+        {
+          "site": 2159133800,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133856,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133916,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133964,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133996,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134024,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134088,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134132,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134184,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuSubmit",
+      "address": 2149386888,
+      "candidate_end": 2149389044,
+      "segment": "E04",
+      "decoded_offset": 667656,
+      "size": 2156,
+      "sha256": "030ffd0e3f5f5b8d56bc4bcc2155a482dc25aaf3f93eac89a575686ca2045213",
+      "transfers": [
+        {
+          "site": 2149387020,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387040,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387124,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387144,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387168,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387204,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387220,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387236,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387264,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387292,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387332,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149387356,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387376,
+          "word": "0c07417c",
+          "kind": "call",
+          "target": 2149385712,
+          "target_names": [
+            "_Z21uiPathInput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387396,
+          "word": "0c07417c",
+          "kind": "call",
+          "target": 2149385712,
+          "target_names": [
+            "_Z21uiPathInput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387412,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2149387460,
+          "word": "0c0741ae",
+          "kind": "call",
+          "target": 2149385912,
+          "target_names": [
+            "_Z22uiPathOutput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387480,
+          "word": "0c0741ae",
+          "kind": "call",
+          "target": 2149385912,
+          "target_names": [
+            "_Z22uiPathOutput2ImageTypej"
+          ]
+        },
+        {
+          "site": 2149387496,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2149387528,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387556,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2149387572,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387592,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149387608,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387624,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387652,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387680,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387720,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149387736,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149387752,
+          "word": "0c0741d8",
+          "kind": "call",
+          "target": 2149386080,
+          "target_names": [
+            "_Z14CalcDecimationP13tagSSCALEPATHP19tagSIMAGEDESCRIPTORS2_"
+          ]
+        },
+        {
+          "site": 2149387768,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149387784,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387800,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387828,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387860,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387888,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        },
+        {
+          "site": 2149387904,
+          "word": "0c0cdf45",
+          "kind": "call",
+          "target": 2150858004,
+          "target_names": [
+            "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM"
+          ]
+        },
+        {
+          "site": 2149387988,
+          "word": "0c0cecaa",
+          "kind": "call",
+          "target": 2150871720,
+          "target_names": [
+            "_ZN15CImageProcessor20setInputSubImageDataEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2149388008,
+          "word": "0c0ced1c",
+          "kind": "call",
+          "target": 2150872176,
+          "target_names": [
+            "_ZN15CImageProcessor12setBatchDataEhjP21tagSCONVERTSINGLETASK"
+          ]
+        },
+        {
+          "site": 2149388100,
+          "word": "0c0ced26",
+          "kind": "call",
+          "target": 2150872216,
+          "target_names": [
+            "_ZN15CImageProcessor17SetSensorGeometryER20tagS_SENSOR_GEOMETRY"
+          ]
+        },
+        {
+          "site": 2149388112,
+          "word": "0c0ce8b2",
+          "kind": "call",
+          "target": 2150867656,
+          "target_names": [
+            "_ZN15CImageProcessor11GetPropertyE22tagIP_PROPERTY_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388200,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388228,
+          "word": "0c0ce9ee",
+          "kind": "call",
+          "target": 2150868920,
+          "target_names": [
+            "_ZN15CImageProcessor6CommitEv"
+          ]
+        },
+        {
+          "site": 2149388240,
+          "word": "0c0ce8b2",
+          "kind": "call",
+          "target": 2150867656,
+          "target_names": [
+            "_ZN15CImageProcessor11GetPropertyE22tagIP_PROPERTY_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388284,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149388328,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149388348,
+          "word": "0c0ce92c",
+          "kind": "call",
+          "target": 2150868144,
+          "target_names": [
+            "_ZN15CImageProcessor16GetSubImagesDataEPmPt"
+          ]
+        },
+        {
+          "site": 2149388400,
+          "word": "0c0ce8aa",
+          "kind": "call",
+          "target": 2150867624,
+          "target_names": [
+            "_ZN15CImageProcessor8GetParamE19tagIP_PARAM_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388472,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149388496,
+          "word": "0c027f6e",
+          "kind": "call",
+          "target": 2148138424,
+          "target_names": [
+            "ImageSurfaceSetFirstColor"
+          ]
+        },
+        {
+          "site": 2149388524,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388548,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149388580,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149388600,
+          "word": "0c0ce92c",
+          "kind": "call",
+          "target": 2150868144,
+          "target_names": [
+            "_ZN15CImageProcessor16GetSubImagesDataEPmPt"
+          ]
+        },
+        {
+          "site": 2149388652,
+          "word": "0c0ce8aa",
+          "kind": "call",
+          "target": 2150867624,
+          "target_names": [
+            "_ZN15CImageProcessor8GetParamE19tagIP_PARAM_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2149388672,
+          "word": "0c0740ea",
+          "kind": "call",
+          "target": 2149385128,
+          "target_names": [
+            "_Z20FillNrDataExtractionP8tagSPATH"
+          ]
+        },
+        {
+          "site": 2149388732,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149388752,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388768,
+          "word": "0c0cdfb8",
+          "kind": "call",
+          "target": 2150858464,
+          "target_names": [
+            "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2149388784,
+          "word": "0c027ea0",
+          "kind": "call",
+          "target": 2148137600,
+          "target_names": [
+            "ImageDescriptorCreate"
+          ]
+        },
+        {
+          "site": 2149388800,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149388896,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149388912,
+          "word": "0c027ea0",
+          "kind": "call",
+          "target": 2148137600,
+          "target_names": [
+            "ImageDescriptorCreate"
+          ]
+        },
+        {
+          "site": 2149388928,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149389008,
+          "word": "0c027ebe",
+          "kind": "call",
+          "target": 2148137720,
+          "target_names": [
+            "ImageDescriptorAddSurface"
+          ]
+        },
+        {
+          "site": 2149389028,
+          "word": "0c027e60",
+          "kind": "call",
+          "target": 2148137344,
+          "target_names": [
+            "ImageDescriptorCopy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor8SetParamE19tagIP_PARAM_ID_ENUMm",
+      "address": 2150858464,
+      "candidate_end": 2150858736,
+      "segment": "E04",
+      "decoded_offset": 2139232,
+      "size": 272,
+      "sha256": "f03a178e3b6422104418c57a2478f4ffb68ca7d9fff788f1608e67c904ca46f0",
+      "transfers": [
+        {
+          "site": 2150858640,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150858656,
+          "word": "0c004ddd",
+          "kind": "call",
+          "target": 2147563380,
+          "target_names": [
+            "IpConfigComponent"
+          ]
+        },
+        {
+          "site": 2150858680,
+          "word": "0c0cdf75",
+          "kind": "call",
+          "target": 2150858196,
+          "target_names": [
+            "_ZN15CImageProcessor19OnSetSerializeParamEm"
+          ]
+        },
+        {
+          "site": 2150858696,
+          "word": "0c004ddd",
+          "kind": "call",
+          "target": 2147563380,
+          "target_names": [
+            "IpConfigComponent"
+          ]
+        },
+        {
+          "site": 2150858720,
+          "word": "0c0cdf75",
+          "kind": "call",
+          "target": 2150858196,
+          "target_names": [
+            "_ZN15CImageProcessor19OnSetSerializeParamEm"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor8SetImageEP19tagSIMAGEDESCRIPTOR28_IMAGE_PROCESSING_IMAGE_ENUM",
+      "address": 2150858004,
+      "candidate_end": 2150858196,
+      "segment": "E04",
+      "decoded_offset": 2138772,
+      "size": 192,
+      "sha256": "8200f7f0e6e7ee7fecf8b7e1285402a02936d6410e1e4e630d229776d854f520",
+      "transfers": [
+        {
+          "site": 2150858092,
+          "word": "0c00363a",
+          "kind": "call",
+          "target": 2147539176,
+          "target_names": [
+            "_ZdlPvmPci"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor28CheckLimitationsBeforeCommitEv",
+      "address": 2150857596,
+      "candidate_end": 2150857620,
+      "segment": "E04",
+      "decoded_offset": 2138364,
+      "size": 24,
+      "sha256": "93e14901782162a608fc36c4a01eeb42b79e918655648947e055d35d64ef246f",
+      "transfers": []
+    },
+    {
+      "name": "_ZN15CImageProcessor6CommitEv",
+      "address": 2150868920,
+      "candidate_end": 2150871720,
+      "segment": "E04",
+      "decoded_offset": 2149688,
+      "size": 2800,
+      "sha256": "6c392f60c51b5ece79e2f0abb46902bc67f4d91a1677d088faf70af4cc9ecc1d",
+      "transfers": [
+        {
+          "site": 2150868976,
+          "word": "0c0cdedf",
+          "kind": "call",
+          "target": 2150857596,
+          "target_names": [
+            "_ZN15CImageProcessor28CheckLimitationsBeforeCommitEv"
+          ]
+        },
+        {
+          "site": 2150869008,
+          "word": "0c0ce580",
+          "kind": "call",
+          "target": 2150864384,
+          "target_names": [
+            "_ZN15CImageProcessor17FreeTempResourcesEhh"
+          ]
+        },
+        {
+          "site": 2150869048,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869092,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869128,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869156,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869200,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869272,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869316,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869344,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869388,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869456,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150869468,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869512,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869548,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869576,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869620,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869692,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869736,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869764,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869804,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869872,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150869884,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869928,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869964,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869992,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870036,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870108,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870152,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870180,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870224,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870292,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150870340,
+          "word": "0c05f406",
+          "kind": "call",
+          "target": 2149044248,
+          "target_names": [
+            "FipLibDeleteInternalAllocations"
+          ]
+        },
+        {
+          "site": 2150870400,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150870476,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150870508,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        },
+        {
+          "site": 2150870536,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150870596,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150870656,
+          "word": "0c0ce410",
+          "kind": "call",
+          "target": 2150862912,
+          "target_names": [
+            "_ZN15CImageProcessor17CalculateTopologyEv"
+          ]
+        },
+        {
+          "site": 2150870708,
+          "word": "0c0ce1a3",
+          "kind": "call",
+          "target": 2150860428,
+          "target_names": [
+            "_ZN15CImageProcessor16PrepareFinalPassEv"
+          ]
+        },
+        {
+          "site": 2150870732,
+          "word": "0c0ce1d9",
+          "kind": "call",
+          "target": 2150860644,
+          "target_names": [
+            "_ZN15CImageProcessor21PrepareMidPassCommonsEv"
+          ]
+        },
+        {
+          "site": 2150870816,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150870856,
+          "word": "0c0ce97d",
+          "kind": "call",
+          "target": 2150868468,
+          "target_names": [
+            "_ZN15CImageProcessor16PrepareSubimagesEv"
+          ]
+        },
+        {
+          "site": 2150870908,
+          "word": "0c04cc5c",
+          "kind": "call",
+          "target": 2148741488,
+          "target_names": [
+            "CbcBatchCreate"
+          ]
+        },
+        {
+          "site": 2150870928,
+          "word": "0c0ce8ef",
+          "kind": "call",
+          "target": 2150867900,
+          "target_names": [
+            "_ZN15CImageProcessor13SubmitToBatchEP12tagCBC_BATCHh"
+          ]
+        },
+        {
+          "site": 2150870976,
+          "word": "0c0cd551",
+          "kind": "call",
+          "target": 2150847812,
+          "target_names": [
+            "_ZN10Serializer17OpenResourceFilesEP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150870988,
+          "word": "0c0cd14d",
+          "kind": "call",
+          "target": 2150843700,
+          "target_names": [
+            "_ZN10Serializer9SerializeER13ISerializableP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150870996,
+          "word": "0c0cd57f",
+          "kind": "call",
+          "target": 2150847996,
+          "target_names": [
+            "_ZN10Serializer18CloseResourceFilesEP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150871032,
+          "word": "0c0ce410",
+          "kind": "call",
+          "target": 2150862912,
+          "target_names": [
+            "_ZN15CImageProcessor17CalculateTopologyEv"
+          ]
+        },
+        {
+          "site": 2150871056,
+          "word": "0c0ce4d4",
+          "kind": "call",
+          "target": 2150863696,
+          "target_names": [
+            "_ZN15CImageProcessor16TranslateFiltersEv"
+          ]
+        },
+        {
+          "site": 2150871216,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150871284,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150871312,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150871336,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871364,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871392,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871420,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871448,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871476,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871504,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871532,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871560,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871588,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871616,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871644,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871680,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150871712,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor17CalculateTopologyEv",
+      "address": 2150862912,
+      "candidate_end": 2150863696,
+      "segment": "E04",
+      "decoded_offset": 2143680,
+      "size": 784,
+      "sha256": "a995bf2e26bb13f5142c87d531d006f28a5c5a5e05772101d51aa09f08759852",
+      "transfers": [
+        {
+          "site": 2150862980,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150862992,
+          "word": "0c0d116f",
+          "kind": "call",
+          "target": 2150909372,
+          "target_names": [
+            "_ZN19CTopologyHandlerC12C1Ev"
+          ]
+        },
+        {
+          "site": 2150863008,
+          "word": "0c0ce3c0",
+          "kind": "call",
+          "target": 2150862592,
+          "target_names": [
+            "_ZN15CImageProcessor18CalcModuloOfOutputEPjS0_"
+          ]
+        },
+        {
+          "site": 2150863216,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863236,
+          "word": "0c02b459",
+          "kind": "call",
+          "target": 2148192612,
+          "target_names": [
+            "_ZN11CObservable8RegisterEP9CObserver"
+          ]
+        },
+        {
+          "site": 2150863252,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863376,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863412,
+          "word": "00c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863468,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150863488,
+          "word": "0c0d4a09",
+          "kind": "call",
+          "target": 2150967332,
+          "target_names": [
+            "_ZN8CIpuTask14setBatchParamsEhjP21tagSCONVERTSINGLETASK"
+          ]
+        },
+        {
+          "site": 2150863504,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863520,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863536,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863552,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863564,
+          "word": "0c02b459",
+          "kind": "call",
+          "target": 2148192612,
+          "target_names": [
+            "_ZN11CObservable8RegisterEP9CObserver"
+          ]
+        },
+        {
+          "site": 2150863636,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor16TranslateFiltersEv",
+      "address": 2150863696,
+      "candidate_end": 2150864384,
+      "segment": "E04",
+      "decoded_offset": 2144464,
+      "size": 688,
+      "sha256": "bb04a6368b069e3caf60d055431c8949c090d8318af0423062c891c28c6d621d",
+      "transfers": [
+        {
+          "site": 2150863752,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150863828,
+          "word": "0c0cc1cc",
+          "kind": "call",
+          "target": 2150827824,
+          "target_names": [
+            "_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER"
+          ]
+        },
+        {
+          "site": 2150863884,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863908,
+          "word": "0c0cc1d1",
+          "kind": "call",
+          "target": 2150827844,
+          "target_names": [
+            "_ZN10CIpuConfig9AddFilterEP7CFilter"
+          ]
+        },
+        {
+          "site": 2150864080,
+          "word": "0c0cc1d1",
+          "kind": "call",
+          "target": 2150827844,
+          "target_names": [
+            "_ZN10CIpuConfig9AddFilterEP7CFilter"
+          ]
+        },
+        {
+          "site": 2150864104,
+          "word": "0c0cc1cc",
+          "kind": "call",
+          "target": 2150827824,
+          "target_names": [
+            "_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER"
+          ]
+        },
+        {
+          "site": 2150864180,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150864216,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150864232,
+          "word": "0c0d46a5",
+          "kind": "call",
+          "target": 2150963860,
+          "target_names": [
+            "_ZN8CIpuTask12SetIpuConfigEP10CIpuConfig"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor16PrepareSubimagesEv",
+      "address": 2150868468,
+      "candidate_end": 2150868920,
+      "segment": "E04",
+      "decoded_offset": 2149236,
+      "size": 452,
+      "sha256": "ba2bd8e6d755071755225919ef139624cf603b15ccf3d969f121efbf12b73446",
+      "transfers": [
+        {
+          "site": 2150868516,
+          "word": "0c0d49cd",
+          "kind": "call",
+          "target": 2150967092,
+          "target_names": [
+            "_ZN8CIpuTask8GetParamE21tagTASK_PARAM_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2150868532,
+          "word": "0c0d49cd",
+          "kind": "call",
+          "target": 2150967092,
+          "target_names": [
+            "_ZN8CIpuTask8GetParamE21tagTASK_PARAM_ID_ENUM"
+          ]
+        },
+        {
+          "site": 2150868548,
+          "word": "0c0ce942",
+          "kind": "call",
+          "target": 2150868232,
+          "target_names": [
+            "_ZN15CImageProcessor11SetPropertyE22tagIP_PROPERTY_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150868564,
+          "word": "0c0ce942",
+          "kind": "call",
+          "target": 2150868232,
+          "target_names": [
+            "_ZN15CImageProcessor11SetPropertyE22tagIP_PROPERTY_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150868624,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150868684,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150868712,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150868752,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150868784,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150868820,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2150868852,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150868880,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor2GoEv",
+      "address": 2150861772,
+      "candidate_end": 2150862592,
+      "segment": "E04",
+      "decoded_offset": 2142540,
+      "size": 820,
+      "sha256": "4463f653399a5210b3d36aa7834c2364505d8d1b701b7493384923197dd6a951",
+      "transfers": [
+        {
+          "site": 2150861860,
+          "word": "0c0cd0e0",
+          "kind": "call",
+          "target": 2150843264,
+          "target_names": [
+            "_ZN10CIpuDriver10SetCbcModeEh"
+          ]
+        },
+        {
+          "site": 2150861876,
+          "word": "0c0cd0da",
+          "kind": "call",
+          "target": 2150843240,
+          "target_names": [
+            "_ZN10CIpuDriver14SetTasksParamsEjj"
+          ]
+        },
+        {
+          "site": 2150862004,
+          "word": "0c0ce212",
+          "kind": "call",
+          "target": 2150860872,
+          "target_names": [
+            "_ZN15CImageProcessor8CreateDcEv"
+          ]
+        },
+        {
+          "site": 2150862016,
+          "word": "0c0ce2e6",
+          "kind": "call",
+          "target": 2150861720,
+          "target_names": [
+            "_ZN15CImageProcessor10SetNrPhaseENS_13_IPU_NR_PHASEE"
+          ]
+        },
+        {
+          "site": 2150862068,
+          "word": "0c0d4a17",
+          "kind": "call",
+          "target": 2150967388,
+          "target_names": [
+            "_ZN8CIpuTask14IpuTaskDumpAllEj"
+          ]
+        },
+        {
+          "site": 2150862076,
+          "word": "0c0d4674",
+          "kind": "call",
+          "target": 2150963664,
+          "target_names": [
+            "_ZN8CIpuTask2GoEv"
+          ]
+        },
+        {
+          "site": 2150862136,
+          "word": "0c0d4a17",
+          "kind": "call",
+          "target": 2150967388,
+          "target_names": [
+            "_ZN8CIpuTask14IpuTaskDumpAllEj"
+          ]
+        },
+        {
+          "site": 2150862144,
+          "word": "0c0d4674",
+          "kind": "call",
+          "target": 2150963664,
+          "target_names": [
+            "_ZN8CIpuTask2GoEv"
+          ]
+        },
+        {
+          "site": 2150862200,
+          "word": "0c0cd0e0",
+          "kind": "call",
+          "target": 2150843264,
+          "target_names": [
+            "_ZN10CIpuDriver10SetCbcModeEh"
+          ]
+        },
+        {
+          "site": 2150862216,
+          "word": "0c0cd0da",
+          "kind": "call",
+          "target": 2150843240,
+          "target_names": [
+            "_ZN10CIpuDriver14SetTasksParamsEjj"
+          ]
+        },
+        {
+          "site": 2150862252,
+          "word": "0c0363aa",
+          "kind": "call",
+          "target": 2148372136,
+          "target_names": [
+            "_tx_event_flags_set"
+          ]
+        },
+        {
+          "site": 2150862272,
+          "word": "0c0ccf7c",
+          "kind": "call",
+          "target": 2150841840,
+          "target_names": [
+            "_ZN10CIpuDriver14ResetFilterUidEv"
+          ]
+        },
+        {
+          "site": 2150862296,
+          "word": "0c0ccfbb",
+          "kind": "call",
+          "target": 2150842092,
+          "target_names": [
+            "_ZN10CIpuDriver7PowerOnEv"
+          ]
+        },
+        {
+          "site": 2150862304,
+          "word": "0c0cd02a",
+          "kind": "call",
+          "target": 2150842536,
+          "target_names": [
+            "_ZN10CIpuDriver5ResetEv"
+          ]
+        },
+        {
+          "site": 2150862316,
+          "word": "0c04d20e",
+          "kind": "call",
+          "target": 2148747320,
+          "target_names": [
+            "CbcMarkEndOfBatch"
+          ]
+        },
+        {
+          "site": 2150862380,
+          "word": "0c0d4a17",
+          "kind": "call",
+          "target": 2150967388,
+          "target_names": [
+            "_ZN8CIpuTask14IpuTaskDumpAllEj"
+          ]
+        },
+        {
+          "site": 2150862428,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150862436,
+          "word": "0c04cd53",
+          "kind": "call",
+          "target": 2148742476,
+          "target_names": [
+            "CbcBatchExec"
+          ]
+        },
+        {
+          "site": 2150862484,
+          "word": "0c02b45b",
+          "kind": "call",
+          "target": 2148192620,
+          "target_names": [
+            "_ZN11CObservable6NotifyEmPv"
+          ]
+        },
+        {
+          "site": 2150862500,
+          "word": "0c0ce2e6",
+          "kind": "call",
+          "target": 2150861720,
+          "target_names": [
+            "_ZN15CImageProcessor10SetNrPhaseENS_13_IPU_NR_PHASEE"
+          ]
+        },
+        {
+          "site": 2150862512,
+          "word": "0c0ce2e6",
+          "kind": "call",
+          "target": 2150861720,
+          "target_names": [
+            "_ZN15CImageProcessor10SetNrPhaseENS_13_IPU_NR_PHASEE"
+          ]
+        },
+        {
+          "site": 2150862552,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150862584,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuGo",
+      "address": 2149386844,
+      "candidate_end": 2149386852,
+      "segment": "E04",
+      "decoded_offset": 667612,
+      "size": 8,
+      "sha256": "00fdfb5ccb048db9529c8954456b65ef34c35c63848aed5311af722f1ca94e8c",
+      "transfers": [
+        {
+          "site": 2149386844,
+          "word": "080ce2f3",
+          "kind": "jump",
+          "target": 2150861772,
+          "target_names": [
+            "_ZN15CImageProcessor2GoEv"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_Z21uiPathInput2ImageTypej",
+      "address": 2149385712,
+      "candidate_end": 2149385912,
+      "segment": "E04",
+      "decoded_offset": 666480,
+      "size": 200,
+      "sha256": "39bec676056d8e0699a2279e5df1feaa7c7908cbfce7c793665af5de972dcabb",
+      "transfers": [
+        {
+          "site": 2149385752,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149385808,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_Z22uiPathOutput2ImageTypej",
+      "address": 2149385912,
+      "candidate_end": 2149386080,
+      "segment": "E04",
+      "decoded_offset": 666680,
+      "size": 168,
+      "sha256": "797307ddaa25773a11aa580492bcf15e68e13a66b74f5dd58bdc22a7d5cc1a55",
+      "transfers": [
+        {
+          "site": 2149385952,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149385976,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN9CIpuUtils30uiPathInput2IpuConfigToolInputE27_IMAGE_DESCRIPTOR_TYPE_ENUM",
+      "address": 2150942980,
+      "candidate_end": 2150943292,
+      "segment": "E04",
+      "decoded_offset": 2223748,
+      "size": 312,
+      "sha256": "0a486d9661295d10b87524d014a5f595dd83f399450ba7442f7f785512abe32e",
+      "transfers": [
+        {
+          "site": 2150943020,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150943044,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN9CIpuUtils32uiPathOutput2IpuConfigToolOutputE27_IMAGE_DESCRIPTOR_TYPE_ENUM",
+      "address": 2150943292,
+      "candidate_end": 2150943560,
+      "segment": "E04",
+      "decoded_offset": 2224060,
+      "size": 268,
+      "sha256": "4c6c2c450519a5b7057cad54da74e53de2726853f1ca21ba55876b4cd3ac709d",
+      "transfers": [
+        {
+          "site": 2150943336,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150943360,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN14CTranslatorC1219PrepareCalculationsEP14tagSFilterDatamP19tagSIMAGEDESCRIPTORS3_P15tsFIPLIB_InputsP22_FIPLIB_OUTPUT_WRAPPERm",
+      "address": 2150930452,
+      "candidate_end": 2150934020,
+      "segment": "E04",
+      "decoded_offset": 2211220,
+      "size": 3568,
+      "sha256": "d02d958f98abdee47166fd8b59a0405b2541783eac577dfe5925e83d6b950d1a",
+      "transfers": [
+        {
+          "site": 2150930528,
+          "word": "0c0084ff",
+          "kind": "call",
+          "target": 2147619836,
+          "target_names": [
+            "SmdbIsZLightEnabled"
+          ]
+        },
+        {
+          "site": 2150930548,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150930752,
+          "word": "0c0d3241",
+          "kind": "call",
+          "target": 2150942980,
+          "target_names": [
+            "_ZN9CIpuUtils30uiPathInput2IpuConfigToolInputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150930764,
+          "word": "0c0d328f",
+          "kind": "call",
+          "target": 2150943292,
+          "target_names": [
+            "_ZN9CIpuUtils32uiPathOutput2IpuConfigToolOutputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150931384,
+          "word": "0c027e25",
+          "kind": "call",
+          "target": 2148137108,
+          "target_names": [
+            "ImageType2ImageFormat"
+          ]
+        },
+        {
+          "site": 2150931508,
+          "word": "0805f27e",
+          "kind": "jump",
+          "target": 2149042680,
+          "target_names": [
+            "FipLibCalculate"
+          ]
+        },
+        {
+          "site": 2150931684,
+          "word": "0805f27e",
+          "kind": "jump",
+          "target": 2149042680,
+          "target_names": [
+            "FipLibCalculate"
+          ]
+        },
+        {
+          "site": 2150932592,
+          "word": "0c0d33ef",
+          "kind": "call",
+          "target": 2150944700,
+          "target_names": [
+            "_ZN9CIpuUtils19FindZlightGainLimitEP12_S_IP_DRC_12"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FipLibInit",
+      "address": 2149042220,
+      "candidate_end": 2149042616,
+      "segment": "E04",
+      "decoded_offset": 322988,
+      "size": 396,
+      "sha256": "4a67272db3aa4ae625a251681ed4d72a13ef76b988a76a728ddbd203516d5110",
+      "transfers": [
+        {
+          "site": 2149042260,
+          "word": "0c0336c0",
+          "kind": "call",
+          "target": 2148326144,
+          "target_names": [
+            "_tx_mutex_create"
+          ]
+        },
+        {
+          "site": 2149042276,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2149042288,
+          "word": "0c05f443",
+          "kind": "call",
+          "target": 2149044492,
+          "target_names": [
+            "_ZN16CFIPLIB_TopologyC1Ev"
+          ]
+        },
+        {
+          "site": 2149042320,
+          "word": "0c05e577",
+          "kind": "call",
+          "target": 2149029340,
+          "target_names": [
+            "_ZN17CFIP_C12_IPS_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042348,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042376,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042404,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042432,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042460,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042488,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042516,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042544,
+          "word": "0c05dbb0",
+          "kind": "call",
+          "target": 2149019328,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149042580,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FipLibCalculate",
+      "address": 2149042680,
+      "candidate_end": 2149044248,
+      "segment": "E04",
+      "decoded_offset": 323448,
+      "size": 1568,
+      "sha256": "d96148903f2bac2eada89701ea5b7e49de121f8c64def00ef35690238b3cb769",
+      "transfers": [
+        {
+          "site": 2149042784,
+          "word": "0c032fb9",
+          "kind": "call",
+          "target": 2148318948,
+          "target_names": [
+            "_tx_mutex_get"
+          ]
+        },
+        {
+          "site": 2149042812,
+          "word": "0c05eb60",
+          "kind": "call",
+          "target": 2149035392,
+          "target_names": [
+            "_ZN7CFIPLIB5ResetEv"
+          ]
+        },
+        {
+          "site": 2149042832,
+          "word": "0c05ebcd",
+          "kind": "call",
+          "target": 2149035828,
+          "target_names": [
+            "_ZN7CFIPLIB11CalcNPassesER15tsFIPLIB_InputsPjP16fiplib_pass_type"
+          ]
+        },
+        {
+          "site": 2149042896,
+          "word": "0c00360a",
+          "kind": "call",
+          "target": 2147538984,
+          "target_names": [
+            "_ZnwmmPcib"
+          ]
+        },
+        {
+          "site": 2149042948,
+          "word": "0c00360a",
+          "kind": "call",
+          "target": 2147538984,
+          "target_names": [
+            "_ZnwmmPcib"
+          ]
+        },
+        {
+          "site": 2149042968,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2149043208,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149043256,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149043416,
+          "word": "0c02ce54",
+          "kind": "call",
+          "target": 2148219216,
+          "target_names": [
+            "CACHE_WriteBackInvalidateDataCacheEx"
+          ]
+        },
+        {
+          "site": 2149043424,
+          "word": "0c05c1c3",
+          "kind": "call",
+          "target": 2148992780,
+          "target_names": [
+            "ExecuteCommandOnCop"
+          ]
+        },
+        {
+          "site": 2149043908,
+          "word": "0c00363a",
+          "kind": "call",
+          "target": 2147539176,
+          "target_names": [
+            "_ZdlPvmPci"
+          ]
+        },
+        {
+          "site": 2149043924,
+          "word": "0c03464f",
+          "kind": "call",
+          "target": 2148342076,
+          "target_names": [
+            "_tx_mutex_put"
+          ]
+        },
+        {
+          "site": 2149043984,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149044032,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149044064,
+          "word": "0c05f20b",
+          "kind": "call",
+          "target": 2149042220,
+          "target_names": [
+            "FipLibInit"
+          ]
+        },
+        {
+          "site": 2149044092,
+          "word": "0c032fb9",
+          "kind": "call",
+          "target": 2148318948,
+          "target_names": [
+            "_tx_mutex_get"
+          ]
+        },
+        {
+          "site": 2149044144,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149044176,
+          "word": "0c05ecc5",
+          "kind": "call",
+          "target": 2149036820,
+          "target_names": [
+            "_ZN7CFIPLIB7AnalyzeERK15tsFIPLIB_InputsPKh"
+          ]
+        },
+        {
+          "site": 2149044192,
+          "word": "0c05ec4f",
+          "kind": "call",
+          "target": 2149036348,
+          "target_names": [
+            "_ZNK7CFIPLIB6ExportER16tsFIPLIB_Outputs"
+          ]
+        },
+        {
+          "site": 2149044228,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN7CFIPLIB16OverrideInputAPIER15tsFIPLIB_Inputs",
+      "address": 2149035476,
+      "candidate_end": 2149035708,
+      "segment": "E04",
+      "decoded_offset": 316244,
+      "size": 232,
+      "sha256": "449d40c1d56a7a470eaca059be69afe55b9b4fbadca8f8f6084aa1f71f6158f8",
+      "transfers": []
+    },
+    {
+      "name": "_ZN7CFIPLIB11CalcNPassesER15tsFIPLIB_InputsPjP16fiplib_pass_type",
+      "address": 2149035828,
+      "candidate_end": 2149035924,
+      "segment": "E04",
+      "decoded_offset": 316596,
+      "size": 96,
+      "sha256": "136117bd18c60372e72324e977abe325392e4cd5a2e18d4ff60852653c8e6164",
+      "transfers": [
+        {
+          "site": 2149035864,
+          "word": "0c05eb75",
+          "kind": "call",
+          "target": 2149035476,
+          "target_names": [
+            "_ZN7CFIPLIB16OverrideInputAPIER15tsFIPLIB_Inputs"
+          ]
+        },
+        {
+          "site": 2149035876,
+          "word": "0c05fba1",
+          "kind": "call",
+          "target": 2149052036,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology6ConfigERK15tsFIPLIB_Inputs"
+          ]
+        },
+        {
+          "site": 2149035916,
+          "word": "0805ebaf",
+          "kind": "jump",
+          "target": 2149035708,
+          "target_names": [
+            "_ZNK7CFIPLIB10GetNPassesEPjP16fiplib_pass_type"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN16CFIPLIB_Topology19DefineBasicTopologyERK15tsFIPLIB_Inputs",
+      "address": 2149045008,
+      "candidate_end": 2149045428,
+      "segment": "E04",
+      "decoded_offset": 325776,
+      "size": 420,
+      "sha256": "4fdefb5b1938a3ec2c0a132afea70a0e061d61c78e0f43cfc74c1b87482292d7",
+      "transfers": []
+    },
+    {
+      "name": "_ZN16CFIPLIB_Topology14CreateTopologyEv",
+      "address": 2149050772,
+      "candidate_end": 2149052036,
+      "segment": "E04",
+      "decoded_offset": 331540,
+      "size": 1264,
+      "sha256": "c57f9532ea57d640ec20d74a7e1463d6819f78f35edffd030bee0f9e534f6c1c",
+      "transfers": [
+        {
+          "site": 2149050848,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149050868,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149050888,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149050908,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149050940,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149050960,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051072,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051116,
+          "word": "02000008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051136,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051156,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051184,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051220,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051272,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051324,
+          "word": "00e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051352,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051420,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051448,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051484,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051532,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051556,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051580,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051604,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051644,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051680,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051716,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051752,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051780,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051808,
+          "word": "01e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051836,
+          "word": "01a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149051872,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051892,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051908,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051928,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051948,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149051968,
+          "word": "0c05f82b",
+          "kind": "call",
+          "target": 2149048492,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149052004,
+          "word": "0c05f53a",
+          "kind": "call",
+          "target": 2149045480,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology26AdjustTopology_HighQualityEv"
+          ]
+        },
+        {
+          "site": 2149052020,
+          "word": "0c05f6c2",
+          "kind": "call",
+          "target": 2149047048,
+          "target_names": [
+            "_ZN16CFIPLIB_Topology28AdjustTopology_MediumQualityEv"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN16CFIPLIB_Topology24InstanceBasicPassToplogyERKN15FIPLIB_Topology13pass_locationE",
+      "address": 2149048492,
+      "candidate_end": 2149050772,
+      "segment": "E04",
+      "decoded_offset": 329260,
+      "size": 2280,
+      "sha256": "4506b720480da63fe3f18ef8532b61a61108aa170cf1789d5e2b1665bdd594ad",
+      "transfers": [
+        {
+          "site": 2149048552,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149048624,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149048656,
+          "word": "0c05f176",
+          "kind": "call",
+          "target": 2149041624,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPSC1Esss22fiplib_pass_input_type"
+          ]
+        },
+        {
+          "site": 2149048708,
+          "word": "01e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149048776,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149048808,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149048832,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149048884,
+          "word": "0180f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149048924,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149048964,
+          "word": "0240f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049004,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049044,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049084,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049184,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149049220,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149049240,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149049292,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049360,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149049392,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149049416,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149049464,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049508,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049552,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049592,
+          "word": "01a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049632,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149049664,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149049716,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049756,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149049868,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149049904,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149049924,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149049976,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050016,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050052,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149050084,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149050108,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149050160,
+          "word": "0320f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050200,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050236,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149050268,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149050292,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149050344,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050392,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149050424,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149050476,
+          "word": "0320f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050516,
+          "word": "01e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050556,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050596,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050652,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149050668,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149050700,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        },
+        {
+          "site": 2149050716,
+          "word": "0c13d83d",
+          "kind": "call",
+          "target": 2152685812,
+          "target_names": [
+            "_Znwm"
+          ]
+        },
+        {
+          "site": 2149050748,
+          "word": "0c05f052",
+          "kind": "call",
+          "target": 2149040456,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN16CFIPLIB_Topology26AdjustTopology_HighQualityEv",
+      "address": 2149045480,
+      "candidate_end": 2149047048,
+      "segment": "E04",
+      "decoded_offset": 326248,
+      "size": 1568,
+      "sha256": "d2ba8244f14bb2b22b3c047b78bfa5cbf0675e0b1c28ef92d968f3ffa98c6460",
+      "transfers": [
+        {
+          "site": 2149045576,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149045600,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149045632,
+          "word": "00e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149045660,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149045736,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149045764,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149045804,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149045836,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149045872,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149045896,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149045940,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149045976,
+          "word": "0180f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046004,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046048,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046068,
+          "word": "00c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046096,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046124,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046152,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046188,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149046208,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149046252,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046288,
+          "word": "0180f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046316,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046344,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046372,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046400,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046428,
+          "word": "0320f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046456,
+          "word": "01e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046484,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046528,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046556,
+          "word": "0320f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046584,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046620,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046664,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149046704,
+          "word": "0140f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046736,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046752,
+          "word": "0c05f52d",
+          "kind": "call",
+          "target": 2149045428,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology9FindIndexERKN15FIPLIB_Topology13pass_locationE"
+          ]
+        },
+        {
+          "site": 2149046804,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046836,
+          "word": "02a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046884,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046912,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149046980,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149047012,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE",
+      "address": 2149040456,
+      "candidate_end": 2149040884,
+      "segment": "E04",
+      "decoded_offset": 321224,
+      "size": 428,
+      "sha256": "da86e0ce1e403e8623d0adcbf4d3d33e38c69d49f976870c833b4e03a7c9d0f0",
+      "transfers": [
+        {
+          "site": 2149040508,
+          "word": "0c05f03a",
+          "kind": "call",
+          "target": 2149040360,
+          "target_names": [
+            "_ZN17CFIP_PassTopologyC2E16fiplib_pass_typesss22fiplib_pass_input_type"
+          ]
+        },
+        {
+          "site": 2149040588,
+          "word": "0c05f04e",
+          "kind": "call",
+          "target": 2149040440,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPU13SetOutputModeEsss"
+          ]
+        },
+        {
+          "site": 2149040608,
+          "word": "0c05f04b",
+          "kind": "call",
+          "target": 2149040428,
+          "target_names": [
+            "_ZN17CFIP_PassTopology16UpdateSizeFactorER20tsFIPLIB_SizeFactorsmm"
+          ]
+        },
+        {
+          "site": 2149040640,
+          "word": "0c05f04b",
+          "kind": "call",
+          "target": 2149040428,
+          "target_names": [
+            "_ZN17CFIP_PassTopology16UpdateSizeFactorER20tsFIPLIB_SizeFactorsmm"
+          ]
+        },
+        {
+          "site": 2149040680,
+          "word": "0c05f033",
+          "kind": "call",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        },
+        {
+          "site": 2149040708,
+          "word": "0c05f033",
+          "kind": "call",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        },
+        {
+          "site": 2149040736,
+          "word": "0c05f033",
+          "kind": "call",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN17CFIP_PassTopologyC2E16fiplib_pass_typesss22fiplib_pass_input_type",
+      "address": 2149040360,
+      "candidate_end": 2149040428,
+      "segment": "E04",
+      "decoded_offset": 321128,
+      "size": 68,
+      "sha256": "7e4947308ed944c8a6b6d33a6720b4695ee3af07d72ba64ac3f9765141a5fb4a",
+      "transfers": [
+        {
+          "site": 2149040420,
+          "word": "0805f033",
+          "kind": "jump",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN7CFIPLIB17InstantiatePassesEPKh",
+      "address": 2149035924,
+      "candidate_end": 2149036348,
+      "segment": "E04",
+      "decoded_offset": 316692,
+      "size": 424,
+      "sha256": "711e688c23fd7abb8a6eacff22c8a572638fdbbc4391721b08fc7c69f86e1eb4",
+      "transfers": [
+        {
+          "site": 2149036072,
+          "word": "00c00008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149036096,
+          "word": "01a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149036180,
+          "word": "01a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149036296,
+          "word": "0c05f4b6",
+          "kind": "call",
+          "target": 2149044952,
+          "target_names": [
+            "_ZNK16CFIPLIB_Topology11GetPassTypeEh"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZNK21CFIP_PassTopology_IPU21GetPassTopologyParamsEv",
+      "address": 2152854536,
+      "candidate_end": 2152854544,
+      "segment": "E04",
+      "decoded_offset": 4135304,
+      "size": 8,
+      "sha256": "f9e30d24913bba655b7473c090ea7dafcd78b0343d63dbf7ede47eb8a76411fb",
+      "transfers": []
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "limitations": [
+    "The four-pass topology and range are for the traced fresh HDR configuration. Other processor parameters, descriptors or image format choices can yield different topology. The replay constructs the default auxiliary descriptor. Cached auxiliary variants and hardware task construction were not replayed.",
+    "The direct-Go handoff assumes successful construction of the required IPU task, valid geometry and ordinary call success. No camera, DMA, CBC engine or pixel output was observed."
+  ],
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "scope": "Fresh type-0 HDR through native default auxiliary descriptor, processor, IpuSubmit, PrepareCalculations, topology and wrapper creation. Native InstantiatePasses is replayed separately. The FIPLIB geometry/export tail is bypassed when resuming Commit to its task-building entry.",
+    "stubs": {
+      "0x801d12f4": "IpuInit",
+      "0x800d9ac8": "_tx_counter_get",
+      "0x800d9df0": "_tx_thread_interrupt_control",
+      "0x800cdb00": "_tx_mutex_create",
+      "0x800cbee4": "_tx_mutex_get",
+      "0x800d193c": "_tx_mutex_put",
+      "0x800ad120": "CObservable constructor",
+      "0x800b6a40": "CObserver constructor",
+      "0x800ad164": "CObservable::Register",
+      "0x800a1310": "Fprintf_B",
+      "0x8009d910": "Timing/diagnostic",
+      "0x8009bdd8": "TimingMarkIsGroupEnabled",
+      "0x800213fc": "Configuration byte",
+      "0x80333e38": "CIpuDriver::GetDriver",
+      "0x8000bf28": "PoolAllocEx",
+      "0x8000d8bc": "operator new",
+      "0x8000d828": "operator new with alignment",
+      "0x804f60f4": "operator new",
+      "0x80b1f120": "MemAlloc"
+    },
+    "execution_boundary": {
+      "auxiliary_constructor_start": "0x80b17fec",
+      "auxiliary_constructor_stop": "0x80b121d8",
+      "fiplib_analysis_tail_skipped_at": "0x8017cfd0",
+      "commit_resumed_at": "0x8033ad88",
+      "commit_stopped_at": "0x80339040"
+    },
+    "limitations": [
+      "Synthetic 64 by 16 buffers and gamma LUT. The default auxiliary descriptor and its tables are constructed from original firmware instructions.",
+      "Allocation, RTOS, diagnostics and driver access are modeled. Task construction, TranslateFilters and Go are outside this replay."
+    ],
+    "result": {
+      "processor_param_4": 0,
+      "processor_mode": 0,
+      "cbc_mode": 0,
+      "image_input_type": 6,
+      "image_output_type": 8,
+      "fiplib_input_format": 13,
+      "fiplib_output_format": 1,
+      "category": 0,
+      "fiplib_phase": 0,
+      "topology_level": 1,
+      "topology_locations": [
+        0,
+        6,
+        10,
+        5
+      ],
+      "wrapper_kinds": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pass_count": 4,
+      "pass_vtables": [
+        "0x8051f158",
+        "0x8051d590",
+        "0x8051f0b8",
+        "0x8051ed00"
+      ],
+      "top_controls": [
+        "0x8017bc80",
+        "0x80171758",
+        "0x80177468",
+        "0x801788b0"
+      ],
+      "S": 0,
+      "D": 0,
+      "Q": 0,
+      "T": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "start": 0,
+      "end_exclusive": 4
+    }
+  }
+}

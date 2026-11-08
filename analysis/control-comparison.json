@@ -1,0 +1,54 @@
+{
+  "purpose": "Bounded K-3 comparison for Q7 HDR per-pass FC1 control and final submitted-pass/output selector",
+  "k3_repository": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis",
+  "latest_public_main_sha_verified_via_gh": "c1db6f27f0f72b30f09c30ae55cf8525640016e4",
+  "commit_url": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/commit/c1db6f27f0f72b30f09c30ae55cf8525640016e4",
+  "source_method": "Inspected committed blobs with git show at the verified public commit. The worktree was clean at that commit. Hashes below are SHA-256 of exact committed blob bytes.",
+  "comparisons": [
+    {
+      "topic": "Output/submit selection versus stage submission",
+      "k3_evidence": "K-3 represents B2r and R2y as distinct Develop opcodes 0x200005 and 0x200006. Their specialized buffer builders pass separate mode flags (B2r arg5=1; R2y arg6=1); the normal plan passes both as 0 and yields zero descriptor address triples. The B2r/R2y address triples match only conditionally: same parameter object, index 0..3, both flags 1, and same descriptor format 0 or 8. The report explicitly says distinct opcodes do not establish queue order.",
+      "evidence_refs": [
+        "analysis/pipeline-evidence.json: isp_buffers.relationships[separate_opcodes]",
+        "analysis/pipeline-evidence.json: isp_buffers.relationships[b2r_buffer_builder]",
+        "analysis/pipeline-evidence.json: isp_buffers.relationships[r2y_buffer_builder]",
+        "analysis/pipeline-evidence.json: isp_buffers.relationships[conditional_shared_buffers]",
+        "analysis/pipeline-evidence.json: isp_buffers.relationships[normal_plan]"
+      ],
+      "addresses": ["0x52e5c264", "0x52e5c288", "0x52e5b4cc", "0x52e5b148", "0x52e5a99c", "0x52e5a500", "0x52e5a62c"],
+      "comparison_limit": "These K-3 flags describe stage/buffer setup. They are not evidence for a single final-pass selector equivalent to Q7 IpuSubmit path+0x964, and shared pointers do not prove per-pixel stage order."
+    },
+    {
+      "topic": "Control and mode bits versus Q7 FC1 enable/control",
+      "k3_evidence": "K-3's R2y control follow-up traces eight configuration bytes into one boolean core bit. If the settings path reaches 0x53253f8c and config[4] is nonzero, the aggregate is passed to 0x5324ff2c and helper 0x53256b90 updates bit0 of R+0x10. Separately, 0x532512f8/0x5325130c mask CustomImage byte0 with 3 and 0x53251310 sends it to register R+0x80 bits0..1. The report leaves the core bit's bypass/clock/enable meaning and the matrix enum's bypass/order meaning unresolved.",
+      "evidence_refs": [
+        "analysis/isp-semantics-evidence.json: r2y.relations[Eight control bytes feed one core bit]",
+        "analysis/isp-semantics-evidence.json: r2y.relations[Matrix mode is programmed independently]",
+        "analysis/pipeline-report.html: sections R2y 제어 바이트의 생산자 and M2PCLIP 비교식과 처리 순서의 추가 추적"
+      ],
+      "addresses": ["0x53253ed4", "0x53253ee0", "0x53253f8c", "0x53253fa8", "0x5324ff2c", "0x53256b90", "0x532512f8", "0x53251310", "R+0x10", "R+0x80"],
+      "comparison_limit": "K-3 documents an aggregate R2y control bit and an independent two-bit matrix mode. Neither documents semantics equivalent to the Q7 FC1 per-pass enable or proves a pixel-stage bypass/order."
+    },
+    {
+      "topic": "Verification depth",
+      "k3_evidence": "The K-3 buffer checks cover conditional descriptor-address construction, but record no pixel samples or ISP execution and no event ordering between the two opcodes. Eight R2y control producer fragments were checked across all 256 source-byte0 values, but the check scope excludes the complete packer, runtime selector, MMIO, and pixel arithmetic. The ISP semantics check reports pixel comparator/order unverified.",
+      "evidence_refs": [
+        "analysis/pipeline-evidence.json: isp_buffers.limitations",
+        "analysis/r2y-control-checks.json: scope and groups",
+        "analysis/isp-semantics-checks.json: pixel_comparator_or_order_verified and scope",
+        "analysis/isp-semantics-evidence.json: r2y.limitations"
+      ],
+      "addresses": ["0x52e5c264", "0x52e5c28c", "0x53253fa8"],
+      "comparison_limit": "This is static/control-field and bounded numeric evidence, not an executed camera pipeline or pixel-level bypass/order result."
+    }
+  ],
+  "source_blobs": [
+    {"path": "analysis/pipeline-evidence.json", "sha256": "dfae64d80f9da746587f803c64e8feca3701c30201ab920e68a5bd535ea2d63d"},
+    {"path": "analysis/isp-semantics-evidence.json", "sha256": "036d96e97abd24be97ee6e870fa7584e9e8f8bb9ed1bd1890c1ea155c64af0f7"},
+    {"path": "analysis/isp-semantics-checks.json", "sha256": "79aab09d850d1d47b45bed6c35e181a9f9155edba3c272492512bce9b0bbea4b"},
+    {"path": "analysis/r2y-control-checks.json", "sha256": "5c296b68bc147aca27d6dd5f3c94e136ddc82e298f0178ccfc1dc95df03d2b2f"},
+    {"path": "analysis/pipeline-report.html", "sha256": "96acbeaee4b41d53c9f350033fe90f2429d65a462f9f5b63376f2a1c22fcd2ba"},
+    {"path": "analysis/isp-buffer-checks.json", "sha256": "9660c87bdb5130ee2ed4767aad739241fcc42bf5f203084ee777493f3164442b"}
+  ],
+  "explicit_non_equivalence": "K-3 R2y/B2r and Q7 HDR FC1/IpuSubmit labels are model-specific. Similar-looking control fields or submission conditions do not establish equivalent hardware stages or behavior."
+}

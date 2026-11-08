@@ -2,6 +2,8 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[HDR FC1 활성화·최종 제출 패스 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/hdr-control-report.html): HDR 보조 설정에 따른 패스 구성과 전체 범위 선택을 연결했습니다. FC1 활성화와 별도 제어 워드, 클래스별 분기 조건을 원본 명령으로 검증하고 K-3 Mark III 자료와 대조했습니다. [검증·한계](hdr-control-report.html#validation)
+
 [HDR 제출 분기·최종 FC 계수 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/final-color-report.html): 새 HDR 경로의 IpuSubmit 출력 선택과 FIPLIB FC 계수 생성·내보내기를 추적했습니다. 출력 선택 2사례와 FC 구성→Export→FC1 setter·writer 6사례, MMIO 쓰기 72회를 원본 명령으로 검증했습니다. 계수 보존과 패스별 활성화·실제 픽셀의 한계는 구분했습니다. [근거·한계](final-color-report.html#validation)
 
 [HDR 버퍼·색 처리 패스 후속 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/pixel-report.html): HDR IPU 출력 할당에서 LDC를 거쳐 JPEG 입력으로 전달되는 조건부 주소 연결, 실제 DirectCompress 압축 위치, 패스 선택과 CM·FC1의 FIPLIB 덮어쓰기를 추적했습니다. 두 setter·writer 구간에서 객체 바이트와 MMIO 28회를 대조했습니다. [근거·한계](pixel-report.html#validation)

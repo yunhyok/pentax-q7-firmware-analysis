@@ -1,0 +1,4345 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Q7 v1.01 IPU FC1 top-control predicates, bypass and mode-1 flags export. The HDR case combines static topology evidence with bounded replay.",
+  "inputs": {
+    "T": "u32 at the pointer stored in the topology parameter block at +4, i.e. **(topology+4). It is independent of the returned IPU/IPS wrapper kind.",
+    "S": "Pass local byte +3 (pass+0x88f). For 1x1, 0x1, 2x0 and 1x0 the operation-mode function copies FIPLIB input+1 into it.",
+    "D": "FIPLIB input+0x1072, set by PrepareCalculations to (upper descriptor ID 0xf slot enable byte == 0). The top controls compare D with 1 exactly.",
+    "Q": "FIPLIB input+9. In PrepareCalculations it is zero unless (processor+0x26c & 0xd1ab0) == 0xd1ab0, when it is the low byte of processor+0x26c plus 0x50, stored as a byte.",
+    "H": "Return value of IsANR_or_LC_or_CC_ON 0x801775e0, computed independently of D."
+  },
+  "helper": {
+    "function": "0x801775e0",
+    "zero_iff": "All five listed u16 fields are zero, u32[input+0x1420] == 1, and (u8[input+2] == 1 or (u8[input+0x1070] == 1 and u8[input+0xc74] == 1)). Other inputs return 1.",
+    "nr_halfword_offsets": [
+      "0x16f4",
+      "0x16f8",
+      "0x1712",
+      "0x171a",
+      "0x171c"
+    ],
+    "note": "For 1x1 and 0x1 Q in {0,1,4}, the helper affects FC1 bypass only when S != 0 and T != 0. The 2x0 method does not use it for these controls."
+  },
+  "methods": [
+    {
+      "pass_classes": [
+        "3x0",
+        "3x1",
+        "2x1",
+        "5x1"
+      ],
+      "function": "0x80177468",
+      "bypass": "T == 0",
+      "flag": "0"
+    },
+    {
+      "pass_classes": [
+        "1x0"
+      ],
+      "function": "0x8017bc80",
+      "bypass": "1",
+      "flag": "0"
+    },
+    {
+      "pass_classes": [
+        "1x1"
+      ],
+      "function": "0x80171758",
+      "bypass": "S == 0 ? D == 1 : (T == 0 || H == 0)",
+      "flag": "T == 0"
+    },
+    {
+      "pass_classes": [
+        "2x0"
+      ],
+      "function": "0x8017bda4",
+      "bypass": "S == 0 ? D == 1 : T == 0",
+      "flag": "T == 0"
+    },
+    {
+      "pass_classes": [
+        "0x1"
+      ],
+      "function": "0x801788b0",
+      "categories": [
+        {
+          "Q": [
+            0,
+            1,
+            4
+          ],
+          "bypass": "S == 0 ? D == 1 : (T == 0 || H == 0)",
+          "flag": "T == 0"
+        },
+        {
+          "Q": [
+            2,
+            3,
+            5
+          ],
+          "bypass": "T == 0",
+          "flag": "0"
+        },
+        {
+          "Q": [
+            6
+          ],
+          "bypass": "1",
+          "flag": "0"
+        },
+        {
+          "Q": "> 6",
+          "bypass": "unchanged",
+          "flag": "unchanged"
+        }
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "pass_class": "3x0",
+      "vptr": "0x8051d4f0",
+      "top_controls": "0x80177468"
+    },
+    {
+      "pass_class": "1x1",
+      "vptr": "0x8051d590",
+      "top_controls": "0x80171758"
+    },
+    {
+      "pass_class": "3x1",
+      "vptr": "0x8051d630",
+      "top_controls": "0x80177468"
+    },
+    {
+      "pass_class": "0x1",
+      "vptr": "0x8051ed00",
+      "top_controls": "0x801788b0"
+    },
+    {
+      "pass_class": "2x1",
+      "vptr": "0x8051efd8",
+      "top_controls": "0x80177468"
+    },
+    {
+      "pass_class": "5x1",
+      "vptr": "0x8051f0b8",
+      "top_controls": "0x80177468"
+    },
+    {
+      "pass_class": "1x0",
+      "vptr": "0x8051f158",
+      "top_controls": "0x8017bc80"
+    },
+    {
+      "pass_class": "2x0",
+      "vptr": "0x8051f1f8",
+      "top_controls": "0x8017bda4"
+    }
+  ],
+  "export": {
+    "bypass": "Local+0x24 (pass+0x8b0) -> General block+0x3f via 0x80179cac -> zero-extended word payload+0x44 via 0x80179f90. Translator reads the byte and enables FC1 iff it is zero.",
+    "flags": "Local+0x28 (pass+0x8b4) -> FC mode-1 block+0xc (block+0xd is cleared) via 0x8017ab94 -> payload+0x12c = (block+0xc & 1) via 0x8017ad04. The FC1 setter stores this word separately at object+0x48 for the writer at 0xb60000fc.",
+    "limit": "Enable and the FC1 control word are independent fields. The coefficient values themselves are covered by fiplib-followup.json."
+  },
+  "fresh_hdr": {
+    "route": "Fresh type-0 IpuToneMapRgb submission in the previously traced HDR path with no external descriptor or state mutation.",
+    "topology_evidence": "hdr-pass-followup.json",
+    "selector_evidence": "fiplib-followup.json",
+    "enable_emission_evidence": "fc1-enable-checks.json",
+    "pass_count": 4,
+    "selected_range": [
+      0,
+      4
+    ],
+    "final_index": 3,
+    "fiplib_phase": 0,
+    "input_1": 0,
+    "input_1072": 0,
+    "input_9": 0,
+    "requested_enable": "SetDefaults writes 1 at processor+0x104, the ID 0xf enable byte. IpuToneMapRgb also calls PathImageProcessingEnable(path,0xf,1). PrepareCalculations inverts the byte into D, so D=0.",
+    "phase_source": "PrepareCalculations initializes input+0x1738 to 1 but clears it when the ID 0x1f descriptor exists and its slot enable byte equals 1. The traced HDR path enables ID 0x1f, so the topology uses phase zero. The phase byte is held at zero in the four dedicated top-control replay cases.",
+    "passes": [
+      {
+        "pass_index": 0,
+        "topology_location": 0,
+        "pass_class": "1x0",
+        "topology_word": 1,
+        "final_pass": false,
+        "replay_case": "fresh-hdr-pass-0",
+        "expected_payload": {
+          "bypass_word": 1,
+          "mode_1_flag_word": 0
+        },
+        "expected_direct_register_values": {
+          "0xb60000ec": 1,
+          "0xb60000fc": 0
+        }
+      },
+      {
+        "pass_index": 1,
+        "topology_location": 6,
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "final_pass": false,
+        "replay_case": "fresh-hdr-pass-1",
+        "expected_payload": {
+          "bypass_word": 0,
+          "mode_1_flag_word": 0
+        },
+        "expected_direct_register_values": {
+          "0xb60000ec": 0,
+          "0xb60000fc": 0
+        }
+      },
+      {
+        "pass_index": 2,
+        "topology_location": 10,
+        "pass_class": "5x1",
+        "topology_word": 0,
+        "final_pass": false,
+        "replay_case": "fresh-hdr-pass-2",
+        "expected_payload": {
+          "bypass_word": 1,
+          "mode_1_flag_word": 0
+        },
+        "expected_direct_register_values": {
+          "0xb60000ec": 1,
+          "0xb60000fc": 0
+        }
+      },
+      {
+        "pass_index": 3,
+        "topology_location": 5,
+        "pass_class": "0x1",
+        "topology_word": 1,
+        "final_pass": true,
+        "replay_case": "fresh-hdr-pass-3",
+        "expected_payload": {
+          "bypass_word": 0,
+          "mode_1_flag_word": 0
+        },
+        "expected_direct_register_values": {
+          "0xb60000ec": 0,
+          "0xb60000fc": 0
+        }
+      }
+    ],
+    "conclusion": "Commit mode 0 selects all four IPU passes in [0,4). The final pass index 3 is class 0x1. The 1x0 and 5x1 passes set FC1 bypass; the 1x1 and 0x1 passes clear bypass. All four mode-1 flag words are zero. These are software configuration values, with physical register writes conditional on submission and the writer conditions."
+  },
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "scope": "Concrete MIPS replay of FC1 block-control methods and payload export. Synthetic input/topology, no stubs, MMIO, scheduling or camera execution.",
+    "functions": [
+      "0x80171670",
+      "0x80171758",
+      "0x80171a58",
+      "0x80177468",
+      "0x80177588",
+      "0x801775e0",
+      "0x80178770",
+      "0x801788b0",
+      "0x80178ea0",
+      "0x80179cac",
+      "0x80179f90",
+      "0x8017a974",
+      "0x8017ab94",
+      "0x8017ad04",
+      "0x8017b9fc",
+      "0x8017bba8",
+      "0x8017bc80",
+      "0x8017bd18",
+      "0x8017bda4",
+      "0x8017bfdc"
+    ],
+    "cases": [
+      {
+        "case": "base-hdr-like-t0",
+        "pass_class": "base",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "base-hdr-like-t1",
+        "pass_class": "base",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "base-hdr-like-t2",
+        "pass_class": "base",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x0-hdr-like-t0",
+        "pass_class": "1x0",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x0-hdr-like-t1",
+        "pass_class": "1x0",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x0-hdr-like-t2",
+        "pass_class": "1x0",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x1-hdr-like-t0",
+        "pass_class": "1x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "1x1-hdr-like-t1",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x1-hdr-like-t2",
+        "pass_class": "1x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "2x0-hdr-like-t0",
+        "pass_class": "2x0",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "2x0-hdr-like-t1",
+        "pass_class": "2x0",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "2x0-hdr-like-t2",
+        "pass_class": "2x0",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-hdr-like-t0",
+        "pass_class": "0x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "0x1-hdr-like-t1",
+        "pass_class": "0x1",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-hdr-like-t2",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "base-full-word",
+        "pass_class": "base",
+        "topology_word": 256,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x1-requested-bypass",
+        "pass_class": "1x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x1-requested-byte-2",
+        "pass_class": "1x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 2,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x1-selector-nonzero-t0",
+        "pass_class": "1x1",
+        "topology_word": 0,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "1x1-selector-nonzero-helper-off",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 2,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "1x1-selector-nonzero-helper-on",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 0,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "2x0-requested-bypass",
+        "pass_class": "2x0",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "2x0-requested-byte-2",
+        "pass_class": "2x0",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 2,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "2x0-selector-nonzero-t0",
+        "pass_class": "2x0",
+        "topology_word": 0,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "2x0-selector-nonzero-helper-off",
+        "pass_class": "2x0",
+        "topology_word": 1,
+        "input_1": 2,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "2x0-selector-nonzero-helper-on",
+        "pass_class": "2x0",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 0,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-requested-bypass",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-requested-byte-2",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 2,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-selector-nonzero-t0",
+        "pass_class": "0x1",
+        "topology_word": 0,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "0x1-selector-nonzero-helper-off",
+        "pass_class": "0x1",
+        "topology_word": 1,
+        "input_1": 2,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-selector-nonzero-helper-on",
+        "pass_class": "0x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 0,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q1",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 1,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q2",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 2,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q3",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 3,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q4",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 4,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q5",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 5,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q6",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 6,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q7",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 7,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 165,
+          "local_flag_byte": 215,
+          "payload_bypass_word": 165,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "0x1-q1-t0",
+        "pass_class": "0x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 1,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "0x1-q2-t0",
+        "pass_class": "0x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 2,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q3-t0",
+        "pass_class": "0x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 3,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-q4-t0",
+        "pass_class": "0x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 4,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 1,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "0x1-q5-t0",
+        "pass_class": "0x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 1,
+        "input_9": 5,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "0x1-qff-no-write",
+        "pass_class": "0x1",
+        "topology_word": 2,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 255,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 165,
+          "local_flag_byte": 215,
+          "payload_bypass_word": 165,
+          "payload_flag_word": 1
+        }
+      },
+      {
+        "case": "helper-u16-16f4",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            32768,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-u16-16f8",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            32768,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-u16-1712",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            32768,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-u16-171a",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            32768,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-u16-171c",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            32768
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-input-2-override",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 1,
+          "input_1070": 0,
+          "input_c74": 0
+        },
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-input-2-exact",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 2,
+          "input_1070": 0,
+          "input_c74": 0
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-lc-full-word",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 65537,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-input-1070-exact",
+        "pass_class": "0x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 2,
+          "input_c74": 1
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "helper-input-c74-exact",
+        "pass_class": "0x1",
+        "topology_word": 1,
+        "input_1": 1,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 2
+        },
+        "expected": {
+          "helper": 1,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "fresh-hdr-pass-0",
+        "pass_class": "1x0",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "input_1738": 0,
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "fresh-hdr-pass-1",
+        "pass_class": "1x1",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "input_1738": 0,
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "fresh-hdr-pass-2",
+        "pass_class": "5x1",
+        "topology_word": 0,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "input_1738": 0,
+        "expected": {
+          "helper": 0,
+          "local_bypass": 1,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 1,
+          "payload_flag_word": 0
+        }
+      },
+      {
+        "case": "fresh-hdr-pass-3",
+        "pass_class": "0x1",
+        "topology_word": 1,
+        "input_1": 0,
+        "input_1072": 0,
+        "input_9": 0,
+        "helper_fields": {
+          "nr_halfwords": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "lc_word": 1,
+          "input_2": 0,
+          "input_1070": 1,
+          "input_c74": 1
+        },
+        "input_1738": 0,
+        "expected": {
+          "helper": 0,
+          "local_bypass": 0,
+          "local_flag_byte": 0,
+          "payload_bypass_word": 0,
+          "payload_flag_word": 0
+        }
+      }
+    ],
+    "engine": "angr 10.0.5 / VEX"
+  },
+  "evidence": [
+    {
+      "role": "Pass-class binding through top-control vtable slot +0x24",
+      "words": [
+        {
+          "va": "0x8051d514",
+          "u32le_word": "0x80177468",
+          "segment": "E04",
+          "decoded_offset": "0x3efa94"
+        },
+        {
+          "va": "0x8051d5b4",
+          "u32le_word": "0x80171758",
+          "segment": "E04",
+          "decoded_offset": "0x3efb34"
+        },
+        {
+          "va": "0x8051d654",
+          "u32le_word": "0x80177468",
+          "segment": "E04",
+          "decoded_offset": "0x3efbd4"
+        },
+        {
+          "va": "0x8051ed24",
+          "u32le_word": "0x801788b0",
+          "segment": "E04",
+          "decoded_offset": "0x3f12a4"
+        },
+        {
+          "va": "0x8051effc",
+          "u32le_word": "0x80177468",
+          "segment": "E04",
+          "decoded_offset": "0x3f157c"
+        },
+        {
+          "va": "0x8051f0dc",
+          "u32le_word": "0x80177468",
+          "segment": "E04",
+          "decoded_offset": "0x3f165c"
+        },
+        {
+          "va": "0x8051f17c",
+          "u32le_word": "0x8017bc80",
+          "segment": "E04",
+          "decoded_offset": "0x3f16fc"
+        },
+        {
+          "va": "0x8051f21c",
+          "u32le_word": "0x8017bda4",
+          "segment": "E04",
+          "decoded_offset": "0x3f179c"
+        }
+      ]
+    },
+    {
+      "role": "S copied from FIPLIB input+1 to local byte +3 by operation-mode methods",
+      "words": [
+        {
+          "va": "0x8017167c",
+          "u32le_word": "0x248b088c",
+          "segment": "E04",
+          "decoded_offset": "0x43bfc"
+        },
+        {
+          "va": "0x80171688",
+          "u32le_word": "0x90a20001",
+          "segment": "E04",
+          "decoded_offset": "0x43c08"
+        },
+        {
+          "va": "0x80171690",
+          "u32le_word": "0xa1620003",
+          "segment": "E04",
+          "decoded_offset": "0x43c10"
+        },
+        {
+          "va": "0x80178784",
+          "u32le_word": "0x248a088c",
+          "segment": "E04",
+          "decoded_offset": "0x4ad04"
+        },
+        {
+          "va": "0x801787a8",
+          "u32le_word": "0x90ae0001",
+          "segment": "E04",
+          "decoded_offset": "0x4ad28"
+        },
+        {
+          "va": "0x801787b0",
+          "u32le_word": "0xa14e0003",
+          "segment": "E04",
+          "decoded_offset": "0x4ad30"
+        },
+        {
+          "va": "0x8017bd24",
+          "u32le_word": "0x2489088c",
+          "segment": "E04",
+          "decoded_offset": "0x4e2a4"
+        },
+        {
+          "va": "0x8017bd30",
+          "u32le_word": "0x90a20001",
+          "segment": "E04",
+          "decoded_offset": "0x4e2b0"
+        },
+        {
+          "va": "0x8017bd38",
+          "u32le_word": "0xa1220003",
+          "segment": "E04",
+          "decoded_offset": "0x4e2b8"
+        },
+        {
+          "va": "0x8017bbd0",
+          "u32le_word": "0x90ab0001",
+          "segment": "E04",
+          "decoded_offset": "0x4e150"
+        },
+        {
+          "va": "0x8017bbd8",
+          "u32le_word": "0xa12b0003",
+          "segment": "E04",
+          "decoded_offset": "0x4e158"
+        }
+      ]
+    },
+    {
+      "role": "Phase-zero HDR dispatch and 5x1 operation mode",
+      "words": [
+        {
+          "va": "0x80349888",
+          "u32le_word": "0xa22a1738",
+          "segment": "E04",
+          "decoded_offset": "0x21be08"
+        },
+        {
+          "va": "0x80349990",
+          "u32le_word": "0x8e460174",
+          "segment": "E04",
+          "decoded_offset": "0x21bf10"
+        },
+        {
+          "va": "0x80349994",
+          "u32le_word": "0x50c00006",
+          "segment": "E04",
+          "decoded_offset": "0x21bf14"
+        },
+        {
+          "va": "0x8034999c",
+          "u32le_word": "0x924a017c",
+          "segment": "E04",
+          "decoded_offset": "0x21bf1c"
+        },
+        {
+          "va": "0x803499a4",
+          "u32le_word": "0x5149017c",
+          "segment": "E04",
+          "decoded_offset": "0x21bf24"
+        },
+        {
+          "va": "0x80349f98",
+          "u32le_word": "0x262a1740",
+          "segment": "E04",
+          "decoded_offset": "0x21c518"
+        },
+        {
+          "va": "0x8034a064",
+          "u32le_word": "0xa2201738",
+          "segment": "E04",
+          "decoded_offset": "0x21c5e4"
+        },
+        {
+          "va": "0x8017b9fc",
+          "u32le_word": "0x2489088c",
+          "segment": "E04",
+          "decoded_offset": "0x4df7c"
+        },
+        {
+          "va": "0x8017ba14",
+          "u32le_word": "0xa1200003",
+          "segment": "E04",
+          "decoded_offset": "0x4df94"
+        },
+        {
+          "va": "0x8017c288",
+          "u32le_word": "0x00717824",
+          "segment": "E04",
+          "decoded_offset": "0x4e808"
+        },
+        {
+          "va": "0x8017c28c",
+          "u32le_word": "0x55e0000d",
+          "segment": "E04",
+          "decoded_offset": "0x4e80c"
+        },
+        {
+          "va": "0x8017c290",
+          "u32le_word": "0xae400018",
+          "segment": "E04",
+          "decoded_offset": "0x4e810"
+        },
+        {
+          "va": "0x8017c2a0",
+          "u32le_word": "0x307f2010",
+          "segment": "E04",
+          "decoded_offset": "0x4e820"
+        },
+        {
+          "va": "0x8017c2a8",
+          "u32le_word": "0xae440018",
+          "segment": "E04",
+          "decoded_offset": "0x4e828"
+        }
+      ]
+    },
+    {
+      "role": "D and Q input provenance, upper ID 0xf default and HDR explicit enable",
+      "words": [
+        {
+          "va": "0x8033838c",
+          "u32le_word": "0xa2130104",
+          "segment": "E04",
+          "decoded_offset": "0x20a90c"
+        },
+        {
+          "va": "0x80b1c2f0",
+          "u32le_word": "0x24060001",
+          "segment": "E06-text",
+          "decoded_offset": "0x329670"
+        },
+        {
+          "va": "0x80b1c2f8",
+          "u32le_word": "0x0c0709d7",
+          "segment": "E06-text",
+          "decoded_offset": "0x329678"
+        },
+        {
+          "va": "0x80b1c2fc",
+          "u32le_word": "0x2405000f",
+          "segment": "E06-text",
+          "decoded_offset": "0x32967c"
+        },
+        {
+          "va": "0x80338060",
+          "u32le_word": "0x91040050",
+          "segment": "E04",
+          "decoded_offset": "0x20a5e0"
+        },
+        {
+          "va": "0x80338094",
+          "u32le_word": "0xa1060050",
+          "segment": "E04",
+          "decoded_offset": "0x20a614"
+        },
+        {
+          "va": "0x803380ac",
+          "u32le_word": "0xa1060050",
+          "segment": "E04",
+          "decoded_offset": "0x20a62c"
+        },
+        {
+          "va": "0x803498c8",
+          "u32le_word": "0x924400bc",
+          "segment": "E04",
+          "decoded_offset": "0x21be48"
+        },
+        {
+          "va": "0x803498cc",
+          "u32le_word": "0x2c820001",
+          "segment": "E04",
+          "decoded_offset": "0x21be4c"
+        },
+        {
+          "va": "0x803498d0",
+          "u32le_word": "0xa2221072",
+          "segment": "E04",
+          "decoded_offset": "0x21be50"
+        },
+        {
+          "va": "0x8033ad60",
+          "u32le_word": "0x8e46026c",
+          "segment": "E04",
+          "decoded_offset": "0x20d2e0"
+        },
+        {
+          "va": "0x80349bec",
+          "u32le_word": "0x37f61ab0",
+          "segment": "E04",
+          "decoded_offset": "0x21c16c"
+        },
+        {
+          "va": "0x80349bf0",
+          "u32le_word": "0x02969824",
+          "segment": "E04",
+          "decoded_offset": "0x21c170"
+        },
+        {
+          "va": "0x80349bf4",
+          "u32le_word": "0x1276002c",
+          "segment": "E04",
+          "decoded_offset": "0x21c174"
+        },
+        {
+          "va": "0x80349bfc",
+          "u32le_word": "0xa2200009",
+          "segment": "E04",
+          "decoded_offset": "0x21c17c"
+        },
+        {
+          "va": "0x80349ca8",
+          "u32le_word": "0x268a0050",
+          "segment": "E04",
+          "decoded_offset": "0x21c228"
+        },
+        {
+          "va": "0x80349cac",
+          "u32le_word": "0xa22a0009",
+          "segment": "E04",
+          "decoded_offset": "0x21c22c"
+        }
+      ]
+    },
+    {
+      "role": "Base and 1x0 output bytes",
+      "words": [
+        {
+          "va": "0x80177468",
+          "u32le_word": "0x2487088c",
+          "segment": "E04",
+          "decoded_offset": "0x499e8"
+        },
+        {
+          "va": "0x80177488",
+          "u32le_word": "0x8cc20004",
+          "segment": "E04",
+          "decoded_offset": "0x49a08"
+        },
+        {
+          "va": "0x8017748c",
+          "u32le_word": "0x8c430000",
+          "segment": "E04",
+          "decoded_offset": "0x49a0c"
+        },
+        {
+          "va": "0x80177490",
+          "u32le_word": "0x1460001f",
+          "segment": "E04",
+          "decoded_offset": "0x49a10"
+        },
+        {
+          "va": "0x80177498",
+          "u32le_word": "0xa0e40024",
+          "segment": "E04",
+          "decoded_offset": "0x49a18"
+        },
+        {
+          "va": "0x8017749c",
+          "u32le_word": "0xa0e00028",
+          "segment": "E04",
+          "decoded_offset": "0x49a1c"
+        },
+        {
+          "va": "0x80177510",
+          "u32le_word": "0xa0e00024",
+          "segment": "E04",
+          "decoded_offset": "0x49a90"
+        },
+        {
+          "va": "0x80177514",
+          "u32le_word": "0xa0e00028",
+          "segment": "E04",
+          "decoded_offset": "0x49a94"
+        },
+        {
+          "va": "0x8017bc84",
+          "u32le_word": "0x24020001",
+          "segment": "E04",
+          "decoded_offset": "0x4e204"
+        },
+        {
+          "va": "0x8017bca4",
+          "u32le_word": "0xa0820024",
+          "segment": "E04",
+          "decoded_offset": "0x4e224"
+        },
+        {
+          "va": "0x8017bcb4",
+          "u32le_word": "0xa0800028",
+          "segment": "E04",
+          "decoded_offset": "0x4e234"
+        }
+      ]
+    },
+    {
+      "role": "1x1 topology equality, exact D==1, and helper branch",
+      "words": [
+        {
+          "va": "0x80171868",
+          "u32le_word": "0x8e4f0004",
+          "segment": "E04",
+          "decoded_offset": "0x43de8"
+        },
+        {
+          "va": "0x8017186c",
+          "u32le_word": "0x8dee0000",
+          "segment": "E04",
+          "decoded_offset": "0x43dec"
+        },
+        {
+          "va": "0x80171870",
+          "u32le_word": "0x2dcd0001",
+          "segment": "E04",
+          "decoded_offset": "0x43df0"
+        },
+        {
+          "va": "0x80171874",
+          "u32le_word": "0x14a0003e",
+          "segment": "E04",
+          "decoded_offset": "0x43df4"
+        },
+        {
+          "va": "0x80171878",
+          "u32le_word": "0xa20d0028",
+          "segment": "E04",
+          "decoded_offset": "0x43df8"
+        },
+        {
+          "va": "0x8017187c",
+          "u32le_word": "0x92221072",
+          "segment": "E04",
+          "decoded_offset": "0x43dfc"
+        },
+        {
+          "va": "0x80171884",
+          "u32le_word": "0x385f0001",
+          "segment": "E04",
+          "decoded_offset": "0x43e04"
+        },
+        {
+          "va": "0x80171888",
+          "u32le_word": "0x2ff90001",
+          "segment": "E04",
+          "decoded_offset": "0x43e08"
+        },
+        {
+          "va": "0x8017188c",
+          "u32le_word": "0xa2190024",
+          "segment": "E04",
+          "decoded_offset": "0x43e0c"
+        },
+        {
+          "va": "0x80171970",
+          "u32le_word": "0x8e490004",
+          "segment": "E04",
+          "decoded_offset": "0x43ef0"
+        },
+        {
+          "va": "0x80171984",
+          "u32le_word": "0xa20a0025",
+          "segment": "E04",
+          "decoded_offset": "0x43f04"
+        },
+        {
+          "va": "0x80171a3c",
+          "u32le_word": "0x0c05dd78",
+          "segment": "E04",
+          "decoded_offset": "0x43fbc"
+        },
+        {
+          "va": "0x80171a44",
+          "u32le_word": "0x1040ffcf",
+          "segment": "E04",
+          "decoded_offset": "0x43fc4"
+        },
+        {
+          "va": "0x80171a4c",
+          "u32le_word": "0xa2000024",
+          "segment": "E04",
+          "decoded_offset": "0x43fcc"
+        }
+      ]
+    },
+    {
+      "role": "2x0 S branch and independent topology flag",
+      "words": [
+        {
+          "va": "0x8017be58",
+          "u32le_word": "0x90e40003",
+          "segment": "E04",
+          "decoded_offset": "0x4e3d8"
+        },
+        {
+          "va": "0x8017be70",
+          "u32le_word": "0x8ccc0004",
+          "segment": "E04",
+          "decoded_offset": "0x4e3f0"
+        },
+        {
+          "va": "0x8017be74",
+          "u32le_word": "0x8d8b0000",
+          "segment": "E04",
+          "decoded_offset": "0x4e3f4"
+        },
+        {
+          "va": "0x8017be78",
+          "u32le_word": "0x2d6a0001",
+          "segment": "E04",
+          "decoded_offset": "0x4e3f8"
+        },
+        {
+          "va": "0x8017be7c",
+          "u32le_word": "0x1480002c",
+          "segment": "E04",
+          "decoded_offset": "0x4e3fc"
+        },
+        {
+          "va": "0x8017be80",
+          "u32le_word": "0xa0ea0028",
+          "segment": "E04",
+          "decoded_offset": "0x4e400"
+        },
+        {
+          "va": "0x8017be84",
+          "u32le_word": "0x90ae1072",
+          "segment": "E04",
+          "decoded_offset": "0x4e404"
+        },
+        {
+          "va": "0x8017be88",
+          "u32le_word": "0x39cd0001",
+          "segment": "E04",
+          "decoded_offset": "0x4e408"
+        },
+        {
+          "va": "0x8017be8c",
+          "u32le_word": "0x2da20001",
+          "segment": "E04",
+          "decoded_offset": "0x4e40c"
+        },
+        {
+          "va": "0x8017be94",
+          "u32le_word": "0xa0e20024",
+          "segment": "E04",
+          "decoded_offset": "0x4e414"
+        },
+        {
+          "va": "0x8017bf30",
+          "u32le_word": "0x8cd80004",
+          "segment": "E04",
+          "decoded_offset": "0x4e4b0"
+        },
+        {
+          "va": "0x8017bf40",
+          "u32le_word": "0x1000ffd3",
+          "segment": "E04",
+          "decoded_offset": "0x4e4c0"
+        },
+        {
+          "va": "0x8017bf60",
+          "u32le_word": "0xa0e00024",
+          "segment": "E04",
+          "decoded_offset": "0x4e4e0"
+        }
+      ]
+    },
+    {
+      "role": "0x1 Q guards/delegation and main S/D/T/IsANR branches",
+      "words": [
+        {
+          "va": "0x801788c8",
+          "u32le_word": "0x90a30009",
+          "segment": "E04",
+          "decoded_offset": "0x4ae48"
+        },
+        {
+          "va": "0x801788d0",
+          "u32le_word": "0x2c620007",
+          "segment": "E04",
+          "decoded_offset": "0x4ae50"
+        },
+        {
+          "va": "0x801788dc",
+          "u32le_word": "0x1040002f",
+          "segment": "E04",
+          "decoded_offset": "0x4ae5c"
+        },
+        {
+          "va": "0x801788e8",
+          "u32le_word": "0x00721804",
+          "segment": "E04",
+          "decoded_offset": "0x4ae68"
+        },
+        {
+          "va": "0x801788ec",
+          "u32le_word": "0x30680013",
+          "segment": "E04",
+          "decoded_offset": "0x4ae6c"
+        },
+        {
+          "va": "0x801788f0",
+          "u32le_word": "0x55000031",
+          "segment": "E04",
+          "decoded_offset": "0x4ae70"
+        },
+        {
+          "va": "0x801788f8",
+          "u32le_word": "0x3067000c",
+          "segment": "E04",
+          "decoded_offset": "0x4ae78"
+        },
+        {
+          "va": "0x801788fc",
+          "u32le_word": "0x14e000b3",
+          "segment": "E04",
+          "decoded_offset": "0x4ae7c"
+        },
+        {
+          "va": "0x80178900",
+          "u32le_word": "0x30690060",
+          "segment": "E04",
+          "decoded_offset": "0x4ae80"
+        },
+        {
+          "va": "0x8017890c",
+          "u32le_word": "0x0c05dd1a",
+          "segment": "E04",
+          "decoded_offset": "0x4ae8c"
+        },
+        {
+          "va": "0x80178998",
+          "u32le_word": "0xa2190024",
+          "segment": "E04",
+          "decoded_offset": "0x4af18"
+        },
+        {
+          "va": "0x80178b08",
+          "u32le_word": "0x8e790004",
+          "segment": "E04",
+          "decoded_offset": "0x4b088"
+        },
+        {
+          "va": "0x80178b0c",
+          "u32le_word": "0x8f380000",
+          "segment": "E04",
+          "decoded_offset": "0x4b08c"
+        },
+        {
+          "va": "0x80178b10",
+          "u32le_word": "0x2f120001",
+          "segment": "E04",
+          "decoded_offset": "0x4b090"
+        },
+        {
+          "va": "0x80178b14",
+          "u32le_word": "0xa2120028",
+          "segment": "E04",
+          "decoded_offset": "0x4b094"
+        },
+        {
+          "va": "0x80178b20",
+          "u32le_word": "0x92080003",
+          "segment": "E04",
+          "decoded_offset": "0x4b0a0"
+        },
+        {
+          "va": "0x80178b38",
+          "u32le_word": "0x92261072",
+          "segment": "E04",
+          "decoded_offset": "0x4b0b8"
+        },
+        {
+          "va": "0x80178b3c",
+          "u32le_word": "0x38c30001",
+          "segment": "E04",
+          "decoded_offset": "0x4b0bc"
+        },
+        {
+          "va": "0x80178b40",
+          "u32le_word": "0x2c690001",
+          "segment": "E04",
+          "decoded_offset": "0x4b0c0"
+        },
+        {
+          "va": "0x80178b44",
+          "u32le_word": "0xa2090024",
+          "segment": "E04",
+          "decoded_offset": "0x4b0c4"
+        },
+        {
+          "va": "0x80178bcc",
+          "u32le_word": "0x0c05dd1a",
+          "segment": "E04",
+          "decoded_offset": "0x4b14c"
+        },
+        {
+          "va": "0x80178c84",
+          "u32le_word": "0xa2040024",
+          "segment": "E04",
+          "decoded_offset": "0x4b204"
+        },
+        {
+          "va": "0x80178d94",
+          "u32le_word": "0x0c05dd78",
+          "segment": "E04",
+          "decoded_offset": "0x4b314"
+        },
+        {
+          "va": "0x80178d9c",
+          "u32le_word": "0x1040ffb8",
+          "segment": "E04",
+          "decoded_offset": "0x4b31c"
+        },
+        {
+          "va": "0x80178da4",
+          "u32le_word": "0xa2000024",
+          "segment": "E04",
+          "decoded_offset": "0x4b324"
+        }
+      ]
+    },
+    {
+      "role": "Pure helper input sizes and zero/one results",
+      "words": [
+        {
+          "va": "0x801775e0",
+          "u32le_word": "0x94a216f4",
+          "segment": "E04",
+          "decoded_offset": "0x49b60"
+        },
+        {
+          "va": "0x801775e4",
+          "u32le_word": "0x14400019",
+          "segment": "E04",
+          "decoded_offset": "0x49b64"
+        },
+        {
+          "va": "0x801775e8",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49b68"
+        },
+        {
+          "va": "0x801775ec",
+          "u32le_word": "0x94a316f8",
+          "segment": "E04",
+          "decoded_offset": "0x49b6c"
+        },
+        {
+          "va": "0x801775f0",
+          "u32le_word": "0x14600016",
+          "segment": "E04",
+          "decoded_offset": "0x49b70"
+        },
+        {
+          "va": "0x801775f4",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49b74"
+        },
+        {
+          "va": "0x801775f8",
+          "u32le_word": "0x94a41712",
+          "segment": "E04",
+          "decoded_offset": "0x49b78"
+        },
+        {
+          "va": "0x801775fc",
+          "u32le_word": "0x14800013",
+          "segment": "E04",
+          "decoded_offset": "0x49b7c"
+        },
+        {
+          "va": "0x80177600",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49b80"
+        },
+        {
+          "va": "0x80177604",
+          "u32le_word": "0x94a6171a",
+          "segment": "E04",
+          "decoded_offset": "0x49b84"
+        },
+        {
+          "va": "0x80177608",
+          "u32le_word": "0x14c00010",
+          "segment": "E04",
+          "decoded_offset": "0x49b88"
+        },
+        {
+          "va": "0x8017760c",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49b8c"
+        },
+        {
+          "va": "0x80177610",
+          "u32le_word": "0x94a7171c",
+          "segment": "E04",
+          "decoded_offset": "0x49b90"
+        },
+        {
+          "va": "0x80177614",
+          "u32le_word": "0x14e0000d",
+          "segment": "E04",
+          "decoded_offset": "0x49b94"
+        },
+        {
+          "va": "0x80177618",
+          "u32le_word": "0x24080001",
+          "segment": "E04",
+          "decoded_offset": "0x49b98"
+        },
+        {
+          "va": "0x8017761c",
+          "u32le_word": "0x8ca31420",
+          "segment": "E04",
+          "decoded_offset": "0x49b9c"
+        },
+        {
+          "va": "0x80177620",
+          "u32le_word": "0x1468000a",
+          "segment": "E04",
+          "decoded_offset": "0x49ba0"
+        },
+        {
+          "va": "0x80177624",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49ba4"
+        },
+        {
+          "va": "0x80177628",
+          "u32le_word": "0x90a90002",
+          "segment": "E04",
+          "decoded_offset": "0x49ba8"
+        },
+        {
+          "va": "0x8017762c",
+          "u32le_word": "0x11230009",
+          "segment": "E04",
+          "decoded_offset": "0x49bac"
+        },
+        {
+          "va": "0x80177630",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49bb0"
+        },
+        {
+          "va": "0x80177634",
+          "u32le_word": "0x90a41070",
+          "segment": "E04",
+          "decoded_offset": "0x49bb4"
+        },
+        {
+          "va": "0x80177638",
+          "u32le_word": "0x14830004",
+          "segment": "E04",
+          "decoded_offset": "0x49bb8"
+        },
+        {
+          "va": "0x8017763c",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49bbc"
+        },
+        {
+          "va": "0x80177640",
+          "u32le_word": "0x90aa0c74",
+          "segment": "E04",
+          "decoded_offset": "0x49bc0"
+        },
+        {
+          "va": "0x80177644",
+          "u32le_word": "0x11440003",
+          "segment": "E04",
+          "decoded_offset": "0x49bc4"
+        },
+        {
+          "va": "0x80177648",
+          "u32le_word": "0x00000000",
+          "segment": "E04",
+          "decoded_offset": "0x49bc8"
+        },
+        {
+          "va": "0x8017764c",
+          "u32le_word": "0x03e00008",
+          "segment": "E04",
+          "decoded_offset": "0x49bcc"
+        },
+        {
+          "va": "0x80177650",
+          "u32le_word": "0x24020001",
+          "segment": "E04",
+          "decoded_offset": "0x49bd0"
+        },
+        {
+          "va": "0x80177654",
+          "u32le_word": "0x03e00008",
+          "segment": "E04",
+          "decoded_offset": "0x49bd4"
+        },
+        {
+          "va": "0x80177658",
+          "u32le_word": "0x00001021",
+          "segment": "E04",
+          "decoded_offset": "0x49bd8"
+        }
+      ]
+    },
+    {
+      "role": "Independent bypass and flags output paths",
+      "words": [
+        {
+          "va": "0x80179d44",
+          "u32le_word": "0x90ad0024",
+          "segment": "E04",
+          "decoded_offset": "0x4c2c4"
+        },
+        {
+          "va": "0x80179d48",
+          "u32le_word": "0xa0cd003f",
+          "segment": "E04",
+          "decoded_offset": "0x4c2c8"
+        },
+        {
+          "va": "0x8017a128",
+          "u32le_word": "0x908a003f",
+          "segment": "E04",
+          "decoded_offset": "0x4c6a8"
+        },
+        {
+          "va": "0x8017a12c",
+          "u32le_word": "0xacaa0044",
+          "segment": "E04",
+          "decoded_offset": "0x4c6ac"
+        },
+        {
+          "va": "0x8017ac10",
+          "u32le_word": "0x90a20028",
+          "segment": "E04",
+          "decoded_offset": "0x4d190"
+        },
+        {
+          "va": "0x8017ac14",
+          "u32le_word": "0xa080000d",
+          "segment": "E04",
+          "decoded_offset": "0x4d194"
+        },
+        {
+          "va": "0x8017ac18",
+          "u32le_word": "0xa082000c",
+          "segment": "E04",
+          "decoded_offset": "0x4d198"
+        },
+        {
+          "va": "0x8017ad60",
+          "u32le_word": "0x91280005",
+          "segment": "E04",
+          "decoded_offset": "0x4d2e0"
+        },
+        {
+          "va": "0x8017ad64",
+          "u32le_word": "0x91270004",
+          "segment": "E04",
+          "decoded_offset": "0x4d2e4"
+        },
+        {
+          "va": "0x8017ad68",
+          "u32le_word": "0x3106000f",
+          "segment": "E04",
+          "decoded_offset": "0x4d2e8"
+        },
+        {
+          "va": "0x8017ad6c",
+          "u32le_word": "0x30e40001",
+          "segment": "E04",
+          "decoded_offset": "0x4d2ec"
+        },
+        {
+          "va": "0x8017ad70",
+          "u32le_word": "0x00061040",
+          "segment": "E04",
+          "decoded_offset": "0x4d2f0"
+        },
+        {
+          "va": "0x8017ad74",
+          "u32le_word": "0x00821821",
+          "segment": "E04",
+          "decoded_offset": "0x4d2f4"
+        },
+        {
+          "va": "0x8017ad7c",
+          "u32le_word": "0xaca3002c",
+          "segment": "E04",
+          "decoded_offset": "0x4d2fc"
+        }
+      ]
+    }
+  ],
+  "selected_functions": [
+    {
+      "name": "_ZN21CFIP_C12_IPU_1x1_Pass38PreparePassInParams_Top_OperationModesER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2148996720,
+      "candidate_end": 2148996952,
+      "segment": "E04",
+      "decoded_offset": 277488,
+      "size": 232,
+      "sha256": "a10a197baa9a9042433662c380c00bf36e393a03553a9a6522236575983fb40a",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_1x1_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2148996952,
+      "candidate_end": 2148997720,
+      "segment": "E04",
+      "decoded_offset": 277720,
+      "size": 768,
+      "sha256": "476df9acdce44dc8a3d956d68cba70c850d21c5e1bab00faeb31388c65962e8f",
+      "transfers": [
+        {
+          "site": 2148997692,
+          "word": "0c05dd78",
+          "kind": "call",
+          "target": 2149021152,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass20IsANR_or_LC_or_CC_ONER15tsFIPLIB_Inputs"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_1x1_Pass24PreparePassInParams_MiscER15tsFIPLIB_Inputs",
+      "address": 2148997720,
+      "candidate_end": 2148997956,
+      "segment": "E04",
+      "decoded_offset": 278488,
+      "size": 236,
+      "sha256": "f856e5fd1c545333c9c2dafe0bfc21f16c0c05aaa031425326d19f7a6c72980d",
+      "transfers": []
+    },
+    {
+      "name": "_ZN17CFIP_C12_IPU_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149020776,
+      "candidate_end": 2149021064,
+      "segment": "E04",
+      "decoded_offset": 301544,
+      "size": 288,
+      "sha256": "10bdec67c84d3217760c90d66f00e5305bc4e7104abb6b98de3d41bfd7d7c8e9",
+      "transfers": []
+    },
+    {
+      "name": "_ZN17CFIP_C12_IPU_Pass24PreparePassInParams_MiscER15tsFIPLIB_Inputs",
+      "address": 2149021064,
+      "candidate_end": 2149021152,
+      "segment": "E04",
+      "decoded_offset": 301832,
+      "size": 88,
+      "sha256": "d9eb02009f0f2b9885a00a3d269a2814604c435c47d7cc9241d6f8f18205cd58",
+      "transfers": []
+    },
+    {
+      "name": "_ZN17CFIP_C12_IPU_Pass20IsANR_or_LC_or_CC_ONER15tsFIPLIB_Inputs",
+      "address": 2149021152,
+      "candidate_end": 2149021276,
+      "segment": "E04",
+      "decoded_offset": 301920,
+      "size": 124,
+      "sha256": "75ae530cb84c8e0aea839c0372ef3eeeea5d66333675382bfdfc0b1f33f9839d",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_0x1_Pass38PreparePassInParams_Top_OperationModesER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149025648,
+      "candidate_end": 2149025968,
+      "segment": "E04",
+      "decoded_offset": 306416,
+      "size": 320,
+      "sha256": "34a5e2eadd905ff551a9ed2dde458870df0e41e8abecd549d1b732c12dacc2f9",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_0x1_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149025968,
+      "candidate_end": 2149027488,
+      "segment": "E04",
+      "decoded_offset": 306736,
+      "size": 1520,
+      "sha256": "f6ae021134ef941fb940703113f0ee1633efeaf0924e9bef4fea9639bbb2ec49",
+      "transfers": [
+        {
+          "site": 2149026060,
+          "word": "0c05dd1a",
+          "kind": "call",
+          "target": 2149020776,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams"
+          ]
+        },
+        {
+          "site": 2149026764,
+          "word": "0c05dd1a",
+          "kind": "call",
+          "target": 2149020776,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams"
+          ]
+        },
+        {
+          "site": 2149027220,
+          "word": "0c05dd78",
+          "kind": "call",
+          "target": 2149021152,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass20IsANR_or_LC_or_CC_ONER15tsFIPLIB_Inputs"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_0x1_Pass24PreparePassInParams_MiscER15tsFIPLIB_Inputs",
+      "address": 2149027488,
+      "candidate_end": 2149027612,
+      "segment": "E04",
+      "decoded_offset": 308256,
+      "size": 124,
+      "sha256": "fb0a62b53e8cc03164ba64879c8c29678fbcdfd51712ba1e7295389bfda3d670",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIPB_C12_IPU_General22ConfigIntRegs_BypassesERK18tsFIPLIB_PassInTop",
+      "address": 2149031084,
+      "candidate_end": 2149031304,
+      "segment": "E04",
+      "decoded_offset": 311852,
+      "size": 220,
+      "sha256": "b5e90cb97122b30170294ad39ad4e91eeabef4d5b63f2d5796fc48fba10fb019",
+      "transfers": []
+    },
+    {
+      "name": "_ZNK21CFIPB_C12_IPU_General6ExportER24tsFIPLIB_Out_IPU_General",
+      "address": 2149031824,
+      "candidate_end": 2149032292,
+      "segment": "E04",
+      "decoded_offset": 312592,
+      "size": 468,
+      "sha256": "d479d6b80764fe42e3031bbb9d7d4ef6d0d5cfd08f01a31f7c5c7dea636c8694",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FCC1Eh",
+      "address": 2149034356,
+      "candidate_end": 2149034388,
+      "segment": "E04",
+      "decoded_offset": 315124,
+      "size": 32,
+      "sha256": "1e9d568f0a643f1c3e29ecae394768b3c5213ff5c0ac37f3eb68da03b2119f2b",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC13ConfigIntRegsERK22tsFIPLIB_IPUPassInputs",
+      "address": 2149034900,
+      "candidate_end": 2149035268,
+      "segment": "E04",
+      "decoded_offset": 315668,
+      "size": 368,
+      "sha256": "b2f07b93060e2fa27db5629e5984705db3b7e024555ceb42815f675185944940",
+      "transfers": [
+        {
+          "site": 2149034992,
+          "word": "0805ea67",
+          "kind": "jump",
+          "target": 2149034396,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_601_RGB2YUVEv"
+          ]
+        },
+        {
+          "site": 2149035016,
+          "word": "0805ea7c",
+          "kind": "jump",
+          "target": 2149034480,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_601_YUV2RGBEv"
+          ]
+        },
+        {
+          "site": 2149035196,
+          "word": "0805eab4",
+          "kind": "jump",
+          "target": 2149034704,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_709_YUV2RGBEv"
+          ]
+        },
+        {
+          "site": 2149035204,
+          "word": "0805ead8",
+          "kind": "jump",
+          "target": 2149034848,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC19Config_Matrix_UnityEv"
+          ]
+        },
+        {
+          "site": 2149035236,
+          "word": "0805ea9f",
+          "kind": "jump",
+          "target": 2149034620,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_709_RGB2YUVEv"
+          ]
+        },
+        {
+          "site": 2149035244,
+          "word": "0805eac5",
+          "kind": "jump",
+          "target": 2149034772,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC34Config_Matrix_ITUR_709_YUV2RGB_RecEv"
+          ]
+        },
+        {
+          "site": 2149035252,
+          "word": "0805ea8d",
+          "kind": "jump",
+          "target": 2149034548,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC34Config_Matrix_ITUR_601_YUV2RGB_RecEv"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZNK12CFIPB_C12_FC6ExportER19tsFIPLIB_Out_IPU_FC",
+      "address": 2149035268,
+      "candidate_end": 2149035392,
+      "segment": "E04",
+      "decoded_offset": 316036,
+      "size": 124,
+      "sha256": "c0826e44718b9e8daeebd50728715bb396fbe4a51d230d7668a851af63a9e850",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_5x1_Pass38PreparePassInParams_Top_OperationModesER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149038588,
+      "candidate_end": 2149038716,
+      "segment": "E04",
+      "decoded_offset": 319356,
+      "size": 128,
+      "sha256": "a99bcc40c48585b56d38af66f217362792320cd73542d076e63b16d623572367",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_1x0_Pass38PreparePassInParams_Top_OperationModesER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149039016,
+      "candidate_end": 2149039232,
+      "segment": "E04",
+      "decoded_offset": 319784,
+      "size": 216,
+      "sha256": "76253ebfef950ed6b62b74871144e36c9835f608b20403ac75a34592db8e947f",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_1x0_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149039232,
+      "candidate_end": 2149039384,
+      "segment": "E04",
+      "decoded_offset": 320000,
+      "size": 152,
+      "sha256": "650376c6a68ff42c18ff338ad66728bf777b3cb67467ca7c566522bca66fdc7c",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_2x0_Pass38PreparePassInParams_Top_OperationModesER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149039384,
+      "candidate_end": 2149039524,
+      "segment": "E04",
+      "decoded_offset": 320152,
+      "size": 140,
+      "sha256": "7ad53cabd93a1ea26bb9e4ff3d8758877f975115812d35891aa21d41464347d8",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_2x0_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149039524,
+      "candidate_end": 2149040092,
+      "segment": "E04",
+      "decoded_offset": 320292,
+      "size": 568,
+      "sha256": "b9dab37927081537367d1e6e80dfd72ec605d8bea6c2554594b2ec6853f3320b",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_2x0_Pass24PreparePassInParams_MiscER15tsFIPLIB_Inputs",
+      "address": 2149040092,
+      "candidate_end": 2149040332,
+      "segment": "E04",
+      "decoded_offset": 320860,
+      "size": 240,
+      "sha256": "82cae80c7d331aa7d2a4a45d25fd9cb7f3f5fcb4b4b6f7488bb74812ee1bffdc",
+      "transfers": []
+    },
+    {
+      "name": "PathImageProcessingEnable",
+      "address": 2149328732,
+      "candidate_end": 2149328916,
+      "segment": "E04",
+      "decoded_offset": 609500,
+      "size": 184,
+      "sha256": "7502c60615f9ad23af404a4ae0d8957831b3ddeb5dfebb7a0a063a0255458ad2",
+      "transfers": [
+        {
+          "site": 2149328796,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149328808,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328872,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328884,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328896,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        },
+        {
+          "site": 2149328908,
+          "word": "080744e1",
+          "kind": "jump",
+          "target": 2149389188,
+          "target_names": [
+            "IpuSetFilterEnable"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuSetFilterEnable",
+      "address": 2149389188,
+      "candidate_end": 2149389200,
+      "segment": "E04",
+      "decoded_offset": 669956,
+      "size": 12,
+      "sha256": "faaa0aeacbbe0f6e086150a572f89fb3e25eb6ee13995500f2ebb1f324b1b9e4",
+      "transfers": [
+        {
+          "site": 2149389192,
+          "word": "080ce00e",
+          "kind": "jump",
+          "target": 2150858808,
+          "target_names": [
+            "_ZN15CImageProcessor15SetFilterEnableE29_IMAGE_PROCESSING_FILTER_ENUMh"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor15SetFilterEnableE29_IMAGE_PROCESSING_FILTER_ENUMh",
+      "address": 2150858808,
+      "candidate_end": 2150858928,
+      "segment": "E04",
+      "decoded_offset": 2139576,
+      "size": 120,
+      "sha256": "999f367f655bd3953314d896faf893a0b80a4a7a441d92ba533a0574a6741fae",
+      "transfers": []
+    },
+    {
+      "name": "_ZN15CImageProcessor11SetDefaultsEv",
+      "address": 2150859508,
+      "candidate_end": 2150859768,
+      "segment": "E04",
+      "decoded_offset": 2140276,
+      "size": 260,
+      "sha256": "927f0e056887cd1503d4985d42031ec1937a24ed7e89a05883ad22dfd75f3bd8",
+      "transfers": [
+        {
+          "site": 2150859652,
+          "word": "0c0ce042",
+          "kind": "call",
+          "target": 2150859016,
+          "target_names": [
+            "_ZN15CImageProcessor9SetFilterEPvm"
+          ]
+        },
+        {
+          "site": 2150859728,
+          "word": "0c0ce042",
+          "kind": "call",
+          "target": 2150859016,
+          "target_names": [
+            "_ZN15CImageProcessor9SetFilterEPvm"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor6CommitEv",
+      "address": 2150868920,
+      "candidate_end": 2150871720,
+      "segment": "E04",
+      "decoded_offset": 2149688,
+      "size": 2800,
+      "sha256": "6c392f60c51b5ece79e2f0abb46902bc67f4d91a1677d088faf70af4cc9ecc1d",
+      "transfers": [
+        {
+          "site": 2150868976,
+          "word": "0c0cdedf",
+          "kind": "call",
+          "target": 2150857596,
+          "target_names": [
+            "_ZN15CImageProcessor28CheckLimitationsBeforeCommitEv"
+          ]
+        },
+        {
+          "site": 2150869008,
+          "word": "0c0ce580",
+          "kind": "call",
+          "target": 2150864384,
+          "target_names": [
+            "_ZN15CImageProcessor17FreeTempResourcesEhh"
+          ]
+        },
+        {
+          "site": 2150869048,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869092,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869128,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869156,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869200,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869272,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869316,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869344,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869388,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869456,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150869468,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869512,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869548,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869576,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869620,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869692,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869736,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869764,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869804,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869872,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150869884,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869928,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869964,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869992,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870036,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870108,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870152,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870180,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870224,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870292,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150870340,
+          "word": "0c05f406",
+          "kind": "call",
+          "target": 2149044248,
+          "target_names": [
+            "FipLibDeleteInternalAllocations"
+          ]
+        },
+        {
+          "site": 2150870400,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150870476,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150870508,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        },
+        {
+          "site": 2150870536,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150870596,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150870656,
+          "word": "0c0ce410",
+          "kind": "call",
+          "target": 2150862912,
+          "target_names": [
+            "_ZN15CImageProcessor17CalculateTopologyEv"
+          ]
+        },
+        {
+          "site": 2150870708,
+          "word": "0c0ce1a3",
+          "kind": "call",
+          "target": 2150860428,
+          "target_names": [
+            "_ZN15CImageProcessor16PrepareFinalPassEv"
+          ]
+        },
+        {
+          "site": 2150870732,
+          "word": "0c0ce1d9",
+          "kind": "call",
+          "target": 2150860644,
+          "target_names": [
+            "_ZN15CImageProcessor21PrepareMidPassCommonsEv"
+          ]
+        },
+        {
+          "site": 2150870816,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150870856,
+          "word": "0c0ce97d",
+          "kind": "call",
+          "target": 2150868468,
+          "target_names": [
+            "_ZN15CImageProcessor16PrepareSubimagesEv"
+          ]
+        },
+        {
+          "site": 2150870908,
+          "word": "0c04cc5c",
+          "kind": "call",
+          "target": 2148741488,
+          "target_names": [
+            "CbcBatchCreate"
+          ]
+        },
+        {
+          "site": 2150870928,
+          "word": "0c0ce8ef",
+          "kind": "call",
+          "target": 2150867900,
+          "target_names": [
+            "_ZN15CImageProcessor13SubmitToBatchEP12tagCBC_BATCHh"
+          ]
+        },
+        {
+          "site": 2150870976,
+          "word": "0c0cd551",
+          "kind": "call",
+          "target": 2150847812,
+          "target_names": [
+            "_ZN10Serializer17OpenResourceFilesEP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150870988,
+          "word": "0c0cd14d",
+          "kind": "call",
+          "target": 2150843700,
+          "target_names": [
+            "_ZN10Serializer9SerializeER13ISerializableP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150870996,
+          "word": "0c0cd57f",
+          "kind": "call",
+          "target": 2150847996,
+          "target_names": [
+            "_ZN10Serializer18CloseResourceFilesEP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150871032,
+          "word": "0c0ce410",
+          "kind": "call",
+          "target": 2150862912,
+          "target_names": [
+            "_ZN15CImageProcessor17CalculateTopologyEv"
+          ]
+        },
+        {
+          "site": 2150871056,
+          "word": "0c0ce4d4",
+          "kind": "call",
+          "target": 2150863696,
+          "target_names": [
+            "_ZN15CImageProcessor16TranslateFiltersEv"
+          ]
+        },
+        {
+          "site": 2150871216,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150871284,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150871312,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150871336,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871364,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871392,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871420,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871448,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871476,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871504,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871532,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871560,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871588,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871616,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871644,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871680,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150871712,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN14CTranslatorC1219PrepareCalculationsEP14tagSFilterDatamP19tagSIMAGEDESCRIPTORS3_P15tsFIPLIB_InputsP22_FIPLIB_OUTPUT_WRAPPERm",
+      "address": 2150930452,
+      "candidate_end": 2150934020,
+      "segment": "E04",
+      "decoded_offset": 2211220,
+      "size": 3568,
+      "sha256": "d02d958f98abdee47166fd8b59a0405b2541783eac577dfe5925e83d6b950d1a",
+      "transfers": [
+        {
+          "site": 2150930528,
+          "word": "0c0084ff",
+          "kind": "call",
+          "target": 2147619836,
+          "target_names": [
+            "SmdbIsZLightEnabled"
+          ]
+        },
+        {
+          "site": 2150930548,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150930752,
+          "word": "0c0d3241",
+          "kind": "call",
+          "target": 2150942980,
+          "target_names": [
+            "_ZN9CIpuUtils30uiPathInput2IpuConfigToolInputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150930764,
+          "word": "0c0d328f",
+          "kind": "call",
+          "target": 2150943292,
+          "target_names": [
+            "_ZN9CIpuUtils32uiPathOutput2IpuConfigToolOutputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150931384,
+          "word": "0c027e25",
+          "kind": "call",
+          "target": 2148137108,
+          "target_names": [
+            "ImageType2ImageFormat"
+          ]
+        },
+        {
+          "site": 2150931508,
+          "word": "0805f27e",
+          "kind": "jump",
+          "target": 2149042680,
+          "target_names": [
+            "FipLibCalculate"
+          ]
+        },
+        {
+          "site": 2150931684,
+          "word": "0805f27e",
+          "kind": "jump",
+          "target": 2149042680,
+          "target_names": [
+            "FipLibCalculate"
+          ]
+        },
+        {
+          "site": 2150932592,
+          "word": "0c0d33ef",
+          "kind": "call",
+          "target": 2150944700,
+          "target_names": [
+            "_ZN9CIpuUtils19FindZlightGainLimitEP12_S_IP_DRC_12"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IpuToneMapRgb",
+      "address": 2159132932,
+      "candidate_end": 2159134224,
+      "segment": "E06-text",
+      "decoded_offset": 3314820,
+      "size": 1292,
+      "sha256": "5b55a77c848f6820895258c1001f814e96426c9de7a232721247cd6cf965c78c",
+      "transfers": [
+        {
+          "site": 2159133004,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2159133056,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2159133076,
+          "word": "0c06e4a5",
+          "kind": "call",
+          "target": 2149290644,
+          "target_names": [
+            "PathCreate"
+          ]
+        },
+        {
+          "site": 2159133104,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133124,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133168,
+          "word": "0c2c7c48",
+          "kind": "call",
+          "target": 2159145248,
+          "target_names": [
+            "MemAlloc"
+          ]
+        },
+        {
+          "site": 2159133196,
+          "word": "0c2c6d5b",
+          "kind": "call",
+          "target": 2159129964,
+          "target_names": [
+            "SetFilterHeader"
+          ]
+        },
+        {
+          "site": 2159133276,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133300,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133316,
+          "word": "0c0707d9",
+          "kind": "call",
+          "target": 2149326692,
+          "target_names": [
+            "PathImageProcessingCreate"
+          ]
+        },
+        {
+          "site": 2159133408,
+          "word": "0c07087a",
+          "kind": "call",
+          "target": 2149327336,
+          "target_names": [
+            "PathSetImageProcessing"
+          ]
+        },
+        {
+          "site": 2159133432,
+          "word": "0c0709d7",
+          "kind": "call",
+          "target": 2149328732,
+          "target_names": [
+            "PathImageProcessingEnable"
+          ]
+        },
+        {
+          "site": 2159133444,
+          "word": "0c06e82d",
+          "kind": "call",
+          "target": 2149294260,
+          "target_names": [
+            "PathSetFormat"
+          ]
+        },
+        {
+          "site": 2159133460,
+          "word": "0c06e716",
+          "kind": "call",
+          "target": 2149293144,
+          "target_names": [
+            "PathSetScale"
+          ]
+        },
+        {
+          "site": 2159133480,
+          "word": "0c06ed09",
+          "kind": "call",
+          "target": 2149299236,
+          "target_names": [
+            "PathSetBuffers"
+          ]
+        },
+        {
+          "site": 2159133488,
+          "word": "0c0720f2",
+          "kind": "call",
+          "target": 2149352392,
+          "target_names": [
+            "PathSubmit"
+          ]
+        },
+        {
+          "site": 2159133504,
+          "word": "0c0729d4",
+          "kind": "call",
+          "target": 2149361488,
+          "target_names": [
+            "PathGo"
+          ]
+        },
+        {
+          "site": 2159133520,
+          "word": "0c072a4a",
+          "kind": "call",
+          "target": 2149361960,
+          "target_names": [
+            "PathWait"
+          ]
+        },
+        {
+          "site": 2159133544,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        },
+        {
+          "site": 2159133556,
+          "word": "0c0366b2",
+          "kind": "call",
+          "target": 2148375240,
+          "target_names": [
+            "_tx_counter_get"
+          ]
+        },
+        {
+          "site": 2159133592,
+          "word": "0c03f232",
+          "kind": "call",
+          "target": 2148518088,
+          "target_names": [
+            "__udivdi3"
+          ]
+        },
+        {
+          "site": 2159133608,
+          "word": "0c2c624c",
+          "kind": "call",
+          "target": 2159118640,
+          "target_names": [
+            "DebugProfUpdateCounter"
+          ]
+        },
+        {
+          "site": 2159133640,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133676,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133692,
+          "word": "0c06e502",
+          "kind": "call",
+          "target": 2149291016,
+          "target_names": [
+            "PathDestroy"
+          ]
+        },
+        {
+          "site": 2159133724,
+          "word": "0c2c807f",
+          "kind": "call",
+          "target": 2159149564,
+          "target_names": [
+            "MemFree"
+          ]
+        },
+        {
+          "site": 2159133800,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133856,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133916,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133964,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159133996,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134024,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134088,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134132,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        },
+        {
+          "site": 2159134184,
+          "word": "0c2c909c",
+          "kind": "call",
+          "target": 2159166064,
+          "target_names": [
+            "PrintBErr"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "limitations": [
+    "The replay initializes unrelated topology and input fields in synthetic RAM and executes the original block-control and export routines. It does not recompute the capture topology, run the scheduler, execute MMIO or simulate pixels.",
+    "The four-pass HDR result applies to the traced fresh path and its input conditions. The top-control replay uses the resolved class, topology word and control inputs; it does not regenerate the topology.",
+    "For 0x1 Q > 6 the top-control function returns without setting the two local bytes; the example replay preserves seeded sentinels and does not assign that category a normal HDR interpretation."
+  ]
+}

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — HDR 제출 분기와 최종 FC 계수</title><meta name="description" content="IpuSubmit 출력 디스크립터 선택, HDR FIPLIB FC 계수 생성·내보내기·레지스터 기록의 조건부 검증"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
 <body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / FOLLOW-UP 04</p><h1>HDR 제출 분기와<br><span>최종 FC 계수</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="pixel-report.html">이전 버퍼·패스 분석</a><a href="index.html">전체 분석</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub</a></p></div><aside class="milestone"><strong>path+0x28</strong><span>새 HDR 경로에서 선택되는 출력</span><strong>11개 값</strong><span>FC 계수 9개 + 보조값 2개 보존</span><strong>72회</strong><span>6개 사례의 MMIO 쓰기 대조</span></aside></header>
-<nav aria-label="문서 목차"><a href="#selector">출력 선택</a><a href="#producer">FIPLIB 생성</a><a href="#values">최종 설정값</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·한계</a></nav><main>
+<nav aria-label="문서 목차"><a href="#selector">출력 선택</a><a href="#producer">FIPLIB 생성</a><a href="#values">최종 설정값</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·한계</a></nav><main><p class="update-banner"><strong>최신 후속 분석:</strong> <a href="hdr-control-report.html">HDR 패스별 FC1 활성화·제어 비트와 최종 제출 선택</a>을 추가 확인했습니다. HDR 보조 설정에 따른 패스 구성과 패스별 FC1 값, 마지막 패스를 고르는 조건을 원본 명령으로 대조했습니다. 아래 내용은 작성 시점의 범위를 유지하며 실제 촬영 관측은 포함하지 않습니다.</p>
 <section id="selector"><p class="eyebrow">01 / OUTPUT DESCRIPTOR</p><h2>대체 출력의 타입 필드가 선택 조건이다</h2><p>{{selector}} <a href="analysis/submit-followup.json">[S1: selector·type_0_registry]</a></p>{{selector_graph}}
 <p>{{mutators}} <a href="analysis/submit-followup.json">[S1: HDR 설정·surface 바인딩]</a></p>
 <div class="table-wrap"><table><caption>분석한 경로: W+0x208 == 0 → IpuToneMapRgb, 새 type 0 경로, format 0x0f01</caption><thead><tr><th>구간</th><th>주소 근거</th><th>확인한 내용</th></tr></thead><tbody>
@@ -31,7 +31,7 @@
 1024   −857   −167
 
 companion values: 2048, 2048</code></pre>
-<p>이 11개 값은 HDR의 상위 디스크립터에서 FIPLIB 입력·FC 블록·출력 payload를 거쳐 FC1 객체까지 유지됩니다. FC1 writer는 계수와 보조값을 부호 확장해 <code>0xb60000c0..0xb60000e8</code>에 기록합니다. FIPLIB가 FC1 값을 덮어쓸 수 있다는 <a href="pixel-report.html#overwrite">이전 분석</a>은 그대로 유효하며, 이번에 확인한 새 HDR 경로에서는 그 덮어쓰기 값이 같다는 뜻입니다. <a href="analysis/fiplib-followup.json">[F1]</a> <a href="analysis/fiplib-coefficient-checks.json">[N1]</a></p>
+<p>이 11개 값은 HDR의 상위 디스크립터에서 FIPLIB 입력·FC 블록·출력 payload를 거쳐 FC1 객체까지 유지됩니다. FC1 writer는 계수와 보조값을 부호 확장해 <code>0xb60000c0..0xb60000e8</code>에 기록합니다. FIPLIB가 FC1 값을 덮어쓸 수 있다는 <a href="pixel-report.html#overwrite">이전 분석</a>은 그대로 유효하며, 여기서 검증한 FC mode 1 계수 경로에서는 그 덮어쓰기 값이 같다는 뜻입니다. 패스별 토폴로지·활성화 값은 <a href="hdr-control-report.html#controls">후속 보고서</a>에서 구분하며, 이 여섯 합성 사례만으로 전체 HDR 패스의 동작을 검증했다고 보지는 않습니다. <a href="analysis/fiplib-followup.json">[F1]</a> <a href="analysis/fiplib-coefficient-checks.json">[N1]</a></p>
 <div class="table-wrap"><table><caption>계수 이외의 제어값은 따로 판단해야 합니다</caption><thead><tr><th>대상</th><th>확인한 식·조건</th><th>남은 범위</th></tr></thead><tbody>
 <tr><th>FC1 제어 워드</th><td>mode 1에서는 payload+0x12c = local pass input[0x28] &amp; 1; writer 주소 0xb60000fc</td><td>실제 촬영의 모든 패스에서 이 비트를 고정하지 않음</td></tr>
 <tr><th>FC1 활성화</th><td>payload+0x44 바이트 == 0일 때 enable. 이 값은 general block+0x3f ← pass+0x8b0의 별도 top-control 값</td><td>모든 패스에서 FC1이 활성이라는 결론은 아님</td></tr>

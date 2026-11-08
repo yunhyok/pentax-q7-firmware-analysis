@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — HDR FC1 활성화와 최종 제출 패스</title><meta name="description" content="HDR 보조 설정으로 구성되는 네 IPU 패스, FC1 bypass·flags와 최종 제출 조건 분석"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
+<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / FOLLOW-UP 05</p><h1>HDR FC1 활성화와<br><span>최종 제출 패스</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="final-color-report.html">이전 계수·출력 선택</a><a href="index.html">전체 분석</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub</a></p></div><aside class="milestone"><strong>4 IPU passes</strong><span>분석한 새 HDR 기본 경로</span><strong>EC = 0</strong><span>마지막 패스 · FC1 활성화 설정</span><strong>FC = 0</strong><span>마지막 패스 · 별도 제어 워드</span></aside></header>
+<nav aria-label="문서 목차"><a href="#topology">HDR 패스 구성</a><a href="#controls">패스별 제어</a><a href="#registers">활성화 기록</a><a href="#submit">최종 제출</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·한계</a></nav><main>
+<section id="topology"><p class="eyebrow">01 / CONCRETE HDR TOPOLOGY</p><h2>HDR 보조 설정이 단계 선택값을 덮어써 네 패스를 만든다</h2><p>{{scope}} <a href="analysis/hdr-pass-followup.json">[H1: HDR 입력과 기본값]</a></p>{{topology_graph}}
+<div class="table-wrap"><table><caption>토폴로지 선택의 입력과 근거</caption><thead><tr><th>단계</th><th>확인한 조건</th><th>의미</th></tr></thead><tbody>
+<tr><th>입력·출력 형식</th><td>format 0x0f01 → image type 6 / 8 → FIPLIB input[6]=0xd / [7]=1</td><td>IpuSubmit 형식 표와 PrepareCalculations 변환 함수를 따라감</td></tr>
+<tr><th>분류값 Q</th><td>processor+0x26c = 0 → input[9] = 0</td><td>새 processor의 ID 4 파라미터가 HDR 설정 호출에서 바뀌지 않음</td></tr>
+<tr><th>최초 기본값</th><td>PrepareCalculations: input[0x1738]=1; ID 0x1e 없음 → NR 반워드 0</td><td>이 초기값만으로 최종 토폴로지를 판단할 수 없음</td></tr>
+<tr><th>HDR 보조 설정</th><td>활성 ID 0x1f → input[0x1738]=0</td><td>0x80349fa0..0x8034a064에서 초기값을 덮어씀</td></tr>
+<tr><th>추가 패스 선택</th><td>topology phase=0; CreateTopology가 level 0을 1로 올림</td><td>location 0 → 6 → 10 → 5, N=4</td></tr>
+<tr><th>마지막 패스</th><td>index 3 / location 5 → class 0x1</td><td>vtable 0x8051ed00 → Top_BlockControls 0x801788b0</td></tr>
+<tr><th>토폴로지 워드 T</th><td>GetPassTopologyParams: object+0x84; +4가 가리키는 object+0x18</td><td>파생 생성자의 형식별 분기 후 T=1·1·0·1</td></tr></tbody></table></div>
+<p>토폴로지 기본 생성자가 T를 0으로 지운 뒤, 파생 IPU 생성자 <code>0x8017c148</code>가 입력 형식에 따라 다시 씁니다. 형식 0xd는 <code>0x2010</code> 마스크 분기에서 T=1이 되고, location 10의 형식 0x12는 <code>0x023e000c</code> 마스크 분기에서 T=0이 됩니다. MIPS branch-likely의 지연 슬롯 기록까지 확인했습니다. <a href="analysis/hdr-pass-followup.json">[H1: T 생성 경로]</a></p>
+<p class="note">입력 형식 코드 0xd와 토폴로지 워드 T는 서로 다른 필드입니다. T를 패스 인덱스나 이미지 형식이라고 임의로 해석하지 않았습니다. 실제 영상 크기나 촬영 데이터의 관측도 아닙니다.</p></section>
+
+<section id="controls"><p class="eyebrow">02 / PER-PASS FC1 CONTROLS</p><h2>네 패스의 FC1 활성화는 꺼짐·켜짐·꺼짐·켜짐으로 갈린다</h2><p>{{controls}} <a href="analysis/control-followup.json">[C1: Top_BlockControls 분기]</a></p>{{control_graph}}
+<p>로컬 패스 입력은 <code>pass+0x88c</code>입니다. <code>+0x24</code>의 bypass 바이트는 general block을 거쳐 <code>payload+0x44</code>로 나가고, <code>+0x28</code>의 플래그는 FC mode 1에서 <code>payload+0x12c</code>의 bit 0으로 나갑니다. <a href="analysis/control-followup.json">[C1: 설정·Export]</a></p>
+<div class="table-wrap"><table><caption>조건식에서 사용하는 원본 필드 — 등호 비교는 바이트 또는 워드 값의 정확한 비교</caption><thead><tr><th>기호</th><th>정의</th><th>이번 HDR 값</th></tr></thead><tbody><tr><th>S</th><td>u8[pass+0x88f], operation-mode 단계에서 input[1] 복사</td><td>0: ID 0x1d가 없음</td></tr><tr><th>D</th><td>u8[input+0x1072] = (상위 ID 0xf enable 바이트 == 0)</td><td>0: HDR이 ID 0xf를 활성화</td></tr><tr><th>Q</th><td>u8[input+9]</td><td>0: processor 파라미터 ID 4 기본값</td></tr><tr><th>T</th><td>u32[*(topology-params+4)]</td><td>1·1·0·1: 파생 생성자의 형식별 분기까지 확인</td></tr><tr><th>H</th><td>IsANR_or_LC_or_CC_ON helper 0x801775e0의 반환값</td><td>S=0 분기에서는 FC1 bypass 결정에 필요 없음</td></tr></tbody></table></div>
+<div class="table-wrap"><table><caption>다섯 top-control 구현을 사용하는 IPU 클래스별 FC1 결과</caption><thead><tr><th>클래스·분류</th><th>bypass 바이트</th><th>flag 바이트</th></tr></thead><tbody>
+<tr><th>3x0 / 3x1 / 2x1 / 5x1</th><td>T == 0</td><td>0</td></tr><tr><th>1x0</th><td>1</td><td>0</td></tr><tr><th>1x1</th><td>S == 0 ? D == 1 : (T == 0 또는 H == 0)</td><td>T == 0</td></tr><tr><th>2x0</th><td>S == 0 ? D == 1 : T == 0</td><td>T == 0</td></tr><tr><th>0x1, Q = 0·1·4</th><td>1x1과 동일</td><td>T == 0</td></tr><tr><th>0x1, Q = 2·3·5</th><td>T == 0</td><td>0</td></tr><tr><th>0x1, Q = 6</th><td>1</td><td>0</td></tr><tr><th>0x1, Q &gt; 6</th><td colspan="2">이 함수는 두 필드를 쓰지 않고 반환. 초기 상태를 별도로 확인해야 함</td></tr></tbody></table></div>
+{{pass_table}}
+<p>모든 패스의 Q=0, S=0, D=0은 같지만 T는 1·1·0·1이며, 클래스별 조건식도 다릅니다. 1x0과 5x1의 FC1은 비활성화되고, 1x1과 마지막 0x1의 FC1은 활성화됩니다. 이 결과를 다른 디스크립터나 재사용 경로로 일반화하지 않습니다. H의 전체 조건식과 경계 사례는 <a href="analysis/control-followup.json">C1 근거</a>에 기록했습니다.</p>
+<p>마지막 0x1 패스의 제어 경로를 <a href="final-color-report.html#values">이전 계수 보존 경로</a>와 합치면, 계수 9개와 보조값 <code>2048, 2048</code>을 유지하면서 활성화 값 0과 제어 워드 0을 설정하는 구성입니다. 이 설명을 앞선 세 패스의 계수까지 확대하지 않습니다. 고정소수점 분모나 bit 0의 하드웨어 기능은 여기서 새로 지정하지 않습니다.</p></section>
+
+<section id="registers"><p class="eyebrow">03 / ENABLE EMISSION</p><h2>활성화 기록은 제어 워드와 다른 주소를 쓴다</h2><p>{{registers}} <a href="analysis/fc1-enable-checks.json">[E1: 생성자·vtable·writer]</a></p>
+<pre><code>SetEnabled(u8[payload+0x44] == 0) → u8[filter+0x28] = enabled
+FC1 constructor: address = 0xb60000ec, disabled = 1, enabled = 0
+WriteEnable:       MMIO[0xb60000ec] = enabled ? 0 : 1
+WriteEnableToCbc:   append(0xb60000ec, enabled ? 0 : 1)
+
+FC mode 1 Export: u32[payload+0x12c] = u8[local+0x28] &amp; 1
+FC1 setter:       u32[filter+0x48] = u32[payload+0x12c]
+FC1 writer (dirty): MMIO[0xb60000fc] = u32[filter+0x48]</code></pre>
+<p>FC1 생성자 <code>0x8031f56c</code>가 주소와 두 값을 정하고, vtable+0x24는 상속한 SetEnabled <code>0x804ff648</code>로 연결됩니다. 직접 기록은 <code>0x80332680</code>, CBC 청크 기록은 <code>0x80332700</code>입니다. <a href="analysis/fc1-enable-checks.json">[E1: 원본 워드·전이]</a></p>
+<p>{{numeric}}</p><div class="table-wrap"><table><caption>6개 원본 명령 재실행 사례 — enabled·MMIO·CBC 모두 대조</caption><thead><tr><th>payload+0x44의 u32</th><th>읽은 u8</th><th>enabled</th><th>0xb60000ec 값</th></tr></thead><tbody><tr><th>0x00000000</th><td>0</td><td>1</td><td>0</td></tr><tr><th>0x00000001</th><td>1</td><td>0</td><td>1</td></tr><tr><th>0x00000002</th><td>2</td><td>0</td><td>1</td></tr><tr><th>0x00000100</th><td>0</td><td>1</td><td>0</td></tr><tr><th>0x00000101</th><td>1</td><td>0</td><td>1</td></tr><tr><th>0xffffffff</th><td>255</td><td>0</td><td>1</td></tr></tbody></table></div>
+<p class="note">이 6사례는 생성자·변환·setter·writer를 대체 함수 없이 실행했습니다. MMIO는 RAM으로 모델링했습니다. 실제 카메라가 이 값을 받아 필터를 동작시켰다는 관측은 아닙니다.</p></section>
+
+<section id="submit"><p class="eyebrow">04 / FINAL SUBMITTED PASS</p><h2>mode 0은 네 패스를 고르고, 마지막 패스는 index 3이다</h2><p>{{submit}} <a href="analysis/hdr-pass-followup.json">[H1: 초기화·SetParam·Commit·Go]</a></p>{{submit_graph}}
+<p>processor 생성자는 <code>+0x25c</code>부터 파라미터 26개를 0으로 지웁니다. 따라서 mode ID <code>0xa / +0x284</code>, CBC ID <code>0xb / +0x288</code>, import·restore 조건 <code>+0x2b0</code>도 0입니다. 분석한 IpuSubmit의 SetParam 호출은 ID <code>1·2·3·5·6·7·0xd·0xe</code>이며 mode와 CBC 선택값을 바꾸지 않습니다. <a href="analysis/hdr-pass-followup.json">[H1: 파라미터 출처]</a></p>
+<div class="table-wrap"><table><caption>N=4인 경우의 범위 비교 — 실제 새 HDR은 mode 0</caption><thead><tr><th>mode</th><th>범위</th><th>의미</th></tr></thead><tbody><tr><th>0 · 이번 HDR</th><td>[0,4)</td><td>전체 패스 선택 → index 0·1·2·3</td></tr><tr><th>1 · 비교</th><td>[0,3)</td><td>마지막 제외 → index 0·1·2</td></tr><tr><th>2 · 비교</th><td>[3,4)</td><td>마지막만 선택 → index 3</td></tr></tbody></table></div>
+<p>TranslateFilters의 마지막 패스 조건 <code>i == N−1</code>도 index 3에서 참입니다. 이 플래그, Commit 범위, FC1 활성화는 각각 다른 조건입니다. 선택 범위 안에서 task가 없는 슬롯은 건너뛰며, 직접 레지스터 기록에는 config·UID·dirty 조건이 추가됩니다. <a href="pixel-report.html#passes">[이전 패스·writer 조건]</a></p></section>
+
+<section id="comparison"><p class="eyebrow">05 / K-3 MARK III COMPARISON</p><h2>제출 범위와 비트 의미를 기종별로 대조한다</h2><p>{{comparison}} <a href="analysis/control-comparison.json">[K1: 출처·해시]</a></p><p>고정한 공개 커밋은 <code>{{k3_commit}}</code>입니다. 비교에는 해당 커밋의 파일만 사용했습니다.</p>
+<div class="table-wrap"><table><caption>같은 질문에 대해 확보한 증거와 차이</caption><thead><tr><th>질문</th><th>K-3 Mark III</th><th>Q7 이번 결과</th></tr></thead><tbody><tr><th>어느 단계를 제출하는가</th><td><a href="{{k3_base}}pipeline-evidence.json">B2r·R2y opcode 0x200005 / 0x200006</a>와 별도 생성 플래그. opcode 차이만으로 큐 순서는 미확정</td><td>새 HDR의 네 IPU 패스, mode 0의 [0,4), 마지막 index 3. CBC 0의 직접 제출 경로</td></tr><tr><th>활성화와 별도 제어값</th><td><a href="{{k3_base}}isp-semantics-evidence.json">R2y의 8개 제어 바이트 → R+0x10 bit 0</a>; 별도 행렬 모드 → R+0x80 bits 0..1. 물리적 enable·bypass 의미는 미확정</td><td>소프트웨어 FC1 enable → 0xb60000ec, 별도 packed control → 0xb60000fc. 마지막 HDR 패스의 설정은 모두 0</td></tr><tr><th>검증 범위</th><td><a href="{{k3_base}}r2y-control-checks.json">8개 제어값 생산 구간의 입력 byte0 256값</a> 대조. 전체 packer·실제 MMIO·픽셀 제외</td><td>top-control 조건과 Export, 토폴로지·제출 선택, 활성화 MMIO·CBC의 제한된 원본 명령 실행. 실기 픽셀 제외</td></tr></tbody></table></div></section>
+
+<section id="validation"><p class="eyebrow">06 / VALIDATION AND LIMITS</p><h2>분기별 재실행과 실제 촬영의 경계</h2><p>원본 함수 후보 <strong>{{function_count}}개</strong>와 명령·데이터 워드 <strong>{{word_count}}건</strong>을 검증 대상으로 고정했습니다. 함수 범위는 다음 sidecar 주소까지이며 공식 함수 크기가 아닙니다. 공개 CI는 원본 없이 메타데이터·기준값·HTML·링크를 검사하고, 원본 워드 대조와 VEX 실행은 로컬에서 수행했습니다.</p>
+<pre><code>python -m unittest discover -s tests -v
+python tools/verify_report.py --firmware path/to/fwdc603p.bin
+python tools/check_fc1_controls.py .private/main-expanded.elf --output .private/control-recheck.json
+python tools/check_fc1_enable.py .private/main-expanded.elf --output .private/enable-recheck.json
+python tools/check_hdr_passes.py .private/main-expanded.elf --output .private/hdr-recheck.json</code></pre>
+<p>top-control 58사례 검사에는 다섯 구현, 네 HDR 패스의 phase 0 입력, 분류값의 기본·예외 분기, helper의 경계값과 실제 General·FC Export를 포함했습니다. HDR 토폴로지와 제출 선택의 재실행 범위·대체 함수는 <a href="analysis/hdr-pass-followup.json">H1의 replay</a>에 명시했습니다. <a href="analysis/control-followup.json">C1</a>과 <a href="analysis/fc1-enable-checks.json">E1</a>은 각각의 실행 결과와 입력 조건을 기록합니다.</p>
+<p>HDR 재실행은 합성 64×16 버퍼와 원본 명령으로 만든 기본 보조 설정을 사용했습니다. 토폴로지·wrapper 생성 뒤 FIPLIB Analyze·geometry·Export의 나머지 구간을 건너뛰고, 실제 출력 메모리를 유지한 채 Commit의 범위 선택을 실행했습니다. task 생성·TranslateFilters·Go는 이 재실행에 포함하지 않았으며, 마지막 플래그와 직접 제출 경로는 정적 코드로 연결했습니다. 전체 촬영 실행을 재현한 결과는 아닙니다.</p><p>{{limits}}</p><p class="note">아직 명명하지 않은 packed control bit 0의 물리적 기능, 실제 센서 데이터에서의 처리 결과, DMA·캐시 일관성은 남은 과제입니다. 원본 BIN·추출 ELF·전체 디컴파일은 공개하지 않습니다.</p>
+<ul class="sources"><li><a href="analysis/hdr-pass-followup.json">H1 · HDR 토폴로지·최종 제출 선택</a> · <a href="tools/check_hdr_passes.py">재현 도구</a></li><li><a href="analysis/control-followup.json">C1 · 패스별 FC1 제어식과 원본 재실행</a> · <a href="tools/check_fc1_controls.py">재현 도구</a></li><li><a href="analysis/fc1-enable-checks.json">E1 · 활성화 MMIO·CBC 연결</a> · <a href="tools/check_fc1_enable.py">재현 도구</a></li><li><a href="analysis/control-comparison.json">K1 · K-3 고정 커밋과 파일 해시</a></li><li><a href="analysis/control-editorial.json">문장 검수 기록</a> · <a href="tools/verify_control_followup.py">근거 검증 도구</a></li></ul></section>
+</main><footer>독립적인 펌웨어 분석 · Q7 v1.01 · 선택한 설정과 실제 영상 결과를 구분했습니다.</footer></body></html>

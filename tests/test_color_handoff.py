@@ -8,7 +8,7 @@ import unittest
 class OptimizedReplayTests(unittest.TestCase):
     def test_optimized_python_is_rejected_before_reading_input(self):
         root=Path(__file__).resolve().parents[1]
-        for module in ('check_color_handoff','check_fiplib_coefficients','check_submit_choice'):
+        for module in ('check_color_handoff','check_fiplib_coefficients','check_submit_choice','check_fc1_enable','check_hdr_passes'):
             with self.subTest(module=module):
                 result=subprocess.run([sys.executable,'-O','-c',
                     "import sys; from pathlib import Path; sys.path.insert(0,'tools'); "
