@@ -1,0 +1,14 @@
+{
+  "skill": "humanize-korean 2.3.2",
+  "route": "light",
+  "run_id": "2026-11-08-006-00c7",
+  "change_rate_percent": 0.4,
+  "golden": "PASS",
+  "lost_modality_pairs": 0,
+  "scope": "7 narrative paragraphs; technical fields and limits preserved",
+  "post_review_clarifications": [
+    "Connected FIPLIB Export payload and direct descriptor paths in the FC1 diagram.",
+    "Clarified that matrix input is fixed within each descriptor-version pair.",
+    "Added measured four-task construction, Commit and Go queue results with fixture-local UIDs and explicit external models."
+  ]
+}

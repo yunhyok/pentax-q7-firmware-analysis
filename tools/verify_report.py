@@ -17,6 +17,8 @@ from build_final_report import main as build_final
 from verify_final_followup import verify as verify_final
 from build_control_report import main as build_control
 from verify_control_followup import verify as verify_control
+from build_task_report import main as build_task
+from verify_task_followup import verify as verify_task
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -113,6 +115,8 @@ def verify_deep(firmware):
     verify_final()
     verify_html(ROOT / "hdr-control-report.html", build_control)
     verify_control()
+    verify_html(ROOT / "hdr-task-report.html", build_task)
+    verify_task()
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode
@@ -127,6 +131,7 @@ def verify_deep(firmware):
         verify_pixel(firmware, outputs)
         verify_final(firmware, outputs)
         verify_control(firmware, outputs)
+        verify_task(firmware, outputs)
         assert trace(firmware, read("deep-selected-functions.json"), outputs) == deep, "deep transfer mismatch"
         assert trace(firmware, read("selected-functions.json")) == read("threadx-shutter-transfers.json")
         segments = [(va, firmware[offset:offset+size]) for offset,va,size in PLAIN]

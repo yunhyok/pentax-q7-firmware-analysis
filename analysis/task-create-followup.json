@@ -1,0 +1,3962 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Q7 v1.01 fresh HDR task construction, configuration and direct queue submission after the default auxiliary ID 0x1f path.",
+  "coordinates": "Word locations are decoded segment offsets. E03 word locations use original firmware file offsets.",
+  "evidence": [
+    {
+      "id": "wrapper_to_task",
+      "observation": "CalculateTopology creates the C12 topology handler and iterates the selected processor range. A wrapper kind 0 dispatches handler vtable+0x18 to CreateTask with its existing task pointer, descriptor array, wrapper array, index and count. The returned pointer is stored at processor+0x204+4*index. Other wrapper kinds use handler+0x1c, record their index in processor+0x314 and clear any preexisting IPU task slot after destroying the old task.",
+      "words": [
+        {
+          "va": "0x80339068",
+          "u32le_word": "0xafb20068",
+          "segment": "E04",
+          "decoded_offset": "0x20b5e8"
+        },
+        {
+          "va": "0x80339070",
+          "u32le_word": "0xafb60078",
+          "segment": "E04",
+          "decoded_offset": "0x20b5f0"
+        },
+        {
+          "va": "0x803390a8",
+          "u32le_word": "0x8e32030c",
+          "segment": "E04",
+          "decoded_offset": "0x20b628"
+        },
+        {
+          "va": "0x803390ac",
+          "u32le_word": "0x8e230310",
+          "segment": "E04",
+          "decoded_offset": "0x20b62c"
+        },
+        {
+          "va": "0x803390b0",
+          "u32le_word": "0xae200314",
+          "segment": "E04",
+          "decoded_offset": "0x20b630"
+        },
+        {
+          "va": "0x803390c0",
+          "u32le_word": "0x001230c0",
+          "segment": "E04",
+          "decoded_offset": "0x20b640"
+        },
+        {
+          "va": "0x803390cc",
+          "u32le_word": "0x00719821",
+          "segment": "E04",
+          "decoded_offset": "0x20b64c"
+        },
+        {
+          "va": "0x803390d0",
+          "u32le_word": "0x0004a080",
+          "segment": "E04",
+          "decoded_offset": "0x20b650"
+        },
+        {
+          "va": "0x80339130",
+          "u32le_word": "0xafb90018",
+          "segment": "E04",
+          "decoded_offset": "0x20b6b0"
+        },
+        {
+          "va": "0x80339134",
+          "u32le_word": "0xafb8001c",
+          "segment": "E04",
+          "decoded_offset": "0x20b6b4"
+        },
+        {
+          "va": "0x8033913c",
+          "u32le_word": "0xafb20014",
+          "segment": "E04",
+          "decoded_offset": "0x20b6bc"
+        },
+        {
+          "va": "0x80339140",
+          "u32le_word": "0x8e650204",
+          "segment": "E04",
+          "decoded_offset": "0x20b6c0"
+        },
+        {
+          "va": "0x8033916c",
+          "u32le_word": "0x8da20018",
+          "segment": "E04",
+          "decoded_offset": "0x20b6ec"
+        },
+        {
+          "va": "0x80339170",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x20b6f0"
+        },
+        {
+          "va": "0x80339180",
+          "u32le_word": "0xae620204",
+          "segment": "E04",
+          "decoded_offset": "0x20b700"
+        },
+        {
+          "va": "0x80339184",
+          "u32le_word": "0x0c02b459",
+          "segment": "E04",
+          "decoded_offset": "0x20b704"
+        },
+        {
+          "va": "0x80339194",
+          "u32le_word": "0x0c0d4980",
+          "segment": "E04",
+          "decoded_offset": "0x20b714"
+        },
+        {
+          "va": "0x803391c8",
+          "u32le_word": "0x02891021",
+          "segment": "E04",
+          "decoded_offset": "0x20b748"
+        },
+        {
+          "va": "0x803391cc",
+          "u32le_word": "0x8c480014",
+          "segment": "E04",
+          "decoded_offset": "0x20b74c"
+        },
+        {
+          "va": "0x803391d0",
+          "u32le_word": "0x1100ffc3",
+          "segment": "E04",
+          "decoded_offset": "0x20b750"
+        },
+        {
+          "va": "0x8033920c",
+          "u32le_word": "0x8d23001c",
+          "segment": "E04",
+          "decoded_offset": "0x20b78c"
+        },
+        {
+          "va": "0x80339210",
+          "u32le_word": "0x0060f809",
+          "segment": "E04",
+          "decoded_offset": "0x20b790"
+        },
+        {
+          "va": "0x80339218",
+          "u32le_word": "0x8e620204",
+          "segment": "E04",
+          "decoded_offset": "0x20b798"
+        },
+        {
+          "va": "0x8033921c",
+          "u32le_word": "0xae320314",
+          "segment": "E04",
+          "decoded_offset": "0x20b79c"
+        },
+        {
+          "va": "0x80339248",
+          "u32le_word": "0xa2c70244",
+          "segment": "E04",
+          "decoded_offset": "0x20b7c8"
+        },
+        {
+          "va": "0x8033924c",
+          "u32le_word": "0xae600204",
+          "segment": "E04",
+          "decoded_offset": "0x20b7cc"
+        },
+        {
+          "va": "0x803445d4",
+          "u32le_word": "0x2462f100",
+          "segment": "E04",
+          "decoded_offset": "0x216b54"
+        },
+        {
+          "va": "0x803445d8",
+          "u32le_word": "0xae020000",
+          "segment": "E04",
+          "decoded_offset": "0x216b58"
+        },
+        {
+          "va": "0x804ff118",
+          "u32le_word": "0x80345850",
+          "segment": "E04",
+          "decoded_offset": "0x3d1698"
+        },
+        {
+          "va": "0x804ff11c",
+          "u32le_word": "0x803453f0",
+          "segment": "E04",
+          "decoded_offset": "0x3d169c"
+        }
+      ]
+    },
+    {
+      "id": "task_class_id_and_callbacks",
+      "observation": "CreateTask returns zero on its wrapper-kind-1 guard. For kind 0 it loads the wrapper+0x18 topology record and uses an existing task if present. Fresh slots allocate 0x2a8 bytes and call CIpuTaskC12 constructor, installing primary vtable 0x804ff1e0 and observer subobject vtable 0x804ff228 at task+8. Each exported topology halfword +0x68 is copied from topology source+0x10, the pass index; SetTaskId puts it into task+0x2a0. Intermediate passes call handler slot 0 for output topology. The index equal to count-1 uses slot +8 for final topology. All four FIPLIB pass classes use this same C12 task class.",
+      "words": [
+        {
+          "va": "0x80345858",
+          "u32le_word": "0x8fb3006c",
+          "segment": "E04",
+          "decoded_offset": "0x217dd8"
+        },
+        {
+          "va": "0x8034585c",
+          "u32le_word": "0x8fa90068",
+          "segment": "E04",
+          "decoded_offset": "0x217ddc"
+        },
+        {
+          "va": "0x80345888",
+          "u32le_word": "0x01494021",
+          "segment": "E04",
+          "decoded_offset": "0x217e08"
+        },
+        {
+          "va": "0x8034588c",
+          "u32le_word": "0x8d030014",
+          "segment": "E04",
+          "decoded_offset": "0x217e0c"
+        },
+        {
+          "va": "0x80345890",
+          "u32le_word": "0x24020001",
+          "segment": "E04",
+          "decoded_offset": "0x217e10"
+        },
+        {
+          "va": "0x803458a0",
+          "u32le_word": "0x1062005f",
+          "segment": "E04",
+          "decoded_offset": "0x217e20"
+        },
+        {
+          "va": "0x803458a4",
+          "u32le_word": "0x00002021",
+          "segment": "E04",
+          "decoded_offset": "0x217e24"
+        },
+        {
+          "va": "0x803458a8",
+          "u32le_word": "0x8d110018",
+          "segment": "E04",
+          "decoded_offset": "0x217e28"
+        },
+        {
+          "va": "0x803458d0",
+          "u32le_word": "0x10a0007a",
+          "segment": "E04",
+          "decoded_offset": "0x217e50"
+        },
+        {
+          "va": "0x803458d8",
+          "u32le_word": "0x86250068",
+          "segment": "E04",
+          "decoded_offset": "0x217e58"
+        },
+        {
+          "va": "0x803458dc",
+          "u32le_word": "0x0c0d4a07",
+          "segment": "E04",
+          "decoded_offset": "0x217e5c"
+        },
+        {
+          "va": "0x80345904",
+          "u32le_word": "0x25eeffff",
+          "segment": "E04",
+          "decoded_offset": "0x217e84"
+        },
+        {
+          "va": "0x8034590c",
+          "u32le_word": "0x1520004f",
+          "segment": "E04",
+          "decoded_offset": "0x217e8c"
+        },
+        {
+          "va": "0x803459b8",
+          "u32le_word": "0x11530031",
+          "segment": "E04",
+          "decoded_offset": "0x217f38"
+        },
+        {
+          "va": "0x80345a04",
+          "u32le_word": "0x8ff50000",
+          "segment": "E04",
+          "decoded_offset": "0x217f84"
+        },
+        {
+          "va": "0x80345a14",
+          "u32le_word": "0x02a0f809",
+          "segment": "E04",
+          "decoded_offset": "0x217f94"
+        },
+        {
+          "va": "0x80345a40",
+          "u32le_word": "0x00801021",
+          "segment": "E04",
+          "decoded_offset": "0x217fc0"
+        },
+        {
+          "va": "0x80345a9c",
+          "u32le_word": "0x8ed30008",
+          "segment": "E04",
+          "decoded_offset": "0x21801c"
+        },
+        {
+          "va": "0x80345aac",
+          "u32le_word": "0x0260f809",
+          "segment": "E04",
+          "decoded_offset": "0x21802c"
+        },
+        {
+          "va": "0x80345ac4",
+          "u32le_word": "0x240402a8",
+          "segment": "E04",
+          "decoded_offset": "0x218044"
+        },
+        {
+          "va": "0x80345ac8",
+          "u32le_word": "0x0c00362f",
+          "segment": "E04",
+          "decoded_offset": "0x218048"
+        },
+        {
+          "va": "0x80345ad4",
+          "u32le_word": "0x0c0d54a5",
+          "segment": "E04",
+          "decoded_offset": "0x218054"
+        },
+        {
+          "va": "0x803552a0",
+          "u32le_word": "0x0c0d44e8",
+          "segment": "E04",
+          "decoded_offset": "0x227820"
+        },
+        {
+          "va": "0x803552b0",
+          "u32le_word": "0x2443f228",
+          "segment": "E04",
+          "decoded_offset": "0x227830"
+        },
+        {
+          "va": "0x803552b4",
+          "u32le_word": "0x24a4f1e0",
+          "segment": "E04",
+          "decoded_offset": "0x227834"
+        },
+        {
+          "va": "0x803552b8",
+          "u32le_word": "0xae040000",
+          "segment": "E04",
+          "decoded_offset": "0x227838"
+        },
+        {
+          "va": "0x803552bc",
+          "u32le_word": "0xae030008",
+          "segment": "E04",
+          "decoded_offset": "0x22783c"
+        },
+        {
+          "va": "0x8017c0fc",
+          "u32le_word": "0xa4860010",
+          "segment": "E04",
+          "decoded_offset": "0x4e67c"
+        },
+        {
+          "va": "0x8017c5b8",
+          "u32le_word": "0x956c0010",
+          "segment": "E04",
+          "decoded_offset": "0x4eb38"
+        },
+        {
+          "va": "0x8017c5bc",
+          "u32le_word": "0xa52c0068",
+          "segment": "E04",
+          "decoded_offset": "0x4eb3c"
+        },
+        {
+          "va": "0x80352820",
+          "u32le_word": "0xac8502a0",
+          "segment": "E04",
+          "decoded_offset": "0x224da0"
+        },
+        {
+          "va": "0x804ff100",
+          "u32le_word": "0x80344c94",
+          "segment": "E04",
+          "decoded_offset": "0x3d1680"
+        },
+        {
+          "va": "0x804ff104",
+          "u32le_word": "0x80344660",
+          "segment": "E04",
+          "decoded_offset": "0x3d1684"
+        },
+        {
+          "va": "0x804ff108",
+          "u32le_word": "0x803448fc",
+          "segment": "E04",
+          "decoded_offset": "0x3d1688"
+        },
+        {
+          "va": "0x804ff10c",
+          "u32le_word": "0x80345818",
+          "segment": "E04",
+          "decoded_offset": "0x3d168c"
+        }
+      ]
+    },
+    {
+      "id": "translate_and_commit",
+      "observation": "TranslateFilters walks the FIPLIB count, checks each task slot and skips an empty slot before computing or dispatching its per-pass flag. It marks index N-1 final, passes that flag to the translator at stack+0x1c, and writes the corresponding per-pass configuration into the task at +0x1bc. Commit then walks the selected range, skips null slots and calls task vtable+0x28 for each remaining object, which resolves to CIpuTaskC12::Commit. This loop does not consume the virtual Commit return as a per-pass success result.",
+      "words": [
+        {
+          "va": "0x8033ae8c",
+          "u32le_word": "0x330f0002",
+          "segment": "E04",
+          "decoded_offset": "0x20d40c"
+        },
+        {
+          "va": "0x8033ae90",
+          "u32le_word": "0x15e0005f",
+          "segment": "E04",
+          "decoded_offset": "0x20d410"
+        },
+        {
+          "va": "0x8033b010",
+          "u32le_word": "0x0c0ce4d4",
+          "segment": "E04",
+          "decoded_offset": "0x20d590"
+        },
+        {
+          "va": "0x8033943c",
+          "u32le_word": "0x8e830308",
+          "segment": "E04",
+          "decoded_offset": "0x20b9bc"
+        },
+        {
+          "va": "0x8033945c",
+          "u32le_word": "0x8e300204",
+          "segment": "E04",
+          "decoded_offset": "0x20b9dc"
+        },
+        {
+          "va": "0x80339470",
+          "u32le_word": "0x11800041",
+          "segment": "E04",
+          "decoded_offset": "0x20b9f0"
+        },
+        {
+          "va": "0x80339474",
+          "u32le_word": "0x8db20370",
+          "segment": "E04",
+          "decoded_offset": "0x20b9f4"
+        },
+        {
+          "va": "0x80339478",
+          "u32le_word": "0x2462ffff",
+          "segment": "E04",
+          "decoded_offset": "0x20b9f8"
+        },
+        {
+          "va": "0x80339490",
+          "u32le_word": "0x0043f826",
+          "segment": "E04",
+          "decoded_offset": "0x20ba10"
+        },
+        {
+          "va": "0x80339498",
+          "u32le_word": "0x02dff00a",
+          "segment": "E04",
+          "decoded_offset": "0x20ba18"
+        },
+        {
+          "va": "0x80339518",
+          "u32le_word": "0x01d56821",
+          "segment": "E04",
+          "decoded_offset": "0x20ba98"
+        },
+        {
+          "va": "0x8033952c",
+          "u32le_word": "0xafbe001c",
+          "segment": "E04",
+          "decoded_offset": "0x20baac"
+        },
+        {
+          "va": "0x80339534",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x20bab4"
+        },
+        {
+          "va": "0x80339568",
+          "u32le_word": "0x0c0d46a5",
+          "segment": "E04",
+          "decoded_offset": "0x20bae8"
+        },
+        {
+          "va": "0x80339574",
+          "u32le_word": "0xa2c00244",
+          "segment": "E04",
+          "decoded_offset": "0x20baf4"
+        },
+        {
+          "va": "0x803395a0",
+          "u32le_word": "0x1640ffac",
+          "segment": "E04",
+          "decoded_offset": "0x20bb20"
+        },
+        {
+          "va": "0x80351a98",
+          "u32le_word": "0xac8501bc",
+          "segment": "E04",
+          "decoded_offset": "0x224018"
+        },
+        {
+          "va": "0x8033aee0",
+          "u32le_word": "0x8e51030c",
+          "segment": "E04",
+          "decoded_offset": "0x20d460"
+        },
+        {
+          "va": "0x8033aee4",
+          "u32le_word": "0x8e430310",
+          "segment": "E04",
+          "decoded_offset": "0x20d464"
+        },
+        {
+          "va": "0x8033aef8",
+          "u32le_word": "0x8e050204",
+          "segment": "E04",
+          "decoded_offset": "0x20d478"
+        },
+        {
+          "va": "0x8033af04",
+          "u32le_word": "0x10a00009",
+          "segment": "E04",
+          "decoded_offset": "0x20d484"
+        },
+        {
+          "va": "0x8033af18",
+          "u32le_word": "0xa0ab02a4",
+          "segment": "E04",
+          "decoded_offset": "0x20d498"
+        },
+        {
+          "va": "0x8033af1c",
+          "u32le_word": "0x8d420028",
+          "segment": "E04",
+          "decoded_offset": "0x20d49c"
+        },
+        {
+          "va": "0x8033af20",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x20d4a0"
+        },
+        {
+          "va": "0x8033af28",
+          "u32le_word": "0x8e430310",
+          "segment": "E04",
+          "decoded_offset": "0x20d4a8"
+        },
+        {
+          "va": "0x804ff208",
+          "u32le_word": "0x8035572c",
+          "segment": "E04",
+          "decoded_offset": "0x3d1788"
+        }
+      ]
+    },
+    {
+      "id": "task_fields_and_null_boundary",
+      "observation": "CalculateTopology applies final-task settings using the slot at end-1. SetSubImagesConfigParams copies the processor configuration into the task at +0x228..+0x248, and C12 Commit writes the computed subimage count at +0x224. The kind-0 creation branch calls the constructor and uses the returned task without a graceful allocation-null skip. The final-task setup also has no null guard on this path. The later null checks in TranslateFilters, the Commit loop and Go therefore do not establish recovery from kind-0 allocation failure.",
+      "words": [
+        {
+          "va": "0x80345ac8",
+          "u32le_word": "0x0c00362f",
+          "segment": "E04",
+          "decoded_offset": "0x218048"
+        },
+        {
+          "va": "0x80345ad0",
+          "u32le_word": "0x00402021",
+          "segment": "E04",
+          "decoded_offset": "0x218050"
+        },
+        {
+          "va": "0x80345ad4",
+          "u32le_word": "0x0c0d54a5",
+          "segment": "E04",
+          "decoded_offset": "0x218054"
+        },
+        {
+          "va": "0x80339178",
+          "u32le_word": "0x00402021",
+          "segment": "E04",
+          "decoded_offset": "0x20b6f8"
+        },
+        {
+          "va": "0x80339180",
+          "u32le_word": "0xae620204",
+          "segment": "E04",
+          "decoded_offset": "0x20b700"
+        },
+        {
+          "va": "0x80339184",
+          "u32le_word": "0x0c02b459",
+          "segment": "E04",
+          "decoded_offset": "0x20b704"
+        },
+        {
+          "va": "0x8033925c",
+          "u32le_word": "0x0003a080",
+          "segment": "E04",
+          "decoded_offset": "0x20b7dc"
+        },
+        {
+          "va": "0x80339264",
+          "u32le_word": "0x8e720200",
+          "segment": "E04",
+          "decoded_offset": "0x20b7e4"
+        },
+        {
+          "va": "0x80339268",
+          "u32le_word": "0x262502cc",
+          "segment": "E04",
+          "decoded_offset": "0x20b7e8"
+        },
+        {
+          "va": "0x8033926c",
+          "u32le_word": "0x0c0d4882",
+          "segment": "E04",
+          "decoded_offset": "0x20b7ec"
+        },
+        {
+          "va": "0x80339280",
+          "u32le_word": "0x0c0d4a09",
+          "segment": "E04",
+          "decoded_offset": "0x20b800"
+        },
+        {
+          "va": "0x8035142c",
+          "u32le_word": "0xae000224",
+          "segment": "E04",
+          "decoded_offset": "0x2239ac"
+        },
+        {
+          "va": "0x80351498",
+          "u32le_word": "0xae000228",
+          "segment": "E04",
+          "decoded_offset": "0x223a18"
+        },
+        {
+          "va": "0x803514b0",
+          "u32le_word": "0xae000234",
+          "segment": "E04",
+          "decoded_offset": "0x223a30"
+        },
+        {
+          "va": "0x80352244",
+          "u32le_word": "0xad0b0228",
+          "segment": "E04",
+          "decoded_offset": "0x2247c4"
+        },
+        {
+          "va": "0x80352268",
+          "u32le_word": "0xad070234",
+          "segment": "E04",
+          "decoded_offset": "0x2247e8"
+        },
+        {
+          "va": "0x80355760",
+          "u32le_word": "0x8c840298",
+          "segment": "E04",
+          "decoded_offset": "0x227ce0"
+        },
+        {
+          "va": "0x80355770",
+          "u32le_word": "0x108301b0",
+          "segment": "E04",
+          "decoded_offset": "0x227cf0"
+        },
+        {
+          "va": "0x80355ddc",
+          "u32le_word": "0x0c0c91cf",
+          "segment": "E04",
+          "decoded_offset": "0x22835c"
+        },
+        {
+          "va": "0x80355dec",
+          "u32le_word": "0x0c0c94e3",
+          "segment": "E04",
+          "decoded_offset": "0x22836c"
+        },
+        {
+          "va": "0x80355df8",
+          "u32le_word": "0xae820224",
+          "segment": "E04",
+          "decoded_offset": "0x228378"
+        },
+        {
+          "va": "0x80355e00",
+          "u32le_word": "0xae840298",
+          "segment": "E04",
+          "decoded_offset": "0x228380"
+        },
+        {
+          "va": "0x80338d1c",
+          "u32le_word": "0x5080fffb",
+          "segment": "E04",
+          "decoded_offset": "0x20b29c"
+        }
+      ]
+    },
+    {
+      "id": "direct_queue_handoff",
+      "observation": "Processor Go passes the mode and selected range to the driver. On the fresh mode-0, CBC-0 path it walks nonnull task slots in order. The optional repeated penultimate task requires processor byte +0x370==1, which the fresh constructor clears. CIpuTask::Go tail-calls AddTask with task+0x1c8 as driver. Driver SetCbcMode stores byte +0x340. SetTasksParams writes start and end at +0x344/+0x348 and clears +0x34c. AddTask stores the task pointer on stack and passes its address to ThreadX queue send at driver+0x224, wait=0. A nonzero queue-send result invokes OsSysHaltEx instead of silently skipping the task.",
+      "words": [
+        {
+          "va": "0x803384c8",
+          "u32le_word": "0xa2800370",
+          "segment": "E04",
+          "decoded_offset": "0x20aa48"
+        },
+        {
+          "va": "0x80338be8",
+          "u32le_word": "0x8c83031c",
+          "segment": "E04",
+          "decoded_offset": "0x20b168"
+        },
+        {
+          "va": "0x80338c10",
+          "u32le_word": "0x8e470284",
+          "segment": "E04",
+          "decoded_offset": "0x20b190"
+        },
+        {
+          "va": "0x80338c24",
+          "u32le_word": "0x0c0cd0e0",
+          "segment": "E04",
+          "decoded_offset": "0x20b1a4"
+        },
+        {
+          "va": "0x80338c28",
+          "u32le_word": "0x92450288",
+          "segment": "E04",
+          "decoded_offset": "0x20b1a8"
+        },
+        {
+          "va": "0x80338c30",
+          "u32le_word": "0x8e45030c",
+          "segment": "E04",
+          "decoded_offset": "0x20b1b0"
+        },
+        {
+          "va": "0x80338c34",
+          "u32le_word": "0x0c0cd0da",
+          "segment": "E04",
+          "decoded_offset": "0x20b1b4"
+        },
+        {
+          "va": "0x80338c38",
+          "u32le_word": "0x8e460310",
+          "segment": "E04",
+          "decoded_offset": "0x20b1b8"
+        },
+        {
+          "va": "0x80338c4c",
+          "u32le_word": "0x8e4c0288",
+          "segment": "E04",
+          "decoded_offset": "0x20b1cc"
+        },
+        {
+          "va": "0x80338c50",
+          "u32le_word": "0x1580005b",
+          "segment": "E04",
+          "decoded_offset": "0x20b1d0"
+        },
+        {
+          "va": "0x80334368",
+          "u32le_word": "0xac850344",
+          "segment": "E04",
+          "decoded_offset": "0x2068e8"
+        },
+        {
+          "va": "0x8033436c",
+          "u32le_word": "0xac860348",
+          "segment": "E04",
+          "decoded_offset": "0x2068ec"
+        },
+        {
+          "va": "0x80334374",
+          "u32le_word": "0xac80034c",
+          "segment": "E04",
+          "decoded_offset": "0x2068f4"
+        },
+        {
+          "va": "0x80334384",
+          "u32le_word": "0xa0850340",
+          "segment": "E04",
+          "decoded_offset": "0x206904"
+        },
+        {
+          "va": "0x80338cfc",
+          "u32le_word": "0x0c0d4674",
+          "segment": "E04",
+          "decoded_offset": "0x20b27c"
+        },
+        {
+          "va": "0x80338d00",
+          "u32le_word": "0x8e040204",
+          "segment": "E04",
+          "decoded_offset": "0x20b280"
+        },
+        {
+          "va": "0x80338d18",
+          "u32le_word": "0x8e040204",
+          "segment": "E04",
+          "decoded_offset": "0x20b298"
+        },
+        {
+          "va": "0x80338d1c",
+          "u32le_word": "0x5080fffb",
+          "segment": "E04",
+          "decoded_offset": "0x20b29c"
+        },
+        {
+          "va": "0x80338d24",
+          "u32le_word": "0x924a0370",
+          "segment": "E04",
+          "decoded_offset": "0x20b2a4"
+        },
+        {
+          "va": "0x80338d28",
+          "u32le_word": "0x1553fff2",
+          "segment": "E04",
+          "decoded_offset": "0x20b2a8"
+        },
+        {
+          "va": "0x80338d30",
+          "u32le_word": "0x1471fff0",
+          "segment": "E04",
+          "decoded_offset": "0x20b2b0"
+        },
+        {
+          "va": "0x80338d40",
+          "u32le_word": "0x0c0d4674",
+          "segment": "E04",
+          "decoded_offset": "0x20b2c0"
+        },
+        {
+          "va": "0x803514dc",
+          "u32le_word": "0x0c0ccf8e",
+          "segment": "E04",
+          "decoded_offset": "0x223a5c"
+        },
+        {
+          "va": "0x803514e4",
+          "u32le_word": "0xae0201c8",
+          "segment": "E04",
+          "decoded_offset": "0x223a64"
+        },
+        {
+          "va": "0x803519d0",
+          "u32le_word": "0x00802821",
+          "segment": "E04",
+          "decoded_offset": "0x223f50"
+        },
+        {
+          "va": "0x803519d4",
+          "u32le_word": "0x080ccfaa",
+          "segment": "E04",
+          "decoded_offset": "0x223f54"
+        },
+        {
+          "va": "0x803519d8",
+          "u32le_word": "0x8c8401c8",
+          "segment": "E04",
+          "decoded_offset": "0x223f58"
+        },
+        {
+          "va": "0x80333eac",
+          "u32le_word": "0xafa50010",
+          "segment": "E04",
+          "decoded_offset": "0x20642c"
+        },
+        {
+          "va": "0x80333eb0",
+          "u32le_word": "0x24840224",
+          "segment": "E04",
+          "decoded_offset": "0x206430"
+        },
+        {
+          "va": "0x80333eb4",
+          "u32le_word": "0x27a50010",
+          "segment": "E04",
+          "decoded_offset": "0x206434"
+        },
+        {
+          "va": "0x80333ebc",
+          "u32le_word": "0x0c035f01",
+          "segment": "E04",
+          "decoded_offset": "0x20643c"
+        },
+        {
+          "va": "0x80333ec0",
+          "u32le_word": "0x00003021",
+          "segment": "E04",
+          "decoded_offset": "0x206440"
+        },
+        {
+          "va": "0x80333ec4",
+          "u32le_word": "0x14400003",
+          "segment": "E04",
+          "decoded_offset": "0x206444"
+        },
+        {
+          "va": "0x80333ee4",
+          "u32le_word": "0x0c035aa9",
+          "segment": "E04",
+          "decoded_offset": "0x206464"
+        }
+      ]
+    },
+    {
+      "id": "uid_boundary",
+      "observation": "Task ID at +0x2a0 is distinct from the filter UID tracked by the driver. C12 WriteAll reads the task config at +0x1bc. It gets filter ID via vtable+0x18 and fetches the prior submitted UID for that ID. The current UID via vtable+0x14 gates the register writer at vtable+8, with a subsequent driver submitted-UID update when the values differ. CIpuConfig::GetFilterById loads the array at config+4. FC1 is low ID 13 and its vtable+0x14 reads filter+0x2c. The comparison and driver UID update occur after queue acceptance.",
+      "words": [
+        {
+          "va": "0x80352820",
+          "u32le_word": "0xac8502a0",
+          "segment": "E04",
+          "decoded_offset": "0x224da0"
+        },
+        {
+          "va": "0x804ff20c",
+          "u32le_word": "0x80357098",
+          "segment": "E04",
+          "decoded_offset": "0x3d178c"
+        },
+        {
+          "va": "0x80357130",
+          "u32le_word": "0x8e4401bc",
+          "segment": "E04",
+          "decoded_offset": "0x2296b0"
+        },
+        {
+          "va": "0x8035719c",
+          "u32le_word": "0x8db00018",
+          "segment": "E04",
+          "decoded_offset": "0x22971c"
+        },
+        {
+          "va": "0x803571a0",
+          "u32le_word": "0x0200f809",
+          "segment": "E04",
+          "decoded_offset": "0x229720"
+        },
+        {
+          "va": "0x803571a8",
+          "u32le_word": "0x8e4401c8",
+          "segment": "E04",
+          "decoded_offset": "0x229728"
+        },
+        {
+          "va": "0x803571ac",
+          "u32le_word": "0x0c0cd036",
+          "segment": "E04",
+          "decoded_offset": "0x22972c"
+        },
+        {
+          "va": "0x803571cc",
+          "u32le_word": "0x8d620014",
+          "segment": "E04",
+          "decoded_offset": "0x22974c"
+        },
+        {
+          "va": "0x803571d0",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x229750"
+        },
+        {
+          "va": "0x803571d8",
+          "u32le_word": "0x10500012",
+          "segment": "E04",
+          "decoded_offset": "0x229758"
+        },
+        {
+          "va": "0x803571e4",
+          "u32le_word": "0x8f380008",
+          "segment": "E04",
+          "decoded_offset": "0x229764"
+        },
+        {
+          "va": "0x803571e8",
+          "u32le_word": "0x0300f809",
+          "segment": "E04",
+          "decoded_offset": "0x229768"
+        },
+        {
+          "va": "0x80357208",
+          "u32le_word": "0x8dc20014",
+          "segment": "E04",
+          "decoded_offset": "0x229788"
+        },
+        {
+          "va": "0x8035720c",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x22978c"
+        },
+        {
+          "va": "0x8035721c",
+          "u32le_word": "0x0c0cd042",
+          "segment": "E04",
+          "decoded_offset": "0x22979c"
+        },
+        {
+          "va": "0x80330730",
+          "u32le_word": "0x8c820004",
+          "segment": "E04",
+          "decoded_offset": "0x202cb0"
+        },
+        {
+          "va": "0x80330740",
+          "u32le_word": "0x8ca20000",
+          "segment": "E04",
+          "decoded_offset": "0x202cc0"
+        },
+        {
+          "va": "0x8031f5a4",
+          "u32le_word": "0xae050018",
+          "segment": "E04",
+          "decoded_offset": "0x1f1b24"
+        },
+        {
+          "va": "0x8031f5a8",
+          "u32le_word": "0xae060000",
+          "segment": "E04",
+          "decoded_offset": "0x1f1b28"
+        },
+        {
+          "va": "0x804ffa04",
+          "u32le_word": "0x804ff658",
+          "segment": "E04",
+          "decoded_offset": "0x3d1f84"
+        },
+        {
+          "va": "0x804ff65c",
+          "u32le_word": "0x8c82002c",
+          "segment": "E04",
+          "decoded_offset": "0x3d1bdc"
+        }
+      ]
+    }
+  ],
+  "selected_functions": [
+    {
+      "name": "_ZN15CImageProcessor17CalculateTopologyEv",
+      "address": 2150862912,
+      "candidate_end": 2150863696,
+      "segment": "E04",
+      "decoded_offset": 2143680,
+      "size": 784,
+      "sha256": "a995bf2e26bb13f5142c87d531d006f28a5c5a5e05772101d51aa09f08759852",
+      "transfers": [
+        {
+          "site": 2150862980,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150862992,
+          "word": "0c0d116f",
+          "kind": "call",
+          "target": 2150909372,
+          "target_names": [
+            "_ZN19CTopologyHandlerC12C1Ev"
+          ]
+        },
+        {
+          "site": 2150863008,
+          "word": "0c0ce3c0",
+          "kind": "call",
+          "target": 2150862592,
+          "target_names": [
+            "_ZN15CImageProcessor18CalcModuloOfOutputEPjS0_"
+          ]
+        },
+        {
+          "site": 2150863216,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863236,
+          "word": "0c02b459",
+          "kind": "call",
+          "target": 2148192612,
+          "target_names": [
+            "_ZN11CObservable8RegisterEP9CObserver"
+          ]
+        },
+        {
+          "site": 2150863252,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863376,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863412,
+          "word": "00c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863468,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150863488,
+          "word": "0c0d4a09",
+          "kind": "call",
+          "target": 2150967332,
+          "target_names": [
+            "_ZN8CIpuTask14setBatchParamsEhjP21tagSCONVERTSINGLETASK"
+          ]
+        },
+        {
+          "site": 2150863504,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863520,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863536,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863552,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150863564,
+          "word": "0c02b459",
+          "kind": "call",
+          "target": 2148192612,
+          "target_names": [
+            "_ZN11CObservable8RegisterEP9CObserver"
+          ]
+        },
+        {
+          "site": 2150863636,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ]
+    },
+    {
+      "name": "_ZN19CTopologyHandlerC12C1Ev",
+      "address": 2150909372,
+      "candidate_end": 2150909420,
+      "segment": "E04",
+      "decoded_offset": 2190140,
+      "size": 48,
+      "sha256": "22be115c0f61085c737d3bef82884f5e3570e5661d95d5c09198ba0ef7d519b9",
+      "transfers": [
+        {
+          "site": 2150909384,
+          "word": "0c0cca17",
+          "kind": "call",
+          "target": 2150836316,
+          "target_names": [
+            "_ZN16CTopologyHandlerC2Ev"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN19CTopologyHandlerC1210CreateTaskEP8CIpuTaskP21_SIPU_MID_RESULT_DATAPP19tagSIMAGEDESCRIPTORP27_FIPLIB_OUTPUT_PASS_WRAPPERj15STaskParameters",
+      "address": 2150914128,
+      "candidate_end": 2150914788,
+      "segment": "E04",
+      "decoded_offset": 2194896,
+      "size": 660,
+      "sha256": "f8f66d0679f81fd597173cde9ec9230b9ae7d2ab68c2ebe4b705649043632866",
+      "transfers": [
+        {
+          "site": 2150914268,
+          "word": "0c0d4a07",
+          "kind": "call",
+          "target": 2150967324,
+          "target_names": [
+            "_ZN8CIpuTask9SetTaskIdEm"
+          ]
+        },
+        {
+          "site": 2150914296,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150914368,
+          "word": "0120f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150914420,
+          "word": "0180f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150914472,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150914580,
+          "word": "02a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150914672,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150914732,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150914760,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150914772,
+          "word": "0c0d54a5",
+          "kind": "call",
+          "target": 2150978196,
+          "target_names": [
+            "_ZN11CIpuTaskC12C1Ev"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN19CTopologyHandlerC1223SetTopologyOutputImagesEP8CIpuTaskP21tsFIPLIB_IPU_TopologyS3_P21_SIPU_MID_RESULT_DATAPP19tagSIMAGEDESCRIPTOR15STaskParameters",
+      "address": 2150911124,
+      "candidate_end": 2150913008,
+      "segment": "E04",
+      "decoded_offset": 2191892,
+      "size": 1884,
+      "sha256": "31d4b5d30c2b320dbe26c30dfb5f3496d28c6b6721034e5af145ed5b607a7715",
+      "transfers": [
+        {
+          "site": 2150911352,
+          "word": "0c0d345f",
+          "kind": "call",
+          "target": 2150945148,
+          "target_names": [
+            "_ZN9CIpuUtils14IsOverlapImageEP15_SOVERLAPBUFFER"
+          ]
+        },
+        {
+          "site": 2150911524,
+          "word": "0c0d3320",
+          "kind": "call",
+          "target": 2150943872,
+          "target_names": [
+            "_ZN9CIpuUtils32uiIpuConfigToolOutput2PathOutputEj"
+          ]
+        },
+        {
+          "site": 2150911872,
+          "word": "0c0d3320",
+          "kind": "call",
+          "target": 2150943872,
+          "target_names": [
+            "_ZN9CIpuUtils32uiIpuConfigToolOutput2PathOutputEj"
+          ]
+        },
+        {
+          "site": 2150911888,
+          "word": "0c0d3320",
+          "kind": "call",
+          "target": 2150943872,
+          "target_names": [
+            "_ZN9CIpuUtils32uiIpuConfigToolOutput2PathOutputEj"
+          ]
+        },
+        {
+          "site": 2150912056,
+          "word": "0c0cca2e",
+          "kind": "call",
+          "target": 2150836408,
+          "target_names": [
+            "_ZN16CTopologyHandler16ReallocateBufferEP15tagSBLOCKBUFFER27_IMAGE_DESCRIPTOR_TYPE_ENUMS1_S2_hjP8tagSPOOL"
+          ]
+        },
+        {
+          "site": 2150912108,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2150912132,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150912148,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150912220,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150912236,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150912408,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150912440,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150912460,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150912500,
+          "word": "0c0d345f",
+          "kind": "call",
+          "target": 2150945148,
+          "target_names": [
+            "_ZN9CIpuUtils14IsOverlapImageEP15_SOVERLAPBUFFER"
+          ]
+        },
+        {
+          "site": 2150912656,
+          "word": "0c0cca82",
+          "kind": "call",
+          "target": 2150836744,
+          "target_names": [
+            "_ZN16CTopologyHandler23ReallocateOverlapBufferEP15_SOVERLAPBUFFERS1_jP8tagSPOOL"
+          ]
+        },
+        {
+          "site": 2150912748,
+          "word": "0c0ccb31",
+          "kind": "call",
+          "target": 2150837444,
+          "target_names": [
+            "_ZN16CTopologyHandler22GetSecondOverlapBufferEP15_SOVERLAPBUFFERP15tagSBLOCKBUFFER"
+          ]
+        },
+        {
+          "site": 2150912836,
+          "word": "0c0ccb22",
+          "kind": "call",
+          "target": 2150837384,
+          "target_names": [
+            "_ZN16CTopologyHandler21GetFirstOverlapBufferEP15_SOVERLAPBUFFERP15tagSBLOCKBUFFER"
+          ]
+        },
+        {
+          "site": 2150912960,
+          "word": "0c0d3430",
+          "kind": "call",
+          "target": 2150944960,
+          "target_names": [
+            "_ZN9CIpuUtils11FreeBuffersEP15_SOVERLAPBUFFERP15tagSBLOCKBUFFERRh"
+          ]
+        },
+        {
+          "site": 2150912992,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN19CTopologyHandlerC1220SetFinalPassTopologyEP8CIpuTaskP21tsFIPLIB_IPU_TopologyP21_SIPU_MID_RESULT_DATAPP19tagSIMAGEDESCRIPTORjmj",
+      "address": 2150910204,
+      "candidate_end": 2150911124,
+      "segment": "E04",
+      "decoded_offset": 2190972,
+      "size": 920,
+      "sha256": "14fccb0ba8b084cce9dc018078f0b603838c10df331f0e959e5351476a4ce6ec",
+      "transfers": [
+        {
+          "site": 2150910272,
+          "word": "0c0d4980",
+          "kind": "call",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        },
+        {
+          "site": 2150910452,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150910476,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150910496,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150910636,
+          "word": "0c0cca2e",
+          "kind": "call",
+          "target": 2150836408,
+          "target_names": [
+            "_ZN16CTopologyHandler16ReallocateBufferEP15tagSBLOCKBUFFER27_IMAGE_DESCRIPTOR_TYPE_ENUMS1_S2_hjP8tagSPOOL"
+          ]
+        },
+        {
+          "site": 2150910652,
+          "word": "0c027edc",
+          "kind": "call",
+          "target": 2148137840,
+          "target_names": [
+            "ImageDescriptorCreateFromBlockBuffer"
+          ]
+        },
+        {
+          "site": 2150910680,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150910812,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150910832,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150910904,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150910916,
+          "word": "0c004fcc",
+          "kind": "call",
+          "target": 2147565360,
+          "target_names": [
+            "DcuSetClientDataConfig"
+          ]
+        },
+        {
+          "site": 2150910928,
+          "word": "0c004fcc",
+          "kind": "call",
+          "target": 2147565360,
+          "target_names": [
+            "DcuSetClientDataConfig"
+          ]
+        },
+        {
+          "site": 2150910940,
+          "word": "0c004fcc",
+          "kind": "call",
+          "target": 2147565360,
+          "target_names": [
+            "DcuSetClientDataConfig"
+          ]
+        },
+        {
+          "site": 2150910960,
+          "word": "0c0d47d0",
+          "kind": "call",
+          "target": 2150965056,
+          "target_names": [
+            "_ZN8CIpuTask8SetImageEP19tagSIMAGEDESCRIPTOR15_IPU_IMAGE_ENUM14_IPU_MODE_ENUM"
+          ]
+        },
+        {
+          "site": 2150911060,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2150911096,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2150911116,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN19CTopologyHandlerC1214SetSlotMachineEP8CIpuTaskjj",
+      "address": 2150914072,
+      "candidate_end": 2150914128,
+      "segment": "E04",
+      "decoded_offset": 2194840,
+      "size": 56,
+      "sha256": "060b55ee10b34fd41d11e7f8ba79a76ac00f732f3adf335bd27d2955a1803474",
+      "transfers": [
+        {
+          "site": 2150914120,
+          "word": "080d4980",
+          "kind": "jump",
+          "target": 2150966784,
+          "target_names": [
+            "_ZN8CIpuTask8SetParamE21tagTASK_PARAM_ID_ENUMm"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZNK21CFIP_PassTopology_IPU6ExportER13tsFIPLIB_Pass",
+      "address": 2149041260,
+      "candidate_end": 2149041624,
+      "segment": "E04",
+      "decoded_offset": 322028,
+      "size": 364,
+      "sha256": "7dd4e2248ffbcc8d1d0ba40c4e2b53fb515eea69f868614945e462aab5c058b1",
+      "transfers": []
+    },
+    {
+      "name": "_ZN11CIpuTaskC12C1Ev",
+      "address": 2150978196,
+      "candidate_end": 2150978336,
+      "segment": "E04",
+      "decoded_offset": 2258964,
+      "size": 140,
+      "sha256": "113956fb9fd63e3aaf11f4e76af4ea7560471e8db2e75e465e5b55dda2099de3",
+      "transfers": [
+        {
+          "site": 2150978208,
+          "word": "0c0d44e8",
+          "kind": "call",
+          "target": 2150962080,
+          "target_names": [
+            "_ZN8CIpuTaskC2Ev"
+          ]
+        },
+        {
+          "site": 2150978312,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN8CIpuTaskC2Ev",
+      "address": 2150962080,
+      "candidate_end": 2150962424,
+      "segment": "E04",
+      "decoded_offset": 2242848,
+      "size": 344,
+      "sha256": "72e7951041512b03a18ec3af23baec77c0560b810a88c4397a800a39bfa5a2a6",
+      "transfers": [
+        {
+          "site": 2150962092,
+          "word": "0c02b448",
+          "kind": "call",
+          "target": 2148192544,
+          "target_names": [
+            "_ZN11CObservableC2Ev"
+          ]
+        },
+        {
+          "site": 2150962100,
+          "word": "0c02da90",
+          "kind": "call",
+          "target": 2148231744,
+          "target_names": [
+            "_ZN9CObserverC2Ev"
+          ]
+        },
+        {
+          "site": 2150962296,
+          "word": "0c00360a",
+          "kind": "call",
+          "target": 2147538984,
+          "target_names": [
+            "_ZnwmmPcib"
+          ]
+        },
+        {
+          "site": 2150962320,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150962396,
+          "word": "0c0ccf8e",
+          "kind": "call",
+          "target": 2150841912,
+          "target_names": [
+            "_ZN10CIpuDriver9GetDriverEv"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN8CIpuTask9SetTaskIdEm",
+      "address": 2150967324,
+      "candidate_end": 2150967332,
+      "segment": "E04",
+      "decoded_offset": 2248092,
+      "size": 8,
+      "sha256": "d0be01eefa6d7f642737ebb7f66c24aa1a6029ddacacd0bdac8dbd337c1774e5",
+      "transfers": []
+    },
+    {
+      "name": "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG",
+      "address": 2150965768,
+      "candidate_end": 2150965908,
+      "segment": "E04",
+      "decoded_offset": 2246536,
+      "size": 140,
+      "sha256": "1e15e8c1e3859c8fb6818d5ad3c74b921c7d621d82b3baa28f525e530eebefc8",
+      "transfers": []
+    },
+    {
+      "name": "_ZN15CImageProcessor16TranslateFiltersEv",
+      "address": 2150863696,
+      "candidate_end": 2150864384,
+      "segment": "E04",
+      "decoded_offset": 2144464,
+      "size": 688,
+      "sha256": "bb04a6368b069e3caf60d055431c8949c090d8318af0423062c891c28c6d621d",
+      "transfers": [
+        {
+          "site": 2150863752,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150863828,
+          "word": "0c0cc1cc",
+          "kind": "call",
+          "target": 2150827824,
+          "target_names": [
+            "_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER"
+          ]
+        },
+        {
+          "site": 2150863884,
+          "word": "0100f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150863908,
+          "word": "0c0cc1d1",
+          "kind": "call",
+          "target": 2150827844,
+          "target_names": [
+            "_ZN10CIpuConfig9AddFilterEP7CFilter"
+          ]
+        },
+        {
+          "site": 2150864080,
+          "word": "0c0cc1d1",
+          "kind": "call",
+          "target": 2150827844,
+          "target_names": [
+            "_ZN10CIpuConfig9AddFilterEP7CFilter"
+          ]
+        },
+        {
+          "site": 2150864104,
+          "word": "0c0cc1cc",
+          "kind": "call",
+          "target": 2150827824,
+          "target_names": [
+            "_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER"
+          ]
+        },
+        {
+          "site": 2150864180,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150864216,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150864232,
+          "word": "0c0d46a5",
+          "kind": "call",
+          "target": 2150963860,
+          "target_names": [
+            "_ZN8CIpuTask12SetIpuConfigEP10CIpuConfig"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN8CIpuTask12SetIpuConfigEP10CIpuConfig",
+      "address": 2150963860,
+      "candidate_end": 2150963916,
+      "segment": "E04",
+      "decoded_offset": 2244628,
+      "size": 56,
+      "sha256": "da7203bc16c20a0a51cb1494a5c1b43619b0415ab51f3544d5631882c9c063e0",
+      "transfers": [
+        {
+          "site": 2150963876,
+          "word": "0c0d4677",
+          "kind": "call",
+          "target": 2150963676,
+          "target_names": [
+            "_ZN8CIpuTask17CheckFilterEnableEP10CIpuConfig"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor6CommitEv",
+      "address": 2150868920,
+      "candidate_end": 2150871720,
+      "segment": "E04",
+      "decoded_offset": 2149688,
+      "size": 2800,
+      "sha256": "6c392f60c51b5ece79e2f0abb46902bc67f4d91a1677d088faf70af4cc9ecc1d",
+      "transfers": [
+        {
+          "site": 2150868976,
+          "word": "0c0cdedf",
+          "kind": "call",
+          "target": 2150857596,
+          "target_names": [
+            "_ZN15CImageProcessor28CheckLimitationsBeforeCommitEv"
+          ]
+        },
+        {
+          "site": 2150869008,
+          "word": "0c0ce580",
+          "kind": "call",
+          "target": 2150864384,
+          "target_names": [
+            "_ZN15CImageProcessor17FreeTempResourcesEhh"
+          ]
+        },
+        {
+          "site": 2150869048,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869092,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869128,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869156,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869200,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869272,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869316,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869344,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869388,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869456,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150869468,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869512,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869548,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869576,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869620,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869692,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869736,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869764,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869804,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869872,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150869884,
+          "word": "0c026f76",
+          "kind": "call",
+          "target": 2148122072,
+          "target_names": [
+            "TimingMarkIsGroupEnabled"
+          ]
+        },
+        {
+          "site": 2150869928,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150869964,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150869992,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870036,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870108,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870152,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870180,
+          "word": "0c03fc54",
+          "kind": "call",
+          "target": 2148528464,
+          "target_names": [
+            "__floatsidf"
+          ]
+        },
+        {
+          "site": 2150870224,
+          "word": "0c03fb23",
+          "kind": "call",
+          "target": 2148527244,
+          "target_names": [
+            "__muldf3"
+          ]
+        },
+        {
+          "site": 2150870292,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150870340,
+          "word": "0c05f406",
+          "kind": "call",
+          "target": 2149044248,
+          "target_names": [
+            "FipLibDeleteInternalAllocations"
+          ]
+        },
+        {
+          "site": 2150870400,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150870476,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150870508,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        },
+        {
+          "site": 2150870536,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150870596,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150870656,
+          "word": "0c0ce410",
+          "kind": "call",
+          "target": 2150862912,
+          "target_names": [
+            "_ZN15CImageProcessor17CalculateTopologyEv"
+          ]
+        },
+        {
+          "site": 2150870708,
+          "word": "0c0ce1a3",
+          "kind": "call",
+          "target": 2150860428,
+          "target_names": [
+            "_ZN15CImageProcessor16PrepareFinalPassEv"
+          ]
+        },
+        {
+          "site": 2150870732,
+          "word": "0c0ce1d9",
+          "kind": "call",
+          "target": 2150860644,
+          "target_names": [
+            "_ZN15CImageProcessor21PrepareMidPassCommonsEv"
+          ]
+        },
+        {
+          "site": 2150870816,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150870856,
+          "word": "0c0ce97d",
+          "kind": "call",
+          "target": 2150868468,
+          "target_names": [
+            "_ZN15CImageProcessor16PrepareSubimagesEv"
+          ]
+        },
+        {
+          "site": 2150870908,
+          "word": "0c04cc5c",
+          "kind": "call",
+          "target": 2148741488,
+          "target_names": [
+            "CbcBatchCreate"
+          ]
+        },
+        {
+          "site": 2150870928,
+          "word": "0c0ce8ef",
+          "kind": "call",
+          "target": 2150867900,
+          "target_names": [
+            "_ZN15CImageProcessor13SubmitToBatchEP12tagCBC_BATCHh"
+          ]
+        },
+        {
+          "site": 2150870976,
+          "word": "0c0cd551",
+          "kind": "call",
+          "target": 2150847812,
+          "target_names": [
+            "_ZN10Serializer17OpenResourceFilesEP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150870988,
+          "word": "0c0cd14d",
+          "kind": "call",
+          "target": 2150843700,
+          "target_names": [
+            "_ZN10Serializer9SerializeER13ISerializableP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150870996,
+          "word": "0c0cd57f",
+          "kind": "call",
+          "target": 2150847996,
+          "target_names": [
+            "_ZN10Serializer18CloseResourceFilesEP27tagSerializeInnerParameters"
+          ]
+        },
+        {
+          "site": 2150871032,
+          "word": "0c0ce410",
+          "kind": "call",
+          "target": 2150862912,
+          "target_names": [
+            "_ZN15CImageProcessor17CalculateTopologyEv"
+          ]
+        },
+        {
+          "site": 2150871056,
+          "word": "0c0ce4d4",
+          "kind": "call",
+          "target": 2150863696,
+          "target_names": [
+            "_ZN15CImageProcessor16TranslateFiltersEv"
+          ]
+        },
+        {
+          "site": 2150871216,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150871284,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150871312,
+          "word": "0c0d4882",
+          "kind": "call",
+          "target": 2150965768,
+          "target_names": [
+            "_ZN8CIpuTask24SetSubImagesConfigParamsEP18tagSSUBIMAGECONFIG"
+          ]
+        },
+        {
+          "site": 2150871336,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871364,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871392,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871420,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871448,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871476,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871504,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871532,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871560,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871588,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871616,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871644,
+          "word": "0c03fe68",
+          "kind": "call",
+          "target": 2148530592,
+          "target_names": [
+            "__adddf3"
+          ]
+        },
+        {
+          "site": 2150871680,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150871712,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN11CIpuTaskC126CommitEv",
+      "address": 2150979372,
+      "candidate_end": 2150982048,
+      "segment": "E04",
+      "decoded_offset": 2260140,
+      "size": 2676,
+      "sha256": "042611db60597e5a2af1a73179a7c6e639a54c1bb88c7d619da0af9b86bf83e4",
+      "transfers": [
+        {
+          "site": 2150979484,
+          "word": "0c0c90ac",
+          "kind": "call",
+          "target": 2150777520,
+          "target_names": [
+            "_ZN13CExcelContext8GetInputEv"
+          ]
+        },
+        {
+          "site": 2150979728,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150979740,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150979760,
+          "word": "0c0d3241",
+          "kind": "call",
+          "target": 2150942980,
+          "target_names": [
+            "_ZN9CIpuUtils30uiPathInput2IpuConfigToolInputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150979772,
+          "word": "0c0d328f",
+          "kind": "call",
+          "target": 2150943292,
+          "target_names": [
+            "_ZN9CIpuUtils32uiPathOutput2IpuConfigToolOutputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150979920,
+          "word": "0c027f6b",
+          "kind": "call",
+          "target": 2148138412,
+          "target_names": [
+            "ImageSurfaceGetFirstColor"
+          ]
+        },
+        {
+          "site": 2150980128,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150980148,
+          "word": "0c0c90b2",
+          "kind": "call",
+          "target": 2150777544,
+          "target_names": [
+            "_ZN13CExcelContextC1EP8tagSPOOL"
+          ]
+        },
+        {
+          "site": 2150980716,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150980752,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150980788,
+          "word": "0240f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150980864,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2150981084,
+          "word": "0c0c91cf",
+          "kind": "call",
+          "target": 2150778684,
+          "target_names": [
+            "_ZN13CExcelContext12CalculateAllEh"
+          ]
+        },
+        {
+          "site": 2150981100,
+          "word": "0c0c94e3",
+          "kind": "call",
+          "target": 2150781836,
+          "target_names": [
+            "_ZN13CExcelContext11GetPropertyE21_IP_EXCEL_PROPERTY_ID"
+          ]
+        },
+        {
+          "site": 2150981124,
+          "word": "0c0c90b0",
+          "kind": "call",
+          "target": 2150777536,
+          "target_names": [
+            "_ZN13CExcelContext9GetOutputEv"
+          ]
+        },
+        {
+          "site": 2150981148,
+          "word": "0c0c9434",
+          "kind": "call",
+          "target": 2150781136,
+          "target_names": [
+            "_ZN13CExcelContext18GetSubImagesParamsEv"
+          ]
+        },
+        {
+          "site": 2150981164,
+          "word": "0c0d4624",
+          "kind": "call",
+          "target": 2150963344,
+          "target_names": [
+            "_ZN8CIpuTask14CommitSubImageEv"
+          ]
+        },
+        {
+          "site": 2150981224,
+          "word": "0c0d328f",
+          "kind": "call",
+          "target": 2150943292,
+          "target_names": [
+            "_ZN9CIpuUtils32uiPathOutput2IpuConfigToolOutputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150981244,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150981264,
+          "word": "0c0d328f",
+          "kind": "call",
+          "target": 2150943292,
+          "target_names": [
+            "_ZN9CIpuUtils32uiPathOutput2IpuConfigToolOutputE27_IMAGE_DESCRIPTOR_TYPE_ENUM"
+          ]
+        },
+        {
+          "site": 2150981284,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150981392,
+          "word": "0c028d28",
+          "kind": "call",
+          "target": 2148152480,
+          "target_names": [
+            "Lcm"
+          ]
+        },
+        {
+          "site": 2150981420,
+          "word": "0c028d28",
+          "kind": "call",
+          "target": 2148152480,
+          "target_names": [
+            "Lcm"
+          ]
+        },
+        {
+          "site": 2150981560,
+          "word": "02c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150981580,
+          "word": "0240f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150981612,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150981676,
+          "word": "00c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150981696,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150981712,
+          "word": "0240f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150981744,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150981872,
+          "word": "0c00362f",
+          "kind": "call",
+          "target": 2147539132,
+          "target_names": [
+            "_ZnwmPci"
+          ]
+        },
+        {
+          "site": 2150981888,
+          "word": "0c0c90b2",
+          "kind": "call",
+          "target": 2150777544,
+          "target_names": [
+            "_ZN13CExcelContextC1EP8tagSPOOL"
+          ]
+        },
+        {
+          "site": 2150981912,
+          "word": "0c0d0fff",
+          "kind": "call",
+          "target": 2150907900,
+          "target_names": [
+            "_ZN15CGeometryFilter8SetScaleEjjjj"
+          ]
+        },
+        {
+          "site": 2150981956,
+          "word": "02a0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150982012,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        },
+        {
+          "site": 2150982040,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN15CImageProcessor2GoEv",
+      "address": 2150861772,
+      "candidate_end": 2150862592,
+      "segment": "E04",
+      "decoded_offset": 2142540,
+      "size": 820,
+      "sha256": "4463f653399a5210b3d36aa7834c2364505d8d1b701b7493384923197dd6a951",
+      "transfers": [
+        {
+          "site": 2150861860,
+          "word": "0c0cd0e0",
+          "kind": "call",
+          "target": 2150843264,
+          "target_names": [
+            "_ZN10CIpuDriver10SetCbcModeEh"
+          ]
+        },
+        {
+          "site": 2150861876,
+          "word": "0c0cd0da",
+          "kind": "call",
+          "target": 2150843240,
+          "target_names": [
+            "_ZN10CIpuDriver14SetTasksParamsEjj"
+          ]
+        },
+        {
+          "site": 2150862004,
+          "word": "0c0ce212",
+          "kind": "call",
+          "target": 2150860872,
+          "target_names": [
+            "_ZN15CImageProcessor8CreateDcEv"
+          ]
+        },
+        {
+          "site": 2150862016,
+          "word": "0c0ce2e6",
+          "kind": "call",
+          "target": 2150861720,
+          "target_names": [
+            "_ZN15CImageProcessor10SetNrPhaseENS_13_IPU_NR_PHASEE"
+          ]
+        },
+        {
+          "site": 2150862068,
+          "word": "0c0d4a17",
+          "kind": "call",
+          "target": 2150967388,
+          "target_names": [
+            "_ZN8CIpuTask14IpuTaskDumpAllEj"
+          ]
+        },
+        {
+          "site": 2150862076,
+          "word": "0c0d4674",
+          "kind": "call",
+          "target": 2150963664,
+          "target_names": [
+            "_ZN8CIpuTask2GoEv"
+          ]
+        },
+        {
+          "site": 2150862136,
+          "word": "0c0d4a17",
+          "kind": "call",
+          "target": 2150967388,
+          "target_names": [
+            "_ZN8CIpuTask14IpuTaskDumpAllEj"
+          ]
+        },
+        {
+          "site": 2150862144,
+          "word": "0c0d4674",
+          "kind": "call",
+          "target": 2150963664,
+          "target_names": [
+            "_ZN8CIpuTask2GoEv"
+          ]
+        },
+        {
+          "site": 2150862200,
+          "word": "0c0cd0e0",
+          "kind": "call",
+          "target": 2150843264,
+          "target_names": [
+            "_ZN10CIpuDriver10SetCbcModeEh"
+          ]
+        },
+        {
+          "site": 2150862216,
+          "word": "0c0cd0da",
+          "kind": "call",
+          "target": 2150843240,
+          "target_names": [
+            "_ZN10CIpuDriver14SetTasksParamsEjj"
+          ]
+        },
+        {
+          "site": 2150862252,
+          "word": "0c0363aa",
+          "kind": "call",
+          "target": 2148372136,
+          "target_names": [
+            "_tx_event_flags_set"
+          ]
+        },
+        {
+          "site": 2150862272,
+          "word": "0c0ccf7c",
+          "kind": "call",
+          "target": 2150841840,
+          "target_names": [
+            "_ZN10CIpuDriver14ResetFilterUidEv"
+          ]
+        },
+        {
+          "site": 2150862296,
+          "word": "0c0ccfbb",
+          "kind": "call",
+          "target": 2150842092,
+          "target_names": [
+            "_ZN10CIpuDriver7PowerOnEv"
+          ]
+        },
+        {
+          "site": 2150862304,
+          "word": "0c0cd02a",
+          "kind": "call",
+          "target": 2150842536,
+          "target_names": [
+            "_ZN10CIpuDriver5ResetEv"
+          ]
+        },
+        {
+          "site": 2150862316,
+          "word": "0c04d20e",
+          "kind": "call",
+          "target": 2148747320,
+          "target_names": [
+            "CbcMarkEndOfBatch"
+          ]
+        },
+        {
+          "site": 2150862380,
+          "word": "0c0d4a17",
+          "kind": "call",
+          "target": 2150967388,
+          "target_names": [
+            "_ZN8CIpuTask14IpuTaskDumpAllEj"
+          ]
+        },
+        {
+          "site": 2150862428,
+          "word": "0c027644",
+          "kind": "call",
+          "target": 2148129040,
+          "target_names": [
+            "TimingMarkF"
+          ]
+        },
+        {
+          "site": 2150862436,
+          "word": "0c04cd53",
+          "kind": "call",
+          "target": 2148742476,
+          "target_names": [
+            "CbcBatchExec"
+          ]
+        },
+        {
+          "site": 2150862484,
+          "word": "0c02b45b",
+          "kind": "call",
+          "target": 2148192620,
+          "target_names": [
+            "_ZN11CObservable6NotifyEmPv"
+          ]
+        },
+        {
+          "site": 2150862500,
+          "word": "0c0ce2e6",
+          "kind": "call",
+          "target": 2150861720,
+          "target_names": [
+            "_ZN15CImageProcessor10SetNrPhaseENS_13_IPU_NR_PHASEE"
+          ]
+        },
+        {
+          "site": 2150862512,
+          "word": "0c0ce2e6",
+          "kind": "call",
+          "target": 2150861720,
+          "target_names": [
+            "_ZN15CImageProcessor10SetNrPhaseENS_13_IPU_NR_PHASEE"
+          ]
+        },
+        {
+          "site": 2150862552,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        },
+        {
+          "site": 2150862584,
+          "word": "0c028860",
+          "kind": "call",
+          "target": 2148147584,
+          "target_names": [
+            "__assfail"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN8CIpuTask2GoEv",
+      "address": 2150963664,
+      "candidate_end": 2150963676,
+      "segment": "E04",
+      "decoded_offset": 2244432,
+      "size": 12,
+      "sha256": "77f8a2e6e608074058900c5d15edded0d01bc78d1eb5897fffc4a41efa8ca8d6",
+      "transfers": [
+        {
+          "site": 2150963668,
+          "word": "080ccfaa",
+          "kind": "jump",
+          "target": 2150842024,
+          "target_names": [
+            "_ZN10CIpuDriver7AddTaskEP8CIpuTask"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN10CIpuDriver7AddTaskEP8CIpuTask",
+      "address": 2150842024,
+      "candidate_end": 2150842092,
+      "segment": "E04",
+      "decoded_offset": 2122792,
+      "size": 68,
+      "sha256": "c5d61b2cb5c145bf536a7931adefb67ed8cd3990c9d5f60cb0534d9ddc40d4d6",
+      "transfers": [
+        {
+          "site": 2150842044,
+          "word": "0c035f01",
+          "kind": "call",
+          "target": 2148367364,
+          "target_names": [
+            "_tx_queue_send"
+          ]
+        },
+        {
+          "site": 2150842084,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN11CIpuTaskC128WriteAllEv",
+      "address": 2150985880,
+      "candidate_end": 2150987800,
+      "segment": "E04",
+      "decoded_offset": 2266648,
+      "size": 1920,
+      "sha256": "04138f48e44e2d591d8f4eee89e2a15e97b3b3636aefd9e7cce675d390d6241e",
+      "transfers": [
+        {
+          "site": 2150985928,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150985940,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150985952,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150985960,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150985972,
+          "word": "0c0c90ac",
+          "kind": "call",
+          "target": 2150777520,
+          "target_names": [
+            "_ZN13CExcelContext8GetInputEv"
+          ]
+        },
+        {
+          "site": 2150985980,
+          "word": "0c0d307c",
+          "kind": "call",
+          "target": 2150941168,
+          "target_names": [
+            "_ZN9CIpuUtils10TurnIpuOffEv"
+          ]
+        },
+        {
+          "site": 2150986000,
+          "word": "00c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986064,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986084,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986116,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986144,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986156,
+          "word": "0c0cd036",
+          "kind": "call",
+          "target": 2150842584,
+          "target_names": [
+            "_ZN10CIpuDriver21GetSubmittedFilterUidE27_LL_IMAGE_PROCESSING_FILTER"
+          ]
+        },
+        {
+          "site": 2150986176,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986192,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986216,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986232,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986252,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986268,
+          "word": "0c0cd042",
+          "kind": "call",
+          "target": 2150842632,
+          "target_names": [
+            "_ZN10CIpuDriver21SetSubmittedFilterUidE27_LL_IMAGE_PROCESSING_FILTERl"
+          ]
+        },
+        {
+          "site": 2150986304,
+          "word": "0060f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986332,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986348,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150986368,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986408,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150986424,
+          "word": "0c0cc1cc",
+          "kind": "call",
+          "target": 2150827824,
+          "target_names": [
+            "_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER"
+          ]
+        },
+        {
+          "site": 2150986448,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986468,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986484,
+          "word": "0c0cd042",
+          "kind": "call",
+          "target": 2150842632,
+          "target_names": [
+            "_ZN10CIpuDriver21SetSubmittedFilterUidE27_LL_IMAGE_PROCESSING_FILTERl"
+          ]
+        },
+        {
+          "site": 2150986500,
+          "word": "0160f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986516,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986528,
+          "word": "0c0cc1cc",
+          "kind": "call",
+          "target": 2150827824,
+          "target_names": [
+            "_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER"
+          ]
+        },
+        {
+          "site": 2150986552,
+          "word": "0200f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986572,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986588,
+          "word": "0c0cd042",
+          "kind": "call",
+          "target": 2150842632,
+          "target_names": [
+            "_ZN10CIpuDriver21SetSubmittedFilterUidE27_LL_IMAGE_PROCESSING_FILTERl"
+          ]
+        },
+        {
+          "site": 2150986604,
+          "word": "0300f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986624,
+          "word": "0220f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986656,
+          "word": "0c0d3409",
+          "kind": "call",
+          "target": 2150944804,
+          "target_names": [
+            "_ZN9CIpuUtils15SetDemosaicModeEm"
+          ]
+        },
+        {
+          "site": 2150986664,
+          "word": "0c004bc6",
+          "kind": "call",
+          "target": 2147561240,
+          "target_names": [
+            "DcuIsInternalDramPresent"
+          ]
+        },
+        {
+          "site": 2150986700,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150986740,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150986772,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150986796,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150986836,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150986964,
+          "word": "0c0d3068",
+          "kind": "call",
+          "target": 2150941088,
+          "target_names": [
+            "_ZN9CIpuUtils12SetDgcEnableEh"
+          ]
+        },
+        {
+          "site": 2150986976,
+          "word": "0c02b459",
+          "kind": "call",
+          "target": 2148192612,
+          "target_names": [
+            "_ZN11CObservable8RegisterEP9CObserver"
+          ]
+        },
+        {
+          "site": 2150987044,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987060,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987076,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987140,
+          "word": "0c0c9536",
+          "kind": "call",
+          "target": 2150782168,
+          "target_names": [
+            "_ZN13CExcelContext17ConfigBatchClientEP16tagSDCUCLIENTOBJS1_S1_PhS2_S2_P15tagSFRAMEFIELDS"
+          ]
+        },
+        {
+          "site": 2150987168,
+          "word": "0c028276",
+          "kind": "call",
+          "target": 2148141528,
+          "target_names": [
+            "ImageDescriptorGetSurface"
+          ]
+        },
+        {
+          "site": 2150987184,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987208,
+          "word": "02e0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150987236,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987248,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987264,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987304,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150987320,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987332,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987348,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987388,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150987408,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150987420,
+          "word": "0c0d46c6",
+          "kind": "call",
+          "target": 2150963992,
+          "target_names": [
+            "_ZN8CIpuTask16SetClientDramSelEj"
+          ]
+        },
+        {
+          "site": 2150987436,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987448,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987464,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987504,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150987520,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987532,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987548,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987588,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150987604,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987616,
+          "word": "0c02828c",
+          "kind": "call",
+          "target": 2148141616,
+          "target_names": [
+            "ImageDescriptorGetPrimarySurface"
+          ]
+        },
+        {
+          "site": 2150987632,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987672,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        },
+        {
+          "site": 2150987696,
+          "word": "0260f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150987712,
+          "word": "0c028276",
+          "kind": "call",
+          "target": 2148141528,
+          "target_names": [
+            "ImageDescriptorGetSurface"
+          ]
+        },
+        {
+          "site": 2150987728,
+          "word": "0c028276",
+          "kind": "call",
+          "target": 2148141528,
+          "target_names": [
+            "ImageDescriptorGetSurface"
+          ]
+        },
+        {
+          "site": 2150987744,
+          "word": "0c0cd04f",
+          "kind": "call",
+          "target": 2150842684,
+          "target_names": [
+            "_ZN10CIpuDriver15GetClientHandleE16_IPU_CLIENT_ENUM"
+          ]
+        },
+        {
+          "site": 2150987784,
+          "word": "0c0c95bb",
+          "kind": "call",
+          "target": 2150782700,
+          "target_names": [
+            "_ZN13CExcelContext12ConfigClientE16_IPU_CLIENT_ENUMP16tagSDCUCLIENTOBJPhP15tagSFRAMEFIELDSP16tagSIMAGESURFACEhP19tagCBC_CONFIG_CHUNK"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN10CIpuDriver14SetTasksParamsEjj",
+      "address": 2150843240,
+      "candidate_end": 2150843256,
+      "segment": "E04",
+      "decoded_offset": 2124008,
+      "size": 16,
+      "sha256": "d6561d57380b545aaf95f8a53f8ad37b06b981ecaa9aba6a8737fbd75e3e7006",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CIpuDriver10SetCbcModeEh",
+      "address": 2150843264,
+      "candidate_end": 2150843272,
+      "segment": "E04",
+      "decoded_offset": 2124032,
+      "size": 8,
+      "sha256": "feb2c72469c3ee066780b172912e99c7b158aa0c5e6b4c03fc425b52fa0767c3",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER",
+      "address": 2150827824,
+      "candidate_end": 2150827844,
+      "segment": "E04",
+      "decoded_offset": 2108592,
+      "size": 20,
+      "sha256": "07a7f65eff868ad0d9bd8e32dd98ff43412334dc0d1f610a511a2b1f7f169164",
+      "transfers": []
+    },
+    {
+      "name": "_ZNK7CFilter6GetUidEv",
+      "address": 2152724056,
+      "candidate_end": 2152724064,
+      "segment": "E04",
+      "decoded_offset": 4004824,
+      "size": 8,
+      "sha256": "e891996c2125ec623cc7c7061ec66f141fc65f461e04e2e2392d30325f1e6495",
+      "transfers": []
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "limitations": [
+    "Four successful IPU task constructions and queue acceptance are a software path. The original task processing loop, interrupts and actual hardware are outside this evidence.",
+    "Task and filter identifiers use different storage and scopes. No camera-global UID is fixed by the static route."
+  ],
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "scope": "Original default HDR auxiliary descriptor through IpuToneMapRgb, FIPLIB geometry/export, CalculateTopology, TranslateFilters and virtual task Commit. Processor Go then executes to the modeled ThreadX queue sender.",
+    "stubs": {
+      "0x801d12f4": "IpuInit",
+      "0x800d9ac8": "_tx_counter_get",
+      "0x800d9df0": "_tx_thread_interrupt_control",
+      "0x800cdb00": "_tx_mutex_create",
+      "0x800cbee4": "_tx_mutex_get",
+      "0x800d193c": "_tx_mutex_put",
+      "0x800ad120": "CObservable constructor",
+      "0x800b6a40": "CObserver constructor",
+      "0x800ad164": "CObservable::Register",
+      "0x800a1310": "Fprintf_B",
+      "0x8009d910": "TimingMarkF",
+      "0x8009bdd8": "TimingMarkIsGroupEnabled",
+      "0x800213fc": "SmdbIsZLightEnabled returns 0",
+      "0x8000c598": "PoolFreeEx",
+      "0x8000d8e8": "operator delete with diagnostics",
+      "0x8000bf28": "PoolAllocEx",
+      "0x8000d8bc": "operator new",
+      "0x8000d828": "operator new with alignment",
+      "0x804f60f4": "operator new",
+      "0x80b1f120": "MemAlloc",
+      "0x80333e38": "CIpuDriver::GetDriver returns modeled driver",
+      "0x800d7c04": "_tx_queue_send records message and returns success",
+      "0x800d6aa4": "OsSysHaltEx fails replay if reached",
+      "0x800a2180": "__assfail fails replay if reached"
+    },
+    "limitations": [
+      "The fixture uses 512 by 128 buffers, a synthetic gamma LUT, the native default HDR auxiliary descriptor, and the modeled configuration bit in the stub list.",
+      "Processor Go is invoked on the same committed processor. PathGo's external synchronization, RTOS queue processing, driver RunTask and camera hardware are outside the replay.",
+      "The allocator provides distinct RAM blocks and ignores frees. No task or exported wrapper is injected."
+    ],
+    "result": {
+      "wrapper_kinds": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "topology_locations": [
+        0,
+        6,
+        10,
+        5
+      ],
+      "create_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "task_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "task_vtables": [
+        "0x804ff1e0",
+        "0x804ff1e0",
+        "0x804ff1e0",
+        "0x804ff1e0"
+      ],
+      "observer_vtables": [
+        "0x804ff228",
+        "0x804ff228",
+        "0x804ff228",
+        "0x804ff228"
+      ],
+      "final_flags": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "committed_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "queue_task_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "queue": "driver+0x224",
+      "queue_wait": 0,
+      "processor_fields": {
+        "0x2f0": 1,
+        "0x314": 0,
+        "0x310": 4,
+        "0x370": 0
+      },
+      "task_fields": [
+        {
+          "0x220": 0,
+          "0x224": 1,
+          "0x228": 0,
+          "0x234": 0,
+          "0x298": 3
+        },
+        {
+          "0x220": 0,
+          "0x224": 1,
+          "0x228": 0,
+          "0x234": 0,
+          "0x298": 3
+        },
+        {
+          "0x220": 0,
+          "0x224": 1,
+          "0x228": 0,
+          "0x234": 0,
+          "0x298": 3
+        },
+        {
+          "0x220": 0,
+          "0x224": 1,
+          "0x228": 0,
+          "0x234": 0,
+          "0x298": 3
+        }
+      ],
+      "driver_fields": {
+        "0x344": 0,
+        "0x348": 4,
+        "0x34c": 0,
+        "0x340": 0
+      },
+      "fc1": [
+        {
+          "uid": 9,
+          "enabled": 0,
+          "flags": 0
+        },
+        {
+          "uid": 35,
+          "enabled": 1,
+          "flags": 0
+        },
+        {
+          "uid": 61,
+          "enabled": 0,
+          "flags": 0
+        },
+        {
+          "uid": 87,
+          "enabled": 1,
+          "flags": 0
+        }
+      ]
+    }
+  }
+}

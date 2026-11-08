@@ -1,0 +1,107 @@
+{
+  "purpose": "Bounded comparison of Q7 HDR FC1 control and task submission/completion against K-3 evidence",
+  "k3_public_repository": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis",
+  "latest_public_main_sha_verified_via_gh": "614d1fe46b0041819f70f61559dc5e267183f717",
+  "commit_url": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/commit/614d1fe46b0041819f70f61559dc5e267183f717",
+  "method": "Used gh to read current public main and git show at the resulting fixed commit. K-3 source blob hashes below were computed from exact committed bytes; dirty worktree content was excluded. The current commit changed deep-evidence elsewhere, but its raw_jpeg_pipeline section is byte-equivalent at the parsed JSON object level to the prior public commit.",
+  "comparisons": [
+    {
+      "topic": "FC1 enable/control bit semantics",
+      "q7_context": "The Q7 HDR report traces a software FC1 gate: payload+0x44 byte == 0 selects enabled, and FC1 writer stores 0 to 0xb60000ec for enabled or 1 otherwise. A separate mode-1 control word is payload+0x12c from pass-local +0x28 bit0 and is written at 0xb60000fc. The report explicitly does not name the packed control bit's physical function. The follow-up identifies T as stored fiplib_pass_input_type; applicable Top_BlockControls use T==0, while upper descriptor versions 0xc/0xd/0xf can copy a raw u32 control word.",
+      "k3_evidence": "K-3's R2y path ORs eight configuration fields into a boolean that is applied to bit0 of R+0x10 via 0x53256b90 when the settings path and config[4] conditions hold. A separate CustomImage byte0&3 value is written to R+0x80 bits0..1. The evidence explicitly leaves the core bit's bypass/clock/filter-enable meaning and matrix-mode semantics unresolved.",
+      "k3_evidence_refs": [
+        "analysis/isp-semantics-evidence.json: r2y.relations[Eight control bytes feed one core bit]",
+        "analysis/isp-semantics-evidence.json: r2y.relations[Matrix mode is programmed independently]",
+        "analysis/isp-semantics-checks.json: pixel_comparator_or_order_verified=false",
+        "analysis/r2y-control-checks.json: scope"
+      ],
+      "addresses": [
+        "0x53253ed4",
+        "0x53253ee0",
+        "0x53253f8c",
+        "0x53253fa8",
+        "0x53256b90",
+        "R+0x10",
+        "0x532512f8",
+        "0x53251310",
+        "R+0x80"
+      ],
+      "comparison_limit": "K-3 documents an R2y aggregate control bit and separate matrix mode, not a physical FC1-enable meaning. Do not transfer R2y register semantics to Q7 FC1. The eight-byte control aggregate has no numerical replay or pixel execution."
+    },
+    {
+      "topic": "HDR task creation, submit range, and asynchronous queue",
+      "q7_context": "Fresh Q7 default HDR produces four locations [0,6,10,5], mode 0/CBC 0 selecting [0,4), and final index 3. The follow-up replays native FIPLIB geometry/export, four C12 task constructions, TranslateFilters and virtual Commit with synthetic 512x128 buffers; Go on that same processor sends IDs [0,1,2,3] to a modeled ThreadX queue sender. External allocation/RTOS helpers are modeled; actual queue consumption and hardware scheduling remain unobserved.",
+      "k3_evidence": "K-3 maps recipe operations Develop1/2, BackResize, JpegEncode and StoreImage to worker modules. The RAW/JPEG pipeline records an async message at context+0x8e8+24*op with a completion descriptor at message+0xc, plus a statically matched send/worker receive pair using object+0x24. JPEG downstream shows completion code 0x00c00003. The queue object linkage and operation mapping do not establish HDR task equivalence, runtime thread delivery, or K-3's per-pass FC1 behavior.",
+      "k3_evidence_refs": [
+        "analysis/deep-evidence.json: raw_jpeg_pipeline.operation_mapping",
+        "analysis/deep-evidence.json: raw_jpeg_pipeline.relationships[Async message record]",
+        "analysis/deep-evidence.json: raw_jpeg_pipeline.relationships[Queue pair]",
+        "analysis/deep-evidence.json: raw_jpeg_pipeline.relationships[JPEG downstream]",
+        "analysis/pipeline-report.html: Develop iteration and service start-order section"
+      ],
+      "addresses": [
+        "0x52e9476c",
+        "0x530ef074",
+        "0x530ef124",
+        "0x530eed94",
+        "0x530eee20",
+        "0x52e5edb4",
+        "0x00c00003"
+      ],
+      "comparison_limit": "K-3 queue evidence is a static RAW/JPEG module route, not a replay of Q7's four HDR task slots. The pipeline report states CPU start-request order does not establish pixel-processing order."
+    },
+    {
+      "topic": "Interrupt/callback completion boundary",
+      "q7_context": "The follow-up traces Q7 driver queue/RunTask, injected done-ISR conditions, task subimage requeue, processor completion counts, callback and PathWait mask. Seventeen bounded replay cases exercise selected branches with synthetic objects and injected RTOS results; no camera IRQ, DMA or pixels were observed.",
+      "k3_evidence": "K-3 JPEG evidence maps ImageInterruptService input 0xd5 to handler 0x53201640. For source 0x64, status bit31 and driver+0x50==0 gate the code-length read from 0x298c0020 and event 0x00e00001. The callback stores pipe+0x44, sets event mask bit0; the later 0x00c00003 callback sets macro event bit1. This is static code-flow evidence for JPEG completion handling, not a runtime IRQ or camera task-completion observation.",
+      "k3_evidence_refs": [
+        "analysis/pipeline-evidence.json: jpeg.relationships[image IRQ JPEG branch]",
+        "analysis/pipeline-evidence.json: jpeg.relationships[encode completion]",
+        "analysis/pipeline-report.html: 압축 크기와 완료 처리 section",
+        "analysis/pipeline-evidence.json: jpeg.limitations"
+      ],
+      "addresses": [
+        "0x53201c24",
+        "0x53202000",
+        "0x53201640",
+        "0x5320abf4",
+        "0x5320ac08",
+        "0x298c0020",
+        "0x5304c718",
+        "0x5304c724",
+        "0x5304c8c4",
+        "0x5304c8dc",
+        "0x5304cffc"
+      ],
+      "comparison_limit": "The upstream physical IRQ vector, RTOS scheduling, actual encoder execution, DMA/cache behavior, and JPEG correctness were not observed. This JPEG-specific callback chain must not be presented as a verified analogue of Q7 HDR IPU task completion."
+    }
+  ],
+  "source_blobs": [
+    {
+      "path": "analysis/isp-semantics-evidence.json",
+      "sha256": "036d96e97abd24be97ee6e870fa7584e9e8f8bb9ed1bd1890c1ea155c64af0f7"
+    },
+    {
+      "path": "analysis/isp-semantics-checks.json",
+      "sha256": "79aab09d850d1d47b45bed6c35e181a9f9155edba3c272492512bce9b0bbea4b"
+    },
+    {
+      "path": "analysis/r2y-control-checks.json",
+      "sha256": "5c296b68bc147aca27d6dd5f3c94e136ddc82e298f0178ccfc1dc95df03d2b2f"
+    },
+    {
+      "path": "analysis/pipeline-evidence.json",
+      "sha256": "dfae64d80f9da746587f803c64e8feca3701c30201ab920e68a5bd535ea2d63d"
+    },
+    {
+      "path": "analysis/deep-evidence.json",
+      "sha256": "951393148359e561050d824d84f5aed29ab92e23c28644a612583a756f778f6a"
+    },
+    {
+      "path": "analysis/pipeline-report.html",
+      "sha256": "96acbeaee4b41d53c9f350033fe90f2429d65a462f9f5b63376f2a1c22fcd2ba"
+    }
+  ],
+  "explicit_non_equivalence": "K-3 R2y controls, RAW/JPEG module queues, and JPEG encoder interrupts are model-specific. They do not establish the hardware meaning of Q7's FC1 byte or reproduce Q7 HDR task completion.",
+  "historical_comparison_note": "The current Q7 hdr-control-report.html comparison paragraph cites K-3 commit c1db6f27f0f72b30f09c30ae55cf8525640016e4. Current public main is 614d1fe46b0041819f70f61559dc5e267183f717; this JSON uses the latest commit and its exact blobs."
+}

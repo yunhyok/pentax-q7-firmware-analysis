@@ -1,0 +1,3965 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Q7 firmware provenance of FC1 control word at 0xb60000fc, including topology input typing, shared FC export and direct setter alternatives.",
+  "software_label": "FC1 packed-control bit 0. In the applicable IPU pass-control branches, it is the stored topology-input-type-zero indicator.",
+  "physical_meaning": "Unresolved. These code paths establish how the processor computes and writes the bit; the physical operation of the ISP datapath for each bit value is outside the evidence.",
+  "topology_type": {
+    "enum_type": "fiplib_pass_input_type",
+    "constructor_argument": "CFIP_PassTopology base constructor 0x8017c0e8 takes this typed enum as its sixth O32 argument and stores it to object+0x18.",
+    "input_format_type": "FIPLIB_PassIn::input_format_mode",
+    "input_format_field": "Topology object+0x50. The IPU constructor 0x8017c148 receives this separate typed format as its fifth O32 argument.",
+    "binding": "Topology params at object+0x84, with params+4 pointing to object+0x18. The cited top-control methods dereference that pointer as T.",
+    "ordered_classification": [
+      {
+        "condition": "u32 input format < 26 and (1 << format) & 0x023e000c != 0",
+        "input_formats": [
+          2,
+          3,
+          17,
+          18,
+          19,
+          20,
+          21,
+          25
+        ],
+        "T": 0
+      },
+      {
+        "condition": "u32 input format < 26 and (1 << format) & 0x203 != 0",
+        "input_formats": [
+          0,
+          1,
+          9
+        ],
+        "T": 2
+      },
+      {
+        "condition": "u32 input format < 26 and (1 << format) & 0x2010 != 0",
+        "input_formats": [
+          4,
+          13
+        ],
+        "T": 1
+      },
+      {
+        "condition": "otherwise, including u32 input format >= 26",
+        "T": 0
+      }
+    ],
+    "format_mutators": "SetInputFormat 0x8017c304 changes +0x50. SetOutputFormat 0x8017c2f4 writes +0x44,+0x48,+0x4c. Both preserve the stored topology enum at +0x18 in this path.",
+    "other_consumer": "The 0x1 operation-mode routine 0x80178770 compares the same T with 2 to select local+0 as 0 when T==2 and 1 otherwise.",
+    "mapped_examples": [
+      {
+        "descriptor_type": 6,
+        "descriptor_type_name": "RGB_48",
+        "input_format": 13,
+        "topology_input_type": 1,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 8,
+        "descriptor_type_name": "YUV_422",
+        "input_format": 2,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 12,
+        "descriptor_type_name": "YUV_444_16",
+        "input_format": 13,
+        "topology_input_type": 1,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 16,
+        "descriptor_type_name": "RGB_10_12_10",
+        "input_format": 22,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 17,
+        "descriptor_type_name": "LUMA-Y",
+        "input_format": 0,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 20,
+        "descriptor_type_name": "LIMAGE_32",
+        "input_format": 18,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      }
+    ],
+    "inference": "RGB_48 and YUV_444_16 share format 0xd/T1. RGB_10_12_10 format 0x16/T0 and YUV_422 format 2/T0 share T0. Thus neither T0 nor T1 alone identifies the RGB/YUV domain."
+  },
+  "control_word": {
+    "producer": "0x80176ec0 initializes the FC1/FC2/FC3/FC4 FC block modes to 1/2/3/4. The mode byte is stored at FC object+0x26 by 0x8017a974.",
+    "mode_1": "0x8017ab94 copies pass local+0x28 into FC block+0xc and zeroes +0xd. The 1x1 and 2x0 top-control methods and 0x1 with Q in {0,1,4} set local+0x28=(T==0). Remaining branch details are in control-followup.json.",
+    "shared_export": "0x8017ad04 writes the block output+0x2c as (u8[FC+0xc] & 1) | ((u8[FC+0xd] & 0xf) << 1). 0x801784c0 places FC1 at payload+0x100, making its packed word payload+0x12c.",
+    "other_modes": "In the shared ConfigIntRegs routine, modes 2 and 4 set FC+0xc=1 and +0xd=0 independently of topology and select YUV2RGB presets. Mode 3 sets bit 0 when local+0x29 bit 0 is set and (u8[local+0x29] >> 1) != 1, copies local+0x65 into FC+0xd, and selects local+0x6c custom coefficients or fallback presets. These are software construction paths for separate FC blocks.",
+    "matrix_independence": "Existing coefficient replay hdr-custom-flag0/1 exports the same eleven values for both flag values in FC1 mode 1. The new descriptor replay holds each version-specific coefficient/tail result constant while toggling control bit 0.",
+    "enable_independence": "FC1 active-low enable/bypass has its own word at 0xb60000ec (fc1-enable-checks.json). The FC1 coefficient writer reads object+0x48 as one full word for 0xb60000fc.",
+    "related_blocks": [
+      {
+        "block": "FC2",
+        "mode": 2,
+        "packed_payload_offset": "0x15c",
+        "mmio": "0xb6000870",
+        "setter": "0x80354668",
+        "writer": "0x80354970"
+      },
+      {
+        "block": "FC3",
+        "mode": 3,
+        "packed_payload_offset": "0x18c",
+        "mmio": "0xb60008b0",
+        "setter": "0x8032f054",
+        "writer": "0x8032f0c4"
+      },
+      {
+        "block": "FC4",
+        "mode": 4,
+        "packed_payload_offset": "0x1bc",
+        "mmio": "0xb6000c70",
+        "setter": "0x803313e0",
+        "writer": "0x803316e8"
+      }
+    ]
+  },
+  "descriptor_sources": [
+    {
+      "id": "0xf",
+      "versions": [
+        "0",
+        "0x6"
+      ],
+      "value": "0",
+      "setters": [
+        "0x80321a5c",
+        "0x80321aac"
+      ]
+    },
+    {
+      "id": "0xf",
+      "versions": [
+        "0xc",
+        "0xd",
+        "0xf"
+      ],
+      "value": "u32[descriptor+0x2c]",
+      "setters": [
+        "0x80321afc",
+        "0x80321b84",
+        "0x80321b40"
+      ]
+    },
+    {
+      "id": "0xab",
+      "versions": [
+        "0xc",
+        "0xf"
+      ],
+      "value": "u32[u32[descriptor+0x1c]+0x12c]",
+      "setters": [
+        "0x8031f64c",
+        "0x8031f6bc"
+      ]
+    }
+  ],
+  "fresh_hdr": {
+    "source": "control-followup.json, hdr-pass-followup.json",
+    "topology_locations": [
+      0,
+      6,
+      10,
+      5
+    ],
+    "topology_types": [
+      1,
+      1,
+      0,
+      1
+    ],
+    "fc1_bypass_words": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "fc1_control_words": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "note": "Location 10 has T0 and uses the 5x1 base method which forces flag zero. The final submitted pass is index 3, location 5, class 0x1 with Q0/T1, also yielding flag zero."
+  },
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "scope": "Original MIPS image-type name and input-format mapping, IPU topology constructor and format setters, and FC1 constructor, descriptor dispatcher and direct writer. Synthetic objects and RAM MMIO with no stubs. No scheduling, camera or ISP datapath execution.",
+    "topology_format_cases": [
+      {
+        "input_format": 0,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 1,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 2,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 3,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 4,
+        "topology_input_type": 1,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 5,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 6,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 7,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 8,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 9,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 10,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 11,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 12,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 13,
+        "topology_input_type": 1,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 14,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 15,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 16,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 17,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 18,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 19,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 20,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 21,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 22,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 23,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 24,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 25,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 26,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "input_format": 4294967295,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      }
+    ],
+    "descriptor_mapping_cases": [
+      {
+        "descriptor_type": 1,
+        "descriptor_type_name": "BAYER_8",
+        "input_format": 0,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 2,
+        "descriptor_type_name": "BAYER_10",
+        "input_format": 15,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 3,
+        "descriptor_type_name": "BAYER_12",
+        "input_format": 9,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 4,
+        "descriptor_type_name": "BAYER_16",
+        "input_format": 1,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 5,
+        "descriptor_type_name": "RGB_24",
+        "input_format": 4,
+        "topology_input_type": 1,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 6,
+        "descriptor_type_name": "RGB_48",
+        "input_format": 13,
+        "topology_input_type": 1,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 7,
+        "descriptor_type_name": "YUV_420",
+        "input_format": 20,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 8,
+        "descriptor_type_name": "YUV_422",
+        "input_format": 2,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 11,
+        "descriptor_type_name": "YUV_444",
+        "input_format": 3,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 12,
+        "descriptor_type_name": "YUV_444_16",
+        "input_format": 13,
+        "topology_input_type": 1,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 13,
+        "descriptor_type_name": "YUV_422_VD",
+        "input_format": 19,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 14,
+        "descriptor_type_name": "YUV_444_12_10_10",
+        "input_format": 16,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 15,
+        "descriptor_type_name": "YUV_444_12_48",
+        "input_format": 17,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 16,
+        "descriptor_type_name": "RGB_10_12_10",
+        "input_format": 22,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 17,
+        "descriptor_type_name": "LUMA-Y",
+        "input_format": 0,
+        "topology_input_type": 2,
+        "changed_input_format": 2,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 19,
+        "descriptor_type_name": "LIMAGE_16",
+        "input_format": 14,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      },
+      {
+        "descriptor_type": 20,
+        "descriptor_type_name": "LIMAGE_32",
+        "input_format": 18,
+        "topology_input_type": 0,
+        "changed_input_format": 13,
+        "changed_output_formats": [
+          2,
+          4,
+          13
+        ]
+      }
+    ],
+    "source_coefficients": [
+      31,
+      -49,
+      7,
+      -11,
+      100,
+      203,
+      -19,
+      59,
+      -14
+    ],
+    "source_tail": [
+      19,
+      -43
+    ],
+    "descriptor_writer_cases": [
+      {
+        "descriptor_id": 15,
+        "version": 0,
+        "source_control_word": 2777808960,
+        "emitted_control_word": 0,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            248
+          ],
+          [
+            3053453508,
+            4,
+            4294966904
+          ],
+          [
+            3053453512,
+            4,
+            56
+          ],
+          [
+            3053453516,
+            4,
+            4294967208
+          ],
+          [
+            3053453520,
+            4,
+            800
+          ],
+          [
+            3053453524,
+            4,
+            1624
+          ],
+          [
+            3053453528,
+            4,
+            4294967144
+          ],
+          [
+            3053453532,
+            4,
+            472
+          ],
+          [
+            3053453536,
+            4,
+            4294967184
+          ],
+          [
+            3053453540,
+            4,
+            2200
+          ],
+          [
+            3053453544,
+            4,
+            1704
+          ],
+          [
+            3053453564,
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 0,
+        "source_control_word": 2777808961,
+        "emitted_control_word": 0,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            248
+          ],
+          [
+            3053453508,
+            4,
+            4294966904
+          ],
+          [
+            3053453512,
+            4,
+            56
+          ],
+          [
+            3053453516,
+            4,
+            4294967208
+          ],
+          [
+            3053453520,
+            4,
+            800
+          ],
+          [
+            3053453524,
+            4,
+            1624
+          ],
+          [
+            3053453528,
+            4,
+            4294967144
+          ],
+          [
+            3053453532,
+            4,
+            472
+          ],
+          [
+            3053453536,
+            4,
+            4294967184
+          ],
+          [
+            3053453540,
+            4,
+            2200
+          ],
+          [
+            3053453544,
+            4,
+            1704
+          ],
+          [
+            3053453564,
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 6,
+        "source_control_word": 2777808960,
+        "emitted_control_word": 0,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            124
+          ],
+          [
+            3053453508,
+            4,
+            4294967100
+          ],
+          [
+            3053453512,
+            4,
+            28
+          ],
+          [
+            3053453516,
+            4,
+            4294967252
+          ],
+          [
+            3053453520,
+            4,
+            400
+          ],
+          [
+            3053453524,
+            4,
+            812
+          ],
+          [
+            3053453528,
+            4,
+            4294967220
+          ],
+          [
+            3053453532,
+            4,
+            236
+          ],
+          [
+            3053453536,
+            4,
+            4294967240
+          ],
+          [
+            3053453540,
+            4,
+            2200
+          ],
+          [
+            3053453544,
+            4,
+            1704
+          ],
+          [
+            3053453564,
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 6,
+        "source_control_word": 2777808961,
+        "emitted_control_word": 0,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            124
+          ],
+          [
+            3053453508,
+            4,
+            4294967100
+          ],
+          [
+            3053453512,
+            4,
+            28
+          ],
+          [
+            3053453516,
+            4,
+            4294967252
+          ],
+          [
+            3053453520,
+            4,
+            400
+          ],
+          [
+            3053453524,
+            4,
+            812
+          ],
+          [
+            3053453528,
+            4,
+            4294967220
+          ],
+          [
+            3053453532,
+            4,
+            236
+          ],
+          [
+            3053453536,
+            4,
+            4294967240
+          ],
+          [
+            3053453540,
+            4,
+            2200
+          ],
+          [
+            3053453544,
+            4,
+            1704
+          ],
+          [
+            3053453564,
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 12,
+        "source_control_word": 2777808960,
+        "emitted_control_word": 2777808960,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808960
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 12,
+        "source_control_word": 2777808961,
+        "emitted_control_word": 2777808961,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808961
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 13,
+        "source_control_word": 2777808960,
+        "emitted_control_word": 2777808960,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808960
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 13,
+        "source_control_word": 2777808961,
+        "emitted_control_word": 2777808961,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808961
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 15,
+        "source_control_word": 2777808960,
+        "emitted_control_word": 2777808960,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808960
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 15,
+        "version": 15,
+        "source_control_word": 2777808961,
+        "emitted_control_word": 2777808961,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808961
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 171,
+        "version": 12,
+        "source_control_word": 2777808960,
+        "emitted_control_word": 2777808960,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808960
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 171,
+        "version": 12,
+        "source_control_word": 2777808961,
+        "emitted_control_word": 2777808961,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            31
+          ],
+          [
+            3053453508,
+            4,
+            4294967247
+          ],
+          [
+            3053453512,
+            4,
+            7
+          ],
+          [
+            3053453516,
+            4,
+            4294967285
+          ],
+          [
+            3053453520,
+            4,
+            100
+          ],
+          [
+            3053453524,
+            4,
+            203
+          ],
+          [
+            3053453528,
+            4,
+            4294967277
+          ],
+          [
+            3053453532,
+            4,
+            59
+          ],
+          [
+            3053453536,
+            4,
+            4294967282
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808961
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 171,
+        "version": 15,
+        "source_control_word": 2777808960,
+        "emitted_control_word": 2777808960,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            7
+          ],
+          [
+            3053453508,
+            4,
+            4294967283
+          ],
+          [
+            3053453512,
+            4,
+            1
+          ],
+          [
+            3053453516,
+            4,
+            4294967293
+          ],
+          [
+            3053453520,
+            4,
+            25
+          ],
+          [
+            3053453524,
+            4,
+            50
+          ],
+          [
+            3053453528,
+            4,
+            4294967291
+          ],
+          [
+            3053453532,
+            4,
+            14
+          ],
+          [
+            3053453536,
+            4,
+            4294967292
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808960
+          ]
+        ]
+      },
+      {
+        "descriptor_id": 171,
+        "version": 15,
+        "source_control_word": 2777808961,
+        "emitted_control_word": 2777808961,
+        "ordered_mmio_writes": [
+          [
+            3053453504,
+            4,
+            7
+          ],
+          [
+            3053453508,
+            4,
+            4294967283
+          ],
+          [
+            3053453512,
+            4,
+            1
+          ],
+          [
+            3053453516,
+            4,
+            4294967293
+          ],
+          [
+            3053453520,
+            4,
+            25
+          ],
+          [
+            3053453524,
+            4,
+            50
+          ],
+          [
+            3053453528,
+            4,
+            4294967291
+          ],
+          [
+            3053453532,
+            4,
+            14
+          ],
+          [
+            3053453536,
+            4,
+            4294967292
+          ],
+          [
+            3053453540,
+            4,
+            19
+          ],
+          [
+            3053453544,
+            4,
+            4294967253
+          ],
+          [
+            3053453564,
+            4,
+            2777808961
+          ]
+        ]
+      }
+    ],
+    "engine": "angr 10.0.5 / VEX"
+  },
+  "evidence": [
+    {
+      "role": "Typed base constructor store and IPU topology parameter bindings",
+      "words": [
+        {
+          "va": "0x8017c0e8",
+          "u32le_word": "0x87a80010",
+          "segment": "E04",
+          "decoded_offset": "0x4e668"
+        },
+        {
+          "va": "0x8017c0f4",
+          "u32le_word": "0x8fa50014",
+          "segment": "E04",
+          "decoded_offset": "0x4e674"
+        },
+        {
+          "va": "0x8017c104",
+          "u32le_word": "0xac850018",
+          "segment": "E04",
+          "decoded_offset": "0x4e684"
+        },
+        {
+          "va": "0x8017c17c",
+          "u32le_word": "0x0c05f03a",
+          "segment": "E04",
+          "decoded_offset": "0x4e6fc"
+        },
+        {
+          "va": "0x8017c180",
+          "u32le_word": "0xafa00014",
+          "segment": "E04",
+          "decoded_offset": "0x4e700"
+        },
+        {
+          "va": "0x8017c188",
+          "u32le_word": "0x8fa70038",
+          "segment": "E04",
+          "decoded_offset": "0x4e708"
+        },
+        {
+          "va": "0x8017c190",
+          "u32le_word": "0x26440084",
+          "segment": "E04",
+          "decoded_offset": "0x4e710"
+        },
+        {
+          "va": "0x8017c1a0",
+          "u32le_word": "0x26450018",
+          "segment": "E04",
+          "decoded_offset": "0x4e720"
+        },
+        {
+          "va": "0x8017c1ac",
+          "u32le_word": "0xac850004",
+          "segment": "E04",
+          "decoded_offset": "0x4e72c"
+        },
+        {
+          "va": "0x8017c1b8",
+          "u32le_word": "0xae470050",
+          "segment": "E04",
+          "decoded_offset": "0x4e738"
+        }
+      ]
+    },
+    {
+      "role": "IPU topology input-format classification, unsigned bound and delay-slot writes",
+      "words": [
+        {
+          "va": "0x8017c268",
+          "u32le_word": "0x8e430050",
+          "segment": "E04",
+          "decoded_offset": "0x4e7e8"
+        },
+        {
+          "va": "0x8017c26c",
+          "u32le_word": "0x2c6e001a",
+          "segment": "E04",
+          "decoded_offset": "0x4e7ec"
+        },
+        {
+          "va": "0x8017c270",
+          "u32le_word": "0x11c0000f",
+          "segment": "E04",
+          "decoded_offset": "0x4e7f0"
+        },
+        {
+          "va": "0x8017c278",
+          "u32le_word": "0x24040001",
+          "segment": "E04",
+          "decoded_offset": "0x4e7f8"
+        },
+        {
+          "va": "0x8017c27c",
+          "u32le_word": "0x3c18023e",
+          "segment": "E04",
+          "decoded_offset": "0x4e7fc"
+        },
+        {
+          "va": "0x8017c280",
+          "u32le_word": "0x00641804",
+          "segment": "E04",
+          "decoded_offset": "0x4e800"
+        },
+        {
+          "va": "0x8017c284",
+          "u32le_word": "0x3711000c",
+          "segment": "E04",
+          "decoded_offset": "0x4e804"
+        },
+        {
+          "va": "0x8017c288",
+          "u32le_word": "0x00717824",
+          "segment": "E04",
+          "decoded_offset": "0x4e808"
+        },
+        {
+          "va": "0x8017c28c",
+          "u32le_word": "0x55e0000d",
+          "segment": "E04",
+          "decoded_offset": "0x4e80c"
+        },
+        {
+          "va": "0x8017c290",
+          "u32le_word": "0xae400018",
+          "segment": "E04",
+          "decoded_offset": "0x4e810"
+        },
+        {
+          "va": "0x8017c294",
+          "u32le_word": "0x30790203",
+          "segment": "E04",
+          "decoded_offset": "0x4e814"
+        },
+        {
+          "va": "0x8017c298",
+          "u32le_word": "0x5720000f",
+          "segment": "E04",
+          "decoded_offset": "0x4e818"
+        },
+        {
+          "va": "0x8017c29c",
+          "u32le_word": "0x24040002",
+          "segment": "E04",
+          "decoded_offset": "0x4e81c"
+        },
+        {
+          "va": "0x8017c2a0",
+          "u32le_word": "0x307f2010",
+          "segment": "E04",
+          "decoded_offset": "0x4e820"
+        },
+        {
+          "va": "0x8017c2a4",
+          "u32le_word": "0x57e00001",
+          "segment": "E04",
+          "decoded_offset": "0x4e824"
+        },
+        {
+          "va": "0x8017c2a8",
+          "u32le_word": "0xae440018",
+          "segment": "E04",
+          "decoded_offset": "0x4e828"
+        },
+        {
+          "va": "0x8017c2d8",
+          "u32le_word": "0xae440018",
+          "segment": "E04",
+          "decoded_offset": "0x4e858"
+        }
+      ]
+    },
+    {
+      "role": "Separate format setters and 0x1 operation-mode consumer of the topology enum",
+      "words": [
+        {
+          "va": "0x8017c2f4",
+          "u32le_word": "0xac87004c",
+          "segment": "E04",
+          "decoded_offset": "0x4e874"
+        },
+        {
+          "va": "0x8017c2f8",
+          "u32le_word": "0xac850044",
+          "segment": "E04",
+          "decoded_offset": "0x4e878"
+        },
+        {
+          "va": "0x8017c300",
+          "u32le_word": "0xac860048",
+          "segment": "E04",
+          "decoded_offset": "0x4e880"
+        },
+        {
+          "va": "0x8017c308",
+          "u32le_word": "0xac850050",
+          "segment": "E04",
+          "decoded_offset": "0x4e888"
+        },
+        {
+          "va": "0x80178770",
+          "u32le_word": "0x8cc70004",
+          "segment": "E04",
+          "decoded_offset": "0x4acf0"
+        },
+        {
+          "va": "0x80178774",
+          "u32le_word": "0x24020002",
+          "segment": "E04",
+          "decoded_offset": "0x4acf4"
+        },
+        {
+          "va": "0x80178778",
+          "u32le_word": "0x8ce30000",
+          "segment": "E04",
+          "decoded_offset": "0x4acf8"
+        },
+        {
+          "va": "0x80178780",
+          "u32le_word": "0x10620042",
+          "segment": "E04",
+          "decoded_offset": "0x4ad00"
+        },
+        {
+          "va": "0x8017878c",
+          "u32le_word": "0xa184088c",
+          "segment": "E04",
+          "decoded_offset": "0x4ad0c"
+        },
+        {
+          "va": "0x80178890",
+          "u32le_word": "0xa080088c",
+          "segment": "E04",
+          "decoded_offset": "0x4ae10"
+        }
+      ]
+    },
+    {
+      "role": "Firmware image type names for the cited format counterexamples",
+      "words": [
+        {
+          "va": "0x8009fe58",
+          "u32le_word": "0x3c06800c",
+          "segment": "E03",
+          "original_file_offset": "0x1a2140"
+        },
+        {
+          "va": "0x8009fe60",
+          "u32le_word": "0x24c5de40",
+          "segment": "E03",
+          "original_file_offset": "0x1a2148"
+        },
+        {
+          "va": "0x8009fe68",
+          "u32le_word": "0x2c84001c",
+          "segment": "E03",
+          "original_file_offset": "0x1a2150"
+        },
+        {
+          "va": "0x8009fe78",
+          "u32le_word": "0x8c620000",
+          "segment": "E03",
+          "original_file_offset": "0x1a2160"
+        },
+        {
+          "va": "0x800bde58",
+          "u32le_word": "0x800c0c2c",
+          "segment": "E03",
+          "original_file_offset": "0x1c0140"
+        },
+        {
+          "va": "0x800c0c2c",
+          "u32le_word": "0x5f424752",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f14"
+        },
+        {
+          "va": "0x800c0c30",
+          "u32le_word": "0x00003834",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f18"
+        },
+        {
+          "va": "0x800bde60",
+          "u32le_word": "0x800c0c3c",
+          "segment": "E03",
+          "original_file_offset": "0x1c0148"
+        },
+        {
+          "va": "0x800c0c3c",
+          "u32le_word": "0x5f565559",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f24"
+        },
+        {
+          "va": "0x800c0c40",
+          "u32le_word": "0x00323234",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f28"
+        },
+        {
+          "va": "0x800bde70",
+          "u32le_word": "0x800c0c70",
+          "segment": "E03",
+          "original_file_offset": "0x1c0158"
+        },
+        {
+          "va": "0x800c0c70",
+          "u32le_word": "0x5f565559",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f58"
+        },
+        {
+          "va": "0x800c0c74",
+          "u32le_word": "0x5f343434",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f5c"
+        },
+        {
+          "va": "0x800c0c78",
+          "u32le_word": "0x00003631",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f60"
+        },
+        {
+          "va": "0x800bde80",
+          "u32le_word": "0x800c0cac",
+          "segment": "E03",
+          "original_file_offset": "0x1c0168"
+        },
+        {
+          "va": "0x800c0cac",
+          "u32le_word": "0x5f424752",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f94"
+        },
+        {
+          "va": "0x800c0cb0",
+          "u32le_word": "0x315f3031",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f98"
+        },
+        {
+          "va": "0x800c0cb4",
+          "u32le_word": "0x30315f32",
+          "segment": "E03",
+          "original_file_offset": "0x1c2f9c"
+        },
+        {
+          "va": "0x800c0cb8",
+          "u32le_word": "0x00000000",
+          "segment": "E03",
+          "original_file_offset": "0x1c2fa0"
+        },
+        {
+          "va": "0x800bde84",
+          "u32le_word": "0x800c0cbc",
+          "segment": "E03",
+          "original_file_offset": "0x1c016c"
+        },
+        {
+          "va": "0x800c0cbc",
+          "u32le_word": "0x414d554c",
+          "segment": "E03",
+          "original_file_offset": "0x1c2fa4"
+        },
+        {
+          "va": "0x800c0cc0",
+          "u32le_word": "0x0000592d",
+          "segment": "E03",
+          "original_file_offset": "0x1c2fa8"
+        },
+        {
+          "va": "0x800bde90",
+          "u32le_word": "0x800c0cdc",
+          "segment": "E03",
+          "original_file_offset": "0x1c0178"
+        },
+        {
+          "va": "0x800c0cdc",
+          "u32le_word": "0x414d494c",
+          "segment": "E03",
+          "original_file_offset": "0x1c2fc4"
+        },
+        {
+          "va": "0x800c0ce0",
+          "u32le_word": "0x335f4547",
+          "segment": "E03",
+          "original_file_offset": "0x1c2fc8"
+        },
+        {
+          "va": "0x800c0ce4",
+          "u32le_word": "0x00000032",
+          "segment": "E03",
+          "original_file_offset": "0x1c2fcc"
+        }
+      ]
+    },
+    {
+      "role": "Descriptor type to FIPLIB input-format table and the cited example return values",
+      "words": [
+        {
+          "va": "0x8034c908",
+          "u32le_word": "0x2c820015",
+          "segment": "E04",
+          "decoded_offset": "0x21ee88"
+        },
+        {
+          "va": "0x8034c920",
+          "u32le_word": "0x2503abd8",
+          "segment": "E04",
+          "decoded_offset": "0x21eea0"
+        },
+        {
+          "va": "0x8034c928",
+          "u32le_word": "0x8ca40000",
+          "segment": "E04",
+          "decoded_offset": "0x21eea8"
+        },
+        {
+          "va": "0x8034c92c",
+          "u32le_word": "0x00800008",
+          "segment": "E04",
+          "decoded_offset": "0x21eeac"
+        },
+        {
+          "va": "0x8035abf0",
+          "u32le_word": "0x8034c96c",
+          "segment": "E04",
+          "decoded_offset": "0x22d170"
+        },
+        {
+          "va": "0x8035abf8",
+          "u32le_word": "0x8034c98c",
+          "segment": "E04",
+          "decoded_offset": "0x22d178"
+        },
+        {
+          "va": "0x8035ac08",
+          "u32le_word": "0x8034c96c",
+          "segment": "E04",
+          "decoded_offset": "0x22d188"
+        },
+        {
+          "va": "0x8035ac18",
+          "u32le_word": "0x8034c9ec",
+          "segment": "E04",
+          "decoded_offset": "0x22d198"
+        },
+        {
+          "va": "0x8035ac1c",
+          "u32le_word": "0x8034c95c",
+          "segment": "E04",
+          "decoded_offset": "0x22d19c"
+        },
+        {
+          "va": "0x8035ac28",
+          "u32le_word": "0x8034c9bc",
+          "segment": "E04",
+          "decoded_offset": "0x22d1a8"
+        },
+        {
+          "va": "0x8034c960",
+          "u32le_word": "0x00001021",
+          "segment": "E04",
+          "decoded_offset": "0x21eee0"
+        },
+        {
+          "va": "0x8034c970",
+          "u32le_word": "0x2402000d",
+          "segment": "E04",
+          "decoded_offset": "0x21eef0"
+        },
+        {
+          "va": "0x8034c990",
+          "u32le_word": "0x24020002",
+          "segment": "E04",
+          "decoded_offset": "0x21ef10"
+        },
+        {
+          "va": "0x8034c9c0",
+          "u32le_word": "0x24020012",
+          "segment": "E04",
+          "decoded_offset": "0x21ef40"
+        },
+        {
+          "va": "0x8034c9f0",
+          "u32le_word": "0x24020016",
+          "segment": "E04",
+          "decoded_offset": "0x21ef70"
+        }
+      ]
+    },
+    {
+      "role": "FC1, FC2, FC3 and FC4 constructor modes, and common block+0x26 store",
+      "words": [
+        {
+          "va": "0x80176f44",
+          "u32le_word": "0x26040118",
+          "segment": "E04",
+          "decoded_offset": "0x494c4"
+        },
+        {
+          "va": "0x80176f48",
+          "u32le_word": "0x0c05ea5d",
+          "segment": "E04",
+          "decoded_offset": "0x494c8"
+        },
+        {
+          "va": "0x80176f4c",
+          "u32le_word": "0x24050001",
+          "segment": "E04",
+          "decoded_offset": "0x494cc"
+        },
+        {
+          "va": "0x80176fa4",
+          "u32le_word": "0x26040684",
+          "segment": "E04",
+          "decoded_offset": "0x49524"
+        },
+        {
+          "va": "0x80176fa8",
+          "u32le_word": "0x0c05ea5d",
+          "segment": "E04",
+          "decoded_offset": "0x49528"
+        },
+        {
+          "va": "0x80176fac",
+          "u32le_word": "0x24050002",
+          "segment": "E04",
+          "decoded_offset": "0x4952c"
+        },
+        {
+          "va": "0x80176fb0",
+          "u32le_word": "0x260406b0",
+          "segment": "E04",
+          "decoded_offset": "0x49530"
+        },
+        {
+          "va": "0x80176fb4",
+          "u32le_word": "0x0c05ea5d",
+          "segment": "E04",
+          "decoded_offset": "0x49534"
+        },
+        {
+          "va": "0x80176fb8",
+          "u32le_word": "0x24050003",
+          "segment": "E04",
+          "decoded_offset": "0x49538"
+        },
+        {
+          "va": "0x80176fbc",
+          "u32le_word": "0x260406dc",
+          "segment": "E04",
+          "decoded_offset": "0x4953c"
+        },
+        {
+          "va": "0x80176fc0",
+          "u32le_word": "0x0c05ea5d",
+          "segment": "E04",
+          "decoded_offset": "0x49540"
+        },
+        {
+          "va": "0x80176fc4",
+          "u32le_word": "0x24050004",
+          "segment": "E04",
+          "decoded_offset": "0x49544"
+        },
+        {
+          "va": "0x8017a97c",
+          "u32le_word": "0xa0850026",
+          "segment": "E04",
+          "decoded_offset": "0x4cefc"
+        }
+      ]
+    },
+    {
+      "role": "Top-control topology type tests and unconditional zero branches",
+      "words": [
+        {
+          "va": "0x80171868",
+          "u32le_word": "0x8e4f0004",
+          "segment": "E04",
+          "decoded_offset": "0x43de8"
+        },
+        {
+          "va": "0x8017186c",
+          "u32le_word": "0x8dee0000",
+          "segment": "E04",
+          "decoded_offset": "0x43dec"
+        },
+        {
+          "va": "0x80171870",
+          "u32le_word": "0x2dcd0001",
+          "segment": "E04",
+          "decoded_offset": "0x43df0"
+        },
+        {
+          "va": "0x80171878",
+          "u32le_word": "0xa20d0028",
+          "segment": "E04",
+          "decoded_offset": "0x43df8"
+        },
+        {
+          "va": "0x80178b08",
+          "u32le_word": "0x8e790004",
+          "segment": "E04",
+          "decoded_offset": "0x4b088"
+        },
+        {
+          "va": "0x80178b0c",
+          "u32le_word": "0x8f380000",
+          "segment": "E04",
+          "decoded_offset": "0x4b08c"
+        },
+        {
+          "va": "0x80178b10",
+          "u32le_word": "0x2f120001",
+          "segment": "E04",
+          "decoded_offset": "0x4b090"
+        },
+        {
+          "va": "0x80178b14",
+          "u32le_word": "0xa2120028",
+          "segment": "E04",
+          "decoded_offset": "0x4b094"
+        },
+        {
+          "va": "0x8017be70",
+          "u32le_word": "0x8ccc0004",
+          "segment": "E04",
+          "decoded_offset": "0x4e3f0"
+        },
+        {
+          "va": "0x8017be74",
+          "u32le_word": "0x8d8b0000",
+          "segment": "E04",
+          "decoded_offset": "0x4e3f4"
+        },
+        {
+          "va": "0x8017be78",
+          "u32le_word": "0x2d6a0001",
+          "segment": "E04",
+          "decoded_offset": "0x4e3f8"
+        },
+        {
+          "va": "0x8017be80",
+          "u32le_word": "0xa0ea0028",
+          "segment": "E04",
+          "decoded_offset": "0x4e400"
+        },
+        {
+          "va": "0x8017749c",
+          "u32le_word": "0xa0e00028",
+          "segment": "E04",
+          "decoded_offset": "0x49a1c"
+        },
+        {
+          "va": "0x80177514",
+          "u32le_word": "0xa0e00028",
+          "segment": "E04",
+          "decoded_offset": "0x49a94"
+        },
+        {
+          "va": "0x8017bcb4",
+          "u32le_word": "0xa0800028",
+          "segment": "E04",
+          "decoded_offset": "0x4e234"
+        }
+      ]
+    },
+    {
+      "role": "Common FC construction and flag packing; mode 1, mode 3 and other modes",
+      "words": [
+        {
+          "va": "0x8017ab98",
+          "u32le_word": "0x90860026",
+          "segment": "E04",
+          "decoded_offset": "0x4d118"
+        },
+        {
+          "va": "0x8017aba8",
+          "u32le_word": "0x10c30019",
+          "segment": "E04",
+          "decoded_offset": "0x4d128"
+        },
+        {
+          "va": "0x8017abb4",
+          "u32le_word": "0x10c70034",
+          "segment": "E04",
+          "decoded_offset": "0x4d134"
+        },
+        {
+          "va": "0x8017abbc",
+          "u32le_word": "0xa083000c",
+          "segment": "E04",
+          "decoded_offset": "0x4d13c"
+        },
+        {
+          "va": "0x8017abc0",
+          "u32le_word": "0xa080000d",
+          "segment": "E04",
+          "decoded_offset": "0x4d140"
+        },
+        {
+          "va": "0x8017ac08",
+          "u32le_word": "0x0805ea7c",
+          "segment": "E04",
+          "decoded_offset": "0x4d188"
+        },
+        {
+          "va": "0x8017ac10",
+          "u32le_word": "0x90a20028",
+          "segment": "E04",
+          "decoded_offset": "0x4d190"
+        },
+        {
+          "va": "0x8017ac14",
+          "u32le_word": "0xa080000d",
+          "segment": "E04",
+          "decoded_offset": "0x4d194"
+        },
+        {
+          "va": "0x8017ac18",
+          "u32le_word": "0xa082000c",
+          "segment": "E04",
+          "decoded_offset": "0x4d198"
+        },
+        {
+          "va": "0x8017ac1c",
+          "u32le_word": "0x8ca50068",
+          "segment": "E04",
+          "decoded_offset": "0x4d19c"
+        },
+        {
+          "va": "0x8017ac88",
+          "u32le_word": "0x90a70029",
+          "segment": "E04",
+          "decoded_offset": "0x4d208"
+        },
+        {
+          "va": "0x8017ac8c",
+          "u32le_word": "0x00075042",
+          "segment": "E04",
+          "decoded_offset": "0x4d20c"
+        },
+        {
+          "va": "0x8017ac90",
+          "u32le_word": "0x1143000e",
+          "segment": "E04",
+          "decoded_offset": "0x4d210"
+        },
+        {
+          "va": "0x8017ac94",
+          "u32le_word": "0x30eb0001",
+          "segment": "E04",
+          "decoded_offset": "0x4d214"
+        },
+        {
+          "va": "0x8017ac98",
+          "u32le_word": "0x15600018",
+          "segment": "E04",
+          "decoded_offset": "0x4d218"
+        },
+        {
+          "va": "0x8017aca0",
+          "u32le_word": "0xa080000c",
+          "segment": "E04",
+          "decoded_offset": "0x4d220"
+        },
+        {
+          "va": "0x8017aca4",
+          "u32le_word": "0x90a30065",
+          "segment": "E04",
+          "decoded_offset": "0x4d224"
+        },
+        {
+          "va": "0x8017aca8",
+          "u32le_word": "0xa083000d",
+          "segment": "E04",
+          "decoded_offset": "0x4d228"
+        },
+        {
+          "va": "0x8017acb0",
+          "u32le_word": "0x8ca5006c",
+          "segment": "E04",
+          "decoded_offset": "0x4d230"
+        },
+        {
+          "va": "0x8017acbc",
+          "u32le_word": "0x0805eab4",
+          "segment": "E04",
+          "decoded_offset": "0x4d23c"
+        },
+        {
+          "va": "0x8017acc4",
+          "u32le_word": "0x0805ead8",
+          "segment": "E04",
+          "decoded_offset": "0x4d244"
+        },
+        {
+          "va": "0x8017accc",
+          "u32le_word": "0xa080000c",
+          "segment": "E04",
+          "decoded_offset": "0x4d24c"
+        },
+        {
+          "va": "0x8017ace0",
+          "u32le_word": "0x8ca5006c",
+          "segment": "E04",
+          "decoded_offset": "0x4d260"
+        },
+        {
+          "va": "0x8017acec",
+          "u32le_word": "0x0805eac5",
+          "segment": "E04",
+          "decoded_offset": "0x4d26c"
+        },
+        {
+          "va": "0x8017acf4",
+          "u32le_word": "0x0805ea8d",
+          "segment": "E04",
+          "decoded_offset": "0x4d274"
+        },
+        {
+          "va": "0x8017ad00",
+          "u32le_word": "0xa083000c",
+          "segment": "E04",
+          "decoded_offset": "0x4d280"
+        },
+        {
+          "va": "0x8017ad60",
+          "u32le_word": "0x91280005",
+          "segment": "E04",
+          "decoded_offset": "0x4d2e0"
+        },
+        {
+          "va": "0x8017ad64",
+          "u32le_word": "0x91270004",
+          "segment": "E04",
+          "decoded_offset": "0x4d2e4"
+        },
+        {
+          "va": "0x8017ad68",
+          "u32le_word": "0x3106000f",
+          "segment": "E04",
+          "decoded_offset": "0x4d2e8"
+        },
+        {
+          "va": "0x8017ad6c",
+          "u32le_word": "0x30e40001",
+          "segment": "E04",
+          "decoded_offset": "0x4d2ec"
+        },
+        {
+          "va": "0x8017ad70",
+          "u32le_word": "0x00061040",
+          "segment": "E04",
+          "decoded_offset": "0x4d2f0"
+        },
+        {
+          "va": "0x8017ad74",
+          "u32le_word": "0x00821821",
+          "segment": "E04",
+          "decoded_offset": "0x4d2f4"
+        },
+        {
+          "va": "0x8017ad7c",
+          "u32le_word": "0xaca3002c",
+          "segment": "E04",
+          "decoded_offset": "0x4d2fc"
+        }
+      ]
+    },
+    {
+      "role": "Common FC export targets for four IPU block instances",
+      "words": [
+        {
+          "va": "0x801784f0",
+          "u32le_word": "0x26040118",
+          "segment": "E04",
+          "decoded_offset": "0x4aa70"
+        },
+        {
+          "va": "0x801784f4",
+          "u32le_word": "0x0c05eb41",
+          "segment": "E04",
+          "decoded_offset": "0x4aa74"
+        },
+        {
+          "va": "0x801784f8",
+          "u32le_word": "0x26250100",
+          "segment": "E04",
+          "decoded_offset": "0x4aa78"
+        },
+        {
+          "va": "0x80178520",
+          "u32le_word": "0x26040684",
+          "segment": "E04",
+          "decoded_offset": "0x4aaa0"
+        },
+        {
+          "va": "0x80178524",
+          "u32le_word": "0x0c05eb41",
+          "segment": "E04",
+          "decoded_offset": "0x4aaa4"
+        },
+        {
+          "va": "0x80178528",
+          "u32le_word": "0x26250130",
+          "segment": "E04",
+          "decoded_offset": "0x4aaa8"
+        },
+        {
+          "va": "0x8017852c",
+          "u32le_word": "0x260406b0",
+          "segment": "E04",
+          "decoded_offset": "0x4aaac"
+        },
+        {
+          "va": "0x80178530",
+          "u32le_word": "0x0c05eb41",
+          "segment": "E04",
+          "decoded_offset": "0x4aab0"
+        },
+        {
+          "va": "0x80178534",
+          "u32le_word": "0x26250160",
+          "segment": "E04",
+          "decoded_offset": "0x4aab4"
+        },
+        {
+          "va": "0x80178538",
+          "u32le_word": "0x260406dc",
+          "segment": "E04",
+          "decoded_offset": "0x4aab8"
+        },
+        {
+          "va": "0x8017853c",
+          "u32le_word": "0x0c05eb41",
+          "segment": "E04",
+          "decoded_offset": "0x4aabc"
+        },
+        {
+          "va": "0x80178540",
+          "u32le_word": "0x26250190",
+          "segment": "E04",
+          "decoded_offset": "0x4aac0"
+        }
+      ]
+    },
+    {
+      "role": "Upper descriptor version table and raw control word or zero setter stores",
+      "words": [
+        {
+          "va": "0x80321bf4",
+          "u32le_word": "0x8ca30004",
+          "segment": "E04",
+          "decoded_offset": "0x1f4174"
+        },
+        {
+          "va": "0x80321c00",
+          "u32le_word": "0x10670016",
+          "segment": "E04",
+          "decoded_offset": "0x1f4180"
+        },
+        {
+          "va": "0x80321c5c",
+          "u32le_word": "0x8ca30008",
+          "segment": "E04",
+          "decoded_offset": "0x1f41dc"
+        },
+        {
+          "va": "0x80321c60",
+          "u32le_word": "0x2c640010",
+          "segment": "E04",
+          "decoded_offset": "0x1f41e0"
+        },
+        {
+          "va": "0x80321c70",
+          "u32le_word": "0x252888f4",
+          "segment": "E04",
+          "decoded_offset": "0x1f41f0"
+        },
+        {
+          "va": "0x80321c78",
+          "u32le_word": "0x8ca30000",
+          "segment": "E04",
+          "decoded_offset": "0x1f41f8"
+        },
+        {
+          "va": "0x80321c7c",
+          "u32le_word": "0x00600008",
+          "segment": "E04",
+          "decoded_offset": "0x1f41fc"
+        },
+        {
+          "va": "0x803588f4",
+          "u32le_word": "0x80321cc8",
+          "segment": "E04",
+          "decoded_offset": "0x22ae74"
+        },
+        {
+          "va": "0x8035890c",
+          "u32le_word": "0x80321cdc",
+          "segment": "E04",
+          "decoded_offset": "0x22ae8c"
+        },
+        {
+          "va": "0x80358924",
+          "u32le_word": "0x80321cf0",
+          "segment": "E04",
+          "decoded_offset": "0x22aea4"
+        },
+        {
+          "va": "0x80358928",
+          "u32le_word": "0x80321d04",
+          "segment": "E04",
+          "decoded_offset": "0x22aea8"
+        },
+        {
+          "va": "0x80358930",
+          "u32le_word": "0x80321cb4",
+          "segment": "E04",
+          "decoded_offset": "0x22aeb0"
+        },
+        {
+          "va": "0x80321a88",
+          "u32le_word": "0xac800048",
+          "segment": "E04",
+          "decoded_offset": "0x1f4008"
+        },
+        {
+          "va": "0x80321ad8",
+          "u32le_word": "0xac800048",
+          "segment": "E04",
+          "decoded_offset": "0x1f4058"
+        },
+        {
+          "va": "0x80321b28",
+          "u32le_word": "0x8ca4002c",
+          "segment": "E04",
+          "decoded_offset": "0x1f40a8"
+        },
+        {
+          "va": "0x80321b34",
+          "u32le_word": "0xace40048",
+          "segment": "E04",
+          "decoded_offset": "0x1f40b4"
+        },
+        {
+          "va": "0x80321b6c",
+          "u32le_word": "0x8ca4002c",
+          "segment": "E04",
+          "decoded_offset": "0x1f40ec"
+        },
+        {
+          "va": "0x80321b78",
+          "u32le_word": "0xace40048",
+          "segment": "E04",
+          "decoded_offset": "0x1f40f8"
+        },
+        {
+          "va": "0x80321bb0",
+          "u32le_word": "0x8ca8002c",
+          "segment": "E04",
+          "decoded_offset": "0x1f4130"
+        },
+        {
+          "va": "0x80321bbc",
+          "u32le_word": "0xace80048",
+          "segment": "E04",
+          "decoded_offset": "0x1f413c"
+        }
+      ]
+    },
+    {
+      "role": "FIPLIB descriptor dispatcher virtual slots, FC1 payload loads and control stores",
+      "words": [
+        {
+          "va": "0x8031f590",
+          "u32le_word": "0x3c04b600",
+          "segment": "E04",
+          "decoded_offset": "0x1f1b10"
+        },
+        {
+          "va": "0x8031f594",
+          "u32le_word": "0x348200ec",
+          "segment": "E04",
+          "decoded_offset": "0x1f1b14"
+        },
+        {
+          "va": "0x8031f598",
+          "u32le_word": "0x24e6f9f0",
+          "segment": "E04",
+          "decoded_offset": "0x1f1b18"
+        },
+        {
+          "va": "0x8031f5a8",
+          "u32le_word": "0xae060000",
+          "segment": "E04",
+          "decoded_offset": "0x1f1b28"
+        },
+        {
+          "va": "0x80321c08",
+          "u32le_word": "0x240200ab",
+          "segment": "E04",
+          "decoded_offset": "0x1f4188"
+        },
+        {
+          "va": "0x80321c18",
+          "u32le_word": "0x5066001f",
+          "segment": "E04",
+          "decoded_offset": "0x1f4198"
+        },
+        {
+          "va": "0x80321c20",
+          "u32le_word": "0x14670019",
+          "segment": "E04",
+          "decoded_offset": "0x1f41a0"
+        },
+        {
+          "va": "0x80321c2c",
+          "u32le_word": "0x8d62004c",
+          "segment": "E04",
+          "decoded_offset": "0x1f41ac"
+        },
+        {
+          "va": "0x80321c30",
+          "u32le_word": "0x0040f809",
+          "segment": "E04",
+          "decoded_offset": "0x1f41b0"
+        },
+        {
+          "va": "0x80321c9c",
+          "u32le_word": "0x8d420048",
+          "segment": "E04",
+          "decoded_offset": "0x1f421c"
+        },
+        {
+          "va": "0x804ffa38",
+          "u32le_word": "0x8031f64c",
+          "segment": "E04",
+          "decoded_offset": "0x3d1fb8"
+        },
+        {
+          "va": "0x804ffa3c",
+          "u32le_word": "0x8031f6bc",
+          "segment": "E04",
+          "decoded_offset": "0x3d1fbc"
+        },
+        {
+          "va": "0x8031f64c",
+          "u32le_word": "0x8cb8001c",
+          "segment": "E04",
+          "decoded_offset": "0x1f1bcc"
+        },
+        {
+          "va": "0x8031f650",
+          "u32le_word": "0x27020100",
+          "segment": "E04",
+          "decoded_offset": "0x1f1bd0"
+        },
+        {
+          "va": "0x8031f654",
+          "u32le_word": "0x8c45002c",
+          "segment": "E04",
+          "decoded_offset": "0x1f1bd4"
+        },
+        {
+          "va": "0x8031f688",
+          "u32le_word": "0xac850048",
+          "segment": "E04",
+          "decoded_offset": "0x1f1c08"
+        },
+        {
+          "va": "0x8031f6bc",
+          "u32le_word": "0x8caf001c",
+          "segment": "E04",
+          "decoded_offset": "0x1f1c3c"
+        },
+        {
+          "va": "0x8031f6c0",
+          "u32le_word": "0x25e20100",
+          "segment": "E04",
+          "decoded_offset": "0x1f1c40"
+        },
+        {
+          "va": "0x8031f6e8",
+          "u32le_word": "0x8c4d002c",
+          "segment": "E04",
+          "decoded_offset": "0x1f1c68"
+        },
+        {
+          "va": "0x8031f6f4",
+          "u32le_word": "0x00062882",
+          "segment": "E04",
+          "decoded_offset": "0x1f1c74"
+        },
+        {
+          "va": "0x8031f71c",
+          "u32le_word": "0xac8d0048",
+          "segment": "E04",
+          "decoded_offset": "0x1f1c9c"
+        }
+      ]
+    },
+    {
+      "role": "Packed-word FC1 writer and corresponding FC2, FC3, FC4 setter and writer edges",
+      "words": [
+        {
+          "va": "0x8031f774",
+          "u32le_word": "0x90830029",
+          "segment": "E04",
+          "decoded_offset": "0x1f1cf4"
+        },
+        {
+          "va": "0x8031f778",
+          "u32le_word": "0x3c02b600",
+          "segment": "E04",
+          "decoded_offset": "0x1f1cf8"
+        },
+        {
+          "va": "0x8031f7ac",
+          "u32le_word": "0x10600019",
+          "segment": "E04",
+          "decoded_offset": "0x1f1d2c"
+        },
+        {
+          "va": "0x8031f7b0",
+          "u32le_word": "0x345700fc",
+          "segment": "E04",
+          "decoded_offset": "0x1f1d30"
+        },
+        {
+          "va": "0x8031f80c",
+          "u32le_word": "0x8da40048",
+          "segment": "E04",
+          "decoded_offset": "0x1f1d8c"
+        },
+        {
+          "va": "0x8031f810",
+          "u32le_word": "0xaee40000",
+          "segment": "E04",
+          "decoded_offset": "0x1f1d90"
+        },
+        {
+          "va": "0x80354668",
+          "u32le_word": "0x8cb8001c",
+          "segment": "E04",
+          "decoded_offset": "0x226be8"
+        },
+        {
+          "va": "0x8035466c",
+          "u32le_word": "0x27020130",
+          "segment": "E04",
+          "decoded_offset": "0x226bec"
+        },
+        {
+          "va": "0x80354670",
+          "u32le_word": "0x8c45002c",
+          "segment": "E04",
+          "decoded_offset": "0x226bf0"
+        },
+        {
+          "va": "0x803546a4",
+          "u32le_word": "0xac850048",
+          "segment": "E04",
+          "decoded_offset": "0x226c24"
+        },
+        {
+          "va": "0x803549d0",
+          "u32le_word": "0x34570870",
+          "segment": "E04",
+          "decoded_offset": "0x226f50"
+        },
+        {
+          "va": "0x80354a2c",
+          "u32le_word": "0x8da40048",
+          "segment": "E04",
+          "decoded_offset": "0x226fac"
+        },
+        {
+          "va": "0x80354a30",
+          "u32le_word": "0xaee40000",
+          "segment": "E04",
+          "decoded_offset": "0x226fb0"
+        },
+        {
+          "va": "0x8032f054",
+          "u32le_word": "0x8cb8001c",
+          "segment": "E04",
+          "decoded_offset": "0x2015d4"
+        },
+        {
+          "va": "0x8032f058",
+          "u32le_word": "0x27020160",
+          "segment": "E04",
+          "decoded_offset": "0x2015d8"
+        },
+        {
+          "va": "0x8032f05c",
+          "u32le_word": "0x8c45002c",
+          "segment": "E04",
+          "decoded_offset": "0x2015dc"
+        },
+        {
+          "va": "0x8032f090",
+          "u32le_word": "0xac850048",
+          "segment": "E04",
+          "decoded_offset": "0x201610"
+        },
+        {
+          "va": "0x8032f124",
+          "u32le_word": "0x345708b0",
+          "segment": "E04",
+          "decoded_offset": "0x2016a4"
+        },
+        {
+          "va": "0x8032f180",
+          "u32le_word": "0x8da40048",
+          "segment": "E04",
+          "decoded_offset": "0x201700"
+        },
+        {
+          "va": "0x8032f184",
+          "u32le_word": "0xaee40000",
+          "segment": "E04",
+          "decoded_offset": "0x201704"
+        },
+        {
+          "va": "0x803313e0",
+          "u32le_word": "0x8cb8001c",
+          "segment": "E04",
+          "decoded_offset": "0x203960"
+        },
+        {
+          "va": "0x803313e4",
+          "u32le_word": "0x27020190",
+          "segment": "E04",
+          "decoded_offset": "0x203964"
+        },
+        {
+          "va": "0x803313e8",
+          "u32le_word": "0x8c45002c",
+          "segment": "E04",
+          "decoded_offset": "0x203968"
+        },
+        {
+          "va": "0x8033141c",
+          "u32le_word": "0xac850048",
+          "segment": "E04",
+          "decoded_offset": "0x20399c"
+        },
+        {
+          "va": "0x80331748",
+          "u32le_word": "0x34570c70",
+          "segment": "E04",
+          "decoded_offset": "0x203cc8"
+        },
+        {
+          "va": "0x803317a4",
+          "u32le_word": "0x8da40048",
+          "segment": "E04",
+          "decoded_offset": "0x203d24"
+        },
+        {
+          "va": "0x803317a8",
+          "u32le_word": "0xaee40000",
+          "segment": "E04",
+          "decoded_offset": "0x203d28"
+        }
+      ]
+    }
+  ],
+  "selected_functions": [
+    {
+      "name": "ImageTypeName",
+      "address": 2148138584,
+      "candidate_end": 2148138628,
+      "file_offset": 1712448,
+      "size": 44,
+      "sha256": "88678e76523cdd6128436206f51792950f6092891ca7304f962ba0c7007f74f2",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_1x1_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2148996952,
+      "candidate_end": 2148997720,
+      "segment": "E04",
+      "decoded_offset": 277720,
+      "size": 768,
+      "sha256": "476df9acdce44dc8a3d956d68cba70c850d21c5e1bab00faeb31388c65962e8f",
+      "transfers": [
+        {
+          "site": 2148997692,
+          "word": "0c05dd78",
+          "kind": "call",
+          "target": 2149021152,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass20IsANR_or_LC_or_CC_ONER15tsFIPLIB_Inputs"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN17CFIP_C12_IPU_PassC2Ess",
+      "address": 2149019328,
+      "candidate_end": 2149019952,
+      "segment": "E04",
+      "decoded_offset": 300096,
+      "size": 624,
+      "sha256": "6fc87bf78b84f0fd386f14fced10f31704c829ed2b0dbadc44f42a03b64f9b5b",
+      "transfers": [
+        {
+          "site": 2149019348,
+          "word": "0c05c53f",
+          "kind": "call",
+          "target": 2148996348,
+          "target_names": [
+            "_ZN9CFIP_PassC2Ess"
+          ]
+        },
+        {
+          "site": 2149019464,
+          "word": "0c05ea5d",
+          "kind": "call",
+          "target": 2149034356,
+          "target_names": [
+            "_ZN12CFIPB_C12_FCC1Eh"
+          ]
+        },
+        {
+          "site": 2149019496,
+          "word": "0c14795a",
+          "kind": "call",
+          "target": 2152850792,
+          "target_names": [
+            "_ZN15CFIPB_C12_CYLPFC1Ev"
+          ]
+        },
+        {
+          "site": 2149019560,
+          "word": "0c05ea5d",
+          "kind": "call",
+          "target": 2149034356,
+          "target_names": [
+            "_ZN12CFIPB_C12_FCC1Eh"
+          ]
+        },
+        {
+          "site": 2149019572,
+          "word": "0c05ea5d",
+          "kind": "call",
+          "target": 2149034356,
+          "target_names": [
+            "_ZN12CFIPB_C12_FCC1Eh"
+          ]
+        },
+        {
+          "site": 2149019584,
+          "word": "0c05ea5d",
+          "kind": "call",
+          "target": 2149034356,
+          "target_names": [
+            "_ZN12CFIPB_C12_FCC1Eh"
+          ]
+        },
+        {
+          "site": 2149019924,
+          "word": "0c05c553",
+          "kind": "call",
+          "target": 2148996428,
+          "target_names": [
+            "_ZN17CFIPB_C12_IPU_CNRC1Ev"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN17CFIP_C12_IPU_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149020776,
+      "candidate_end": 2149021064,
+      "segment": "E04",
+      "decoded_offset": 301544,
+      "size": 288,
+      "sha256": "10bdec67c84d3217760c90d66f00e5305bc4e7104abb6b98de3d41bfd7d7c8e9",
+      "transfers": []
+    },
+    {
+      "name": "_ZNK17CFIP_C12_IPU_Pass6ExportER13tsFIPLIB_Pass",
+      "address": 2149024960,
+      "candidate_end": 2149025156,
+      "segment": "E04",
+      "decoded_offset": 305728,
+      "size": 196,
+      "sha256": "2d7f9e1ee0ea7ca21cf1a46353196d6f455f79e2f6f016d8caa6f48459020331",
+      "transfers": [
+        {
+          "site": 2149024988,
+          "word": "0c05e7e4",
+          "kind": "call",
+          "target": 2149031824,
+          "target_names": [
+            "_ZNK21CFIPB_C12_IPU_General6ExportER24tsFIPLIB_Out_IPU_General"
+          ]
+        },
+        {
+          "site": 2149025000,
+          "word": "0c05e693",
+          "kind": "call",
+          "target": 2149030476,
+          "target_names": [
+            "_ZNK17CFIPB_C12_LateBLC6ExportER24tsFIPLIB_Out_IPU_LateBLC"
+          ]
+        },
+        {
+          "site": 2149025012,
+          "word": "0c05eb41",
+          "kind": "call",
+          "target": 2149035268,
+          "target_names": [
+            "_ZNK12CFIPB_C12_FC6ExportER19tsFIPLIB_Out_IPU_FC"
+          ]
+        },
+        {
+          "site": 2149025024,
+          "word": "0c05f1f6",
+          "kind": "call",
+          "target": 2149042136,
+          "target_names": [
+            "_ZNK18CFIPB_C12_DCBlend16ExportER25tsFIPLIB_Out_IPU_DCBlend1"
+          ]
+        },
+        {
+          "site": 2149025036,
+          "word": "0c05d280",
+          "kind": "call",
+          "target": 2149009920,
+          "target_names": [
+            "_ZNK15CFIPB_C12_CYLPF6ExportER22tsFIPLIB_Out_IPU_CYLPF"
+          ]
+        },
+        {
+          "site": 2149025048,
+          "word": "0c05c0cb",
+          "kind": "call",
+          "target": 2148991788,
+          "target_names": [
+            "_ZNK18CFIPB_C12_DCBlend26ExportER25tsFIPLIB_Out_IPU_DCBlend2"
+          ]
+        },
+        {
+          "site": 2149025060,
+          "word": "0c05eb41",
+          "kind": "call",
+          "target": 2149035268,
+          "target_names": [
+            "_ZNK12CFIPB_C12_FC6ExportER19tsFIPLIB_Out_IPU_FC"
+          ]
+        },
+        {
+          "site": 2149025072,
+          "word": "0c05eb41",
+          "kind": "call",
+          "target": 2149035268,
+          "target_names": [
+            "_ZNK12CFIPB_C12_FC6ExportER19tsFIPLIB_Out_IPU_FC"
+          ]
+        },
+        {
+          "site": 2149025084,
+          "word": "0c05eb41",
+          "kind": "call",
+          "target": 2149035268,
+          "target_names": [
+            "_ZNK12CFIPB_C12_FC6ExportER19tsFIPLIB_Out_IPU_FC"
+          ]
+        },
+        {
+          "site": 2149025096,
+          "word": "0c05c3c6",
+          "kind": "call",
+          "target": 2148994840,
+          "target_names": [
+            "_ZNK16CFIPB_C12_EECYNF6ExportER23tsFIPLIB_Out_IPU_EECYNF"
+          ]
+        },
+        {
+          "site": 2149025108,
+          "word": "0c05e9b0",
+          "kind": "call",
+          "target": 2149033664,
+          "target_names": [
+            "_ZNK16CFIPB_C12_ZLIGHT6ExportER23tsFIPLIB_Out_IPU_ZLight"
+          ]
+        },
+        {
+          "site": 2149025120,
+          "word": "0c05c4fd",
+          "kind": "call",
+          "target": 2148996084,
+          "target_names": [
+            "_ZNK17CFIPB_C12_IPU_ZNR6ExportER21tsFIPLIB_Out_IPU_ZYNR"
+          ]
+        },
+        {
+          "site": 2149025148,
+          "word": "0805c57e",
+          "kind": "jump",
+          "target": 2148996600,
+          "target_names": [
+            "_ZNK17CFIPB_C12_IPU_CNR6ExportER20tsFIPLIB_Out_IPU_CNR"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_0x1_Pass38PreparePassInParams_Top_OperationModesER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149025648,
+      "candidate_end": 2149025968,
+      "segment": "E04",
+      "decoded_offset": 306416,
+      "size": 320,
+      "sha256": "34a5e2eadd905ff551a9ed2dde458870df0e41e8abecd549d1b732c12dacc2f9",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_0x1_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149025968,
+      "candidate_end": 2149027488,
+      "segment": "E04",
+      "decoded_offset": 306736,
+      "size": 1520,
+      "sha256": "f6ae021134ef941fb940703113f0ee1633efeaf0924e9bef4fea9639bbb2ec49",
+      "transfers": [
+        {
+          "site": 2149026060,
+          "word": "0c05dd1a",
+          "kind": "call",
+          "target": 2149020776,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams"
+          ]
+        },
+        {
+          "site": 2149026764,
+          "word": "0c05dd1a",
+          "kind": "call",
+          "target": 2149020776,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams"
+          ]
+        },
+        {
+          "site": 2149027220,
+          "word": "0c05dd78",
+          "kind": "call",
+          "target": 2149021152,
+          "target_names": [
+            "_ZN17CFIP_C12_IPU_Pass20IsANR_or_LC_or_CC_ONER15tsFIPLIB_Inputs"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FCC1Eh",
+      "address": 2149034356,
+      "candidate_end": 2149034388,
+      "segment": "E04",
+      "decoded_offset": 315124,
+      "size": 32,
+      "sha256": "1e9d568f0a643f1c3e29ecae394768b3c5213ff5c0ac37f3eb68da03b2119f2b",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_601_RGB2YUVEv",
+      "address": 2149034396,
+      "candidate_end": 2149034480,
+      "segment": "E04",
+      "decoded_offset": 315164,
+      "size": 84,
+      "sha256": "216e4d4c9699bc13bb12ce459e458243dd4931342aaaf76d09edb7f67d3b4b71",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_601_YUV2RGBEv",
+      "address": 2149034480,
+      "candidate_end": 2149034548,
+      "segment": "E04",
+      "decoded_offset": 315248,
+      "size": 68,
+      "sha256": "fa73f8a962fba27c49035833a62a7b234845edde1aacf604346f5d907360136f",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC34Config_Matrix_ITUR_601_YUV2RGB_RecEv",
+      "address": 2149034548,
+      "candidate_end": 2149034620,
+      "segment": "E04",
+      "decoded_offset": 315316,
+      "size": 72,
+      "sha256": "5ab430b7fc9d71a2e0d3d09f9e5bb03c0071b818b87c9b8ccd320c23b37c8a97",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_709_RGB2YUVEv",
+      "address": 2149034620,
+      "candidate_end": 2149034704,
+      "segment": "E04",
+      "decoded_offset": 315388,
+      "size": 84,
+      "sha256": "be33c0b2cb275d7cdf8f692df6cba0ba9b200146b7a9d0c33921126088f657a6",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_709_YUV2RGBEv",
+      "address": 2149034704,
+      "candidate_end": 2149034772,
+      "segment": "E04",
+      "decoded_offset": 315472,
+      "size": 68,
+      "sha256": "1b43f5ec0545237821313807b7de42b4b40742a8a3151de7f95e02a59be96641",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC34Config_Matrix_ITUR_709_YUV2RGB_RecEv",
+      "address": 2149034772,
+      "candidate_end": 2149034848,
+      "segment": "E04",
+      "decoded_offset": 315540,
+      "size": 76,
+      "sha256": "1736f77777c90e1c3d6cace23dde86247b3bc656c9ef8601328fd68cf44aee4d",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC19Config_Matrix_UnityEv",
+      "address": 2149034848,
+      "candidate_end": 2149034900,
+      "segment": "E04",
+      "decoded_offset": 315616,
+      "size": 52,
+      "sha256": "7b90b25b5b79ec8f7d3071c5d7ce9679261b8678453631d8027331973e930367",
+      "transfers": []
+    },
+    {
+      "name": "_ZN12CFIPB_C12_FC13ConfigIntRegsERK22tsFIPLIB_IPUPassInputs",
+      "address": 2149034900,
+      "candidate_end": 2149035268,
+      "segment": "E04",
+      "decoded_offset": 315668,
+      "size": 368,
+      "sha256": "b2f07b93060e2fa27db5629e5984705db3b7e024555ceb42815f675185944940",
+      "transfers": [
+        {
+          "site": 2149034992,
+          "word": "0805ea67",
+          "kind": "jump",
+          "target": 2149034396,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_601_RGB2YUVEv"
+          ]
+        },
+        {
+          "site": 2149035016,
+          "word": "0805ea7c",
+          "kind": "jump",
+          "target": 2149034480,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_601_YUV2RGBEv"
+          ]
+        },
+        {
+          "site": 2149035196,
+          "word": "0805eab4",
+          "kind": "jump",
+          "target": 2149034704,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_709_YUV2RGBEv"
+          ]
+        },
+        {
+          "site": 2149035204,
+          "word": "0805ead8",
+          "kind": "jump",
+          "target": 2149034848,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC19Config_Matrix_UnityEv"
+          ]
+        },
+        {
+          "site": 2149035236,
+          "word": "0805ea9f",
+          "kind": "jump",
+          "target": 2149034620,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC30Config_Matrix_ITUR_709_RGB2YUVEv"
+          ]
+        },
+        {
+          "site": 2149035244,
+          "word": "0805eac5",
+          "kind": "jump",
+          "target": 2149034772,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC34Config_Matrix_ITUR_709_YUV2RGB_RecEv"
+          ]
+        },
+        {
+          "site": 2149035252,
+          "word": "0805ea8d",
+          "kind": "jump",
+          "target": 2149034548,
+          "target_names": [
+            "_ZN12CFIPB_C12_FC34Config_Matrix_ITUR_601_YUV2RGB_RecEv"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZNK12CFIPB_C12_FC6ExportER19tsFIPLIB_Out_IPU_FC",
+      "address": 2149035268,
+      "candidate_end": 2149035392,
+      "segment": "E04",
+      "decoded_offset": 316036,
+      "size": 124,
+      "sha256": "c0826e44718b9e8daeebd50728715bb396fbe4a51d230d7668a851af63a9e850",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_1x0_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149039232,
+      "candidate_end": 2149039384,
+      "segment": "E04",
+      "decoded_offset": 320000,
+      "size": 152,
+      "sha256": "650376c6a68ff42c18ff338ad66728bf777b3cb67467ca7c566522bca66fdc7c",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_C12_IPU_2x0_Pass37PreparePassInParams_Top_BlockControlsER15tsFIPLIB_InputsRK26CFIP_IPUPassTopologyParams",
+      "address": 2149039524,
+      "candidate_end": 2149040092,
+      "segment": "E04",
+      "decoded_offset": 320292,
+      "size": 568,
+      "sha256": "b9dab37927081537367d1e6e80dfd72ec605d8bea6c2554594b2ec6853f3320b",
+      "transfers": []
+    },
+    {
+      "name": "_ZN17CFIP_PassTopologyC2E16fiplib_pass_typesss22fiplib_pass_input_type",
+      "address": 2149040360,
+      "candidate_end": 2149040428,
+      "segment": "E04",
+      "decoded_offset": 321128,
+      "size": 68,
+      "sha256": "7e4947308ed944c8a6b6d33a6720b4695ee3af07d72ba64ac3f9765141a5fb4a",
+      "transfers": [
+        {
+          "site": 2149040420,
+          "word": "0805f033",
+          "kind": "jump",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN21CFIP_PassTopology_IPUC1EsssN13FIPLIB_PassIn17input_format_modeE",
+      "address": 2149040456,
+      "candidate_end": 2149040884,
+      "segment": "E04",
+      "decoded_offset": 321224,
+      "size": 428,
+      "sha256": "da86e0ce1e403e8623d0adcbf4d3d33e38c69d49f976870c833b4e03a7c9d0f0",
+      "transfers": [
+        {
+          "site": 2149040508,
+          "word": "0c05f03a",
+          "kind": "call",
+          "target": 2149040360,
+          "target_names": [
+            "_ZN17CFIP_PassTopologyC2E16fiplib_pass_typesss22fiplib_pass_input_type"
+          ]
+        },
+        {
+          "site": 2149040588,
+          "word": "0c05f04e",
+          "kind": "call",
+          "target": 2149040440,
+          "target_names": [
+            "_ZN21CFIP_PassTopology_IPU13SetOutputModeEsss"
+          ]
+        },
+        {
+          "site": 2149040608,
+          "word": "0c05f04b",
+          "kind": "call",
+          "target": 2149040428,
+          "target_names": [
+            "_ZN17CFIP_PassTopology16UpdateSizeFactorER20tsFIPLIB_SizeFactorsmm"
+          ]
+        },
+        {
+          "site": 2149040640,
+          "word": "0c05f04b",
+          "kind": "call",
+          "target": 2149040428,
+          "target_names": [
+            "_ZN17CFIP_PassTopology16UpdateSizeFactorER20tsFIPLIB_SizeFactorsmm"
+          ]
+        },
+        {
+          "site": 2149040680,
+          "word": "0c05f033",
+          "kind": "call",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        },
+        {
+          "site": 2149040708,
+          "word": "0c05f033",
+          "kind": "call",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        },
+        {
+          "site": 2149040736,
+          "word": "0c05f033",
+          "kind": "call",
+          "target": 2149040332,
+          "target_names": [
+            "_ZN17CFIP_PassTopology17UpdateInputPassIDER20tsFIPLIB_InputPassIDssss"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN21CFIP_PassTopology_IPU15SetOutputFormatEN13FIPLIB_PassIn18output_format_modeES1_S1_",
+      "address": 2149040884,
+      "candidate_end": 2149040900,
+      "segment": "E04",
+      "decoded_offset": 321652,
+      "size": 16,
+      "sha256": "75e1b8d05a6fbe707d9a43b87a842b9b61806cb8aed775d8326fc05092912e8c",
+      "transfers": []
+    },
+    {
+      "name": "_ZN21CFIP_PassTopology_IPU14SetInputFormatEN13FIPLIB_PassIn17input_format_modeE",
+      "address": 2149040900,
+      "candidate_end": 2149040908,
+      "segment": "E04",
+      "decoded_offset": 321668,
+      "size": 8,
+      "sha256": "027c92f9e13859f5e5ba736f72d594649e1082eb3f5243457b3511441b71fe69",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CFc1FilterC1EP11CUidFactory",
+      "address": 2150757740,
+      "candidate_end": 2150757848,
+      "segment": "E04",
+      "decoded_offset": 2038508,
+      "size": 108,
+      "sha256": "ca85057a29b794a0d92cc1be0216bfca732ee202f057ea2f6fb90039d381355a",
+      "transfers": [
+        {
+          "site": 2150757764,
+          "word": "0c0c865a",
+          "kind": "call",
+          "target": 2150766952,
+          "target_names": [
+            "_ZN9CFcFilterC2EP11CUidFactory"
+          ]
+        },
+        {
+          "site": 2150757820,
+          "word": "0c0cc99b",
+          "kind": "call",
+          "target": 2150835820,
+          "target_names": [
+            "_ZN7CFilter13SetUidFactoryEP11CUidFactory"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN10CFc1Filter21SetFilterFipLibData12EPv",
+      "address": 2150757964,
+      "candidate_end": 2150758076,
+      "segment": "E04",
+      "decoded_offset": 2038732,
+      "size": 112,
+      "sha256": "963981bf17a87a9a6fbc70334f98681812fce23d5484a346a46a59f571db1207",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CFc1Filter21SetFilterFipLibData13EPv",
+      "address": 2150758076,
+      "candidate_end": 2150758224,
+      "segment": "E04",
+      "decoded_offset": 2038844,
+      "size": 148,
+      "sha256": "d97eca51dcbfe8c54b7a550efe8efdc5bf1fdbe275f2f7f19ede6ca7d56cb1e3",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CFc1Filter14WriteRegistersEv",
+      "address": 2150758224,
+      "candidate_end": 2150758460,
+      "segment": "E04",
+      "decoded_offset": 2038992,
+      "size": 236,
+      "sha256": "06a37df92e426085b3b2bf6dddb263dc2517fb33c75a87fd4a494b2dd6a35090",
+      "transfers": []
+    },
+    {
+      "name": "_ZN9CFcFilter15SetFilterData06EPv",
+      "address": 2150767196,
+      "candidate_end": 2150767276,
+      "segment": "E04",
+      "decoded_offset": 2047964,
+      "size": 80,
+      "sha256": "32cc5d408136aa6991127f17c008c344c4ca8da72860ff9d0c83d08f7a374035",
+      "transfers": []
+    },
+    {
+      "name": "_ZN9CFcFilter15SetFilterData10EPv",
+      "address": 2150767276,
+      "candidate_end": 2150767356,
+      "segment": "E04",
+      "decoded_offset": 2048044,
+      "size": 80,
+      "sha256": "ab92d9fd38786909ecf53b8fb61629e22efeaccd6bd1141bed6bda216b048fc7",
+      "transfers": []
+    },
+    {
+      "name": "_ZN9CFcFilter15SetFilterData12EPv",
+      "address": 2150767356,
+      "candidate_end": 2150767424,
+      "segment": "E04",
+      "decoded_offset": 2048124,
+      "size": 68,
+      "sha256": "a1712dc2caab5641428b99025f38c7d1bfaf03d32e6ac0d3660bebf367c646ab",
+      "transfers": []
+    },
+    {
+      "name": "_ZN9CFcFilter15SetFilterData13EPv",
+      "address": 2150767424,
+      "candidate_end": 2150767492,
+      "segment": "E04",
+      "decoded_offset": 2048192,
+      "size": 68,
+      "sha256": "a1712dc2caab5641428b99025f38c7d1bfaf03d32e6ac0d3660bebf367c646ab",
+      "transfers": []
+    },
+    {
+      "name": "_ZN9CFcFilter18SetFilterData12_02EPv",
+      "address": 2150767492,
+      "candidate_end": 2150767576,
+      "segment": "E04",
+      "decoded_offset": 2048260,
+      "size": 84,
+      "sha256": "271eefb19bbe15c8575cf23fbc6152b44a62071f5140b6f1a1648ade10278a47",
+      "transfers": []
+    },
+    {
+      "name": "_ZN9CFcFilter13SetFilterDataEPv",
+      "address": 2150767592,
+      "candidate_end": 2150767896,
+      "segment": "E04",
+      "decoded_offset": 2048360,
+      "size": 304,
+      "sha256": "d8b66b7b71e372680cf37b037053d2b7e30f88d8638c13a5965b76481b11075a",
+      "transfers": [
+        {
+          "site": 2150767664,
+          "word": "0040f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150767680,
+          "word": "0c0cc987",
+          "kind": "call",
+          "target": 2150835740,
+          "target_names": [
+            "_ZN7CFilter9UpdateUidEv"
+          ]
+        },
+        {
+          "site": 2150767740,
+          "word": "00600008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150767800,
+          "word": "0c0c86d0",
+          "kind": "call",
+          "target": 2150767424,
+          "target_names": [
+            "_ZN9CFcFilter15SetFilterData13EPv"
+          ]
+        },
+        {
+          "site": 2150767820,
+          "word": "0c0c8697",
+          "kind": "call",
+          "target": 2150767196,
+          "target_names": [
+            "_ZN9CFcFilter15SetFilterData06EPv"
+          ]
+        },
+        {
+          "site": 2150767840,
+          "word": "0c0c86ab",
+          "kind": "call",
+          "target": 2150767276,
+          "target_names": [
+            "_ZN9CFcFilter15SetFilterData10EPv"
+          ]
+        },
+        {
+          "site": 2150767860,
+          "word": "0c0c86bf",
+          "kind": "call",
+          "target": 2150767356,
+          "target_names": [
+            "_ZN9CFcFilter15SetFilterData12EPv"
+          ]
+        },
+        {
+          "site": 2150767880,
+          "word": "0c0c86e1",
+          "kind": "call",
+          "target": 2150767492,
+          "target_names": [
+            "_ZN9CFcFilter18SetFilterData12_02EPv"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN10CFc3Filter21SetFilterFipLibData12EPv",
+      "address": 2150821972,
+      "candidate_end": 2150822084,
+      "segment": "E04",
+      "decoded_offset": 2102740,
+      "size": 112,
+      "sha256": "342c12b488e6144ba5603bb145b384266d722da8d62ddd0d3bc10918d51f0a81",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CFc3Filter14WriteRegistersEv",
+      "address": 2150822084,
+      "candidate_end": 2150822320,
+      "segment": "E04",
+      "decoded_offset": 2102852,
+      "size": 236,
+      "sha256": "0e655ff5b7e4c3beaf59cab63cecc6950066c4bb41734f39749a9473f69b6b27",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CFc4Filter21SetFilterFipLibData12EPv",
+      "address": 2150831072,
+      "candidate_end": 2150831184,
+      "segment": "E04",
+      "decoded_offset": 2111840,
+      "size": 112,
+      "sha256": "f5bb74c79965e94991edb217c3ff4e2ac5cfff57f04299030dad2e200efb3aec",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CFc4Filter14WriteRegistersEv",
+      "address": 2150831848,
+      "candidate_end": 2150832084,
+      "segment": "E04",
+      "decoded_offset": 2112616,
+      "size": 236,
+      "sha256": "3e852ca8e0b3bd7e0b627bbb9bdc8265fd8ac9c3b9b8322a5e9d34a1abe9b301",
+      "transfers": []
+    },
+    {
+      "name": "_ZN7CFilter9UpdateUidEv",
+      "address": 2150835740,
+      "candidate_end": 2150835820,
+      "segment": "E04",
+      "decoded_offset": 2116508,
+      "size": 80,
+      "sha256": "3e7ff2e302033569cd875e6d5aa221b58358b313676612bd2e5119563d541d28",
+      "transfers": [
+        {
+          "site": 2150835788,
+          "word": "0c02ec99",
+          "kind": "call",
+          "target": 2148250212,
+          "target_names": [
+            "_ZN11CUidFactory9CreateUidEv"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN9CIpuUtils30uiPathInput2IpuConfigToolInputE27_IMAGE_DESCRIPTOR_TYPE_ENUM",
+      "address": 2150942980,
+      "candidate_end": 2150943292,
+      "segment": "E04",
+      "decoded_offset": 2223748,
+      "size": 312,
+      "sha256": "0a486d9661295d10b87524d014a5f595dd83f399450ba7442f7f785512abe32e",
+      "transfers": [
+        {
+          "site": 2150943020,
+          "word": "00800008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2150943044,
+          "word": "0c0284c4",
+          "kind": "call",
+          "target": 2148143888,
+          "target_names": [
+            "Fprintf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "_ZN10CFc2Filter21SetFilterFipLibData12EPv",
+      "address": 2150975080,
+      "candidate_end": 2150975192,
+      "segment": "E04",
+      "decoded_offset": 2255848,
+      "size": 112,
+      "sha256": "f1d0686dc8ff4b00bcc9de609925060605fa44e71d279ba100a6446a99e53d43",
+      "transfers": []
+    },
+    {
+      "name": "_ZN10CFc2Filter14WriteRegistersEv",
+      "address": 2150975856,
+      "candidate_end": 2150976092,
+      "segment": "E04",
+      "decoded_offset": 2256624,
+      "size": 236,
+      "sha256": "1cf2b50d2764228395988a257a73988c78ac6b2b4d35e7ad80630d83e09b1089",
+      "transfers": []
+    }
+  ],
+  "trace_limitations": [
+    "Extents end at the next distinct sidecar address, not a typed ELF function size.",
+    "Linear MIPS32 word scan; edges are instruction candidates, not proof of reachability.",
+    "Delay slots are included in extents. Register-indirect targets are unresolved.",
+    "A jump is recorded as a transfer, not automatically a function call."
+  ],
+  "limitations": [
+    "Function ranges are next-sidecar intervals. The actual upper descriptor switch targets include local bodies beyond the dispatcher sidecar interval. Version table words and concrete replay cover those transfers.",
+    "Names in this report refer to the recovered firmware types and functions. No named enum members for fiplib_pass_input_type or named bit-field in the physical register were recovered in the selected evidence.",
+    "VEX cases run in synthetic RAM. MMIO is recorded as ordered stores, and camera silicon, pixel data, scheduling and actual hardware effects are outside the replay.",
+    "Related blocks use the same software packing function. Their register offsets and control-word propagation do not establish equivalent bit behavior in silicon."
+  ]
+}
