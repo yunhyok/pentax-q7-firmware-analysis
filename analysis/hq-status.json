@@ -1,11 +1,11 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "a7636ca14a224b91e3f4fb6973b3e32c62a46687",
-  "updated_at": "2026-11-08T19:14:28+09:00",
+  "baseline_commit": "ca124ccbac0afec2e3cb740ce85d39d43da7e933",
+  "updated_at": "2026-11-08T19:22:39+09:00",
   "goals": {
     "rebuild": {
-      "status": "E01 NAND terminal4 remains separately validated. New MAIN23 fixtures cover file staging11 and DownloadCard/handle/wrapper12. Native MAIN handle selects805dd7b8; its Burn body is modeled, so E01 execution must not be transferred to MAIN hardware acceptance.",
+      "status": "MAIN upper23fixtures plus two separately initialized native Burn prefixes: original FileX open stops before NAND op2; modeled open/geometry proceeds through installed-header op6/op4 models to first card FileX read entry. E01 terminal remains separately validated. No actual storage or update acceptance.",
       "evidence": [
         "analysis/rebuild-evidence.json",
         "analysis/loader-foundation.json",
@@ -33,16 +33,20 @@
         "analysis/update-service.json",
         "tools/check_update_service.py",
         "tools/verify_update_service.py",
-        "update-service-report.html"
+        "update-service-report.html",
+        "analysis/main-burn-prefix.json",
+        "tools/check_main_burn.py",
+        "tools/verify_main_burn.py",
+        "main-burn-prefix-report.html"
       ],
       "gaps": [
-        "Actual MAIN Burn805e5374 and BurnNand805dd7b8 execution and installed media state",
+        "MAIN installed-media ID response, later selector1/section maps and full native card read; actual installed state",
         "Other section/header policies, erase-failure path, real installed-media geometry and device persistence",
         "General code insertion/deletion, relocation, and table regeneration",
         "Camera update recognition, hardware inflate, flash, boot, capture and recovery"
       ],
       "next_actions": [
-        "Trace the MAIN Burn callback and its source/geometry/device contract separately from E01",
+        "Extend MAIN prefix with separately controlled installed headers and geometry; validate card-read retry/count/compare independently",
         "Investigate general insertion/deletion and relocation only against the proven fixed-slot representation"
       ],
       "counts": {
@@ -73,7 +77,11 @@
         "main_staging_cases": 11,
         "main_bridge_cases": 12,
         "main_update_words": 98,
-        "main_update_functions": 12
+        "main_update_functions": 12,
+        "main_burn_prefix_cases": 2,
+        "main_burn_words": 98,
+        "e01_comparison_words": 11,
+        "main_burn_function_extents": 24
       },
       "stable_evidence": {
         "analysis/recompiled-numeric.json": "4ec1054854c538f06e8d3e6aaaa9767c4096d5a4b54c5e2a88754473ec5cf2b2",
@@ -89,7 +97,11 @@
         "analysis/update-service.json": "79b1524a7f707ecb716c70c8f390f146e6365e1fd8d7172fa48c4c49f20df68d",
         "tools/check_update_service.py": "caf7453a13479c5fdf2dbd61c2001c1df83b866672ebde5d6147b8f9f9d444f5",
         "tools/verify_update_service.py": "859cc2814d420ef9c022ec0cc9d5e6b4f4f5ebd4cba21b8f29cd2605f4f4448b",
-        "update-service-report.html": "b6c4441030214ed153d7c0ab1985f30ed3f9f16f30f812a977994b7fa0f36021"
+        "update-service-report.html": "a7282c17f25ec42b5136ef13c53ace62647cae65971bc664f5c188c6ce66ed0d",
+        "analysis/main-burn-prefix.json": "b104509fe68f4be3c090e63b18c2b5041447e94ee2e3bbcf37e936819c0772c3",
+        "tools/check_main_burn.py": "01201f56e9299b48d868f4cd31a1329461ee93938af919e4a9bb9e668cad7482",
+        "tools/verify_main_burn.py": "4b8e9886df46b7c4b257a8267ae1c40a1d0251e826d736de47d1a8871cb61cdd",
+        "main-burn-prefix-report.html": "b9a2467c7966107531f66f4aee23b755fe43e6fb261c93ff5a47ded4f4a7fd17"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -263,7 +275,8 @@
     "Original MAIN staging queries configured path size before rewriting its local input drive: board3 fixture measures F then opens E. Uses low32 size and wrapping32 addition for reservation;96byte copy request is bounded evidence.",
     "Native MAIN DownloadCard reads original64+128byte header; native handle kind3 selects805dd7b8 at+ca4, distinct from E01+1254/80012654. MAIN Burn body is replaced at entry.",
     "With backup flag0, native synchronous MAIN wrapper returns1 and clears updating for both modeled Burn0 and7; asynchronous Thread_Create0 returns0 but keeps updating1. These are software return contracts, not update-success proof.",
-    "Captured sRGB requests set48x48 size, zero character-extra fields and palette slot1 index2. Native configured context switches+88c BlitFont to+894 StretchBlitFont;69k-event scaled draw exactly matches full-frame half-step Q16 oracle. Actual ID alias remains unverified."
+    "Captured sRGB requests set48x48 size, zero character-extra fields and palette slot1 index2. Native configured context switches+88c BlitFont to+894 StretchBlitFont;69k-event scaled draw exactly matches full-frame half-step Q16 oracle. Actual ID alias remains unverified.",
+    "MAIN Burn original FileX opening reaches op2 before HostAck/BurnNand (281VEXevents). Separate modeled open/geometry reaches op6 at134 then modeled spare/header replies lead to first card FileX entry at156. Intended payload offset is setup provenance, not a measured FILE cursor."
   ],
   "validation": [
     {
@@ -570,7 +583,11 @@
     "update-service-report.html",
     "analysis/colorspace-attributes.json",
     "tools/check_colorspace_attributes.py",
-    "colorspace-attributes-report.html"
+    "colorspace-attributes-report.html",
+    "analysis/main-burn-prefix.json",
+    "tools/check_main_burn.py",
+    "tools/verify_main_burn.py",
+    "main-burn-prefix-report.html"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
@@ -581,10 +598,10 @@
     "validation": "311 original words,21 typed/3 anonymous E01 records,47 main functions,38 ranges reproduced; deterministic HTML PASS."
   },
   "latest_followup": {
-    "scope": "Captured UI attributes and separate scaled indexed draw",
-    "validation": "Coordinator independently reproduced complete public CLI JSON and71original words/12ranges; independent half-step oracle regression and metadata drift rejection pass. Full48unit tests PASS;2SVG inspected at1265px without horizontal overflow.",
-    "remaining": "Actual ID17/18 versus ID0 context binding, continuous refresh, RGB palette and LCD remain unverified.",
-    "editorial": "8paragraphs; light2.9%character20.7%sentence,goldenPASS,modality0,B6/6; coordinator direct finalizeraccept."
+    "scope": "Two separate MAIN Burn prefix fixtures",
+    "validation": "Coordinator reran both original prefixes and publicCLI exactly;98MAIN+11E01words/24MAIN+1typedE01ranges and source hashes verified. Full original448block/ELF/inventory reproduction and49unit tests PASS;2SVG inspected at1265px with no overflow.",
+    "remaining": "No Ex body/card read result or installed-media observation; later selector1/maps/program/reboot remain unverified.",
+    "editorial": "8paragraphs light4.4%character27.6%sentence,goldenPASS,modality0,B6/6; coordinator finalizeraccept."
   },
   "validation_runs": [
     {
@@ -611,6 +628,11 @@
       "command": "check_colorspace_attributes.py original firmware and expanded ELF; verify_attributes",
       "result": "4refresh captures,2renderer controls,1complete scaled frame exact across worker and coordinator;71words12ranges and prior linkage reproduced",
       "limits": "Attribute/text hooks and separately configured synthetic ID alias; no actual UI context or display"
+    },
+    {
+      "command": "check_main_burn.py original firmware and expanded ELF; verify_main_burn",
+      "result": "Two fresh-project runs exactly match worker results;281 and134/156events with explicit model sets; source98+11words and24+1ranges verified",
+      "limits": "Original caller arguments re-input into new state; synthetic installed header and geometry; no actual FileX cursor, payload, NAND or reboot"
     }
   ],
   "af_queue_regression": {
@@ -620,11 +642,11 @@
     "scheduled_delivery": "First wait scheduled; native normal101/no worker versus condition-deleted mutant1/worker1. Only worker_delivery_wait null→1 changes in public replay."
   },
   "usage_checkpoint": {
-    "remaining_percent": 17,
+    "remaining_percent": 15,
     "decision": "checkpoint",
     "current_task_may_continue": true,
     "stop_threshold_percent": 5,
-    "observed_at": "2026-11-08T19:14:28+09:00"
+    "observed_at": "2026-11-08T19:22:39+09:00"
   },
   "terminal_comparison_correction": {
     "scope": "Comparison prose now states modeled header writeback, native ready callback and terminal return.",

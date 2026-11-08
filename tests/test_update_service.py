@@ -12,9 +12,26 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
 import verify_update_service
+import verify_main_burn
 
 
 class UpdateServiceTests(unittest.TestCase):
+    def test_main_prefix_rejects_namespace_and_model_boundary_drift(self):
+        original = json.loads((ROOT/'analysis/main-burn-prefix.json').read_text(encoding='utf-8'))
+        verify_main_burn.verify()
+        for kind in ('namespace','response','fixture','source'):
+            changed = deepcopy(original)
+            if kind == 'namespace':
+                changed['call_contract']['main']['callback_field'] = '+0x1254'
+            elif kind == 'response':
+                changed['bounded_replay']['native_open']['arguments'][2] = '0x4'
+            elif kind == 'fixture':
+                changed['bounded_replay']['fixture']['installed_header']['actual_installed_media'] = True
+            else:
+                changed['source']['main_functions'][0]['address'] = '0x8001b134'
+            with self.subTest(kind=kind),patch.object(verify_main_burn,'read',return_value=changed),self.assertRaises(AssertionError):
+                verify_main_burn.verify()
+
     def test_callback_namespace_and_return_records_are_pinned(self):
         docs = {n:json.loads((ROOT/'analysis'/n).read_text(encoding='utf-8'))
                 for n in ('update-service.json','rebuild-evidence.json')}
@@ -40,9 +57,9 @@ class UpdateServiceTests(unittest.TestCase):
                 output.symlink_to(target)
             except OSError as error:
                 self.skipTest(str(error))
-            for optimized in (False,True):
+            for script,optimized in ((s,o) for s in ('update_service','main_burn') for o in (False,True)):
                 result = subprocess.run([sys.executable,*(['-O'] if optimized else []),
-                                         str(ROOT/'tools/check_update_service.py'),
+                                         str(ROOT/f'tools/check_{script}.py'),
                                          'missing.bin','missing.elf','--output',str(output)],
                                         capture_output=True,text=True,timeout=15,cwd=ROOT)
                 self.assertEqual(result.returncode,2,result.stderr)

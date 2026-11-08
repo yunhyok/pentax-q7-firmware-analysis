@@ -2,6 +2,8 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[메인 Burn 초기 경로](https://yunhyok.github.io/pentax-q7-firmware-analysis/main-burn-prefix-report.html): 원본 매체 열기의 NAND ID 요청과 별도 합성 설치 헤더의 카드 읽기 진입을 재현했습니다. 장치 연산과 실제 카드 읽기는 실행하지 않았습니다.
+
 [48×48 요청·별도 축소 실행](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-attributes-report.html): 갱신 4회에서 속성을 캡처하고 별도 컨텍스트에서 분기 2개와 전체 축소 프레임을 검증했습니다. 실제 UI의 ID 연결은 미확정입니다.
 
 [메인 업데이트 진입·반환](https://yunhyok.github.io/pentax-q7-firmware-analysis/update-service-report.html): 파일 준비 11사례와 메인 호출 12사례를 재현했습니다. E01과 다른 핸들 구조를 확인했고, 하위 실패에서도 동기 래퍼가 1을 반환하는 범위를 구분했습니다.

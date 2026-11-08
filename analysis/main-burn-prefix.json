@@ -1,0 +1,1377 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Two separate original-MIPS MAIN Burn prefixes from the pinned update header and isolated synthetic RAM.",
+  "prior_evidence": [
+    "analysis/update-service.json",
+    "analysis/loader-storage.json"
+  ],
+  "call_contract": {
+    "main": {
+      "get_handle": "0x805e4fe4",
+      "burn": "0x805e5374",
+      "burn_nand": "0x805dd7b8",
+      "handle_global": "0x805e8864",
+      "callback_field": "+0xca4",
+      "device_field": "+0xca8",
+      "chunk_size_field": "+0xc98",
+      "primary_field": "+0xc9c",
+      "secondary_field": "+0xca0",
+      "hash_flag_field": "+0xcc8",
+      "hash_flag_in_fixture": 0,
+      "card_file_global": "0x815eddd0",
+      "card_table": {
+        "address": "0x805e8854",
+        "read": "0x805e1684",
+        "host_ack": "0x805e1a00"
+      }
+    },
+    "e01": {
+      "burn_nand": "0x80012654",
+      "callback_field": "+0x1254",
+      "hash_flag_field": "+0x1278"
+    }
+  },
+  "bounded_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / VEX",
+    "modeled_apis": {
+      "native_open": {
+        "0x8000c2b4": "Supply zeroed synthetic allocation for the handle, media-info state and FileX buffer.",
+        "0x800cbee4": "Accept mutex get for the seeded synthetic mutex.",
+        "0x800d193c": "Accept mutex put for the seeded synthetic mutex.",
+        "0x800a14f8": "Record diagnostics without printing firmware text."
+      },
+      "installed_header": {
+        "0x8000c2b4": "Supply zeroed synthetic allocation for the handle, media-info state and FileX buffer.",
+        "0x800cbee4": "Accept mutex get for the seeded synthetic mutex.",
+        "0x800d193c": "Accept mutex put for the seeded synthetic mutex.",
+        "0x800a14f8": "Record diagnostics without printing firmware text.",
+        "0x8000bf28": "Supply synthetic primary, secondary, installed-header and card comparison buffers.",
+        "0x80067700": "Set synthetic medium selector and return 0xf1 at installed-media FileX open.",
+        "0x80069b94": "Supply installed-media geometry of 256 sectors per block and 262144 sectors.",
+        "0x80053124": "After observing the first request, return op 6 with 16 FF spare bytes and op 4 with the 0x600-byte installed-header fixture.",
+        "0x800b1edc": "Record card comparison-buffer cache invalidation without cache effects."
+      }
+    },
+    "fixture": {
+      "update_header": {
+        "original_file_offset": "0x100000",
+        "size": 192,
+        "sha256": "5269e3c1cd9cc8dedec0d35d27021c978fd1bc6fc1eaa329b9c0976e65c8c7c9"
+      },
+      "installed_header": {
+        "borrowed_package_offset": "0x1000c0",
+        "size": 1536,
+        "sha256": "319f5ad3f73c171405ab6a3fc0837ef6c8c04c85ba53282aa514390d0df887fe",
+        "actual_installed_media": false
+      },
+      "caps": {
+        "handle_init": 1000,
+        "per_prefix_phase": 5000
+      }
+    },
+    "native_open": {
+      "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+      "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+      "handle_fields": {
+        "0xca4": 2153633720,
+        "0xca8": 2147894348,
+        "0xcb4": 3,
+        "0xcbc": 1,
+        "0xcc0": 0,
+        "0xcc4": 24,
+        "0xcc8": 0
+      },
+      "entry": "0x805e5374",
+      "stop_before": "0x80053124",
+      "arguments": [
+        "0x1",
+        "0x24002000",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x70000ca8",
+        "0x0",
+        "0x10"
+      ],
+      "return_address": "0x80053f0c",
+      "vex_blocks": 281,
+      "events": [
+        {
+          "api": "0x8000c2b4",
+          "return_address": "0x805e5118",
+          "size": 3392,
+          "address": "0x24002000",
+          "result": 603987968
+        },
+        {
+          "api": "0x800a14f8",
+          "return_address": "0x805e522c",
+          "result": 0
+        },
+        {
+          "api": "0x800cbee4",
+          "return_address": "0x80055f70",
+          "result": 0
+        },
+        {
+          "api": "0x8000c2b4",
+          "return_address": "0x80055fdc",
+          "size": 3216,
+          "address": "0x24004000",
+          "result": 603996160
+        },
+        {
+          "api": "0x800d193c",
+          "return_address": "0x80056138",
+          "result": 0
+        },
+        {
+          "api": "0x800cbee4",
+          "return_address": "0x800554fc",
+          "result": 0
+        },
+        {
+          "api": "0x800cbee4",
+          "return_address": "0x80055460",
+          "result": 0
+        },
+        {
+          "api": "0x800d193c",
+          "return_address": "0x800554c0",
+          "result": 0
+        },
+        {
+          "api": "0x800d193c",
+          "return_address": "0x805e53dc",
+          "result": 0
+        },
+        {
+          "api": "0x8000c2b4",
+          "return_address": "0x805e5404",
+          "size": 8192,
+          "address": "0x24006000",
+          "result": 604004352
+        }
+      ]
+    },
+    "installed_header": {
+      "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+      "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+      "handle_fields": {
+        "0xca4": 2153633720,
+        "0xca8": 2147894348,
+        "0xcb4": 3,
+        "0xcbc": 1,
+        "0xcc0": 0,
+        "0xcc4": 24,
+        "0xcc8": 0
+      },
+      "callback_words": [
+        "0x805e1684",
+        "0x805e1a00"
+      ],
+      "first_nand_ex": {
+        "arguments": [
+          "0x1",
+          "0x24002000",
+          "0x6",
+          "0x0",
+          "0x1",
+          "0x0",
+          "0x700008b8",
+          "0x10"
+        ],
+        "vex_blocks": 134
+      },
+      "first_card_filex": {
+        "arguments": [
+          "0x24001000",
+          "0x24100000",
+          "0x20000",
+          "0x700008f0"
+        ],
+        "return_address": "0x805e1754",
+        "intended_payload_offset": "0x1000c0",
+        "vex_blocks": 156
+      },
+      "events": [
+        {
+          "api": "0x8000c2b4",
+          "return_address": "0x805e5118",
+          "size": 3392,
+          "address": "0x24002000",
+          "result": 603987968
+        },
+        {
+          "api": "0x800a14f8",
+          "return_address": "0x805e522c",
+          "result": 0
+        },
+        {
+          "api": "0x800cbee4",
+          "return_address": "0x80055f70",
+          "result": 0
+        },
+        {
+          "api": "0x8000c2b4",
+          "return_address": "0x80055fdc",
+          "size": 3216,
+          "address": "0x24004000",
+          "result": 603996160
+        },
+        {
+          "api": "0x800d193c",
+          "return_address": "0x80056138",
+          "result": 0
+        },
+        {
+          "api": "0x800cbee4",
+          "return_address": "0x800554fc",
+          "result": 0
+        },
+        {
+          "api": "0x800cbee4",
+          "return_address": "0x80055460",
+          "result": 0
+        },
+        {
+          "api": "0x800d193c",
+          "return_address": "0x800554c0",
+          "result": 0
+        },
+        {
+          "api": "0x800d193c",
+          "return_address": "0x805e53dc",
+          "result": 0
+        },
+        {
+          "api": "0x8000c2b4",
+          "return_address": "0x805e5404",
+          "size": 8192,
+          "address": "0x24006000",
+          "result": 604004352
+        },
+        {
+          "api": "0x80067700",
+          "return_address": "0x805e5434",
+          "arguments": [
+            "0x24002000",
+            "0x805ea90c",
+            "0x8006444c",
+            "0x0",
+            "0x24006000",
+            "0x2000",
+            "0x80000000"
+          ],
+          "result": 241
+        },
+        {
+          "api": "0x80069b94",
+          "return_address": "0x805e549c",
+          "geometry": [
+            256,
+            262144
+          ],
+          "result": 0
+        },
+        {
+          "api": "0x8000bf28",
+          "return_address": "0x805e54e4",
+          "size": 131088,
+          "address": "0x24100000",
+          "result": 605028352
+        },
+        {
+          "api": "0x8000bf28",
+          "return_address": "0x805e5504",
+          "size": 131088,
+          "address": "0x24200000",
+          "result": 606076928
+        },
+        {
+          "api": "0x800a14f8",
+          "return_address": "0x805dd838",
+          "result": 0
+        },
+        {
+          "api": "0x800cbee4",
+          "return_address": "0x80056698",
+          "result": 0
+        },
+        {
+          "api": "0x8000bf28",
+          "return_address": "0x80056700",
+          "size": 1536,
+          "address": "0x24400000",
+          "result": 608174080
+        },
+        {
+          "api": "0x80053124",
+          "return_address": "0x80053f0c",
+          "operation": 6,
+          "sector": 0,
+          "count": 1,
+          "data": "0x0",
+          "extra": "0x700008b8",
+          "extra_size": 16,
+          "result": 0
+        },
+        {
+          "api": "0x80053124",
+          "return_address": "0x80053f0c",
+          "supplied_sha256": "319f5ad3f73c171405ab6a3fc0837ef6c8c04c85ba53282aa514390d0df887fe",
+          "operation": 4,
+          "sector": 0,
+          "count": 3,
+          "data": "0x24400000",
+          "extra": "0x0",
+          "extra_size": 0,
+          "result": 0
+        },
+        {
+          "api": "0x800d193c",
+          "return_address": "0x800566c4",
+          "result": 0
+        },
+        {
+          "api": "0x8000bf28",
+          "return_address": "0x805e16dc",
+          "size": 131072,
+          "address": "0x24300000",
+          "result": 607125504
+        },
+        {
+          "api": "0x800b1edc",
+          "return_address": "0x805e170c",
+          "arguments": [
+            "0x24300000",
+            "0x20000"
+          ],
+          "result": 0
+        }
+      ]
+    }
+  },
+  "source": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+    "main_functions": [
+      {
+        "names": [
+          "BurnGetHandle"
+        ],
+        "address": "0x805e4fe4",
+        "candidate_end": "0x805e533c",
+        "size": 856,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "55bb073704681e67079f3759f2ff23e4e7af33d204f3b787c1d3aabe6b289e3e",
+        "segment": "E05",
+        "decoded_offset": "0xc51e4"
+      },
+      {
+        "names": [
+          "Burn"
+        ],
+        "address": "0x805e5374",
+        "candidate_end": "0x805e56e4",
+        "size": 880,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "0929dfd94eb4c7a5a1937d1c7325c7a0d6748b5d2d345941b142ee66abf0986a",
+        "segment": "E05",
+        "decoded_offset": "0xc5574"
+      },
+      {
+        "names": [
+          "BurnNand"
+        ],
+        "address": "0x805dd7b8",
+        "candidate_end": "0x805e02d8",
+        "size": 11040,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "b40bb07f1935620f553e6e1c429eff5bcf1fcbed46ad647115e684b286d7db11",
+        "segment": "E05",
+        "decoded_offset": "0xbd9b8"
+      },
+      {
+        "names": [
+          "Read"
+        ],
+        "address": "0x805e1684",
+        "candidate_end": "0x805e1a00",
+        "size": 892,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "ca69af77cc4129baf2dc171cf60b48a55cc3afb30559ed5070b1badedd0a82ff",
+        "segment": "E05",
+        "decoded_offset": "0xc1884"
+      },
+      {
+        "names": [
+          "HostAck"
+        ],
+        "address": "0x805e1a00",
+        "candidate_end": "0x805e1a08",
+        "size": 8,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "5ce5ad86d452c4d2422bd63e15223d5d6b3dfb77f224a88c1f476e9fb34e359d",
+        "segment": "E05",
+        "decoded_offset": "0xc1c00"
+      },
+      {
+        "names": [
+          "FcuMediaInfoInit"
+        ],
+        "address": "0x80055f20",
+        "candidate_end": "0x8005644c",
+        "size": 1324,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "f7ab7f95393a4ea40ebd5d823a09c826b094bc92ef29f5c20c9cdf16f696ae7b",
+        "segment": "E03",
+        "original_file_offset": "0x158208"
+      },
+      {
+        "names": [
+          "FcuSetZoneConfig"
+        ],
+        "address": "0x800554c8",
+        "candidate_end": "0x80055534",
+        "size": 108,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "3846fb09a0513e7eb4be3cc4914b287e073f7d81f5c4eec3451810b93b7ae14a",
+        "segment": "E03",
+        "original_file_offset": "0x1577b0"
+      },
+      {
+        "names": [
+          "_fx_media_open"
+        ],
+        "address": "0x80067700",
+        "candidate_end": "0x80067738",
+        "size": 56,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "c2d83767793fa790ea2847ca3dda66c9c9485ed7aa5c79762dab83ea6b61214e",
+        "segment": "E03",
+        "original_file_offset": "0x1699e8"
+      },
+      {
+        "names": [
+          "_fx_media_open_ex"
+        ],
+        "address": "0x80066a5c",
+        "candidate_end": "0x80067700",
+        "size": 3236,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "6599e9397722b62aa8fde21f7fcbc14b962d1f0ce3842b948217545af4a4c422",
+        "segment": "E03",
+        "original_file_offset": "0x168d44"
+      },
+      {
+        "names": [
+          "_fx_nand_non_seq_read_driver"
+        ],
+        "address": "0x8006444c",
+        "candidate_end": "0x80064454",
+        "size": 8,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "89c6f1f94ee704e19d46a68511eb96882092f79b9f2b4a29f02765af1b34ee59",
+        "segment": "E03",
+        "original_file_offset": "0x166734"
+      },
+      {
+        "names": [
+          "_fx_nand_driver"
+        ],
+        "address": "0x8006423c",
+        "candidate_end": "0x80064444",
+        "size": 520,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "94e9b58a4f9931a5722b1a9117b93529aeecd52741e8a1b201cf0b73e8a3c913",
+        "segment": "E03",
+        "original_file_offset": "0x166524"
+      },
+      {
+        "names": [
+          "TlMediaInit"
+        ],
+        "address": "0x8008389c",
+        "candidate_end": "0x80084558",
+        "size": 3260,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "642361180e7af5358b988478060f8ed37d931ae318352b781860e75c9fe62c45",
+        "segment": "E03",
+        "original_file_offset": "0x185b84"
+      },
+      {
+        "names": [
+          "TlFcuOperation"
+        ],
+        "address": "0x8007e630",
+        "candidate_end": "0x8007ea44",
+        "size": 1044,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "ce97dbfafba035a6ac7469b3d89936ce601c58003654908d07fcdb2bc19c1d4b",
+        "segment": "E03",
+        "original_file_offset": "0x180918"
+      },
+      {
+        "names": [
+          "FcuNandOperation"
+        ],
+        "address": "0x80053e70",
+        "candidate_end": "0x80053f18",
+        "size": 168,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "90866d43de0bd7b82290e2d1fe57eeb7bb4c75345459b8ce6823641c7126174d",
+        "segment": "E03",
+        "original_file_offset": "0x156158"
+      },
+      {
+        "names": [
+          "FcuNandOperationEx"
+        ],
+        "address": "0x80053124",
+        "candidate_end": "0x80053e70",
+        "size": 3404,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "05ed3abca064e3f6aeb652959b5892ed29927d593a62cb8c84ec54d61cbbb70c",
+        "segment": "E03",
+        "original_file_offset": "0x15540c"
+      },
+      {
+        "names": [
+          "FcuMediaInfoGetHeader"
+        ],
+        "address": "0x80056644",
+        "candidate_end": "0x80056774",
+        "size": 304,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "3c55666a3cbb74181296eceb6f4fe9729d807ed90740c5e3ac5ec77a1950981b",
+        "segment": "E03",
+        "original_file_offset": "0x15892c"
+      },
+      {
+        "names": [
+          "FcuNandFindAndReadHeader"
+        ],
+        "address": "0x80055a3c",
+        "candidate_end": "0x80055b9c",
+        "size": 352,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "8a5c3ccbccc3b7d1da9b3914151c61fa2b5909f2e1268d9a344c7f42f321e9a5",
+        "segment": "E03",
+        "original_file_offset": "0x157d24"
+      },
+      {
+        "names": [
+          "FcuNandFindAndReadBootHeader"
+        ],
+        "address": "0x80055b9c",
+        "candidate_end": "0x80055c54",
+        "size": 184,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "9e11c7cb8cf4d8d3c2ef24264eed7b731ec9a8b68619c6e3d8088bc5a519591f",
+        "segment": "E03",
+        "original_file_offset": "0x157e84"
+      },
+      {
+        "names": [
+          "FcuNandReadRomBootHeader"
+        ],
+        "address": "0x80055c54",
+        "candidate_end": "0x80055ce8",
+        "size": 148,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "eac6ea72b2167df476bbfe69417ace0dd9e829e725b226d7645e885d23f99421",
+        "segment": "E03",
+        "original_file_offset": "0x157f3c"
+      },
+      {
+        "names": [
+          "BurnGetSectionsMap"
+        ],
+        "address": "0x805e45c0",
+        "candidate_end": "0x805e4fe4",
+        "size": 2596,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "556ae20db3c25c2330709e222737fc353bc4a1bc7b7c1667b36d4278327709da",
+        "segment": "E05",
+        "decoded_offset": "0xc47c0"
+      },
+      {
+        "names": [
+          "BlockGetRedundant"
+        ],
+        "address": "0x805dc8fc",
+        "candidate_end": "0x805dc934",
+        "size": 56,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "eabda63b8b65006c5f32b9491d2ba97b0034ff9973a6aefbd4290f14ad519171",
+        "segment": "E05",
+        "decoded_offset": "0xbcafc"
+      },
+      {
+        "names": [
+          "BlockIsBad"
+        ],
+        "address": "0x805dcd6c",
+        "candidate_end": "0x805dcf0c",
+        "size": 416,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "7f73a003e8f5295fe1f2efc92625562081754add3e1bf52884727b8231ce7a9a",
+        "segment": "E05",
+        "decoded_offset": "0xbcf6c"
+      },
+      {
+        "names": [
+          "BlockIsProtected"
+        ],
+        "address": "0x805dc9ac",
+        "candidate_end": "0x805dcc54",
+        "size": 680,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "b399f7190ad336ab36becea7cb71f700c3263683ee9e6e0ed4eef14a6bae7cde",
+        "segment": "E05",
+        "decoded_offset": "0xbcbac"
+      },
+      {
+        "names": [
+          "BlockBurn"
+        ],
+        "address": "0x805dcf0c",
+        "candidate_end": "0x805dd064",
+        "size": 344,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "d3d9acdc199f8992be10c8269d2dbe9284554849f4d4dfc514b7ddbd695ef236",
+        "segment": "E05",
+        "decoded_offset": "0xbd10c"
+      }
+    ],
+    "boot_functions": [
+      {
+        "names": [
+          "BurnNand"
+        ],
+        "address": "0x80012654",
+        "candidate_end": "0x80015174",
+        "size": 11040,
+        "extent_basis": "E01 ELF typed function size",
+        "sha256": "d0db0044b5ba3d939e3341538fb84b94748f2f47d1bb041e45b338ba928b512c",
+        "segment": "E01",
+        "original_file_offset": "0x2acc"
+      }
+    ],
+    "main_words": [
+      {
+        "role": "Original DownloadCard call, MAIN BurnGetHandle, and callback table",
+        "words": [
+          {
+            "va": "0x805e14e0",
+            "u32le_word": "0x0c1793f9",
+            "segment": "E05",
+            "decoded_offset": "0xc16e0"
+          },
+          {
+            "va": "0x805e14ec",
+            "u32le_word": "0x8fa50064",
+            "segment": "E05",
+            "decoded_offset": "0xc16ec"
+          },
+          {
+            "va": "0x805e14f4",
+            "u32le_word": "0x0c1794dd",
+            "segment": "E05",
+            "decoded_offset": "0xc16f4"
+          },
+          {
+            "va": "0x805e14f8",
+            "u32le_word": "0x25068854",
+            "segment": "E05",
+            "decoded_offset": "0xc16f8"
+          },
+          {
+            "va": "0x805e5158",
+            "u32le_word": "0x9607003c",
+            "segment": "E05",
+            "decoded_offset": "0xc5358"
+          },
+          {
+            "va": "0x805e515c",
+            "u32le_word": "0xa0c70cc8",
+            "segment": "E05",
+            "decoded_offset": "0xc535c"
+          },
+          {
+            "va": "0x805e5208",
+            "u32le_word": "0x25ac444c",
+            "segment": "E05",
+            "decoded_offset": "0xc5408"
+          },
+          {
+            "va": "0x805e520c",
+            "u32le_word": "0x2571d7b8",
+            "segment": "E05",
+            "decoded_offset": "0xc540c"
+          },
+          {
+            "va": "0x805e521c",
+            "u32le_word": "0xacac0ca8",
+            "segment": "E05",
+            "decoded_offset": "0xc541c"
+          },
+          {
+            "va": "0x805e5220",
+            "u32le_word": "0xacb10ca4",
+            "segment": "E05",
+            "decoded_offset": "0xc5420"
+          },
+          {
+            "va": "0x805e8854",
+            "u32le_word": "0x805e1684",
+            "segment": "E05",
+            "decoded_offset": "0xc8a54"
+          },
+          {
+            "va": "0x805e8858",
+            "u32le_word": "0x805e1a00",
+            "segment": "E05",
+            "decoded_offset": "0xc8a58"
+          }
+        ]
+      },
+      {
+        "role": "MAIN Burn initialization, FileX geometry, buffer setup, HostAck and NAND callback",
+        "words": [
+          {
+            "va": "0x805e53a0",
+            "u32le_word": "0x8c840cbc",
+            "segment": "E05",
+            "decoded_offset": "0xc55a0"
+          },
+          {
+            "va": "0x805e53a8",
+            "u32le_word": "0x24050002",
+            "segment": "E05",
+            "decoded_offset": "0xc55a8"
+          },
+          {
+            "va": "0x805e53ac",
+            "u32le_word": "0x0c0157c8",
+            "segment": "E05",
+            "decoded_offset": "0xc55ac"
+          },
+          {
+            "va": "0x80055fec",
+            "u32le_word": "0x32e90002",
+            "segment": "E03",
+            "original_file_offset": "0x1582d4"
+          },
+          {
+            "va": "0x80055ff4",
+            "u32le_word": "0x1520004e",
+            "segment": "E03",
+            "original_file_offset": "0x1582dc"
+          },
+          {
+            "va": "0x805e53d4",
+            "u32le_word": "0x0c015532",
+            "segment": "E05",
+            "decoded_offset": "0xc55d4"
+          },
+          {
+            "va": "0x805e5404",
+            "u32le_word": "0x8e260ca8",
+            "segment": "E05",
+            "decoded_offset": "0xc5604"
+          },
+          {
+            "va": "0x805e542c",
+            "u32le_word": "0x0c019dc0",
+            "segment": "E05",
+            "decoded_offset": "0xc562c"
+          },
+          {
+            "va": "0x805e5428",
+            "u32le_word": "0xafa80018",
+            "segment": "E05",
+            "decoded_offset": "0xc5628"
+          },
+          {
+            "va": "0x805e5434",
+            "u32le_word": "0x240300f1",
+            "segment": "E05",
+            "decoded_offset": "0xc5634"
+          },
+          {
+            "va": "0x805e5438",
+            "u32le_word": "0x10430015",
+            "segment": "E05",
+            "decoded_offset": "0xc5638"
+          },
+          {
+            "va": "0x805e5494",
+            "u32le_word": "0x0c01a6e5",
+            "segment": "E05",
+            "decoded_offset": "0xc5694"
+          },
+          {
+            "va": "0x805e5498",
+            "u32le_word": "0x26250c78",
+            "segment": "E05",
+            "decoded_offset": "0xc5698"
+          },
+          {
+            "va": "0x805e54a4",
+            "u32le_word": "0x8e220c88",
+            "segment": "E05",
+            "decoded_offset": "0xc56a4"
+          },
+          {
+            "va": "0x805e54e4",
+            "u32le_word": "0xae220c9c",
+            "segment": "E05",
+            "decoded_offset": "0xc56e4"
+          },
+          {
+            "va": "0x805e5504",
+            "u32le_word": "0x8ef80004",
+            "segment": "E05",
+            "decoded_offset": "0xc5704"
+          },
+          {
+            "va": "0x805e5508",
+            "u32le_word": "0xae220ca0",
+            "segment": "E05",
+            "decoded_offset": "0xc5708"
+          },
+          {
+            "va": "0x805e550c",
+            "u32le_word": "0x0300f809",
+            "segment": "E05",
+            "decoded_offset": "0xc570c"
+          },
+          {
+            "va": "0x805e5510",
+            "u32le_word": "0xae350c98",
+            "segment": "E05",
+            "decoded_offset": "0xc5710"
+          },
+          {
+            "va": "0x805e551c",
+            "u32le_word": "0x92350cc8",
+            "segment": "E05",
+            "decoded_offset": "0xc571c"
+          },
+          {
+            "va": "0x805e5528",
+            "u32le_word": "0x8e300ca4",
+            "segment": "E05",
+            "decoded_offset": "0xc5728"
+          },
+          {
+            "va": "0x805e5530",
+            "u32le_word": "0x0200f809",
+            "segment": "E05",
+            "decoded_offset": "0xc5730"
+          },
+          {
+            "va": "0x805e1a00",
+            "u32le_word": "0x03e00008",
+            "segment": "E05",
+            "decoded_offset": "0xc1c00"
+          },
+          {
+            "va": "0x805e1a04",
+            "u32le_word": "0x24020001",
+            "segment": "E05",
+            "decoded_offset": "0xc1c04"
+          }
+        ]
+      },
+      {
+        "role": "Installed FileX open to first NAND ID request",
+        "words": [
+          {
+            "va": "0x80067724",
+            "u32le_word": "0x0c019a97",
+            "segment": "E03",
+            "original_file_offset": "0x169a0c"
+          },
+          {
+            "va": "0x80066aec",
+            "u32le_word": "0xae5401f4",
+            "segment": "E03",
+            "original_file_offset": "0x168dd4"
+          },
+          {
+            "va": "0x80066b2c",
+            "u32le_word": "0xae4b01c8",
+            "segment": "E03",
+            "original_file_offset": "0x168e14"
+          },
+          {
+            "va": "0x80066b80",
+            "u32le_word": "0x00a0f809",
+            "segment": "E03",
+            "original_file_offset": "0x168e68"
+          },
+          {
+            "va": "0x8006444c",
+            "u32le_word": "0x0801908f",
+            "segment": "E03",
+            "original_file_offset": "0x166734"
+          },
+          {
+            "va": "0x80064450",
+            "u32le_word": "0x24050001",
+            "segment": "E03",
+            "original_file_offset": "0x166738"
+          },
+          {
+            "va": "0x8006424c",
+            "u32le_word": "0x8c8301c8",
+            "segment": "E03",
+            "original_file_offset": "0x166534"
+          },
+          {
+            "va": "0x80064270",
+            "u32le_word": "0x00800008",
+            "segment": "E03",
+            "original_file_offset": "0x166558"
+          },
+          {
+            "va": "0x800643b4",
+            "u32le_word": "0x0c020e27",
+            "segment": "E03",
+            "original_file_offset": "0x16669c"
+          },
+          {
+            "va": "0x8008398c",
+            "u32le_word": "0x240d0001",
+            "segment": "E03",
+            "original_file_offset": "0x185c74"
+          },
+          {
+            "va": "0x8008399c",
+            "u32le_word": "0x0c01bf25",
+            "segment": "E03",
+            "original_file_offset": "0x185c84"
+          },
+          {
+            "va": "0x800839d8",
+            "u32le_word": "0x24060002",
+            "segment": "E03",
+            "original_file_offset": "0x185cc0"
+          },
+          {
+            "va": "0x800839e8",
+            "u32le_word": "0x0c01f98c",
+            "segment": "E03",
+            "original_file_offset": "0x185cd0"
+          },
+          {
+            "va": "0x8007e9b8",
+            "u32le_word": "0x0c014f9c",
+            "segment": "E03",
+            "original_file_offset": "0x180ca0"
+          },
+          {
+            "va": "0x80053e78",
+            "u32le_word": "0x38a90004",
+            "segment": "E03",
+            "original_file_offset": "0x156160"
+          },
+          {
+            "va": "0x80053ee4",
+            "u32le_word": "0x00802821",
+            "segment": "E03",
+            "original_file_offset": "0x1561cc"
+          },
+          {
+            "va": "0x80053f04",
+            "u32le_word": "0x0c014c49",
+            "segment": "E03",
+            "original_file_offset": "0x1561ec"
+          }
+        ]
+      },
+      {
+        "role": "MAIN NAND installed header, card reader, and later map/storage bindings",
+        "words": [
+          {
+            "va": "0x805dd7e8",
+            "u32le_word": "0x8c8b0c98",
+            "segment": "E05",
+            "decoded_offset": "0xbd9e8"
+          },
+          {
+            "va": "0x805dd7ec",
+            "u32le_word": "0x8ea90c9c",
+            "segment": "E05",
+            "decoded_offset": "0xbd9ec"
+          },
+          {
+            "va": "0x805dd800",
+            "u32le_word": "0x92a70cba",
+            "segment": "E05",
+            "decoded_offset": "0xbda00"
+          },
+          {
+            "va": "0x805dd804",
+            "u32le_word": "0x92b40cac",
+            "segment": "E05",
+            "decoded_offset": "0xbda04"
+          },
+          {
+            "va": "0x805dd80c",
+            "u32le_word": "0x92a80cbb",
+            "segment": "E05",
+            "decoded_offset": "0xbda0c"
+          },
+          {
+            "va": "0x805dd81c",
+            "u32le_word": "0x8eb60c88",
+            "segment": "E05",
+            "decoded_offset": "0xbda1c"
+          },
+          {
+            "va": "0x805dd828",
+            "u32le_word": "0x8eb10c8c",
+            "segment": "E05",
+            "decoded_offset": "0xbda28"
+          },
+          {
+            "va": "0x805dd838",
+            "u32le_word": "0x8ea50cbc",
+            "segment": "E05",
+            "decoded_offset": "0xbda38"
+          },
+          {
+            "va": "0x805dd844",
+            "u32le_word": "0x0c015991",
+            "segment": "E05",
+            "decoded_offset": "0xbda44"
+          },
+          {
+            "va": "0x805dd8dc",
+            "u32le_word": "0x8d820000",
+            "segment": "E05",
+            "decoded_offset": "0xbdadc"
+          },
+          {
+            "va": "0x805dd8e0",
+            "u32le_word": "0x0040f809",
+            "segment": "E05",
+            "decoded_offset": "0xbdae0"
+          },
+          {
+            "va": "0x805dd95c",
+            "u32le_word": "0x0c015991",
+            "segment": "E05",
+            "decoded_offset": "0xbdb5c"
+          },
+          {
+            "va": "0x80056670",
+            "u32le_word": "0x24070400",
+            "segment": "E03",
+            "original_file_offset": "0x158958"
+          },
+          {
+            "va": "0x80056678",
+            "u32le_word": "0x24100600",
+            "segment": "E03",
+            "original_file_offset": "0x158960"
+          },
+          {
+            "va": "0x8005674c",
+            "u32le_word": "0x0c01568f",
+            "segment": "E03",
+            "original_file_offset": "0x158a34"
+          },
+          {
+            "va": "0x80056764",
+            "u32le_word": "0x0c0156e7",
+            "segment": "E03",
+            "original_file_offset": "0x158a4c"
+          },
+          {
+            "va": "0x80055a84",
+            "u32le_word": "0x24050006",
+            "segment": "E03",
+            "original_file_offset": "0x157d6c"
+          },
+          {
+            "va": "0x80055a98",
+            "u32le_word": "0x0c014f9c",
+            "segment": "E03",
+            "original_file_offset": "0x157d80"
+          },
+          {
+            "va": "0x80055ab4",
+            "u32le_word": "0x93a30025",
+            "segment": "E03",
+            "original_file_offset": "0x157d9c"
+          },
+          {
+            "va": "0x80055b50",
+            "u32le_word": "0x24050004",
+            "segment": "E03",
+            "original_file_offset": "0x157e38"
+          },
+          {
+            "va": "0x80055b5c",
+            "u32le_word": "0x0c014f9c",
+            "segment": "E03",
+            "original_file_offset": "0x157e44"
+          },
+          {
+            "va": "0x80055bcc",
+            "u32le_word": "0x0c01568f",
+            "segment": "E03",
+            "original_file_offset": "0x157eb4"
+          },
+          {
+            "va": "0x80055c10",
+            "u32le_word": "0x8e480014",
+            "segment": "E03",
+            "original_file_offset": "0x157ef8"
+          },
+          {
+            "va": "0x80055c28",
+            "u32le_word": "0x0501fff0",
+            "segment": "E03",
+            "original_file_offset": "0x157f10"
+          },
+          {
+            "va": "0x80055c3c",
+            "u32le_word": "0x0c01568f",
+            "segment": "E03",
+            "original_file_offset": "0x157f24"
+          },
+          {
+            "va": "0x805e1734",
+            "u32le_word": "0x8d84ddd0",
+            "segment": "E05",
+            "decoded_offset": "0xc1934"
+          },
+          {
+            "va": "0x805e174c",
+            "u32le_word": "0x0c01c684",
+            "segment": "E05",
+            "decoded_offset": "0xc194c"
+          },
+          {
+            "va": "0x805e1760",
+            "u32le_word": "0x90980cc8",
+            "segment": "E05",
+            "decoded_offset": "0xc1960"
+          },
+          {
+            "va": "0x805e1834",
+            "u32le_word": "0x0c01b552",
+            "segment": "E05",
+            "decoded_offset": "0xc1a34"
+          },
+          {
+            "va": "0x805e184c",
+            "u32le_word": "0x0c01c684",
+            "segment": "E05",
+            "decoded_offset": "0xc1a4c"
+          },
+          {
+            "va": "0x805e1860",
+            "u32le_word": "0x14a6004b",
+            "segment": "E05",
+            "decoded_offset": "0xc1a60"
+          },
+          {
+            "va": "0x805e1884",
+            "u32le_word": "0x14c70021",
+            "segment": "E05",
+            "decoded_offset": "0xc1a84"
+          },
+          {
+            "va": "0x805de0fc",
+            "u32le_word": "0x0c01554d",
+            "segment": "E05",
+            "decoded_offset": "0xbe2fc"
+          },
+          {
+            "va": "0x805de14c",
+            "u32le_word": "0x0c179170",
+            "segment": "E05",
+            "decoded_offset": "0xbe34c"
+          },
+          {
+            "va": "0x805de35c",
+            "u32le_word": "0x0c17735b",
+            "segment": "E05",
+            "decoded_offset": "0xbe55c"
+          },
+          {
+            "va": "0x805de3a0",
+            "u32le_word": "0x0c17726b",
+            "segment": "E05",
+            "decoded_offset": "0xbe5a0"
+          },
+          {
+            "va": "0x805de5d4",
+            "u32le_word": "0x0c014f9c",
+            "segment": "E05",
+            "decoded_offset": "0xbe7d4"
+          },
+          {
+            "va": "0x805dec0c",
+            "u32le_word": "0x0c1773c3",
+            "segment": "E05",
+            "decoded_offset": "0xbee0c"
+          },
+          {
+            "va": "0x805dcf34",
+            "u32le_word": "0x8c900c88",
+            "segment": "E05",
+            "decoded_offset": "0xbd134"
+          },
+          {
+            "va": "0x805dcf54",
+            "u32le_word": "0x24050005",
+            "segment": "E05",
+            "decoded_offset": "0xbd154"
+          },
+          {
+            "va": "0x805dcf68",
+            "u32le_word": "0x8c940ca0",
+            "segment": "E05",
+            "decoded_offset": "0xbd168"
+          },
+          {
+            "va": "0x805dcf6c",
+            "u32le_word": "0x0c014f9c",
+            "segment": "E05",
+            "decoded_offset": "0xbd16c"
+          },
+          {
+            "va": "0x805dcfd0",
+            "u32le_word": "0x0c014f9c",
+            "segment": "E05",
+            "decoded_offset": "0xbd1d0"
+          },
+          {
+            "va": "0x805dcff4",
+            "u32le_word": "0x90c80000",
+            "segment": "E05",
+            "decoded_offset": "0xbd1f4"
+          },
+          {
+            "va": "0x805dd000",
+            "u32le_word": "0x15070011",
+            "segment": "E05",
+            "decoded_offset": "0xbd200"
+          }
+        ]
+      }
+    ],
+    "e01_words": [
+      {
+        "role": "E01 homologous BurnNand call and handle words",
+        "words": [
+          {
+            "va": "0x80012684",
+            "u32le_word": "0x8c8b1248",
+            "segment": "E01",
+            "original_file_offset": "0x2afc"
+          },
+          {
+            "va": "0x80012688",
+            "u32le_word": "0x8ea9124c",
+            "segment": "E01",
+            "original_file_offset": "0x2b00"
+          },
+          {
+            "va": "0x800126b8",
+            "u32le_word": "0x8eb61238",
+            "segment": "E01",
+            "original_file_offset": "0x2b30"
+          },
+          {
+            "va": "0x800126c4",
+            "u32le_word": "0x8eb1123c",
+            "segment": "E01",
+            "original_file_offset": "0x2b3c"
+          },
+          {
+            "va": "0x800126e0",
+            "u32le_word": "0x0c021257",
+            "segment": "E01",
+            "original_file_offset": "0x2b58"
+          },
+          {
+            "va": "0x8001277c",
+            "u32le_word": "0x0040f809",
+            "segment": "E01",
+            "original_file_offset": "0x2bf4"
+          },
+          {
+            "va": "0x800127f8",
+            "u32le_word": "0x0c021257",
+            "segment": "E01",
+            "original_file_offset": "0x2c70"
+          },
+          {
+            "va": "0x80012fe8",
+            "u32le_word": "0x0c0069c4",
+            "segment": "E01",
+            "original_file_offset": "0x3460"
+          },
+          {
+            "va": "0x80013470",
+            "u32le_word": "0x0c020927",
+            "segment": "E01",
+            "original_file_offset": "0x38e8"
+          },
+          {
+            "va": "0x80013aa8",
+            "u32le_word": "0x0c00476a",
+            "segment": "E01",
+            "original_file_offset": "0x3f20"
+          },
+          {
+            "va": "0x80011e08",
+            "u32le_word": "0x0c020927",
+            "segment": "E01",
+            "original_file_offset": "0x2280"
+          }
+        ]
+      }
+    ],
+    "comparison": {
+      "words": 2760,
+      "byte_identical_words": 2166,
+      "same_primary_opcode": 2760,
+      "note": "Primary opcode excludes register/target/offset/funct distinctions. Aligned word/opcode statistics are structural comparison only."
+    }
+  },
+  "findings": [
+    "Both fixtures execute MAIN BurnGetHandle from the original 192-byte update header and then invoke original MAIN Burn with its observed caller arguments.",
+    "The native-open fixture follows original installed-media FileX opening and driver initialization to the first observed NAND ID request, op 2, at FcuNandOperationEx entry after 281 VEX block events. No Ex response is supplied.",
+    "The separate installed-header fixture models FileX open and geometry. Native HostAck and BurnNand reach the ordinary installed-header loader's op 6 request after 134 VEX block events. Modeled op 6 and op 4 responses allow original card Read to reach its first FileX read entry after 156 cumulative events.",
+    "The installed-header fixture borrows 0x600 bytes from original package offset 0x1000c0 for the modeled op 4 response. The card FileX entry requests 0x20000 bytes in the primary buffer. Its intended payload offset is setup provenance. The FILE cursor and read data are unobserved."
+  ],
+  "limits": [
+    "The two runs use separate fresh projects, seeded mutex and device state, and bounded read/write regions. Observations use VEX block history counts from the MAIN Burn entry.",
+    "MAIN DownloadCard's caller arguments are verified in the prior update-service report. Neither fixture begins at DownloadCard or exercises actual storage, card I/O or NAND controller behavior.",
+    "The installed-media header is synthetic, and selector 1 is beyond the stop. No Ex function body, program operation, continuation, update acceptance, reboot or hardware outcome is verified.",
+    "The MAIN and E01 aligned code measurements establish structural similarity. E01 replay results apply to the E01 implementation."
+  ],
+  "next_actions": [
+    "Replay MAIN selector 1 and section-map construction with separately controlled installed headers and geometry.",
+    "Test MAIN card-read retry and byte comparison separately from a bounded later MAIN program request."
+  ],
+  "reproduction": {
+    "command": "python tools/check_main_burn.py <original-firmware.bin> <analysis.elf> --output <new-report.json>",
+    "dependency": "angr 10.0.5 with VEX"
+  }
+}
