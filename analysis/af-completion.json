@@ -1075,7 +1075,7 @@
             "action": "drive",
             "mode": 0,
             "wait_for_motion": 1,
-            "worker_delivery_wait": null,
+            "worker_delivery_wait": 1,
             "outer_return": 1,
             "setter_return": 6,
             "queue_message": [
@@ -4269,5 +4269,27 @@
     "Initial readiness, capture phase, temperature bytes and settings are synthetic. Explicit poll inputs emulate telemetry and are labeled; the failure and reset fixtures execute native cache mutation.",
     "A separate worker project with copied lens-control RAM delivers one captured queue word. Worker stack/register state is discarded at the next receive boundary. No real scheduler or post-timeout late delivery beyond the tested same-poll case is inferred.",
     "The phase-4 fixture seeds that phase and does not run the full capture lifecycle. Flag notification, ACK and motion completion remain separate software boundaries."
-  ]
+  ],
+  "queue_delivery_regression": {
+    "scheduled_poll": 1,
+    "submission_status": 0,
+    "normal": {
+      "waits": 101,
+      "worker_result": null,
+      "pending": 1,
+      "setter_result": 6,
+      "link_calls": 0
+    },
+    "mutant": {
+      "change": "Remove queue_send_result==1 from Delay delivery predicate",
+      "waits": 1,
+      "worker_result": 1,
+      "pending": 0,
+      "setter_result": 1,
+      "link_calls": 1,
+      "rejected": true
+    },
+    "metadata_change": "Only fixture worker_delivery_wait changed null to1; native observations and all other19 case records unchanged.",
+    "scope": "Fixture-model regression and original caller execution; no actual RTOS or motor measurement"
+  }
 }

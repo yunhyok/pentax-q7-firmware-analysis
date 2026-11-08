@@ -62,7 +62,7 @@ CASES = (
      (("drive",0,1,1,1,1), ("poll",1,1), ("drive",1,1,None,1,6), ("poll",0,1))),
     ("reset-zero-during-motion-check", {},
      (("drive",0,1,1,1,1), ("poll",1,1), ("reset",), ("poll",None,None))),
-    ("search-queue-rejected", {"queue_send_result":0}, (("drive",0,1,None,1,6),)),
+    ("search-queue-rejected", {"queue_send_result":0}, (("drive",0,1,1,1,6),)),
 )
 WAITS = (
     ("invalid-zero", (0,0), ()),

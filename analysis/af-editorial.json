@@ -16,6 +16,7 @@
   "subsequent_correction": {
     "scope": "Queue-rejection regression added after original12-paragraph humanize pass; count20 and accepted-only delivery wording updated.",
     "verification": "Coordinator independently reproduced attempted6/API0/101waits/setter6/pending1/outer1/state1/no-link; previous19 records unchanged.",
-    "copy_sha256": "b6259b0c548924c4d74bdcdfbcbe71ffa6ff55b79f374436e1b9e274cfc1cf8b"
+    "copy_sha256": "75029256a898eb8be60ab65cc884941f9bd9843bd4fe28731c7c7451d19dda50",
+    "scheduled_delivery_mutant": "Coordinator added first-poll scheduled rejection and native condition-deleted mutant result; later factual extension beyond original language gate."
   }
 }

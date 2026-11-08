@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "89f7bb6bb0c383eb4b4940759626083b7352762b",
-  "updated_at": "2026-11-08T18:19:31+09:00",
+  "baseline_commit": "937d00530881df7e6f335dbd19781315d9740029",
+  "updated_at": "2026-11-08T18:27:18+09:00",
   "goals": {
     "rebuild": {
       "status": "Seven original retry/main continuation fixtures plus four terminal fixtures. Same main path reaches extended-header write, primary read/erase/rewrite, native ready callback1 and BurnNand return0 with modeled success; three status7 errors return1 without ready. Hardware update remains unverified.",
@@ -130,9 +130,9 @@
       "stable_evidence": {
         "analysis/lens-readiness.json": "9516435e4609576717f714d99e8ceeddc97b23fecd57914d680cfcf849025966",
         "tools/check_lens_readiness.py": "b88ca7428dc9881a32f61a1cc9190daa41f6f3ffa8c5fe3ed40a7831db4d6d42",
-        "analysis/af-completion.json": "c1d545466e06c2e1cd7176854d6a329d50d0fe5fde74d29d18924360bd0ade42",
-        "tools/check_af_completion.py": "c81e0383b2cbc9c68742ebfd6cfc9b939b40f39b6349c1053cca9218f48d96be",
-        "af-completion-report.html": "b99d3e12093d9a07eedaab8321e6f2296fe0ca8f5bd7d6068e9a750e3c46d69f"
+        "analysis/af-completion.json": "0f3ea72ba242a88b09a0ea934b3991e12f2a6051fc551355aac5a9ba5ac59534",
+        "tools/check_af_completion.py": "2ab77867652099bd6a30aac94e55215f212867884662c5af1f6950475520b30f",
+        "af-completion-report.html": "0b261ba01eba9ae0da833070139aedc46bab09b553eb892ba79092c21d3c2bcc"
       },
       "hash_normalization": "UTF-8 LF bytes",
       "queue_rejection": "Modeled queue API0, no delivery;101 waits,setter6,pending1,outer1,motion-check1,no lower link. Original send-call return0 observed."
@@ -544,7 +544,8 @@
   ],
   "af_queue_regression": {
     "case": "search-queue-rejected",
-    "validation": "New original VEX case independently reproduced; worker full20 replay exact; previous19 records and128words/28functions unchanged.",
-    "limits": "Queue rejection is supplied by model; no actual RTOS queue or elapsed time measured."
+    "validation": "Coordinator original normal and mutant executions plus dependency-free CI gate regression passed; original128words/28functions and19othercases unchanged. Full20 original cases rerun exactly match publicJSON;41unit tests PASS.",
+    "limits": "Queue rejection is supplied by model; no actual RTOS queue or elapsed time measured.",
+    "scheduled_delivery": "First wait scheduled; native normal101/no worker versus condition-deleted mutant1/worker1. Only worker_delivery_wait null→1 changes in public replay."
   }
 }
