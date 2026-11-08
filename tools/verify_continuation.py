@@ -4,6 +4,7 @@ import json
 import struct
 from build_deep_report import read
 from check_burn_continuation import validate_report as validate_burn
+from check_burn_finalization import validate_report as validate_finalization
 from check_colorspace_raster import validate_report as validate_raster
 from inspect_q7 import parse_elf
 from q7_symbols import SHA
@@ -14,15 +15,19 @@ def verify(firmware=None, decoded=None):
     if not __debug__:
         raise RuntimeError('Validation requires assertions')
     burn, raster = read('burn-continuation.json'), read('colorspace-raster.json')
+    terminal = read('burn-finalization.json')
     validate_burn(burn['bounded_replay'])
     validate_raster(raster['replay'])
+    validate_finalization(terminal['bounded_replay'])
     for doc, keys, expected in (
         (burn, ('selected_functions', 'evidence', 'fixture_configuration', 'source_reconstruction'), '2094459398c7fb44fbde2806d4515cbdd6bcaa3745491cc9c6bb3a5c35a06dce'),
         (raster, ('selected_functions','duplicate_named_ranges','context_template','evidence'), 'b1da523c89a638a42fc25ff314ecc0007182819dbea7f1758ccc17a3f592b2d4'),
+        (terminal, ('selected_functions','evidence','comparison'), 'cfd8a816ee3a14df100aacef878eccaaa40b552cc6e2dbd91a35ff8f256e3d48'),
     ):
         assert doc['input_sha256'] == SHA
         assert hashlib.sha256(json.dumps([doc[k] for k in keys],sort_keys=True,separators=(',',':')).encode()).hexdigest() == expected
     assert len(list(witnesses(burn))) == 116 and len(list(witnesses(raster))) == 50
+    assert len(list(witnesses(terminal))) == 63
     if firmware is None: return
     assert hashlib.sha256(firmware).hexdigest() == SHA and decoded is not None
     boot, symbols = parse_elf(firmware, 0x200)
@@ -30,6 +35,9 @@ def verify(firmware=None, decoded=None):
     segments = [('E01',s['virtual_address'],firmware[s['file_offset']:s['file_offset']+s['file_size']],s['file_offset'])
                 for s in boot['segments'] if s['type']==1]
     assert verify_words(burn,segments) == 116
+    assert terminal['boot_elf_sha256'] == boot['sha256_referenced_bytes']
+    assert verify_words(terminal,segments) == 63
+    assert terminal['selected_functions'][0] == burn['selected_functions'][0]
     typed = [f for f in burn['selected_functions'] if 'section_index' in f]
     assert len(typed) == 4
     for f in typed:
@@ -38,7 +46,7 @@ def verify(firmware=None, decoded=None):
         section = boot['sections'][f['section_index']]
         assert section['name'] == f['section_name']
         assert int(f['original_file_offset'],16) == section['file_offset']+f['address']-section['virtual_address']
-    for f in burn['selected_functions']:
+    for f in (*burn['selected_functions'], *terminal['selected_functions']):
         off = int(f['original_file_offset'],16)
         assert hashlib.sha256(firmware[off:off+f['size']]).hexdigest() == f['sha256']
         assert any(base <= f['address'] < f['candidate_end'] <= base+len(body) and off == fileoff+f['address']-base
@@ -67,7 +75,7 @@ def verify(firmware=None, decoded=None):
         field = 'decoded_offset' if off is None else 'original_file_offset'
         assert name == r['segment'] and int(r[field],16) == address-base+(off or 0)
         assert hashlib.sha256(data[address-base:address-base+size]).hexdigest() == r['sha256']
-    print('Continuation/raster:166 original words,9 E01 extents,22 named/2 duplicate main extents,1 template reproduced')
+    print('Continuation/raster/finalization:229 word witnesses,9+2 E01 records (BurnNand overlaps),22 named/2 duplicate main extents,1 template reproduced')
 
 
 if __name__ == '__main__':

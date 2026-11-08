@@ -1,11 +1,11 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "5dcdcbf87e9d552a569cb5cfafd841347a28913d",
-  "updated_at": "2026-11-08T17:58:49+09:00",
+  "baseline_commit": "89f7bb6bb0c383eb4b4940759626083b7352762b",
+  "updated_at": "2026-11-08T18:19:31+09:00",
   "goals": {
     "rebuild": {
-      "status": "Seven original BurnNand continuation fixtures cover retry, marker failure, bad/protected candidates and card callback failure; all-success aggregate case reaches135 chunks then separate direct op5. Both modified source buffers independently reconstructed. Terminal success remains unverified.",
+      "status": "Seven original retry/main continuation fixtures plus four terminal fixtures. Same main path reaches extended-header write, primary read/erase/rewrite, native ready callback1 and BurnNand return0 with modeled success; three status7 errors return1 without ready. Hardware update remains unverified.",
       "evidence": [
         "analysis/rebuild-evidence.json",
         "analysis/loader-foundation.json",
@@ -27,15 +27,17 @@
         "loader-hash-report.html",
         "analysis/burn-continuation.json",
         "tools/check_burn_continuation.py",
-        "burn-continuation-report.html"
+        "burn-continuation-report.html",
+        "analysis/burn-finalization.json",
+        "tools/check_burn_finalization.py"
       ],
       "gaps": [
-        "Continuation after later direct op5, other section/header policies, real installed-media geometry",
+        "Other section/header policies, erase-failure path, real installed-media geometry and device persistence",
         "General code insertion/deletion, relocation, and table regeneration",
         "Camera update recognition, hardware inflate, flash, boot, capture and recovery"
       ],
       "next_actions": [
-        "Continue after separate sector0xa00/count4 op5 and trace terminal return without treating synthetic I/O as device proof",
+        "Trace general insertion/deletion and remaining section/erase policies without treating synthetic I/O as device proof",
         "Investigate general insertion/deletion and relocation only against the proven fixed-slot representation"
       ],
       "counts": {
@@ -60,7 +62,9 @@
         "aggregate_success_chunks": 135,
         "protected_candidates_skipped": 384,
         "main_header_patch_bytes": 512,
-        "later_header_changed_bytes": 132
+        "later_header_changed_bytes": 132,
+        "burn_terminal_cases": 4,
+        "terminal_primary_changed_bytes": 4
       },
       "stable_evidence": {
         "analysis/recompiled-numeric.json": "4ec1054854c538f06e8d3e6aaaa9767c4096d5a4b54c5e2a88754473ec5cf2b2",
@@ -69,9 +73,10 @@
         "storage-readiness-report.html": "ee98e3f2792ad44c0322484d2a9e62255aaeecb1f89edcc2caac0066caf45c38",
         "analysis/header-hash.json": "900796b1cd98b9f763158fc407d7692a4e984825bc686bcdced35697e93e5217",
         "analysis/hash-card.json": "8d3af227905632a7d3f3beddc51621f6d3539ea8eecb6b3fca02478c5c8b09a0",
-        "loader-hash-report.html": "427951d742e84c0a506246e137db9c3c332003c3231f367ca20685690539d9dd",
+        "loader-hash-report.html": "83f1cb1fa9fc95474c36dee5c8d59672518c14c09ce30f7199389725f790d5da",
         "analysis/burn-continuation.json": "497319343e33ae4437765e9ce4f76dd1910d133ba28aad0a72e4d086fb71ed85",
-        "burn-continuation-report.html": "cd0333922e1092666556054a185901ccd6e7466945cb8faac6049f4644cce6da"
+        "burn-continuation-report.html": "82a747c53b6a030d19b330181058db1727bd3818f6c05c2d545b6adf757679f2",
+        "analysis/burn-finalization.json": "298d542fa655c07cfdb3c4b00c5b576e0cec34f05685265f1b494cb02e5b2744"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -507,7 +512,9 @@
     "analysis/colorspace-raster.json",
     "tools/check_colorspace_raster.py",
     "colorspace-raster-report.html",
-    "tools/verify_continuation.py"
+    "tools/verify_continuation.py",
+    "analysis/burn-finalization.json",
+    "tools/check_burn_finalization.py"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
@@ -518,16 +525,21 @@
     "validation": "311 original words,21 typed/3 anonymous E01 records,47 main functions,38 ranges reproduced; deterministic HTML PASS."
   },
   "latest_followup": {
-    "scope": "NAND continuation and indexed raster",
-    "validation": "Coordinator original VEX Burn7 cases exactly match public metadata; raster7 cases whole-buffer and guard PASS.166 original words/33 code extents/1 template reproduced;40 unit tests PASS; both HTML reports visually reviewed with6SVG and no horizontal overflow at1265px.",
-    "editorial": "19 paragraphs,0.8% character change,5.8% sentence touch,golden PASS; subsequent source reconstruction update recorded.",
-    "remaining": "No flash, boot, real lens motion, RGB palette, glyph or LCD proof."
+    "scope": "NAND terminal return",
+    "validation": "Coordinator full originalVEX four cases exactly match public records; independent primary buffer reconstruction from3242events matches131072-byte hash;63newwords/2code records reproduced;40unit tests pass; two newSVG inspected at1265px without overflow.",
+    "remaining": "No actual flash, boot, camera update acceptance or device persistence. Font glyph path is private ongoing work.",
+    "editorial": "8 paragraphs,2.2% change,7.7% sentence touch,goldenPASS,modalitylost0; sentence-length warning retained and coordinator finalizer accepted."
   },
   "validation_runs": [
     {
       "command": "Independent original Burn7 and raster7 replays plus source reconstruction",
       "result": "PASS; both changed NAND input sources reproduce,166 original words and33code extents plus1template match",
       "limits": "All device responses are modeled; no actual NAND or LCD"
+    },
+    {
+      "command": "check_burn_finalization.py <original> and independent source reconstruction",
+      "result": "4 original cases exact; final primary SHA ce8b5a7ef4d8d173b014dd27f085c1b326b998ab842044f59a03ebf30518e038",
+      "limits": "Same successful main snapshot; storage and allocator fixtures; no erase-error case or physical persistence"
     }
   ],
   "af_queue_regression": {

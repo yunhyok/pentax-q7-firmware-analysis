@@ -1,0 +1,1004 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+  "scope": "Original E01 BurnNand from the pending extended-header write through its terminal return with modeled storage.",
+  "related_evidence": [
+    "analysis/burn-continuation.json",
+    "analysis/loader-storage.json"
+  ],
+  "bounded_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "boot_elf_sha256": "1ea1d44c941294684683ffae9c928e985bdde8a7b68d8579b026649e5746e487",
+    "engine": "angr 10.0.5 / VEX",
+    "main_case": [
+      "main-payload-to-metadata",
+      "96e74ccdb8c6eae3a53a5e361def8c8ab58dc0e0d3f3d2b2bd42495082378f9d"
+    ],
+    "modeled_finalization": {
+      "0x80034720": "Provide one zero-initialized synthetic block buffer.",
+      "0x80034d98": "Record the requested free arguments and return without changing synthetic RAM.",
+      "0x8004717c": "Diagnostic logging no-op carried from the original preflight replay.",
+      "0x80048cf8": "Cache-maintenance no-op carried from the original preflight replay.",
+      "0x8008249c": "Return fixture status for the four recognized requests. The block-zero read supplies the full data and spare bytes captured before its earlier aggregate program. No device I/O occurs."
+    },
+    "source_hashes": {
+      "primary_aggregate_sha256": "a13f08d36e17dc3bfb9deb769d3e1eab95acfb48bfa437ac734d069c72720e29",
+      "primary_aggregate_spare_sha256": "04a5c4ffa6cf440d51deeaf0b93415ce1d4165b7364e9165db149ca89d8331a2",
+      "pending_extended_write_sha256": "a56bc5e32de831dfb0f97dfbac994227bad1045f601a806b54eb6648a8767eac"
+    },
+    "cases": [
+      {
+        "name": "extended-write-error",
+        "injected_error_return_site": "0x8001437c",
+        "entry": "0x8008249c",
+        "stop": "0xbadf000",
+        "return_value": 1,
+        "requests": [
+          {
+            "return_address": "0x8001437c",
+            "arguments": [
+              "0x10000000",
+              "0x5",
+              "0xa00",
+              "0x4",
+              "0x11000c10",
+              "0x0",
+              "0x0"
+            ],
+            "status": 7,
+            "data_sha256": "a56bc5e32de831dfb0f97dfbac994227bad1045f601a806b54eb6648a8767eac"
+          }
+        ],
+        "allocations": [],
+        "free_calls": [
+          {
+            "return_address": "0x80015048",
+            "arguments": [
+              "0x0",
+              "0x11000a10",
+              "0x800951f4",
+              "0xaa0"
+            ]
+          },
+          {
+            "return_address": "0x80015064",
+            "arguments": [
+              "0x0",
+              "0x0",
+              "0x800951f4",
+              "0xaa1"
+            ]
+          }
+        ],
+        "native_ready_callers": [],
+        "native_status_sites": [
+          [
+            "0x8001437c",
+            7
+          ],
+          [
+            "0x80012924",
+            1
+          ]
+        ]
+      },
+      {
+        "name": "primary-read-error",
+        "injected_error_return_site": "0x80012df0",
+        "entry": "0x8008249c",
+        "stop": "0xbadf000",
+        "return_value": 1,
+        "requests": [
+          {
+            "return_address": "0x8001437c",
+            "arguments": [
+              "0x10000000",
+              "0x5",
+              "0xa00",
+              "0x4",
+              "0x11000c10",
+              "0x0",
+              "0x0"
+            ],
+            "status": 0,
+            "data_sha256": "a56bc5e32de831dfb0f97dfbac994227bad1045f601a806b54eb6648a8767eac"
+          },
+          {
+            "return_address": "0x80012df0",
+            "arguments": [
+              "0x10000000",
+              "0x4",
+              "0x0",
+              "0x100",
+              "0x11001410",
+              "0x70007a98",
+              "0x10"
+            ],
+            "status": 7
+          }
+        ],
+        "allocations": [
+          {
+            "return_address": "0x80012dc4",
+            "arguments": [
+              "0x0",
+              "0x20000",
+              "0x0",
+              "0x800951f4",
+              "0xaf0"
+            ],
+            "returned": "0x11001410"
+          }
+        ],
+        "free_calls": [
+          {
+            "return_address": "0x800146c8",
+            "arguments": [
+              "0x0",
+              "0x11000c10",
+              "0x800951f4",
+              "0xd4c"
+            ]
+          },
+          {
+            "return_address": "0x80012d30",
+            "arguments": [
+              "0x0",
+              "0x11000a10",
+              "0x800951f4",
+              "0xac3"
+            ]
+          },
+          {
+            "return_address": "0x80012d4c",
+            "arguments": [
+              "0x0",
+              "0x11000410",
+              "0x800951f4",
+              "0xac7"
+            ]
+          },
+          {
+            "return_address": "0x800147e4",
+            "arguments": [
+              "0x0",
+              "0x11001410",
+              "0x800951f4",
+              "0xafb"
+            ]
+          },
+          {
+            "return_address": "0x80014800",
+            "arguments": [
+              "0x0",
+              "0x0",
+              "0x800951f4",
+              "0xafc"
+            ]
+          }
+        ],
+        "native_ready_callers": [],
+        "native_status_sites": [
+          [
+            "0x8001437c",
+            0
+          ],
+          [
+            "0x80012df0",
+            7
+          ],
+          [
+            "0x80012924",
+            1
+          ]
+        ]
+      },
+      {
+        "name": "primary-write-error",
+        "injected_error_return_site": "0x8001465c",
+        "entry": "0x8008249c",
+        "stop": "0xbadf000",
+        "return_value": 1,
+        "requests": [
+          {
+            "return_address": "0x8001437c",
+            "arguments": [
+              "0x10000000",
+              "0x5",
+              "0xa00",
+              "0x4",
+              "0x11000c10",
+              "0x0",
+              "0x0"
+            ],
+            "status": 0,
+            "data_sha256": "a56bc5e32de831dfb0f97dfbac994227bad1045f601a806b54eb6648a8767eac"
+          },
+          {
+            "return_address": "0x80012df0",
+            "arguments": [
+              "0x10000000",
+              "0x4",
+              "0x0",
+              "0x100",
+              "0x11001410",
+              "0x70007a98",
+              "0x10"
+            ],
+            "status": 0,
+            "data_sha256": "a13f08d36e17dc3bfb9deb769d3e1eab95acfb48bfa437ac734d069c72720e29",
+            "spare_sha256": "04a5c4ffa6cf440d51deeaf0b93415ce1d4165b7364e9165db149ca89d8331a2"
+          },
+          {
+            "return_address": "0x80012f00",
+            "arguments": [
+              "0x10000000",
+              "0x8",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "status": 0
+          },
+          {
+            "return_address": "0x8001465c",
+            "arguments": [
+              "0x10000000",
+              "0x5",
+              "0x0",
+              "0x100",
+              "0x11001410",
+              "0x70007a98",
+              "0x10"
+            ],
+            "status": 7,
+            "data_sha256": "ce8b5a7ef4d8d173b014dd27f085c1b326b998ab842044f59a03ebf30518e038",
+            "spare_sha256": "04a5c4ffa6cf440d51deeaf0b93415ce1d4165b7364e9165db149ca89d8331a2",
+            "data_changes_from_aggregate_block_zero": [
+              [
+                924,
+                255,
+                10
+              ],
+              [
+                925,
+                255,
+                0
+              ],
+              [
+                926,
+                255,
+                0
+              ],
+              [
+                927,
+                255,
+                0
+              ]
+            ]
+          }
+        ],
+        "allocations": [
+          {
+            "return_address": "0x80012dc4",
+            "arguments": [
+              "0x0",
+              "0x20000",
+              "0x0",
+              "0x800951f4",
+              "0xaf0"
+            ],
+            "returned": "0x11001410"
+          }
+        ],
+        "free_calls": [
+          {
+            "return_address": "0x800146c8",
+            "arguments": [
+              "0x0",
+              "0x11000c10",
+              "0x800951f4",
+              "0xd4c"
+            ]
+          },
+          {
+            "return_address": "0x80012d30",
+            "arguments": [
+              "0x0",
+              "0x11000a10",
+              "0x800951f4",
+              "0xac3"
+            ]
+          },
+          {
+            "return_address": "0x80012d4c",
+            "arguments": [
+              "0x0",
+              "0x11000410",
+              "0x800951f4",
+              "0xac7"
+            ]
+          },
+          {
+            "return_address": "0x80014680",
+            "arguments": [
+              "0x0",
+              "0x11001410",
+              "0x800951f4",
+              "0xb5c"
+            ]
+          },
+          {
+            "return_address": "0x8001469c",
+            "arguments": [
+              "0x0",
+              "0x0",
+              "0x800951f4",
+              "0xb5d"
+            ]
+          }
+        ],
+        "native_ready_callers": [],
+        "native_status_sites": [
+          [
+            "0x8001437c",
+            0
+          ],
+          [
+            "0x80012df0",
+            0
+          ],
+          [
+            "0x80012f00",
+            0
+          ],
+          [
+            "0x8001465c",
+            7
+          ],
+          [
+            "0x80012924",
+            1
+          ]
+        ]
+      },
+      {
+        "name": "all-success",
+        "injected_error_return_site": null,
+        "entry": "0x8008249c",
+        "stop": "0xbadf000",
+        "return_value": 0,
+        "requests": [
+          {
+            "return_address": "0x8001437c",
+            "arguments": [
+              "0x10000000",
+              "0x5",
+              "0xa00",
+              "0x4",
+              "0x11000c10",
+              "0x0",
+              "0x0"
+            ],
+            "status": 0,
+            "data_sha256": "a56bc5e32de831dfb0f97dfbac994227bad1045f601a806b54eb6648a8767eac"
+          },
+          {
+            "return_address": "0x80012df0",
+            "arguments": [
+              "0x10000000",
+              "0x4",
+              "0x0",
+              "0x100",
+              "0x11001410",
+              "0x70007a98",
+              "0x10"
+            ],
+            "status": 0,
+            "data_sha256": "a13f08d36e17dc3bfb9deb769d3e1eab95acfb48bfa437ac734d069c72720e29",
+            "spare_sha256": "04a5c4ffa6cf440d51deeaf0b93415ce1d4165b7364e9165db149ca89d8331a2"
+          },
+          {
+            "return_address": "0x80012f00",
+            "arguments": [
+              "0x10000000",
+              "0x8",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "status": 0
+          },
+          {
+            "return_address": "0x8001465c",
+            "arguments": [
+              "0x10000000",
+              "0x5",
+              "0x0",
+              "0x100",
+              "0x11001410",
+              "0x70007a98",
+              "0x10"
+            ],
+            "status": 0,
+            "data_sha256": "ce8b5a7ef4d8d173b014dd27f085c1b326b998ab842044f59a03ebf30518e038",
+            "spare_sha256": "04a5c4ffa6cf440d51deeaf0b93415ce1d4165b7364e9165db149ca89d8331a2",
+            "data_changes_from_aggregate_block_zero": [
+              [
+                924,
+                255,
+                10
+              ],
+              [
+                925,
+                255,
+                0
+              ],
+              [
+                926,
+                255,
+                0
+              ],
+              [
+                927,
+                255,
+                0
+              ]
+            ]
+          }
+        ],
+        "allocations": [
+          {
+            "return_address": "0x80012dc4",
+            "arguments": [
+              "0x0",
+              "0x20000",
+              "0x0",
+              "0x800951f4",
+              "0xaf0"
+            ],
+            "returned": "0x11001410"
+          }
+        ],
+        "free_calls": [
+          {
+            "return_address": "0x800146c8",
+            "arguments": [
+              "0x0",
+              "0x11000c10",
+              "0x800951f4",
+              "0xd4c"
+            ]
+          },
+          {
+            "return_address": "0x80012d30",
+            "arguments": [
+              "0x0",
+              "0x11000a10",
+              "0x800951f4",
+              "0xac3"
+            ]
+          },
+          {
+            "return_address": "0x80012d4c",
+            "arguments": [
+              "0x0",
+              "0x11000410",
+              "0x800951f4",
+              "0xac7"
+            ]
+          },
+          {
+            "return_address": "0x80014b94",
+            "arguments": [
+              "0x0",
+              "0x11000000",
+              "0x800951f4",
+              "0xb8b"
+            ]
+          },
+          {
+            "return_address": "0x80014d70",
+            "arguments": [
+              "0x0",
+              "0x11001410",
+              "0x800951f4",
+              "0xbef"
+            ]
+          }
+        ],
+        "native_ready_callers": [
+          "0x80014d80"
+        ],
+        "native_status_sites": [
+          [
+            "0x8001437c",
+            0
+          ],
+          [
+            "0x80012df0",
+            0
+          ],
+          [
+            "0x80012f00",
+            0
+          ],
+          [
+            "0x8001465c",
+            0
+          ],
+          [
+            "0x80014d80",
+            1
+          ],
+          [
+            "0x80012924",
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  "selected_functions": [
+    {
+      "name": "BurnNand",
+      "address": 2147558996,
+      "candidate_end": 2147570036,
+      "size": 11040,
+      "segment": "E01",
+      "original_file_offset": "0x2acc",
+      "sha256": "d0db0044b5ba3d939e3341538fb84b94748f2f47d1bb041e45b338ba928b512c",
+      "extent_basis": "ELF32 STT_FUNC st_size",
+      "section_index": 13,
+      "section_name": ".text"
+    },
+    {
+      "name": "sCardFunc ready callback",
+      "address": 2147586960,
+      "candidate_end": 2147586968,
+      "size": 8,
+      "segment": "E01",
+      "original_file_offset": "0x9808",
+      "sha256": "5ce5ad86d452c4d2422bd63e15223d5d6b3dfb77f224a88c1f476e9fb34e359d",
+      "extent_basis": "Callback table pointer and native jr ra with one delay-slot instruction"
+    }
+  ],
+  "evidence": [
+    {
+      "role": "extended-header op 5 and result dispatch",
+      "words": [
+        {
+          "va": "0x80014364",
+          "u32le_word": "0x24050005",
+          "segment": "E01",
+          "original_file_offset": "0x47dc"
+        },
+        {
+          "va": "0x80014368",
+          "u32le_word": "0x24070004",
+          "segment": "E01",
+          "original_file_offset": "0x47e0"
+        },
+        {
+          "va": "0x80014370",
+          "u32le_word": "0xafa00014",
+          "segment": "E01",
+          "original_file_offset": "0x47e8"
+        },
+        {
+          "va": "0x80014374",
+          "u32le_word": "0x0c020927",
+          "segment": "E01",
+          "original_file_offset": "0x47ec"
+        },
+        {
+          "va": "0x80014378",
+          "u32le_word": "0xafa00018",
+          "segment": "E01",
+          "original_file_offset": "0x47f0"
+        },
+        {
+          "va": "0x8001437c",
+          "u32le_word": "0x104000cc",
+          "segment": "E01",
+          "original_file_offset": "0x47f4"
+        },
+        {
+          "va": "0x80014390",
+          "u32le_word": "0x1000ff13",
+          "segment": "E01",
+          "original_file_offset": "0x4808"
+        },
+        {
+          "va": "0x80014394",
+          "u32le_word": "0x00001821",
+          "segment": "E01",
+          "original_file_offset": "0x480c"
+        },
+        {
+          "va": "0x800146c0",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x4b38"
+        },
+        {
+          "va": "0x80014778",
+          "u32le_word": "0x1000fe19",
+          "segment": "E01",
+          "original_file_offset": "0x4bf0"
+        },
+        {
+          "va": "0x8001477c",
+          "u32le_word": "0x24030001",
+          "segment": "E01",
+          "original_file_offset": "0x4bf4"
+        },
+        {
+          "va": "0x80013fe0",
+          "u32le_word": "0x10600412",
+          "segment": "E01",
+          "original_file_offset": "0x4458"
+        },
+        {
+          "va": "0x80013fe4",
+          "u32le_word": "0x8faf05f8",
+          "segment": "E01",
+          "original_file_offset": "0x445c"
+        },
+        {
+          "va": "0x80013fec",
+          "u32le_word": "0xafaf05a0",
+          "segment": "E01",
+          "original_file_offset": "0x4464"
+        }
+      ]
+    },
+    {
+      "role": "early error cleanup and return",
+      "words": [
+        {
+          "va": "0x80015034",
+          "u32le_word": "0x8fa50598",
+          "segment": "E01",
+          "original_file_offset": "0x54ac"
+        },
+        {
+          "va": "0x80015040",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x54b8"
+        },
+        {
+          "va": "0x80015050",
+          "u32le_word": "0x8fa505b4",
+          "segment": "E01",
+          "original_file_offset": "0x54c8"
+        },
+        {
+          "va": "0x8001505c",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x54d4"
+        },
+        {
+          "va": "0x80015064",
+          "u32le_word": "0x1000f62f",
+          "segment": "E01",
+          "original_file_offset": "0x54dc"
+        },
+        {
+          "va": "0x80015068",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0x54e0"
+        }
+      ]
+    },
+    {
+      "role": "primary buffer allocation, op 4 read and failure",
+      "words": [
+        {
+          "va": "0x80012d94",
+          "u32le_word": "0x8fa7057c",
+          "segment": "E01",
+          "original_file_offset": "0x320c"
+        },
+        {
+          "va": "0x80012d9c",
+          "u32le_word": "0x70f6c002",
+          "segment": "E01",
+          "original_file_offset": "0x3214"
+        },
+        {
+          "va": "0x80012dbc",
+          "u32le_word": "0x0c00d1c8",
+          "segment": "E01",
+          "original_file_offset": "0x3234"
+        },
+        {
+          "va": "0x80012dd4",
+          "u32le_word": "0x24050004",
+          "segment": "E01",
+          "original_file_offset": "0x324c"
+        },
+        {
+          "va": "0x80012dd8",
+          "u32le_word": "0x02c03821",
+          "segment": "E01",
+          "original_file_offset": "0x3250"
+        },
+        {
+          "va": "0x80012de8",
+          "u32le_word": "0x0c020927",
+          "segment": "E01",
+          "original_file_offset": "0x3260"
+        },
+        {
+          "va": "0x80012dec",
+          "u32le_word": "0xafbe0014",
+          "segment": "E01",
+          "original_file_offset": "0x3264"
+        },
+        {
+          "va": "0x80012df0",
+          "u32le_word": "0x14400675",
+          "segment": "E01",
+          "original_file_offset": "0x3268"
+        },
+        {
+          "va": "0x800147dc",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x4c54"
+        },
+        {
+          "va": "0x800147f8",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x4c70"
+        },
+        {
+          "va": "0x8001480c",
+          "u32le_word": "0x1000f845",
+          "segment": "E01",
+          "original_file_offset": "0x4c84"
+        },
+        {
+          "va": "0x80014810",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0x4c88"
+        }
+      ]
+    },
+    {
+      "role": "extended-header location and primary op 8 erase",
+      "words": [
+        {
+          "va": "0x80012e14",
+          "u32le_word": "0x8fa8059c",
+          "segment": "E01",
+          "original_file_offset": "0x328c"
+        },
+        {
+          "va": "0x80012e18",
+          "u32le_word": "0x11030695",
+          "segment": "E01",
+          "original_file_offset": "0x3290"
+        },
+        {
+          "va": "0x80012e1c",
+          "u32le_word": "0x8fa305a0",
+          "segment": "E01",
+          "original_file_offset": "0x3294"
+        },
+        {
+          "va": "0x80014874",
+          "u32le_word": "0xae03039c",
+          "segment": "E01",
+          "original_file_offset": "0x4cec"
+        },
+        {
+          "va": "0x80012ee0",
+          "u32le_word": "0x8fa6057c",
+          "segment": "E01",
+          "original_file_offset": "0x3358"
+        },
+        {
+          "va": "0x80012ee8",
+          "u32le_word": "0x24050008",
+          "segment": "E01",
+          "original_file_offset": "0x3360"
+        },
+        {
+          "va": "0x80012ef8",
+          "u32le_word": "0x0c020927",
+          "segment": "E01",
+          "original_file_offset": "0x3370"
+        },
+        {
+          "va": "0x80012f00",
+          "u32le_word": "0x104005ce",
+          "segment": "E01",
+          "original_file_offset": "0x3378"
+        }
+      ]
+    },
+    {
+      "role": "full-block primary op 5 and error branch",
+      "words": [
+        {
+          "va": "0x80014644",
+          "u32le_word": "0x24050005",
+          "segment": "E01",
+          "original_file_offset": "0x4abc"
+        },
+        {
+          "va": "0x80014648",
+          "u32le_word": "0x02c03821",
+          "segment": "E01",
+          "original_file_offset": "0x4ac0"
+        },
+        {
+          "va": "0x80014654",
+          "u32le_word": "0x0c020927",
+          "segment": "E01",
+          "original_file_offset": "0x4acc"
+        },
+        {
+          "va": "0x80014658",
+          "u32le_word": "0xafbe0014",
+          "segment": "E01",
+          "original_file_offset": "0x4ad0"
+        },
+        {
+          "va": "0x8001465c",
+          "u32le_word": "0x50400141",
+          "segment": "E01",
+          "original_file_offset": "0x4ad4"
+        },
+        {
+          "va": "0x80014678",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x4af0"
+        },
+        {
+          "va": "0x80014694",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x4b0c"
+        },
+        {
+          "va": "0x800146a8",
+          "u32le_word": "0x1000f89e",
+          "segment": "E01",
+          "original_file_offset": "0x4b20"
+        },
+        {
+          "va": "0x800146ac",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0x4b24"
+        }
+      ]
+    },
+    {
+      "role": "cleanup, native ready callback and terminal status",
+      "words": [
+        {
+          "va": "0x80014b8c",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x5004"
+        },
+        {
+          "va": "0x80014d68",
+          "u32le_word": "0x0c00d366",
+          "segment": "E01",
+          "original_file_offset": "0x51e0"
+        },
+        {
+          "va": "0x80014d70",
+          "u32le_word": "0x8fac0694",
+          "segment": "E01",
+          "original_file_offset": "0x51e8"
+        },
+        {
+          "va": "0x80014d74",
+          "u32le_word": "0x8d820004",
+          "segment": "E01",
+          "original_file_offset": "0x51ec"
+        },
+        {
+          "va": "0x80014d78",
+          "u32le_word": "0x0040f809",
+          "segment": "E01",
+          "original_file_offset": "0x51f0"
+        },
+        {
+          "va": "0x80014d80",
+          "u32le_word": "0x385e0001",
+          "segment": "E01",
+          "original_file_offset": "0x51f8"
+        },
+        {
+          "va": "0x80014d84",
+          "u32le_word": "0x1000f6e7",
+          "segment": "E01",
+          "original_file_offset": "0x51fc"
+        },
+        {
+          "va": "0x80014d88",
+          "u32le_word": "0x001e102b",
+          "segment": "E01",
+          "original_file_offset": "0x5200"
+        },
+        {
+          "va": "0x800a74e0",
+          "u32le_word": "0x80019390",
+          "segment": "E01",
+          "original_file_offset": "0x97950"
+        },
+        {
+          "va": "0x80019390",
+          "u32le_word": "0x03e00008",
+          "segment": "E01",
+          "original_file_offset": "0x9808"
+        },
+        {
+          "va": "0x80019394",
+          "u32le_word": "0x24020001",
+          "segment": "E01",
+          "original_file_offset": "0x980c"
+        },
+        {
+          "va": "0x80012924",
+          "u32le_word": "0x8fbf068c",
+          "segment": "E01",
+          "original_file_offset": "0x2d9c"
+        },
+        {
+          "va": "0x8001294c",
+          "u32le_word": "0x03e00008",
+          "segment": "E01",
+          "original_file_offset": "0x2dc4"
+        },
+        {
+          "va": "0x80012950",
+          "u32le_word": "0x27bd0690",
+          "segment": "E01",
+          "original_file_offset": "0x2dc8"
+        }
+      ]
+    }
+  ],
+  "reproduction": {
+    "command": "python tools/check_burn_finalization.py <local-original-update.bin> --output <new-local-json>",
+    "dependency": "angr 10.0.5 with VEX"
+  },
+  "findings": [
+    "All four terminal fixtures resume a copy of the same state at FcuOperationEx 0x8008249c, with return address 0x8001437c, op 5 sector 0xa00 count 4, and no spare pointer. The source is the same 2048-byte extended-header buffer in every case.",
+    "With zero statuses, the original caller frees the extended staging buffer, reads 256 sectors at sector 0, requests erase of block 0, and programs 256 sectors at sector 0 with 16 spare bytes. The read fixture returns the complete captured source of the earlier aggregate block-zero request. The final program reuses the same spare bytes.",
+    "Original 0x80014874 changes only primary-buffer offsets +0x39c through +0x39f from little-endian 0xffffffff to 10, the first successful physical block of the section-2 extended header. Independent reconstruction from the captured primary source reproduces the full 131072-byte output SHA-256 ce8b5a7ef4d8d173b014dd27f085c1b326b998ab842044f59a03ebf30518e038.",
+    "After the final op 5 succeeds, the original caller requests frees for the block map and primary buffer, then invokes the native ready callback at 0x80019390. Its return 1 is transformed by the original 0x80014d80 and 0x80014d88 sequence into BurnNand return 0. The trace ends at the restored caller sentinel without another storage request.",
+    "An injected status 7 at the extended write, primary read or primary write results in native return 1 and no ready call. The failed read emits neither erase nor primary write. The trace records exact free calls, including null pointer arguments on these error paths. In the extended-write failure no free request for the extended staging buffer appears before return."
+  ],
+  "limits": [
+    "The finalization cases use one exact original-VEX snapshot after the earlier all-success aggregate main case. That main case supplies outcome and map effects in place of real block programming and comparison.",
+    "The primary read uses the captured data and spare from the first aggregate program request. It models a successful read of those bytes and does not establish persistence on NAND.",
+    "Storage statuses and pool behavior are fixtures. Free call arguments and software status are observed; allocation lifetime beyond this function, physical writes, hardware cache operations and actual camera update remain outside the replay."
+  ],
+  "comparison": {
+    "model": "Pentax K-3 Mark III",
+    "commit": "c55c107e47594218b48678ce8bdb8d8ef2c984da",
+    "path": "analysis/update-finalization-evidence.json",
+    "scope": "Pinned K-3 Mark III ARM evidence separately checks update wrapper, input release and completion signaling. This Q7 MIPS replay covers NAND candidate selection and recovery plus a later request boundary. The comparison does not establish shared operations or terminal status values.",
+    "sha256": "c28f8d63bf12bee0264d8efb99456c9fa4b8ae02a76e6687636aa44ffb2c4b78"
+  }
+}

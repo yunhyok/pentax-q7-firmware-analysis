@@ -14,7 +14,24 @@
   "self_check": "6/6",
   "subsequent_factual_extension": "Coordinator added independently reconstructed block10 and later-header byte changes; updated original-word count116. These additions were not part of the19-paragraph style gate.",
   "published_copy_sha256": {
-    "continuation-copy.json": "5391d6b92162e1ba7bf557bad29ffc6dd5897ed6782eb172867d248f4e716f10",
+    "continuation-copy.json": "2bc4ba97866ddc1ced81daf73f4acdb67e561b5871f1053a7b1e3ac4a2005a04",
     "raster-copy.json": "c2594567d0b0fa4884a82098ebb2e823f4ac4382ab9cb78a366d3a086bb8e36e"
+  },
+  "terminal_followup": {
+    "run_id": "2026-11-08-015-dfae",
+    "route": "light",
+    "execution": "Native worker plus coordinator finalizer, not Opus",
+    "paragraphs": 8,
+    "change_rate_percent": 2.2,
+    "sentence_touch_rate_percent": 7.7,
+    "golden": "PASS",
+    "modality_lost": 0,
+    "grade": "B",
+    "self_check": "6/6",
+    "gate": "WARN",
+    "warning": "comma_segment_length z2.66 to2.49 remains above target",
+    "finalizer": "accept after direct complete comparison; technical anchors retained",
+    "input_sha256": "1d8f10a26263764c19b13c6b4cfce025cd88f65b2afb57c0e1f468b0a1bca066",
+    "output_body_sha256": "04335623110cc9acdf30df2a709c2978bf1d9f39da5d32f7aad133a295213361"
   }
 }

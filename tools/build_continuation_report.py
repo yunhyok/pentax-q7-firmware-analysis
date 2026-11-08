@@ -6,6 +6,7 @@ from verify_routing import witnesses
 
 def build_burn():
     data=read('burn-continuation.json')
+    terminal=read('burn-finalization.json')
     v={k:esc(t) for k,t in read('continuation-copy.json').items()}
     v['retry_graph']=graph('burn-retry','기록 실패는 물리 후보만 진행한다',{
         'input':(20,10,'현재 128 KiB 데이터','논리 블록 · 카드 커서'),
@@ -33,10 +34,26 @@ def build_burn():
         'direct':(700,10,'별도 op 5 요청','sector 0xa00 · count 4'),
         'patch0':(20,150,'블록 0 변경 281바이트','앞선 헤더 쓰기 분석과 일치'),
         'patch10':(350,150,'블록 10 변경 512바이트','나머지 133청크는 원본과 같음'),
-        'boundary':(700,150,'저장장치 진입점에서 중단','op 5 처리 · 최종 성공 미검증')},
+        'boundary':(700,150,'저장장치 진입점의 상태','아래 종료 4사례의 시작점')},
         [('s1','s2',False),('s2','direct',False),('direct','boundary',True)],250,
         '135개 기록은 기록 함수의 결과를 공급한 호출자 실행입니다. 135개 물리 기록·읽기 비교를 수행한 것이 아닙니다.','burn-continuation.json')
     v['rows']=''.join(f'<tr><th>{esc(r["name"])}</th><td>{r["aggregate_program_calls"]}</td><td>{r["modeled_card_reads"]}</td><td>{r["protection_skip_count"]}</td><td><code>{r["stop"]}</code></td><td>{r["return_value"] if r["return_value"] is not None else "반환 전"}</td></tr>' for r in data['bounded_replay']['cases'])
+    v['terminal_graph']=graph('burn-terminal','모든 저장장치 상태가 0일 때의 원본 요청 순서',{
+        'extended':(20,10,'op 5 확장 헤더 쓰기','sector 0xa00 · 4섹터'),
+        'read':(350,10,'op 4 블록 0 읽기','256섹터 · 모델이 데이터 제공'),
+        'erase':(700,10,'op 8 블록 0 지우기','블록 1개'),
+        'done':(20,150,'BurnNand 반환 0','콜백 1을 원본에서 변환'),
+        'ready':(350,150,'해제 → 준비 콜백','원본 0x80019390 반환 1'),
+        'write':(700,150,'op 5 블록 0 재기록','256섹터 · spare 16바이트')},
+        [('extended','read',True),('read','erase',True),('erase','write',True),('write','ready',True),('ready','done',False)],250,
+        '점선 구간의 장치 응답은 모델입니다. 세 오류 사례는 준비 콜백 없이 반환 1로 종료합니다.','burn-finalization.json')
+    v['primary_graph']=graph('burn-primary','최종 128 KiB 버퍼의 독립 재구성',{
+        'input':(20,10,'앞선 블록 0 기록 인수','전체 데이터 · spare를 보관'),
+        'patch':(350,10,'원본 store 0x80014874','+0x39c: 0xffffffff → 10'),
+        'output':(700,10,'131,072바이트 전체 일치','변경 4바이트 · spare 동일')},
+        [('input','patch',True),('patch','output',False)],115,
+        '읽기 모델은 보관한 바이트를 공급합니다. 실제 NAND의 기록 보존을 측정한 것이 아닙니다.','burn-finalization.json')
+    v['terminal_rows']=''.join(f'<tr><th>{esc(r["name"])}</th><td>{len(r["requests"])}</td><td>{len(r["native_ready_callers"])}</td><td>{r["return_value"]}</td></tr>' for r in terminal['bounded_replay']['cases'])
     v['words']=str(len(list(witnesses(data))))
     v['k3_commit']=data['comparison']['commit']
     page=(ROOT/'analysis/continuation-template.html').read_text(encoding='utf-8')

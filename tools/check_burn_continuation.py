@@ -104,7 +104,7 @@ def capture_prefix(project, angr, firmware):
     return snap, prefix
 
 
-def run_case(project, angr, firmware, snapshot, prefix, fixture):
+def run_case(project, angr, firmware, snapshot, prefix, fixture, *, observe_final=None):
     programs, card_reads, io_calls, markers, terminal_sites = [], [], [], [], []
     protected, spare_writes = [], {}
     next_offset = int(prefix["card_offset_after"], 16)
@@ -232,6 +232,8 @@ def run_case(project, angr, firmware, snapshot, prefix, fixture):
         row["pending_storage"] = storage.request(ra, args)
         row["pending_storage_data_sha256"] = sha256(storage.read_bytes(
             final, args[4], args[3]*storage.SECTOR_BYTES)).hexdigest()
+    if observe_final is not None:
+        observe_final(final.copy())
     return row
 
 
