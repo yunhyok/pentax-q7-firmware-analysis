@@ -15,6 +15,7 @@ NOTIFY, COMPLETE, WAIT_STOP = 0x8040A008, 0x803786B4, 0x8042E4C4
 THREAD, NEXT_RECEIVE = 0x80116980, 0x801169AC
 QUEUE_SEND, QUEUE_RECEIVE, DELAY = 0x80125D0C, 0x80125CEC, 0x8010F4F0
 QUEUE_POINTER, QUEUE = 0x80C2AA88, 0x10005000
+SEARCH_SEND_RETURN, STOP_SEND_RETURN = 0x801134EC, 0x8011366C
 AF_COMMAND, EXIT_WAIT = 0x8037E218, 0x803787E4
 EVENT_SET, EVENT_WAIT, EVENT_HANDLE = 0x80125C24, 0x80125BE0, 0x10006000
 SEQ, SLEEPING, STOP_COMMAND = 0x80445549, 0x80395A21, 0x80395A22
@@ -33,9 +34,9 @@ SCOPE = (
     "sequence-exit wait are separate checks. Link replies and wait/queue/event delivery are synthetic."
 )
 MODELED = {
-    hex(QUEUE_SEND): "Capture the original lens message word and queue handle.",
+    hex(QUEUE_SEND): "Capture the attempted lens message and queue handle and return fixture submission status.",
     hex(QUEUE_RECEIVE): "Deliver the captured word to the native worker on the separate worker state.",
-    hex(DELAY): "Record native tick arguments. Deliver one pending worker at its fixture wait count, or supply the next focus-stop sample.",
+    hex(DELAY): "Record native tick arguments. Deliver an accepted message to the worker at its fixture wait count, or supply the next focus-stop sample.",
     hex(LINK): "Record original command and configured TX/RX lengths; supply lower status and leave the zero-initialized shared RX buffer unchanged.",
     hex(EVENT_SET): "Record AF thread wake event without waking an RTOS thread.",
     hex(EVENT_WAIT): "Record AF sequence-exit event, mode and timeout; supply fixture status and result bits.",
@@ -61,6 +62,7 @@ CASES = (
      (("drive",0,1,1,1,1), ("poll",1,1), ("drive",1,1,None,1,6), ("poll",0,1))),
     ("reset-zero-during-motion-check", {},
      (("drive",0,1,1,1,1), ("poll",1,1), ("reset",), ("poll",None,None))),
+    ("search-queue-rejected", {"queue_send_result":0}, (("drive",0,1,None,1,6),)),
 )
 WAITS = (
     ("invalid-zero", (0,0), ()),
@@ -98,7 +100,7 @@ def reference():
             if action == "drive":
                 mode, wait, delivery, link_status, status = args
                 enabled = inputs["actuator_inhibit"] != 1
-                delivered = enabled and delivery is not None
+                delivered = enabled and inputs.get("queue_send_result",1) == 1 and delivery is not None
                 admitted = inputs["map_ready"] != 1 or inputs["search_allowed" if mode == 0 else "stop_allowed"]
                 worker_result = (7 if not admitted
                                  else link_status) if delivered else None
@@ -116,6 +118,8 @@ def reference():
                            waits=0 if not enabled else (delivery if delivered else 101),
                            worker_result=worker_result, worker_pending=int(enabled and not delivered),
                            link=[] if not delivered or worker_result == 7 else [lower_event(mode,link_status)])
+                if enabled and "queue_send_result" in inputs:
+                    row["queue_wrapper_return"] = inputs["queue_send_result"]
             elif action == "poll":
                 if args[0] is not None:
                     motion, validity = args
@@ -194,7 +198,7 @@ def install(project, worker, angr):
             command = get(st,num(st,source))
             assert command in (6,8) and not st.globals.get("messages")
             record(st,"messages",command)
-            return 1
+            return st.globals.get("queue_send_result",1)
 
     def run_worker(parent):
         message, = parent.globals["messages"]
@@ -223,7 +227,7 @@ def install(project, worker, angr):
                 motion, validity = st.globals["samples"][index]
                 put(st,VDRC,motion,1)
                 put(st,VD_OK,validity,1)
-            elif st.globals.get("delivery")==index+1:
+            elif st.globals.get("queue_send_result",1)==1 and st.globals.get("delivery")==index+1:
                 run_worker(st)
             return 0
 
@@ -277,6 +281,8 @@ def replay_commands(project,angr):
         record(st,"notifications",num(st,st.regs.a0))
     def setter_return(st):
         st.globals["setter_result"] = num(st,st.regs.v0)
+    def send_return(st):
+        st.globals["queue_wrapper_return"] = num(st,st.regs.v0)
 
     rows = []
     for name, setup, steps in CASES:
@@ -286,6 +292,10 @@ def replay_commands(project,angr):
         for address in (NOTIFY,COMPLETE):
             st.inspect.b("instruction",when=angr.BP_BEFORE,instruction=address,action=notify)
         st.inspect.b("instruction",when=angr.BP_BEFORE,instruction=DISPATCH_RETURN,action=setter_return)
+        if "queue_send_result" in inputs:
+            st.globals["queue_send_result"] = inputs["queue_send_result"]
+            for address in (SEARCH_SEND_RETURN,STOP_SEND_RETURN):
+                st.inspect.b("instruction",when=angr.BP_BEFORE,instruction=address,action=send_return)
         observations = []
         for action,*args in steps:
             row = dict(action=action)
@@ -300,6 +310,8 @@ def replay_commands(project,angr):
                            setter_return=st.globals.pop("setter_result"),queue_message=list(st.globals["messages"]),
                            waits=st.globals["wait_count"],worker_result=st.globals["worker_result"],
                            worker_pending=get(st,pending,1),link=list(st.globals["link"]))
+                if "queue_wrapper_return" in st.globals:
+                    row["queue_wrapper_return"] = st.globals.pop("queue_wrapper_return")
             elif action == "poll":
                 if args[0] is not None:
                     put(st,VDRC,args[0],1)

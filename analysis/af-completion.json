@@ -5,9 +5,9 @@
   "scope": "Q7 v1.01 original AF request, search/stop worker, cached motion completion and AF sequence abort boundaries. Offline foundation work.",
   "findings": {
     "caller": "LensDriveControl 0x8037eb78 writes mode, wait flag and arguments into tFocusControlInfo 0x80c6aad4, clears blFocusCompleteflag and invokes CaptureProcessService_OnNotifyCommand with (0x6003c,0). The original capture jump table sends 0x6003c to 0x8040a458 and native ExecuteFocusControl. At 0x8040a460 the harness observes the returned setter status before the outer notification recipient substitutes its own return 1. The real mode-2 caller at 0x8038401c separately polls blFocusCompleteflag at 0x8038402c; this static example is separate from the tested mode-0/1 calls.",
-    "queue": "The native mode-0/1 setters stage messages 6/8 with pending bytes 0x80c2aa48/0x80c2aa4a. A native send wrapper reaches the modeled RTOS API. The test delivers that exact word to original LensComThreadMain from 0x80116980; after original receive and prior-communication check it chooses the native search or stop worker. The workers write result bytes 0x80c2aa56/0x80c2aa58 and clear pending. Serial wait delivery copies synthetic lens RAM in and back and stops the worker before its next receive.",
+    "queue": "The native mode-0/1 setters stage messages 6/8 with pending bytes 0x80c2aa48/0x80c2aa4a. A native send wrapper reaches the modeled RTOS API. When accepted and scheduled, the test delivers that exact word to original LensComThreadMain from 0x80116980; after original receive and prior-communication check it chooses the native search or stop worker. The workers write result bytes 0x80c2aa56/0x80c2aa58 and clear pending. Serial wait delivery copies synthetic lens RAM in and back and stops the worker before its next receive.",
     "transport": "Search worker uses (0,1,2,4), lower mode 2 and metadata TX3/RX1, with synthetic payload 12 34 56. Stop worker stages a local byte of value 0 at 0x801162ac and uses (0,1,2,6); metadata TX0/RX0 means LensCommunication does not copy that local byte to lower TX. Lower mode is 1. The operation header and configured data lengths are observed at 0x80110c50, with no lens or wire capture.",
-    "admission": "Ready map denying an operation yields native worker/setter status 7 without lower transport. Search with map-ready 0 and AF getter 0 still reached the lower API in the explicitly seeded fixture. Inhibit exactly 1 returns 8 without queue send. At modeled poll 101 the search worker delivered result 1 and cleared pending, but native setter returned 6. No-delivery stop reached status 6 with pending still set. These statuses differ from the outer recipient return 1.",
+    "admission": "Ready map denying an operation yields native worker/setter status 7 without lower transport. Search with map-ready 0 and AF getter 0 still reached the lower API in the explicitly seeded fixture. Inhibit exactly 1 returns 8 without queue send. At modeled poll 101 the search worker delivered result 1 and cleared pending, but native setter returned 6. No-delivery stop reached status 6 with pending still set. These statuses differ from the outer recipient return 1. In the queue-rejection fixture the modeled API returns 0 for attempted message 6. The native wrapper propagates 0 to 0x801134ec, where the setter reloads pending and enters its bounded wait. With no worker delivery or lower link call, it waits 101 times and returns 6 with pending still 1. The outer return and motion-check state are both 1.",
     "arm": "ExecuteFocusControl clears the cached completion state and start count before it issues a lens operation. After search the setter status 7, 4 or 6 did not prevent state 1 when request+1==1. Stop with that byte 1 left state 0 after success, denial or timeout. Search with request+1==0 and inhibit 1 emitted immediate completion without a queued lens operation. Both the outer command and native completion recipient are executed, not substituted.",
     "samples": "The original getter writes VDRC motion from 0x80c2a748 and separately returns validity 0x80c2a746. The callback ignores that validity return. State 1 advances on motion byte 1, start count at least 6, or nonzero bypass flag; transition increments count without completing on that callback. State 2 emits 0x6003f and 0x10060032 on motion 0 and clears state. In the zero sequences, the seventh callback advances the state and the eighth completes. A failed native regular communication after search link failure clears cache but retains prior validity 1. A native lens-control reset clears cache and validity without clearing capture-side state 2 in the fixture, so its next poll completes.",
     "capture_phase": "The original search emits 0x6003e and the recipient moves capture phase 2 to 3. On motion completion the original 0x6003f changes capture phase only from 4 to 5. The usual seeded phase-2 cases end at phase 3 despite AF completion. A separate phase-4 seed tests the conditional advance without simulating how a real capture reaches phase 4. The independent 0x10060032 recipient sets blFocusCompleteflag.",
@@ -31,9 +31,9 @@
     "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
     "scope": "Original LensDriveControl, capture notification/dispatch, search and stop setters, lens worker from its entry through one queued message and upper transport admission. Original live-view and focus-stop predicates consume RAM telemetry. The original AF stop notification selector and sequence-exit wait are separate checks. Link replies and wait/queue/event delivery are synthetic.",
     "modeled_boundaries": {
-      "0x80125d0c": "Capture the original lens message word and queue handle.",
+      "0x80125d0c": "Capture the attempted lens message and queue handle and return fixture submission status.",
       "0x80125cec": "Deliver the captured word to the native worker on the separate worker state.",
-      "0x8010f4f0": "Record native tick arguments. Deliver one pending worker at its fixture wait count, or supply the next focus-stop sample.",
+      "0x8010f4f0": "Record native tick arguments. Deliver an accepted message to the worker at its fixture wait count, or supply the next focus-stop sample.",
       "0x80110c50": "Record original command and configured TX/RX lengths; supply lower status and leave the zero-initialized shared RX buffer unchanged.",
       "0x80125c24": "Record AF thread wake event without waking an RTOS thread.",
       "0x80125be0": "Record AF sequence-exit event, mode and timeout; supply fixture status and result bits."
@@ -1051,6 +1051,50 @@
             "notifications": [
               393279,
               268828722
+            ]
+          }
+        ]
+      },
+      {
+        "name": "search-queue-rejected",
+        "setup": {
+          "communications_state": 8,
+          "map_ready": 1,
+          "search_allowed": 1,
+          "stop_allowed": 1,
+          "actuator_inhibit": 0,
+          "regular_allowed": 1,
+          "capture_phase": 2,
+          "cached_motion": 0,
+          "vd_validity": 1,
+          "queue_send_result": 0
+        },
+        "af_enable": 1,
+        "steps": [
+          {
+            "action": "drive",
+            "mode": 0,
+            "wait_for_motion": 1,
+            "worker_delivery_wait": null,
+            "outer_return": 1,
+            "setter_return": 6,
+            "queue_message": [
+              6
+            ],
+            "waits": 101,
+            "worker_result": null,
+            "worker_pending": 1,
+            "link": [],
+            "queue_wrapper_return": 0,
+            "cached_motion": 0,
+            "vd_validity": 1,
+            "motion_check_state": 1,
+            "start_count": 0,
+            "af_complete": 0,
+            "capture_phase": 3,
+            "notifications": [
+              393276,
+              393278
             ]
           }
         ]

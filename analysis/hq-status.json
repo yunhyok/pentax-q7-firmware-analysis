@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "a1d6e463d9b193cd0d4cbcc8b243623e615444f9",
-  "updated_at": "2026-11-08T17:56:25+09:00",
+  "baseline_commit": "5dcdcbf87e9d552a569cb5cfafd841347a28913d",
+  "updated_at": "2026-11-08T17:58:49+09:00",
   "goals": {
     "rebuild": {
       "status": "Seven original BurnNand continuation fixtures cover retry, marker failure, bad/protected candidates and card callback failure; all-success aggregate case reaches135 chunks then separate direct op5. Both modified source buffers independently reconstructed. Terminal success remains unverified.",
@@ -91,7 +91,7 @@
       ]
     },
     "autofocus": {
-      "status": "Coordinator independently reproduced19 original AF command/completion, cached-stop and sequence-abort cases. Native requester, capture recipient, queue worker and completion callbacks connected; physical motion is not established.",
+      "status": "Coordinator independently reproduced20 original AF command/completion, cached-stop and abort cases, including explicit queue rejection. Prior19 results unchanged; no physical motion established.",
       "evidence": [
         "analysis/lens-foundation.json",
         "tools/check_lens_policy.py",
@@ -116,7 +116,7 @@
         "new_lifecycle_cases": 17,
         "original_words": 153,
         "function_extents": 33,
-        "command_completion_cases": 11,
+        "command_completion_cases": 12,
         "focus_stop_cases": 3,
         "sequence_abort_cases": 5,
         "completion_words": 128,
@@ -125,11 +125,12 @@
       "stable_evidence": {
         "analysis/lens-readiness.json": "9516435e4609576717f714d99e8ceeddc97b23fecd57914d680cfcf849025966",
         "tools/check_lens_readiness.py": "b88ca7428dc9881a32f61a1cc9190daa41f6f3ffa8c5fe3ed40a7831db4d6d42",
-        "analysis/af-completion.json": "b603055d40a8cf6b90a9ca45fd70c03920bd2531eab4cec70577e71320e14bc1",
+        "analysis/af-completion.json": "c1d545466e06c2e1cd7176854d6a329d50d0fe5fde74d29d18924360bd0ade42",
         "tools/check_af_completion.py": "c81e0383b2cbc9c68742ebfd6cfc9b939b40f39b6349c1053cca9218f48d96be",
-        "af-completion-report.html": "eb1f44ba8095e2f725043c8be54a8b0cda3cf0c414207539243b0029fee302f7"
+        "af-completion-report.html": "b99d3e12093d9a07eedaab8321e6f2296fe0ca8f5bd7d6068e9a750e3c46d69f"
       },
-      "hash_normalization": "UTF-8 LF bytes"
+      "hash_normalization": "UTF-8 LF bytes",
+      "queue_rejection": "Modeled queue API0, no delivery;101 waits,setter6,pending1,outer1,motion-check1,no lower link. Original send-call return0 observed."
     },
     "ui_port": {
       "status": "Original indexed shape raster exercised with native context/bitmap setup: two Color Space highlights and five alignment/clipping cases match whole synthetic RAM. Prior queue/text/icon evidence retained.",
@@ -528,5 +529,10 @@
       "result": "PASS; both changed NAND input sources reproduce,166 original words and33code extents plus1template match",
       "limits": "All device responses are modeled; no actual NAND or LCD"
     }
-  ]
+  ],
+  "af_queue_regression": {
+    "case": "search-queue-rejected",
+    "validation": "New original VEX case independently reproduced; worker full20 replay exact; previous19 records and128words/28functions unchanged.",
+    "limits": "Queue rejection is supplied by model; no actual RTOS queue or elapsed time measured."
+  }
 }

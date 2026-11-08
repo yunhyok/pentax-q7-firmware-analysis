@@ -12,5 +12,10 @@
   "modality_lost": 0,
   "self_check": "6/6",
   "grade": "B",
-  "finalizer": "Corrected wording to submitted message; real RTOS queue insertion is not claimed."
+  "finalizer": "Corrected wording to submitted message; real RTOS queue insertion is not claimed.",
+  "subsequent_correction": {
+    "scope": "Queue-rejection regression added after original12-paragraph humanize pass; count20 and accepted-only delivery wording updated.",
+    "verification": "Coordinator independently reproduced attempted6/API0/101waits/setter6/pending1/outer1/state1/no-link; previous19 records unchanged.",
+    "copy_sha256": "b6259b0c548924c4d74bdcdfbcbe71ffa6ff55b79f374436e1b9e274cfc1cf8b"
+  }
 }
