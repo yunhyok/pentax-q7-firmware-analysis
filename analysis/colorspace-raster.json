@@ -1,0 +1,1890 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Original Q7 solid-line raster paths and original 8-bit GDI context/bitmap setup; synthetic buffer binding and identity scaling.",
+  "replay": {
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / VEX",
+    "modeled_boundaries": {
+      "0x8000bf28": "Return zeroed synthetic allocations for one display context and one bitmap.",
+      "0x80262fd4": "Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.",
+      "0x800b3d40": "Record cache address/length and return0 without CPU cache operations."
+    },
+    "buffer": {
+      "stride": 736,
+      "height": 176,
+      "fill": 165
+    },
+    "fixture": "Original 8-bit context template; synthetic default and ID17 binding; identity coordinate scaling.",
+    "context_fill_function": "0x80225820",
+    "cases": [
+      {
+        "name": "srgb-highlight",
+        "steps": [
+          {
+            "command": [
+              0,
+              64,
+              720,
+              6,
+              77,
+              0
+            ],
+            "branch": "halfword",
+            "frame_sha256": "8135b4189fac10aec596e2e23a693128a997585d8be9a645fe38fc9a1b0da776",
+            "changed_bytes": 4320,
+            "cache_requests": [],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x8043ed94",
+                "size": 2,
+                "count": 2160
+              }
+            ]
+          },
+          {
+            "command": [
+              0,
+              64,
+              4,
+              44,
+              77,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "a6855fa102bf2f708bd71890b0fed47e43d1f0e4e7867e8b0c7408fbee168b0e",
+            "changed_bytes": 4472,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb7ec",
+                "size": 1,
+                "count": 176
+              }
+            ]
+          },
+          {
+            "command": [
+              0,
+              108,
+              720,
+              4,
+              79,
+              0
+            ],
+            "branch": "halfword",
+            "frame_sha256": "99728700c9f9d5e040518de91e54b3ca432194ae1d3aee69a623ff33a7041111",
+            "changed_bytes": 7352,
+            "cache_requests": [],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x8043ed94",
+                "size": 2,
+                "count": 1440
+              }
+            ]
+          },
+          {
+            "command": [
+              716,
+              68,
+              4,
+              44,
+              79,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "c159b85e79c2140dcee40927e6f6050c1b7dc1ae2f7d4868d5318838b771fd56",
+            "changed_bytes": 7504,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb7ec",
+                "size": 1,
+                "count": 176
+              }
+            ]
+          },
+          {
+            "command": [
+              4,
+              68,
+              712,
+              40,
+              78,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "fde755d376e662d2669962202d72522a8404aeb2be2ad5b0c279979e06fa7d82",
+            "changed_bytes": 34560,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb7a8",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7ac",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7b0",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7b8",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7d8",
+                "size": 4,
+                "count": 80
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "adobergb-highlight",
+        "steps": [
+          {
+            "command": [
+              0,
+              112,
+              720,
+              6,
+              77,
+              0
+            ],
+            "branch": "halfword",
+            "frame_sha256": "609390e9ebfcf801bc0b30279694ef012880c3557495bea822428434928d0c01",
+            "changed_bytes": 4320,
+            "cache_requests": [],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x8043ed94",
+                "size": 2,
+                "count": 2160
+              }
+            ]
+          },
+          {
+            "command": [
+              0,
+              112,
+              4,
+              44,
+              77,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "91bd43a996e216bcc617128e6fa731b956988fff075159f02141f1c29ab61e29",
+            "changed_bytes": 4472,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb7ec",
+                "size": 1,
+                "count": 176
+              }
+            ]
+          },
+          {
+            "command": [
+              0,
+              156,
+              720,
+              4,
+              79,
+              0
+            ],
+            "branch": "halfword",
+            "frame_sha256": "d91d8a20266c897c92dc16b54e9214987e9980e400cdc3ff9878aa69359d684f",
+            "changed_bytes": 7352,
+            "cache_requests": [],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x8043ed94",
+                "size": 2,
+                "count": 1440
+              }
+            ]
+          },
+          {
+            "command": [
+              716,
+              116,
+              4,
+              44,
+              79,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "1683fcf83329f7506de0b7961ef6a5d144f1644ef9ab006b96a9e49d08289479",
+            "changed_bytes": 7504,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb7ec",
+                "size": 1,
+                "count": 176
+              }
+            ]
+          },
+          {
+            "command": [
+              4,
+              116,
+              712,
+              40,
+              78,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "80e1512dfcb906bef54788ba27450b9ff5923a865b53c5831c64c9484335bef6",
+            "changed_bytes": 34560,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb7a8",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7ac",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7b0",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7b8",
+                "size": 4,
+                "count": 1760
+              },
+              {
+                "pc": "0x800fb7d8",
+                "size": 4,
+                "count": 80
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "word-aligned",
+        "steps": [
+          {
+            "command": [
+              0,
+              2,
+              32,
+              2,
+              77,
+              0
+            ],
+            "branch": "word",
+            "frame_sha256": "ec227307435a5935e585a4491d32610488bd320f6377ea2fac9078d9e22f6b13",
+            "changed_bytes": 64,
+            "cache_requests": [],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x8043ecfc",
+                "size": 4,
+                "count": 16
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "halfword-aligned",
+        "steps": [
+          {
+            "command": [
+              0,
+              2,
+              16,
+              2,
+              78,
+              0
+            ],
+            "branch": "halfword",
+            "frame_sha256": "ad1e41fd649f77651de5c2ac342ec7b54b41fe958aa090d8bc6036d2fb94a0fe",
+            "changed_bytes": 32,
+            "cache_requests": [],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x8043ed94",
+                "size": 2,
+                "count": 16
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "odd-x-gdi",
+        "steps": [
+          {
+            "command": [
+              1,
+              2,
+              32,
+              2,
+              79,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "07721715242f1389438fb92b459743e85050976a0a8c98d6306d990dc23eddab",
+            "changed_bytes": 64,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb78c",
+                "size": 1,
+                "count": 8
+              },
+              {
+                "pc": "0x800fb7a8",
+                "size": 4,
+                "count": 2
+              },
+              {
+                "pc": "0x800fb7ac",
+                "size": 4,
+                "count": 2
+              },
+              {
+                "pc": "0x800fb7b0",
+                "size": 4,
+                "count": 2
+              },
+              {
+                "pc": "0x800fb7b8",
+                "size": 4,
+                "count": 2
+              },
+              {
+                "pc": "0x800fb7d8",
+                "size": 4,
+                "count": 6
+              },
+              {
+                "pc": "0x800fb7ec",
+                "size": 1,
+                "count": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "gdi-clipped-edge",
+        "steps": [
+          {
+            "command": [
+              733,
+              174,
+              7,
+              4,
+              77,
+              0
+            ],
+            "branch": "gdi",
+            "frame_sha256": "6a3eb38dbf209dddf782e50d970c290872b0c9490c9c9a777c67dc6c876dbee6",
+            "changed_bytes": 6,
+            "cache_requests": [
+              [
+                570425344,
+                129536
+              ]
+            ],
+            "vex_pixel_write_events": [
+              {
+                "pc": "0x800fb7ec",
+                "size": 1,
+                "count": 6
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "zero-height",
+        "steps": [
+          {
+            "command": [
+              0,
+              2,
+              32,
+              0,
+              77,
+              0
+            ],
+            "branch": "word",
+            "frame_sha256": "88d973bfe19a61fc5cff9fc8ce1cd72ea9be78b5c735e4a7b4bfc4c874d5a429",
+            "changed_bytes": 0,
+            "cache_requests": [],
+            "vex_pixel_write_events": []
+          }
+        ]
+      }
+    ]
+  },
+  "prior_q7_reference": "analysis/colorspace-render.json",
+  "findings": {
+    "branches": "After coordinate conversion with identity-scale fixture, style0 uses the direct word loop if width%32==0 and x%2==0, otherwise the halfword loop if width%16==0 and x%2==0; remaining cases set the brush and dispatch shape0 through GDI. Branch selection is original code. These tests do not establish physical unaligned-store behavior.",
+    "highlight": "The five previously captured Color Space commands take halfword,GDI,halfword,GDI,GDI. Each command is compared against an independent ordered rectangle oracle over all129536 synthetic buffer bytes. Both positions finish with34560 changed bytes; overlap and untouched regions are included.",
+    "gdi": "Original GdiCreateDisplayContextEx copies the original sDcOsd8 template, and original bitmap creation/selection supplies synthetic frame geometry. Context+0x880 selects FillRect at0x80225820 via generic FillRect0x8022cf9c. Original coordinate mapping, clipping and memset run. Only allocation, GetBuffer and cache APIs are replaced.",
+    "binding": "Fixture seeds default context0x800eb4d8 and ID17 lookup table to the same allocated context. AppOsdSetAttributeByBufferID can replace the selected context with psDcOsd when default is null; binding is an explicit fixture condition, not evidence of actual initialization or a camera defect.",
+    "bounds": "Memory inspection rejects symbolic and out-of-range accesses. Original image ranges and seeded globals are readable. Native writes are confined to stack, display context, bitmap descriptor and synthetic frame. Eight-byte sentinels and full-frame equality are checked after every command. VEX write-event counts are not CPU transaction counts. Event pc is VEX scratch.ins_addr, which may attribute a delay-slot store to its branch: 0x800fb7b8/7d8/7ec correspond to MIPS stores at0x800fb7bc/7dc/7f0. The odd-x SWR case has66 VEX event bytes but64 changed bytes; full-frame equality remains the oracle.",
+    "limits": "No native Color Space refresh-to-raster continuous run, text glyphs, alternate nonzero style, nonidentity scaling, real display palette, scanout, DMA or LCD. Direct-store overflow is not exercised. Context construction does not establish device registration."
+  },
+  "selected_functions": [
+    {
+      "name": "GdiCreateDisplayContextEx",
+      "address": 2149679612,
+      "candidate_end": 2149679752,
+      "segment": "E04",
+      "decoded_offset": 960380,
+      "size": 140,
+      "sha256": "b48db8146b40ce7d7e5c895a47b226a11b05038dcd4d3bc9b2669f62bd84ec80",
+      "transfers": [
+        {
+          "site": 2149679648,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GdiCreateBitmapEx",
+      "address": 2149715296,
+      "candidate_end": 2149715424,
+      "segment": "E04",
+      "decoded_offset": 996064,
+      "size": 128,
+      "sha256": "cb5f8b183f26d2866faf6f844ac22430333985329b69638e8eb652cfc82621a1",
+      "transfers": [
+        {
+          "site": 2149715352,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149715384,
+          "word": "0c088351",
+          "kind": "call",
+          "target": 2149715268,
+          "target_names": [
+            "GdiUpdateBitmap"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GdiSelectBitmap",
+      "address": 2149679976,
+      "candidate_end": 2149680044,
+      "segment": "E04",
+      "decoded_offset": 960744,
+      "size": 68,
+      "sha256": "32dd33fe13fe8905672ed377400cd00aee43c56211634cbd67afe16cd01af1f5",
+      "transfers": []
+    },
+    {
+      "name": "DrawShape_Line",
+      "address": 2151934804,
+      "candidate_end": 2151935424,
+      "segment": "E04",
+      "decoded_offset": 3215572,
+      "size": 620,
+      "sha256": "adcb1f3b046a4e4e17d9abbbcc960a99eac956acbb1b6d9346e450dfc9e5f106",
+      "transfers": [
+        {
+          "site": 2151934860,
+          "word": "0c10f111",
+          "kind": "call",
+          "target": 2151924804,
+          "target_names": [
+            "ScreenOsdLayer_TransDrawPointForScreenMode"
+          ]
+        },
+        {
+          "site": 2151934876,
+          "word": "0c10f148",
+          "kind": "call",
+          "target": 2151925024,
+          "target_names": [
+            "ScreenOsdLayer_TransDrawSizeForScreenMode"
+          ]
+        },
+        {
+          "site": 2151934892,
+          "word": "0c10f0fc",
+          "kind": "call",
+          "target": 2151924720,
+          "target_names": [
+            "ScreenOsdLayer_GetDrawBufferId"
+          ]
+        },
+        {
+          "site": 2151934940,
+          "word": "0c10f0cb",
+          "kind": "call",
+          "target": 2151924524,
+          "target_names": [
+            "ScreenOsdLayer_SetBrushColor"
+          ]
+        },
+        {
+          "site": 2151934976,
+          "word": "0c0a7a9b",
+          "kind": "call",
+          "target": 2150230636,
+          "target_names": [
+            "I43_OSDDrawShape"
+          ]
+        },
+        {
+          "site": 2151935044,
+          "word": "0c10fa0b",
+          "kind": "call",
+          "target": 2151933996,
+          "target_names": [
+            "DrawShape_FrameInternalFill"
+          ]
+        },
+        {
+          "site": 2151935120,
+          "word": "0c098bf5",
+          "kind": "call",
+          "target": 2149986260,
+          "target_names": [
+            "DirectOsdGetBuffer"
+          ]
+        },
+        {
+          "site": 2151935288,
+          "word": "0c098bf5",
+          "kind": "call",
+          "target": 2149986260,
+          "target_names": [
+            "DirectOsdGetBuffer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ScreenOsdLayer_TransDrawPointForScreenMode",
+      "address": 2151924804,
+      "candidate_end": 2151925024,
+      "segment": "E04",
+      "decoded_offset": 3205572,
+      "size": 220,
+      "sha256": "26bebe539151479ceba70138409c02c33bb287c97a9ee1672360d881c7c2b819",
+      "transfers": []
+    },
+    {
+      "name": "ScreenOsdLayer_TransDrawSizeForScreenMode",
+      "address": 2151925024,
+      "candidate_end": 2151925220,
+      "segment": "E04",
+      "decoded_offset": 3205792,
+      "size": 196,
+      "sha256": "bb5ce578f8fbf21acacfb2af459ca0815512a0b724e217fece0bf1911e366ab6",
+      "transfers": []
+    },
+    {
+      "name": "ScreenOsdLayer_SetBrushColor",
+      "address": 2151924524,
+      "candidate_end": 2151924572,
+      "segment": "E04",
+      "decoded_offset": 3205292,
+      "size": 48,
+      "sha256": "bea92002fca9a4fc646150ae5e2bb8d8d6c286e51d85ad300f2fffb49fd2049e",
+      "transfers": [
+        {
+          "site": 2151924552,
+          "word": "0c10f0b8",
+          "kind": "call",
+          "target": 2151924448,
+          "target_names": [
+            "ScreenOsdLayer_SetAttribute"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ScreenOsdLayer_SetAttribute",
+      "address": 2151924448,
+      "candidate_end": 2151924524,
+      "segment": "E04",
+      "decoded_offset": 3205216,
+      "size": 76,
+      "sha256": "ad64dfee1303f6a247a9d122e3e5663bb7d6228403c4af16f07cf9a947f4c5f7",
+      "transfers": [
+        {
+          "site": 2151924504,
+          "word": "0c0a7a8d",
+          "kind": "call",
+          "target": 2150230580,
+          "target_names": [
+            "I43_SetOSDDisplayAttr"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "I43_SetOSDDisplayAttr",
+      "address": 2150230580,
+      "candidate_end": 2150230636,
+      "segment": "E04",
+      "decoded_offset": 1511348,
+      "size": 56,
+      "sha256": "9a9e7835b370eca62c6403de0a6a207de0c013820fcdfc459a45648f0d03a63f",
+      "transfers": [
+        {
+          "site": 2150230612,
+          "word": "0c092fe7",
+          "kind": "call",
+          "target": 2149891996,
+          "target_names": [
+            "AppOsdSetAttributeByBufferID"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppOsdSetAttributeByBufferID",
+      "address": 2149891996,
+      "candidate_end": 2149893524,
+      "segment": "E04",
+      "decoded_offset": 1172764,
+      "size": 1528,
+      "sha256": "c07af25e23d36691b7e96d506d5835814dc5129c02bfab7fbaefb3f296b2db00",
+      "transfers": [
+        {
+          "site": 2149892120,
+          "word": "00a00008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149892172,
+          "word": "0c092432",
+          "kind": "call",
+          "target": 2149880008,
+          "target_names": [
+            "AppOsdGetOsdDrawContext"
+          ]
+        },
+        {
+          "site": 2149892196,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2149892248,
+          "word": "0c00ffd3",
+          "kind": "call",
+          "target": 2147745612,
+          "target_names": [
+            "DisplaySetCaps"
+          ]
+        },
+        {
+          "site": 2149892272,
+          "word": "0c08bd65",
+          "kind": "call",
+          "target": 2149774740,
+          "target_names": [
+            "GdiSetOsdTransparentOpaque"
+          ]
+        },
+        {
+          "site": 2149892348,
+          "word": "0c00ffd3",
+          "kind": "call",
+          "target": 2147745612,
+          "target_names": [
+            "DisplaySetCaps"
+          ]
+        },
+        {
+          "site": 2149892376,
+          "word": "0c086133",
+          "kind": "call",
+          "target": 2149680332,
+          "target_names": [
+            "GdiSetTextColor"
+          ]
+        },
+        {
+          "site": 2149892400,
+          "word": "0c08612b",
+          "kind": "call",
+          "target": 2149680300,
+          "target_names": [
+            "GdiSetPenColor"
+          ]
+        },
+        {
+          "site": 2149892424,
+          "word": "0c086126",
+          "kind": "call",
+          "target": 2149680280,
+          "target_names": [
+            "GdiSetBrushColor"
+          ]
+        },
+        {
+          "site": 2149892444,
+          "word": "0c0861b6",
+          "kind": "call",
+          "target": 2149680856,
+          "target_names": [
+            "GdiSetTextDirection"
+          ]
+        },
+        {
+          "site": 2149892460,
+          "word": "0c092413",
+          "kind": "call",
+          "target": 2149879884,
+          "target_names": [
+            "AppOsdLayerGetHandleByID"
+          ]
+        },
+        {
+          "site": 2149892484,
+          "word": "0c08bda4",
+          "kind": "call",
+          "target": 2149774992,
+          "target_names": [
+            "GdiLowPowerOsdOn"
+          ]
+        },
+        {
+          "site": 2149892500,
+          "word": "0c092413",
+          "kind": "call",
+          "target": 2149879884,
+          "target_names": [
+            "AppOsdLayerGetHandleByID"
+          ]
+        },
+        {
+          "site": 2149892524,
+          "word": "0c08bda2",
+          "kind": "call",
+          "target": 2149774984,
+          "target_names": [
+            "GdiLowPowerOsdEnable"
+          ]
+        },
+        {
+          "site": 2149892548,
+          "word": "0c08bd7d",
+          "kind": "call",
+          "target": 2149774836,
+          "target_names": [
+            "GdiSetOsdFormat"
+          ]
+        },
+        {
+          "site": 2149892556,
+          "word": "0c092413",
+          "kind": "call",
+          "target": 2149879884,
+          "target_names": [
+            "AppOsdLayerGetHandleByID"
+          ]
+        },
+        {
+          "site": 2149892568,
+          "word": "0c0112da",
+          "kind": "call",
+          "target": 2147765096,
+          "target_names": [
+            "LayerSetOsdFormat"
+          ]
+        },
+        {
+          "site": 2149892576,
+          "word": "0c092413",
+          "kind": "call",
+          "target": 2149879884,
+          "target_names": [
+            "AppOsdLayerGetHandleByID"
+          ]
+        },
+        {
+          "site": 2149892588,
+          "word": "0c0112da",
+          "kind": "call",
+          "target": 2147765096,
+          "target_names": [
+            "LayerSetOsdFormat"
+          ]
+        },
+        {
+          "site": 2149892596,
+          "word": "0c092413",
+          "kind": "call",
+          "target": 2149879884,
+          "target_names": [
+            "AppOsdLayerGetHandleByID"
+          ]
+        },
+        {
+          "site": 2149892608,
+          "word": "0c0112da",
+          "kind": "call",
+          "target": 2147765096,
+          "target_names": [
+            "LayerSetOsdFormat"
+          ]
+        },
+        {
+          "site": 2149892616,
+          "word": "0c0101a5",
+          "kind": "call",
+          "target": 2147747476,
+          "target_names": [
+            "DisplayGetCurrentDisplayId"
+          ]
+        },
+        {
+          "site": 2149892624,
+          "word": "0c03b681",
+          "kind": "call",
+          "target": 2148456964,
+          "target_names": [
+            "AppGetVideoFormat"
+          ]
+        },
+        {
+          "site": 2149892640,
+          "word": "0c0a1bd9",
+          "kind": "call",
+          "target": 2150133604,
+          "target_names": [
+            "AppSelectDisplayOsd"
+          ]
+        },
+        {
+          "site": 2149892692,
+          "word": "02400008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149892756,
+          "word": "0c0100b3",
+          "kind": "call",
+          "target": 2147746508,
+          "target_names": [
+            "DisplayResourceLock"
+          ]
+        },
+        {
+          "site": 2149892764,
+          "word": "0c092ebd",
+          "kind": "call",
+          "target": 2149890804,
+          "target_names": [
+            "AppOsdScaleSetMode"
+          ]
+        },
+        {
+          "site": 2149892772,
+          "word": "0c01013a",
+          "kind": "call",
+          "target": 2147747048,
+          "target_names": [
+            "DisplayResourceUnlock"
+          ]
+        },
+        {
+          "site": 2149892812,
+          "word": "0c08623f",
+          "kind": "call",
+          "target": 2149681404,
+          "target_names": [
+            "GdiSetInvisibleFrame"
+          ]
+        },
+        {
+          "site": 2149892840,
+          "word": "0c086227",
+          "kind": "call",
+          "target": 2149681308,
+          "target_names": [
+            "GdiSetVirtualMode"
+          ]
+        },
+        {
+          "site": 2149892860,
+          "word": "0c08612b",
+          "kind": "call",
+          "target": 2149680300,
+          "target_names": [
+            "GdiSetPenColor"
+          ]
+        },
+        {
+          "site": 2149892904,
+          "word": "0c0861fb",
+          "kind": "call",
+          "target": 2149681132,
+          "target_names": [
+            "GdiSetBlend"
+          ]
+        },
+        {
+          "site": 2149892932,
+          "word": "0c08621e",
+          "kind": "call",
+          "target": 2149681272,
+          "target_names": [
+            "GdiSetBitmapColor"
+          ]
+        },
+        {
+          "site": 2149892956,
+          "word": "0c086151",
+          "kind": "call",
+          "target": 2149680452,
+          "target_names": [
+            "GdiSetTextCharacterExtra"
+          ]
+        },
+        {
+          "site": 2149892976,
+          "word": "0c08614e",
+          "kind": "call",
+          "target": 2149680440,
+          "target_names": [
+            "GdiSetProportionalMode"
+          ]
+        },
+        {
+          "site": 2149893000,
+          "word": "0c0861da",
+          "kind": "call",
+          "target": 2149681000,
+          "target_names": [
+            "GdiSetBorder"
+          ]
+        },
+        {
+          "site": 2149893020,
+          "word": "0c086126",
+          "kind": "call",
+          "target": 2149680280,
+          "target_names": [
+            "GdiSetBrushColor"
+          ]
+        },
+        {
+          "site": 2149893040,
+          "word": "0c08614b",
+          "kind": "call",
+          "target": 2149680428,
+          "target_names": [
+            "GdiSetBkMode"
+          ]
+        },
+        {
+          "site": 2149893064,
+          "word": "0c086174",
+          "kind": "call",
+          "target": 2149680592,
+          "target_names": [
+            "GdiSetTextSize"
+          ]
+        },
+        {
+          "site": 2149893088,
+          "word": "0c086133",
+          "kind": "call",
+          "target": 2149680332,
+          "target_names": [
+            "GdiSetTextColor"
+          ]
+        },
+        {
+          "site": 2149893112,
+          "word": "0c086133",
+          "kind": "call",
+          "target": 2149680332,
+          "target_names": [
+            "GdiSetTextColor"
+          ]
+        },
+        {
+          "site": 2149893144,
+          "word": "0c086204",
+          "kind": "call",
+          "target": 2149681168,
+          "target_names": [
+            "GdiFlip"
+          ]
+        },
+        {
+          "site": 2149893168,
+          "word": "0c086201",
+          "kind": "call",
+          "target": 2149681156,
+          "target_names": [
+            "GdiSetFlipping"
+          ]
+        },
+        {
+          "site": 2149893192,
+          "word": "0c0861fe",
+          "kind": "call",
+          "target": 2149681144,
+          "target_names": [
+            "GdiSetCenter"
+          ]
+        },
+        {
+          "site": 2149893216,
+          "word": "0c092413",
+          "kind": "call",
+          "target": 2149879884,
+          "target_names": [
+            "AppOsdLayerGetHandleByID"
+          ]
+        },
+        {
+          "site": 2149893228,
+          "word": "0c0110a7",
+          "kind": "call",
+          "target": 2147762844,
+          "target_names": [
+            "LayerShow"
+          ]
+        },
+        {
+          "site": 2149893244,
+          "word": "0c0861fb",
+          "kind": "call",
+          "target": 2149681132,
+          "target_names": [
+            "GdiSetBlend"
+          ]
+        },
+        {
+          "site": 2149893440,
+          "word": "0c0861fb",
+          "kind": "call",
+          "target": 2149681132,
+          "target_names": [
+            "GdiSetBlend"
+          ]
+        },
+        {
+          "site": 2149893460,
+          "word": "0c0861fb",
+          "kind": "call",
+          "target": 2149681132,
+          "target_names": [
+            "GdiSetBlend"
+          ]
+        },
+        {
+          "site": 2149893492,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        },
+        {
+          "site": 2149893516,
+          "word": "0c035aa9",
+          "kind": "call",
+          "target": 2148362916,
+          "target_names": [
+            "OsSysHaltEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppOsdGetOsdDrawContext",
+      "address": 2149880008,
+      "candidate_end": 2149880056,
+      "segment": "E04",
+      "decoded_offset": 1160776,
+      "size": 48,
+      "sha256": "6e3dcd7b9cbe89c6079dca96befddd912cce2ee639dd500b142729c2e2610129",
+      "transfers": []
+    },
+    {
+      "name": "GdiSetBrushColor",
+      "address": 2149680280,
+      "candidate_end": 2149680292,
+      "segment": "E04",
+      "decoded_offset": 961048,
+      "size": 12,
+      "sha256": "27dd798577458c53d4e5b4798ca79d3aa41082082587740862180d5c9ff45232",
+      "transfers": []
+    },
+    {
+      "name": "GdiGetBrushColor",
+      "address": 2149680292,
+      "candidate_end": 2149680300,
+      "segment": "E04",
+      "decoded_offset": 961060,
+      "size": 8,
+      "sha256": "a365902a69202c0c918b4aa28750b7a3a4b99527211886333d5eec83ddd3aeab",
+      "transfers": []
+    },
+    {
+      "name": "I43_OSDDrawShape",
+      "address": 2150230636,
+      "candidate_end": 2150230696,
+      "segment": "E04",
+      "decoded_offset": 1511404,
+      "size": 60,
+      "sha256": "de494796ab6bf348d793f1f33826e47110c5e7a430605d5ea89da0470a57f1b5",
+      "transfers": [
+        {
+          "site": 2150230672,
+          "word": "0c0925c0",
+          "kind": "call",
+          "target": 2149881600,
+          "target_names": [
+            "AppOsdDrawShapeByBufferID"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppOsdDrawShapeByBufferID",
+      "address": 2149881600,
+      "candidate_end": 2149882084,
+      "segment": "E04",
+      "decoded_offset": 1162368,
+      "size": 484,
+      "sha256": "31f85f6230d078fd0d99528df8b527944766a65c96b54179d6f6befd463d1ce9",
+      "transfers": [
+        {
+          "site": 2149881736,
+          "word": "00e00008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149881760,
+          "word": "0c08b607",
+          "kind": "call",
+          "target": 2149767196,
+          "target_names": [
+            "GdiDrawFilledRoundFrame"
+          ]
+        },
+        {
+          "site": 2149881816,
+          "word": "0c092432",
+          "kind": "call",
+          "target": 2149880008,
+          "target_names": [
+            "AppOsdGetOsdDrawContext"
+          ]
+        },
+        {
+          "site": 2149881832,
+          "word": "0c086129",
+          "kind": "call",
+          "target": 2149680292,
+          "target_names": [
+            "GdiGetBrushColor"
+          ]
+        },
+        {
+          "site": 2149881848,
+          "word": "0c08b8c9",
+          "kind": "call",
+          "target": 2149770020,
+          "target_names": [
+            "GdiFillRect"
+          ]
+        },
+        {
+          "site": 2149881864,
+          "word": "0c08612e",
+          "kind": "call",
+          "target": 2149680312,
+          "target_names": [
+            "GdiGetPenColor"
+          ]
+        },
+        {
+          "site": 2149881876,
+          "word": "0c08612e",
+          "kind": "call",
+          "target": 2149680312,
+          "target_names": [
+            "GdiGetPenColor"
+          ]
+        },
+        {
+          "site": 2149881888,
+          "word": "0c08612e",
+          "kind": "call",
+          "target": 2149680312,
+          "target_names": [
+            "GdiGetPenColor"
+          ]
+        },
+        {
+          "site": 2149881900,
+          "word": "0c08612e",
+          "kind": "call",
+          "target": 2149680312,
+          "target_names": [
+            "GdiGetPenColor"
+          ]
+        },
+        {
+          "site": 2149881928,
+          "word": "0c08b8f3",
+          "kind": "call",
+          "target": 2149770188,
+          "target_names": [
+            "GdiDrawFrame"
+          ]
+        },
+        {
+          "site": 2149881960,
+          "word": "0c08b922",
+          "kind": "call",
+          "target": 2149770376,
+          "target_names": [
+            "GdiDrawRectFrame"
+          ]
+        },
+        {
+          "site": 2149881988,
+          "word": "0c08b7ca",
+          "kind": "call",
+          "target": 2149769000,
+          "target_names": [
+            "GdiDrawCircle"
+          ]
+        },
+        {
+          "site": 2149882016,
+          "word": "0c08b79b",
+          "kind": "call",
+          "target": 2149768812,
+          "target_names": [
+            "GdiDrawFilledCircle"
+          ]
+        },
+        {
+          "site": 2149882048,
+          "word": "0c08b680",
+          "kind": "call",
+          "target": 2149767680,
+          "target_names": [
+            "GdiDrawRoundFrame"
+          ]
+        },
+        {
+          "site": 2149882064,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GdiFillRect",
+      "address": 2149770020,
+      "candidate_end": 2149770188,
+      "segment": "E04",
+      "decoded_offset": 1050788,
+      "size": 168,
+      "sha256": "09ff20898e15d83991c41f89e6fedc1b1edb343ebc7724d90a8fca0796cf97fd",
+      "transfers": [
+        {
+          "site": 2149770084,
+          "word": "0c08b5c7",
+          "kind": "call",
+          "target": 2149766940,
+          "target_names": [
+            "GdiMapAllPoints"
+          ]
+        },
+        {
+          "site": 2149770100,
+          "word": "0c08b3e7",
+          "kind": "call",
+          "target": 2149765020,
+          "target_names": [
+            "FillRect"
+          ]
+        },
+        {
+          "site": 2149770160,
+          "word": "0c02cf50",
+          "kind": "call",
+          "target": 2148220224,
+          "target_names": [
+            "CACHE_WriteBackInvalidateDataCacheRegionEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GdiMapAllPoints",
+      "address": 2149766940,
+      "candidate_end": 2149767196,
+      "segment": "E04",
+      "decoded_offset": 1047708,
+      "size": 256,
+      "sha256": "453a33da00111ad6db2960e78893e6ab8b58e242f35519ce53cfcf5d363b6e16",
+      "transfers": [
+        {
+          "site": 2149766984,
+          "word": "0c08b4ac",
+          "kind": "call",
+          "target": 2149765808,
+          "target_names": [
+            "GdiMapOriginPoints"
+          ]
+        },
+        {
+          "site": 2149767000,
+          "word": "0c08b576",
+          "kind": "call",
+          "target": 2149766616,
+          "target_names": [
+            "GdiMapVirtualPoints"
+          ]
+        },
+        {
+          "site": 2149767068,
+          "word": "0808b4dd",
+          "kind": "jump",
+          "target": 2149766004,
+          "target_names": [
+            "GdiMapInvisibleFrame"
+          ]
+        },
+        {
+          "site": 2149767092,
+          "word": "0c08b5a7",
+          "kind": "call",
+          "target": 2149766812,
+          "target_names": [
+            "GdiFlipPoints"
+          ]
+        },
+        {
+          "site": 2149767140,
+          "word": "0808b4dd",
+          "kind": "jump",
+          "target": 2149766004,
+          "target_names": [
+            "GdiMapInvisibleFrame"
+          ]
+        },
+        {
+          "site": 2149767168,
+          "word": "0c08b4c1",
+          "kind": "call",
+          "target": 2149765892,
+          "target_names": [
+            "GdiFlipRect"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memset",
+      "address": 2148513620,
+      "candidate_end": 2148513788,
+      "file_offset": 2087484,
+      "size": 168,
+      "sha256": "0e5fcb67b706d038aa7850bebf241876e0cc86081081de6c3ce49955dbfb9e56",
+      "transfers": []
+    },
+    {
+      "name": "GdiMapOriginPoints",
+      "address": 2149765808,
+      "candidate_end": 2149765892,
+      "segment": "E04",
+      "decoded_offset": 1046576,
+      "size": 84,
+      "sha256": "0d2b27ba308f6452c911798f2352a28e4284110bd603436ba71ab0a8e2e71ee7",
+      "transfers": []
+    },
+    {
+      "name": "GdiFlipRect",
+      "address": 2149765892,
+      "candidate_end": 2149766004,
+      "segment": "E04",
+      "decoded_offset": 1046660,
+      "size": 112,
+      "sha256": "8b7d1bba4c2a59fc8e4e59167b30ec883a38f4c12c0633dc763f8f9e9b1e97c1",
+      "transfers": []
+    },
+    {
+      "name": "GdiMapInvisibleFrame",
+      "address": 2149766004,
+      "candidate_end": 2149766176,
+      "segment": "E04",
+      "decoded_offset": 1046772,
+      "size": 172,
+      "sha256": "a3ea34113212e41faf621364b39f3d91fbaec7eb2f76c68875daac058f438360",
+      "transfers": []
+    },
+    {
+      "name": "GdiMapVirtualPoints",
+      "address": 2149766616,
+      "candidate_end": 2149766740,
+      "segment": "E04",
+      "decoded_offset": 1047384,
+      "size": 124,
+      "sha256": "eb9e9568f2a50c3b531b5d289f60e4756220f95870bb235d8dfd90204c710447",
+      "transfers": [
+        {
+          "site": 2149766696,
+          "word": "0c08b562",
+          "kind": "call",
+          "target": 2149766536,
+          "target_names": [
+            "GdiMapVirtualPoint"
+          ]
+        }
+      ]
+    }
+  ],
+  "duplicate_named_ranges": [
+    {
+      "name": "FillRect",
+      "role": "generic indirect dispatch",
+      "extent_basis": "next distinct sidecar symbol",
+      "va": "0x8022cf9c",
+      "length_bytes": 64,
+      "sha256": "5fc75c5e65bc89f215f3b752df8494be1f9bd0c0f32f4c40699fdabd0167d859",
+      "segment": "E04",
+      "decoded_offset": "0xff51c"
+    },
+    {
+      "name": "FillRect",
+      "role": "8-bit context renderer",
+      "extent_basis": "next distinct sidecar symbol",
+      "va": "0x80225820",
+      "length_bytes": 516,
+      "sha256": "24d18c90e4046ad5abce88e009f30a1be69e5c64b70e2d9cbaf3635cbd5c79ab",
+      "segment": "E04",
+      "decoded_offset": "0xf7da0"
+    }
+  ],
+  "context_template": {
+    "va": "0x802353b8",
+    "length_bytes": 2224,
+    "sha256": "331cfb5882a8d8e7919a53980e19dc3bc1fbc4522d7d1b70b4301becdfde9666",
+    "segment": "E04",
+    "decoded_offset": "0x107938"
+  },
+  "evidence": [
+    {
+      "role": "Original path branches, direct stores, GDI calls and indirect renderer",
+      "words": [
+        {
+          "va": "0x8043eba4",
+          "u32le_word": "0x1640001f",
+          "segment": "E04",
+          "decoded_offset": "0x311124"
+        },
+        {
+          "va": "0x8043ebb8",
+          "u32le_word": "0x3065001f",
+          "segment": "E04",
+          "decoded_offset": "0x311138"
+        },
+        {
+          "va": "0x8043ebbc",
+          "u32le_word": "0x10a0002a",
+          "segment": "E04",
+          "decoded_offset": "0x31113c"
+        },
+        {
+          "va": "0x8043ebc4",
+          "u32le_word": "0x306d000f",
+          "segment": "E04",
+          "decoded_offset": "0x311144"
+        },
+        {
+          "va": "0x8043ebc8",
+          "u32le_word": "0x15a00004",
+          "segment": "E04",
+          "decoded_offset": "0x311148"
+        },
+        {
+          "va": "0x8043ebd0",
+          "u32le_word": "0x30510001",
+          "segment": "E04",
+          "decoded_offset": "0x311150"
+        },
+        {
+          "va": "0x8043ebd4",
+          "u32le_word": "0x12200053",
+          "segment": "E04",
+          "decoded_offset": "0x311154"
+        },
+        {
+          "va": "0x8043ebdc",
+          "u32le_word": "0xc10f0cb",
+          "segment": "E04",
+          "decoded_offset": "0x31115c"
+        },
+        {
+          "va": "0x8043ec00",
+          "u32le_word": "0xc0a7a9b",
+          "segment": "E04",
+          "decoded_offset": "0x311180"
+        },
+        {
+          "va": "0x8043ec68",
+          "u32le_word": "0x97a70020",
+          "segment": "E04",
+          "decoded_offset": "0x3111e8"
+        },
+        {
+          "va": "0x8043ec6c",
+          "u32le_word": "0x30e60001",
+          "segment": "E04",
+          "decoded_offset": "0x3111ec"
+        },
+        {
+          "va": "0x8043ec70",
+          "u32le_word": "0x14c0ffd5",
+          "segment": "E04",
+          "decoded_offset": "0x3111f0"
+        },
+        {
+          "va": "0x8043ec90",
+          "u32le_word": "0xc098bf5",
+          "segment": "E04",
+          "decoded_offset": "0x311210"
+        },
+        {
+          "va": "0x8043ecb8",
+          "u32le_word": "0x83082",
+          "segment": "E04",
+          "decoded_offset": "0x311238"
+        },
+        {
+          "va": "0x8043ecc0",
+          "u32le_word": "0x1160ffe2",
+          "segment": "E04",
+          "decoded_offset": "0x311240"
+        },
+        {
+          "va": "0x8043ecfc",
+          "u32le_word": "0xaca40000",
+          "segment": "E04",
+          "decoded_offset": "0x31127c"
+        },
+        {
+          "va": "0x8043ed38",
+          "u32le_word": "0xc098bf5",
+          "segment": "E04",
+          "decoded_offset": "0x3112b8"
+        },
+        {
+          "va": "0x8043ed50",
+          "u32le_word": "0x102842",
+          "segment": "E04",
+          "decoded_offset": "0x3112d0"
+        },
+        {
+          "va": "0x8043ed58",
+          "u32le_word": "0x1100ffbc",
+          "segment": "E04",
+          "decoded_offset": "0x3112d8"
+        },
+        {
+          "va": "0x8043ed94",
+          "u32le_word": "0xa4860000",
+          "segment": "E04",
+          "decoded_offset": "0x311314"
+        },
+        {
+          "va": "0x80235c38",
+          "u32le_word": "0x80225820",
+          "segment": "E04",
+          "decoded_offset": "0x1081b8"
+        },
+        {
+          "va": "0x80218498",
+          "u32le_word": "0x8c82001c",
+          "segment": "E04",
+          "decoded_offset": "0xeaa18"
+        },
+        {
+          "va": "0x8021849c",
+          "u32le_word": "0x3e00008",
+          "segment": "E04",
+          "decoded_offset": "0xeaa1c"
+        },
+        {
+          "va": "0x802184a4",
+          "u32le_word": "0x3e00008",
+          "segment": "E04",
+          "decoded_offset": "0xeaa24"
+        },
+        {
+          "va": "0x8022cf9c",
+          "u32le_word": "0x27bdffd8",
+          "segment": "E04",
+          "decoded_offset": "0xff51c"
+        },
+        {
+          "va": "0x8022cfa0",
+          "u32le_word": "0xafbf0020",
+          "segment": "E04",
+          "decoded_offset": "0xff520"
+        },
+        {
+          "va": "0x8022cfa4",
+          "u32le_word": "0x8ca9000c",
+          "segment": "E04",
+          "decoded_offset": "0xff524"
+        },
+        {
+          "va": "0x8022cfa8",
+          "u32le_word": "0x8ca20000",
+          "segment": "E04",
+          "decoded_offset": "0xff528"
+        },
+        {
+          "va": "0x80225820",
+          "u32le_word": "0x27bdffb8",
+          "segment": "E04",
+          "decoded_offset": "0xf7da0"
+        },
+        {
+          "va": "0x80225824",
+          "u32le_word": "0xafbe0040",
+          "segment": "E04",
+          "decoded_offset": "0xf7da4"
+        },
+        {
+          "va": "0x800fb7a8",
+          "u32le_word": "0xac850000",
+          "segment": "E03",
+          "original_file_offset": "0x1fda90"
+        },
+        {
+          "va": "0x800fb7ac",
+          "u32le_word": "0xac850004",
+          "segment": "E03",
+          "original_file_offset": "0x1fda94"
+        },
+        {
+          "va": "0x800fb7b0",
+          "u32le_word": "0xac850008",
+          "segment": "E03",
+          "original_file_offset": "0x1fda98"
+        },
+        {
+          "va": "0x800fb7b8",
+          "u32le_word": "0x1487fffb",
+          "segment": "E03",
+          "original_file_offset": "0x1fdaa0"
+        },
+        {
+          "va": "0x800fb7d8",
+          "u32le_word": "0x1487fffe",
+          "segment": "E03",
+          "original_file_offset": "0x1fdac0"
+        },
+        {
+          "va": "0x800fb7ec",
+          "u32le_word": "0x1487fffe",
+          "segment": "E03",
+          "original_file_offset": "0x1fdad4"
+        },
+        {
+          "va": "0x800fb78c",
+          "u32le_word": "0xb8850000",
+          "segment": "E03",
+          "original_file_offset": "0x1fda74"
+        },
+        {
+          "va": "0x800fb7bc",
+          "u32le_word": "0xac85fffc",
+          "segment": "E03",
+          "original_file_offset": "0x1fdaa4"
+        },
+        {
+          "va": "0x800fb7dc",
+          "u32le_word": "0xac85fffc",
+          "segment": "E03",
+          "original_file_offset": "0x1fdac4"
+        },
+        {
+          "va": "0x800fb7f0",
+          "u32le_word": "0xa085ffff",
+          "segment": "E03",
+          "original_file_offset": "0x1fdad8"
+        },
+        {
+          "va": "0x8022cfb4",
+          "u32le_word": "0x8c880880",
+          "segment": "E04",
+          "decoded_offset": "0xff534"
+        },
+        {
+          "va": "0x8022cfc8",
+          "u32le_word": "0x100f809",
+          "segment": "E04",
+          "decoded_offset": "0xff548"
+        },
+        {
+          "va": "0x8024bfe4",
+          "u32le_word": "0x5200001f",
+          "segment": "E04",
+          "decoded_offset": "0x11e564"
+        },
+        {
+          "va": "0x8024bfec",
+          "u32le_word": "0x8e22b4d8",
+          "segment": "E04",
+          "decoded_offset": "0x11e56c"
+        },
+        {
+          "va": "0x8024bff0",
+          "u32le_word": "0x1040001a",
+          "segment": "E04",
+          "decoded_offset": "0x11e570"
+        },
+        {
+          "va": "0x8024c04c",
+          "u32le_word": "0xc092432",
+          "segment": "E04",
+          "decoded_offset": "0x11e5cc"
+        },
+        {
+          "va": "0x8024c054",
+          "u32le_word": "0x1000ffe3",
+          "segment": "E04",
+          "decoded_offset": "0x11e5d4"
+        },
+        {
+          "va": "0x8024c058",
+          "u32le_word": "0x408021",
+          "segment": "E04",
+          "decoded_offset": "0x11e5d8"
+        },
+        {
+          "va": "0x8024c05c",
+          "u32le_word": "0x1000ffe6",
+          "segment": "E04",
+          "decoded_offset": "0x11e5dc"
+        },
+        {
+          "va": "0x8024c060",
+          "u32le_word": "0x8c506550",
+          "segment": "E04",
+          "decoded_offset": "0x11e5e0"
+        }
+      ]
+    }
+  ],
+  "comparison": [
+    {
+      "model": "Pentax K-3 Mark III",
+      "commit": "d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680",
+      "repository_path": "analysis/colorspace-ui-evidence.json",
+      "sha256": "7aa91d515372a489d0a9bc9dd13811db3bad840a42ee72b4f8f5eb6c7b57bd04",
+      "use": "ARM Color Space row preparation assigns model-local text IDs 0x1f6/0x1f7 and style-dependent icons. Its list pending index and confirmation differ from Q7 immediate writes."
+    },
+    {
+      "model": "Pentax K-3 Mark III",
+      "commit": "d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680",
+      "repository_path": "analysis/colorspace-ui-input-evidence.json",
+      "sha256": "b6a21035e533f94d053947ea1c8cc0067cc4d443dc8ae6411e75555927437cad",
+      "use": "Separate ARM direction/focus and presentation callbacks reach their own renderer invalidation and scheduler boundaries. No numerical event, glyph or indexed-pixel compatibility is inferred."
+    }
+  ],
+  "limitations": [
+    "Synthetic indexed RAM establishes palette index writes only, not actual RGB or LCD output.",
+    "The five shape tuples are forwarded as fixture inputs from the prior original refresh evidence; the full UI producer is not executed in this tool.",
+    "The original context template is hashed locally and not redistributed."
+  ]
+}

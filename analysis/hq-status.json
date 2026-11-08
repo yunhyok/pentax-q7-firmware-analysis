@@ -1,11 +1,11 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "a71eb254326a17e633bc9a9ce930f6f19179fb0a",
-  "updated_at": "2026-11-08T17:38:34+09:00",
+  "baseline_commit": "a1d6e463d9b193cd0d4cbcc8b243623e615444f9",
+  "updated_at": "2026-11-08T17:56:25+09:00",
   "goals": {
     "rebuild": {
-      "status": "Native program-source281-byte changes explained by170 field events plus3072 byte-preserving copy events; native MD5 and card callback connected. Existing C fixed-table package and compiler results retained.",
+      "status": "Seven original BurnNand continuation fixtures cover retry, marker failure, bad/protected candidates and card callback failure; all-success aggregate case reaches135 chunks then separate direct op5. Both modified source buffers independently reconstructed. Terminal success remains unverified.",
       "evidence": [
         "analysis/rebuild-evidence.json",
         "analysis/loader-foundation.json",
@@ -24,15 +24,18 @@
         "tools/check_burn_header.py",
         "tools/check_burn_hash.py",
         "tools/check_hash_card.py",
-        "loader-hash-report.html"
+        "loader-hash-report.html",
+        "analysis/burn-continuation.json",
+        "tools/check_burn_continuation.py",
+        "burn-continuation-report.html"
       ],
       "gaps": [
-        "Full BurnNand storage/recovery loop and real installed-media geometry",
+        "Continuation after later direct op5, other section/header policies, real installed-media geometry",
         "General code insertion/deletion, relocation, and table regeneration",
         "Camera update recognition, hardware inflate, flash, boot, capture and recovery"
       ],
       "next_actions": [
-        "Continue original BurnNand storage/recovery loop in synthetic RAM, keeping FCU device boundary explicit",
+        "Continue after separate sector0xa00/count4 op5 and trace terminal return without treating synthetic I/O as device proof",
         "Investigate general insertion/deletion and relocation only against the proven fixed-slot representation"
       ],
       "counts": {
@@ -52,7 +55,12 @@
         "hash_wrapper_cases": 9,
         "native_hash_card_cases": 7,
         "native_hash_card_transactions": 9,
-        "mbr_cases": 7
+        "mbr_cases": 7,
+        "burn_continuation_cases": 7,
+        "aggregate_success_chunks": 135,
+        "protected_candidates_skipped": 384,
+        "main_header_patch_bytes": 512,
+        "later_header_changed_bytes": 132
       },
       "stable_evidence": {
         "analysis/recompiled-numeric.json": "4ec1054854c538f06e8d3e6aaaa9767c4096d5a4b54c5e2a88754473ec5cf2b2",
@@ -61,7 +69,9 @@
         "storage-readiness-report.html": "ee98e3f2792ad44c0322484d2a9e62255aaeecb1f89edcc2caac0066caf45c38",
         "analysis/header-hash.json": "900796b1cd98b9f763158fc407d7692a4e984825bc686bcdced35697e93e5217",
         "analysis/hash-card.json": "8d3af227905632a7d3f3beddc51621f6d3539ea8eecb6b3fca02478c5c8b09a0",
-        "loader-hash-report.html": "dad16ece82414eec300846b4c076fb101152446c5861d350d8d0a568c0e2c5b2"
+        "loader-hash-report.html": "427951d742e84c0a506246e137db9c3c332003c3231f367ca20685690539d9dd",
+        "analysis/burn-continuation.json": "497319343e33ae4437765e9ce4f76dd1910d133ba28aad0a72e4d086fb71ed85",
+        "burn-continuation-report.html": "cd0333922e1092666556054a185901ccd6e7466945cb8faac6049f4644cce6da"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -116,13 +126,13 @@
         "analysis/lens-readiness.json": "9516435e4609576717f714d99e8ceeddc97b23fecd57914d680cfcf849025966",
         "tools/check_lens_readiness.py": "b88ca7428dc9881a32f61a1cc9190daa41f6f3ffa8c5fe3ed40a7831db4d6d42",
         "analysis/af-completion.json": "b603055d40a8cf6b90a9ca45fd70c03920bd2531eab4cec70577e71320e14bc1",
-        "tools/check_af_completion.py": "70892f18b3cb9df7a21d9ea6609e260225f7f7bd6f449abfbec0cdc6ae2fa8bd",
+        "tools/check_af_completion.py": "c81e0383b2cbc9c68742ebfd6cfc9b939b40f39b6349c1053cca9218f48d96be",
         "af-completion-report.html": "eb1f44ba8095e2f725043c8be54a8b0cda3cf0c414207539243b0029fee302f7"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
     "ui_port": {
-      "status": "Original refresh producer and one-message consumer, text staging/highlight requests and buffer roll reproduced; two native indexed-marker RAM draws verified. Coordinator results exactly match worker.",
+      "status": "Original indexed shape raster exercised with native context/bitmap setup: two Color Space highlights and five alignment/clipping cases match whole synthetic RAM. Prior queue/text/icon evidence retained.",
       "evidence": [
         "analysis/colorspace-ui.json",
         "tools/check_colorspace_ui.py",
@@ -130,16 +140,18 @@
         "analysis/portability-evidence.json",
         "analysis/colorspace-render.json",
         "tools/check_colorspace_render.py",
-        "colorspace-render-report.html"
+        "colorspace-render-report.html",
+        "analysis/colorspace-raster.json",
+        "tools/check_colorspace_raster.py",
+        "colorspace-raster-report.html"
       ],
       "gaps": [
-        "Physical switches and full concurrent RTOS event delivery",
-        "Font glyph and focus-shape rasterization, palette RGB, DMA and physical LCD",
-        "Persistent setting lifecycle and K-3 III design reimplementation"
+        "Continuous full UI refresh through raster",
+        "Original font file loading and indirect glyph rendering",
+        "Actual palette RGB, nonidentity scale, physical display registration, DMA and LCD"
       ],
       "next_actions": [
-        "Continue bounded glyph/shape rendering toward complete synthetic capture Color Space screen",
-        "Keep Q7 live-write/confirm-retain/cancel-restore semantics distinct from K3 pending selection"
+        "Trace original font resource and indirect renderer, then connect continuous refresh-to-pixel fixture"
       ],
       "stable_evidence": {
         "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
@@ -147,7 +159,9 @@
         "colorspace-ui-report.html": "7796b24701e10c01d8ad3b80e75991624c0e6ac348dad900aa66256d5599b02c",
         "analysis/colorspace-render.json": "4b46ec562312528c701f2d62e2ae86c23b2ee17207ecbd249b49abdc8234b201",
         "tools/check_colorspace_render.py": "b7e59987909a7ff4b561874ff7c58aed22bc4765dde2ce1f0ebc9234e837a509",
-        "colorspace-render-report.html": "1f4eaa30a9e72e9a89adcde1feadc0bd8d26ecb48ba49b84c09d9a9132febca9"
+        "colorspace-render-report.html": "325d718347b702527165af7128a0cfcc58084b81cd75327a9c689b1dbdb8be62",
+        "analysis/colorspace-raster.json": "46981c50fe8078c8b40d8062b98aca4b0e8e556eb7032dde044e468077bec79b",
+        "colorspace-raster-report.html": "2de8c283798c8cd6fc7c065a274758da0842124fd953da3902ab4fe28b191518"
       },
       "hash_normalization": "UTF-8 LF bytes",
       "reproduction_command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
@@ -166,7 +180,10 @@
         "marker_changed_bytes_per_case": 330,
         "render_original_words": 139,
         "render_function_extents": 47,
-        "resource_range_hashes": 38
+        "resource_range_hashes": 38,
+        "shape_raster_cases": 7,
+        "highlight_changed_bytes_each": 34560,
+        "shape_modeled_apis": 3
       }
     }
   },
@@ -482,7 +499,14 @@
     "analysis/af-completion.json",
     "tools/check_af_completion.py",
     "af-completion-report.html",
-    "tools/build_af_report.py"
+    "tools/build_af_report.py",
+    "analysis/burn-continuation.json",
+    "tools/check_burn_continuation.py",
+    "burn-continuation-report.html",
+    "analysis/colorspace-raster.json",
+    "tools/check_colorspace_raster.py",
+    "colorspace-raster-report.html",
+    "tools/verify_continuation.py"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
@@ -491,5 +515,18 @@
     "show_request": "Capture-and-return replacement at0x8029ef58; original resumes0x8043ca34 and stops in consumer0x80adf980.",
     "resource_links": "Full ordered labels and focus_assets metadata pinned; seven valid-but-misconnected mutations rejected.",
     "validation": "311 original words,21 typed/3 anonymous E01 records,47 main functions,38 ranges reproduced; deterministic HTML PASS."
-  }
+  },
+  "latest_followup": {
+    "scope": "NAND continuation and indexed raster",
+    "validation": "Coordinator original VEX Burn7 cases exactly match public metadata; raster7 cases whole-buffer and guard PASS.166 original words/33 code extents/1 template reproduced;40 unit tests PASS; both HTML reports visually reviewed with6SVG and no horizontal overflow at1265px.",
+    "editorial": "19 paragraphs,0.8% character change,5.8% sentence touch,golden PASS; subsequent source reconstruction update recorded.",
+    "remaining": "No flash, boot, real lens motion, RGB palette, glyph or LCD proof."
+  },
+  "validation_runs": [
+    {
+      "command": "Independent original Burn7 and raster7 replays plus source reconstruction",
+      "result": "PASS; both changed NAND input sources reproduce,166 original words and33code extents plus1template match",
+      "limits": "All device responses are modeled; no actual NAND or LCD"
+    }
+  ]
 }

@@ -55,7 +55,8 @@ class ResearchGuardTests(unittest.TestCase):
     def test_other_recent_replay_clis_reject_dangling_output_before_input(self):
         scripts = ('check_burn_storage.py', 'check_lens_readiness.py', 'check_colorspace_ui.py',
                    'check_burn_input.py', 'check_lens_policy.py', 'check_colorspace_render.py',
-                   'check_burn_hash.py', 'check_burn_header.py', 'check_hash_card.py', 'check_af_completion.py')
+                   'check_burn_hash.py', 'check_burn_header.py', 'check_hash_card.py', 'check_af_completion.py',
+                   'check_burn_continuation.py', 'check_colorspace_raster.py')
         with tempfile.TemporaryDirectory() as directory:
             target, output = Path(directory)/'absent-target.json', Path(directory)/'report.json'
             try:

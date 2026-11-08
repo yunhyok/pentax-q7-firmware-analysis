@@ -1,0 +1,20 @@
+{
+  "skill": "humanize-korean2.3.2",
+  "route": "light",
+  "run_id": "2026-11-08-014-d36d",
+  "execution": "Native Codex worker plus coordinator finalizer; not Claude Opus",
+  "paragraphs": 19,
+  "input_sha256": "4b5b2e8dcaa2deffae8b8639949355ea20db1b9f212614992622d6e3a4429413",
+  "output_sha256": "0535e089b9115688a3794bfb292e463721c38a8edffa0a42a3c1457bf892fc76",
+  "change_rate_percent": 0.8,
+  "sentence_touch_rate_percent": 5.8,
+  "golden": "PASS",
+  "modality_lost": 0,
+  "grade": "B",
+  "self_check": "6/6",
+  "subsequent_factual_extension": "Coordinator added independently reconstructed block10 and later-header byte changes; updated original-word count116. These additions were not part of the19-paragraph style gate.",
+  "published_copy_sha256": {
+    "continuation-copy.json": "5391d6b92162e1ba7bf557bad29ffc6dd5897ed6782eb172867d248f4e716f10",
+    "raster-copy.json": "c2594567d0b0fa4884a82098ebb2e823f4ac4382ab9cb78a366d3a086bb8e36e"
+  }
+}
