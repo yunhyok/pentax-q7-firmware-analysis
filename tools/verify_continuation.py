@@ -22,7 +22,7 @@ def verify(firmware=None, decoded=None):
     for doc, keys, expected in (
         (burn, ('selected_functions', 'evidence', 'fixture_configuration', 'source_reconstruction'), '2094459398c7fb44fbde2806d4515cbdd6bcaa3745491cc9c6bb3a5c35a06dce'),
         (raster, ('selected_functions','duplicate_named_ranges','context_template','evidence'), 'b1da523c89a638a42fc25ff314ecc0007182819dbea7f1758ccc17a3f592b2d4'),
-        (terminal, ('selected_functions','evidence','comparison'), 'cfd8a816ee3a14df100aacef878eccaaa40b552cc6e2dbd91a35ff8f256e3d48'),
+        (terminal, ('selected_functions','evidence','comparison'), 'c4baa9ece99bbfbf1f599e8ca638746cc9ccb01327d87868314f5ca65de4f3bd'),
     ):
         assert doc['input_sha256'] == SHA
         assert hashlib.sha256(json.dumps([doc[k] for k in keys],sort_keys=True,separators=(',',':')).encode()).hexdigest() == expected

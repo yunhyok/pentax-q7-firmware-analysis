@@ -998,7 +998,7 @@
     "model": "Pentax K-3 Mark III",
     "commit": "c55c107e47594218b48678ce8bdb8d8ef2c984da",
     "path": "analysis/update-finalization-evidence.json",
-    "scope": "Pinned K-3 Mark III ARM evidence separately checks update wrapper, input release and completion signaling. This Q7 MIPS replay covers NAND candidate selection and recovery plus a later request boundary. The comparison does not establish shared operations or terminal status values.",
+    "scope": "Pinned K-3 Mark III ARM evidence separately checks update wrapper, input release and completion signaling. This Q7 E01 MIPS replay covers modeled extended-header write and primary-header read/erase/writeback, then the native ready callback and BurnNand terminal return. The comparison does not establish shared device operations or success-code meanings.",
     "sha256": "c28f8d63bf12bee0264d8efb99456c9fa4b8ae02a76e6687636aa44ffb2c4b78"
   }
 }

@@ -2,7 +2,7 @@
   "model": "Pentax Q7",
   "firmware_version": "1.01",
   "baseline_commit": "15ebcb218fda5058148955f81983bdf349d4cdb1",
-  "updated_at": "2026-11-08T18:41:07+09:00",
+  "updated_at": "2026-11-08T18:46:25+09:00",
   "goals": {
     "rebuild": {
       "status": "Seven original retry/main continuation fixtures plus four terminal fixtures. Same main path reaches extended-header write, primary read/erase/rewrite, native ready callback1 and BurnNand return0 with modeled success; three status7 errors return1 without ready. Hardware update remains unverified.",
@@ -76,7 +76,7 @@
         "loader-hash-report.html": "83f1cb1fa9fc95474c36dee5c8d59672518c14c09ce30f7199389725f790d5da",
         "analysis/burn-continuation.json": "497319343e33ae4437765e9ce4f76dd1910d133ba28aad0a72e4d086fb71ed85",
         "burn-continuation-report.html": "82a747c53b6a030d19b330181058db1727bd3818f6c05c2d545b6adf757679f2",
-        "analysis/burn-finalization.json": "298d542fa655c07cfdb3c4b00c5b576e0cec34f05685265f1b494cb02e5b2744"
+        "analysis/burn-finalization.json": "35f8e606c9f4ddf1058fd58ca1ec1529b512865e7e01c5c1f27cee7448d8b2c1"
       },
       "hash_normalization": "UTF-8 LF bytes"
     },
@@ -577,5 +577,9 @@
     "current_task_may_continue": true,
     "stop_threshold_percent": 10,
     "observed_at": "2026-11-08T18:40:10+09:00"
+  },
+  "terminal_comparison_correction": {
+    "scope": "Comparison prose now states modeled header writeback, native ready callback and terminal return.",
+    "validation": "Only comparison.scope and its canonical static pin change; original replay and all source records are identical to prior public evidence."
   }
 }
