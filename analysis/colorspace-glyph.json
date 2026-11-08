@@ -1,0 +1,1525 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Exact FAT16 LatinFont file, original file-loader control path, and two bounded indexed glyph raster fixtures.",
+  "related_evidence": [
+    "analysis/colorspace-render.json",
+    "analysis/colorspace-raster.json"
+  ],
+  "bounded_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / VEX",
+    "resource": {
+      "directory_name": "FONTDATA",
+      "directory_root_record": "0x78d800",
+      "directory_first_cluster": 62,
+      "directory_first_cluster_offset": "0x7a02c0",
+      "directory_record": "0x7a05a0",
+      "short_name": "LATINF~6.BIN",
+      "long_name": "LATINFONT.BIN",
+      "long_name_record": "0x7a0580",
+      "first_cluster": 2308,
+      "declared_size": 130886,
+      "file_spans": [
+        {
+          "offset": 10296000,
+          "size": 130886
+        }
+      ],
+      "sha256": "9ba8e0f0b4fe85a9c097f7cd3e992ca6a159eef76ddc2340c2b6f6d22c1cc44b"
+    },
+    "context": {
+      "stride": 736,
+      "height": 176,
+      "initial_index": 165,
+      "origin": [
+        96,
+        64
+      ],
+      "font_cell": [
+        64,
+        48
+      ],
+      "source_bits_per_pixel": 2,
+      "source_row_bytes": 16,
+      "orientation": 0,
+      "spacing_control": 1,
+      "pixel_indices": [
+        null,
+        2,
+        1,
+        3
+      ]
+    },
+    "modeled_boundaries": {
+      "raster_setup": {
+        "0x8000bf28": "Return zeroed synthetic allocations for one display context and one bitmap.",
+        "0x80262fd4": "Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.",
+        "0x800b3d40": "Record cache address/length and return0 without CPU cache operations."
+      },
+      "font_load_and_draw": {
+        "0x80240e2c": "Return a synthetic media pointer for the observed drive selector.",
+        "0x8007d180": "Supply the verified FAT file size at the stat boundary.",
+        "0x8000bf28": "After raster setup, allocate the synthetic FileX control block or font buffer.",
+        "0x80074334": "Accept the normalized font path at FileX open.",
+        "0x80071a10": "Supply the full verified font bytes and return success at FileX read.",
+        "0x8007c258": "Accept FileX close for the modeled file.",
+        "0x8000c598": "Record release of the FileX control block without allocator effects.",
+        "0x800a14f8": "Record a diagnostic call without emitting text."
+      }
+    },
+    "loader_path": "A:\\FontData\\LatinFont.bin",
+    "loader_events": [
+      {
+        "api": "0x80240e2c",
+        "kind": "media",
+        "return_address": "0x8028b6fc",
+        "selector": 2,
+        "result": 590348288
+      },
+      {
+        "api": "0x8007d180",
+        "kind": "stat",
+        "return_address": "0x80223bdc",
+        "path": "\\FontData\\LatinFont.bin",
+        "size": 130886,
+        "result": 0
+      },
+      {
+        "api": "0x8000bf28",
+        "kind": "allocate",
+        "return_address": "0x80223c08",
+        "size": 504,
+        "result": 589299712
+      },
+      {
+        "api": "0x80074334",
+        "kind": "open",
+        "return_address": "0x80223c28",
+        "path": "\\FontData\\LatinFont.bin",
+        "result": 0
+      },
+      {
+        "api": "0x8000bf28",
+        "kind": "allocate",
+        "return_address": "0x80223c48",
+        "size": 130886,
+        "result": 587202560
+      },
+      {
+        "api": "0x80071a10",
+        "kind": "read",
+        "return_address": "0x80223c64",
+        "size": 130886,
+        "result": 0
+      },
+      {
+        "api": "0x8007c258",
+        "kind": "close",
+        "return_address": "0x80223c74",
+        "result": 0
+      },
+      {
+        "api": "0x8000c598",
+        "kind": "free",
+        "return_address": "0x80223c88",
+        "result": 0
+      },
+      {
+        "api": "0x800a14f8",
+        "kind": "log",
+        "return_address": "0x80223e50",
+        "result": 0
+      }
+    ],
+    "cases": [
+      {
+        "units": [
+          84
+        ],
+        "entry": "0x8022c058",
+        "vex_block_events": 16447,
+        "sim_explore_step_cap": 37000,
+        "text_draw_call": {
+          "pc": "0x8022c058",
+          "return_address": "0xbadf000",
+          "arguments": [
+            "0x23000000",
+            "0x21000000",
+            "0x60",
+            "0x40",
+            "0x23100000",
+            "0x1"
+          ],
+          "text_sha256": "766caa663e1025b9accd7ededd24fbc8193180e028eedae2f41d6bb0b1d36468"
+        },
+        "renderer_calls": [
+          {
+            "pc": "0x8022607c",
+            "return_address": "0x8022c2b0",
+            "x": 96,
+            "y": 64,
+            "width": 24,
+            "height": 48,
+            "raw_source_offset": "0x9e1806"
+          }
+        ],
+        "frame_sha256": "2f0ba3233cce52717ce2e80712a22b43e2d89272eb1f2d624b891db71c98269d",
+        "changed_bytes": 563,
+        "indexed_histogram": {
+          "1": 329,
+          "2": 234,
+          "165": 128973
+        },
+        "glyphs": [
+          {
+            "unit": 84,
+            "width": 24,
+            "height": 48,
+            "x": 96,
+            "y": 64,
+            "raw_source_offset": "0x9e1806",
+            "changed_bytes": 563
+          }
+        ]
+      },
+      {
+        "units": [
+          84,
+          51,
+          40,
+          35
+        ],
+        "entry": "0x8024928c",
+        "vex_block_events": 79513,
+        "sim_explore_step_cap": 125000,
+        "text_draw_call": {
+          "pc": "0x8022c058",
+          "return_address": "0x80229694",
+          "arguments": [
+            "0x23000000",
+            "0x21000000",
+            "0x60",
+            "0x40",
+            "0x70000d72",
+            "0x4"
+          ],
+          "text_sha256": "adda92cf5ff02d3e692ef7a992dad973bf629a47d72e710025f1d46efcd15eca"
+        },
+        "renderer_calls": [
+          {
+            "pc": "0x8022607c",
+            "return_address": "0x8022c2b0",
+            "x": 96,
+            "y": 64,
+            "width": 24,
+            "height": 48,
+            "raw_source_offset": "0x9e1806"
+          },
+          {
+            "pc": "0x8022607c",
+            "return_address": "0x8022c2b0",
+            "x": 120,
+            "y": 64,
+            "width": 29,
+            "height": 48,
+            "raw_source_offset": "0x9db506"
+          },
+          {
+            "pc": "0x8022607c",
+            "return_address": "0x8022c2b0",
+            "x": 149,
+            "y": 64,
+            "width": 34,
+            "height": 48,
+            "raw_source_offset": "0x9d9406"
+          },
+          {
+            "pc": "0x8022607c",
+            "return_address": "0x8022c2b0",
+            "x": 183,
+            "y": 64,
+            "width": 29,
+            "height": 48,
+            "raw_source_offset": "0x9d8506"
+          }
+        ],
+        "frame_sha256": "bd25eb5b6eae638bc812f9b84aa5ab335f591f1604ae3e5385ec267f10c66bb0",
+        "changed_bytes": 3346,
+        "indexed_histogram": {
+          "1": 1808,
+          "2": 1538,
+          "165": 126190
+        },
+        "glyphs": [
+          {
+            "unit": 84,
+            "width": 24,
+            "height": 48,
+            "x": 96,
+            "y": 64,
+            "raw_source_offset": "0x9e1806",
+            "changed_bytes": 563
+          },
+          {
+            "unit": 51,
+            "width": 29,
+            "height": 48,
+            "x": 120,
+            "y": 64,
+            "raw_source_offset": "0x9db506",
+            "changed_bytes": 898
+          },
+          {
+            "unit": 40,
+            "width": 34,
+            "height": 48,
+            "x": 149,
+            "y": 64,
+            "raw_source_offset": "0x9d9406",
+            "changed_bytes": 950
+          },
+          {
+            "unit": 35,
+            "width": 29,
+            "height": 48,
+            "x": 183,
+            "y": 64,
+            "raw_source_offset": "0x9d8506",
+            "changed_bytes": 935
+          }
+        ]
+      }
+    ]
+  },
+  "selected_functions": [
+    {
+      "name": "GdiCreateFont",
+      "address": 2149726836,
+      "candidate_end": 2149727576,
+      "size": 740,
+      "segment": "E04",
+      "sha256": "ebdb293bf096365aa27dc5be525691a4dd2280fb92661818ffa59c23639d52e3",
+      "transfers": [
+        {
+          "site": 2149726900,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2149727032,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2149727188,
+          "word": "0c01f460",
+          "kind": "call",
+          "target": 2147996032,
+          "target_names": [
+            "_fx_directory_information_get"
+          ]
+        },
+        {
+          "site": 2149727232,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149727264,
+          "word": "0c01d0cd",
+          "kind": "call",
+          "target": 2147959604,
+          "target_names": [
+            "_fx_file_open"
+          ]
+        },
+        {
+          "site": 2149727296,
+          "word": "0c002fca",
+          "kind": "call",
+          "target": 2147532584,
+          "target_names": [
+            "PoolAllocEx"
+          ]
+        },
+        {
+          "site": 2149727324,
+          "word": "0c01c684",
+          "kind": "call",
+          "target": 2147949072,
+          "target_names": [
+            "_fx_file_read"
+          ]
+        },
+        {
+          "site": 2149727340,
+          "word": "0c01f096",
+          "kind": "call",
+          "target": 2147992152,
+          "target_names": [
+            "_fx_file_close"
+          ]
+        },
+        {
+          "site": 2149727360,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149727408,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149727460,
+          "word": "0c01f096",
+          "kind": "call",
+          "target": 2147992152,
+          "target_names": [
+            "_fx_file_close"
+          ]
+        },
+        {
+          "site": 2149727480,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149727508,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149727532,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        },
+        {
+          "site": 2149727540,
+          "word": "0c01f096",
+          "kind": "call",
+          "target": 2147992152,
+          "target_names": [
+            "_fx_file_close"
+          ]
+        },
+        {
+          "site": 2149727560,
+          "word": "0c003166",
+          "kind": "call",
+          "target": 2147534232,
+          "target_names": [
+            "PoolFreeEx"
+          ]
+        }
+      ],
+      "decoded_offset": 1007604
+    },
+    {
+      "name": "GdiSelectFont",
+      "address": 2149680044,
+      "candidate_end": 2149680264,
+      "size": 220,
+      "segment": "E04",
+      "sha256": "d9cfe74cc89945eb153fbbac652431357dc2e461c6bcef9e1e68efa4748d6fa4",
+      "transfers": [
+        {
+          "site": 2149680084,
+          "word": "0c08b51b",
+          "kind": "call",
+          "target": 2149766252,
+          "target_names": [
+            "GdiMapVirtualCoord"
+          ]
+        },
+        {
+          "site": 2149680104,
+          "word": "0c08b51b",
+          "kind": "call",
+          "target": 2149766252,
+          "target_names": [
+            "GdiMapVirtualCoord"
+          ]
+        },
+        {
+          "site": 2149680124,
+          "word": "0c08b43d",
+          "kind": "call",
+          "target": 2149765364,
+          "target_names": [
+            "GdiScaleByInvisibleFrame"
+          ]
+        },
+        {
+          "site": 2149680144,
+          "word": "0c08b43d",
+          "kind": "call",
+          "target": 2149765364,
+          "target_names": [
+            "GdiScaleByInvisibleFrame"
+          ]
+        }
+      ],
+      "decoded_offset": 960812
+    },
+    {
+      "name": "FntDrawTextEx",
+      "address": 2149761112,
+      "candidate_end": 2149762684,
+      "size": 1572,
+      "segment": "E04",
+      "sha256": "dbb938013b8b9fed17473eabe31e2689ed4f28a26bb83c564b0553bc085c7220",
+      "transfers": [
+        {
+          "site": 2149761644,
+          "word": "0c08b4c1",
+          "kind": "call",
+          "target": 2149765892,
+          "target_names": [
+            "GdiFlipRect"
+          ]
+        },
+        {
+          "site": 2149761704,
+          "word": "01c0f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149762076,
+          "word": "0c08b4c1",
+          "kind": "call",
+          "target": 2149765892,
+          "target_names": [
+            "GdiFlipRect"
+          ]
+        },
+        {
+          "site": 2149762148,
+          "word": "0180f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149762476,
+          "word": "0c08afb6",
+          "kind": "call",
+          "target": 2149760728,
+          "target_names": [
+            "FntGetTextSizeEx"
+          ]
+        },
+        {
+          "site": 2149762564,
+          "word": "0c08b4c1",
+          "kind": "call",
+          "target": 2149765892,
+          "target_names": [
+            "GdiFlipRect"
+          ]
+        },
+        {
+          "site": 2149762572,
+          "word": "0c086149",
+          "kind": "call",
+          "target": 2149680420,
+          "target_names": [
+            "GdiGetTextBkColor"
+          ]
+        },
+        {
+          "site": 2149762592,
+          "word": "0240f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        }
+      ],
+      "decoded_offset": 1041880
+    },
+    {
+      "name": "BlitFont",
+      "address": 2149736572,
+      "candidate_end": 2149737804,
+      "size": 1232,
+      "segment": "E04",
+      "sha256": "27c836ba0b44f82c943eeef049543145ff14f791a5728e3234558ba0ac4e7b53",
+      "transfers": [],
+      "decoded_offset": 1017340
+    },
+    {
+      "name": "DirectLoadFontEx",
+      "address": 2149978816,
+      "candidate_end": 2149979036,
+      "size": 220,
+      "segment": "E04",
+      "decoded_offset": 1259584,
+      "sha256": "911211065c82dac8179acb10c431be4bfc0ee229211d6ae51a1b475815c9ea79",
+      "transfers": [
+        {
+          "site": 2149978864,
+          "word": "0c03edd5",
+          "kind": "call",
+          "target": 2148513620,
+          "target_names": [
+            "memset"
+          ]
+        },
+        {
+          "site": 2149978880,
+          "word": "0c000418",
+          "kind": "call",
+          "target": 2147487840,
+          "target_names": [
+            "HceGetResourceTable"
+          ]
+        },
+        {
+          "site": 2149978900,
+          "word": "0c088e97",
+          "kind": "call",
+          "target": 2149726812,
+          "target_names": [
+            "GdiFontSetStaticTable"
+          ]
+        },
+        {
+          "site": 2149978932,
+          "word": "0c088f75",
+          "kind": "call",
+          "target": 2149727700,
+          "target_names": [
+            "GdiLoadFontEx"
+          ]
+        },
+        {
+          "site": 2149978972,
+          "word": "0c0a2d2c",
+          "kind": "call",
+          "target": 2150151344,
+          "target_names": [
+            "AppResourceGetPath"
+          ]
+        },
+        {
+          "site": 2149978996,
+          "word": "0c088f75",
+          "kind": "call",
+          "target": 2149727700,
+          "target_names": [
+            "GdiLoadFontEx"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GdiFontSetStaticTable",
+      "address": 2149726812,
+      "candidate_end": 2149726836,
+      "size": 24,
+      "segment": "E04",
+      "decoded_offset": 1007580,
+      "sha256": "4d6653da4d87fe7260777b789b707722dc1abd70626fe2470780d8e284dfcdb1",
+      "transfers": []
+    },
+    {
+      "name": "AppResourceGetPath",
+      "address": 2150151344,
+      "candidate_end": 2150151960,
+      "size": 616,
+      "segment": "E04",
+      "decoded_offset": 1432112,
+      "sha256": "231b9e171406d4ffa370491e50bf666ca716d06dce924fec4f213fd3d2b8a21a",
+      "transfers": [
+        {
+          "site": 2150151384,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151416,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151432,
+          "word": "0c09038b",
+          "kind": "call",
+          "target": 2149846572,
+          "target_names": [
+            "AppMediaGetResourceHandle"
+          ]
+        },
+        {
+          "site": 2150151504,
+          "word": "0c03ef0d",
+          "kind": "call",
+          "target": 2148514868,
+          "target_names": [
+            "strcat"
+          ]
+        },
+        {
+          "site": 2150151556,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151584,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151648,
+          "word": "0c03ef0d",
+          "kind": "call",
+          "target": 2148514868,
+          "target_names": [
+            "strcat"
+          ]
+        },
+        {
+          "site": 2150151672,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151696,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151724,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151752,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151780,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151808,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151836,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151864,
+          "word": "0c03eef5",
+          "kind": "call",
+          "target": 2148514772,
+          "target_names": [
+            "strncasecmp"
+          ]
+        },
+        {
+          "site": 2150151884,
+          "word": "0c09020e",
+          "kind": "call",
+          "target": 2149845048,
+          "target_names": [
+            "AppMediaGetHandle"
+          ]
+        },
+        {
+          "site": 2150151904,
+          "word": "0c090647",
+          "kind": "call",
+          "target": 2149849372,
+          "target_names": [
+            "AppMediaGetCurrentHandle"
+          ]
+        },
+        {
+          "site": 2150151924,
+          "word": "0c09038b",
+          "kind": "call",
+          "target": 2149846572,
+          "target_names": [
+            "AppMediaGetResourceHandle"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GdiLoadFontEx",
+      "address": 2149727700,
+      "candidate_end": 2149727972,
+      "size": 272,
+      "segment": "E04",
+      "decoded_offset": 1008468,
+      "sha256": "9099f48444f0552df230831ae8d42c98c3e4e71c36d07929d18dac2329a67068",
+      "transfers": [
+        {
+          "site": 2149727756,
+          "word": "0c08b3e4",
+          "kind": "call",
+          "target": 2149765008,
+          "target_names": [
+            "GdiIsFreetypeLibRegistered"
+          ]
+        },
+        {
+          "site": 2149727772,
+          "word": "0c0873f6",
+          "kind": "call",
+          "target": 2149699544,
+          "target_names": [
+            "GdiCheckVecFontFileName"
+          ]
+        },
+        {
+          "site": 2149727792,
+          "word": "0c088e9d",
+          "kind": "call",
+          "target": 2149726836,
+          "target_names": [
+            "GdiCreateFont"
+          ]
+        },
+        {
+          "site": 2149727816,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2149727832,
+          "word": "0c086122",
+          "kind": "call",
+          "target": 2149680264,
+          "target_names": [
+            "GdiDeselectFont"
+          ]
+        },
+        {
+          "site": 2149727840,
+          "word": "0c088f56",
+          "kind": "call",
+          "target": 2149727576,
+          "target_names": [
+            "GdiDeleteFont"
+          ]
+        },
+        {
+          "site": 2149727852,
+          "word": "0c0860eb",
+          "kind": "call",
+          "target": 2149680044,
+          "target_names": [
+            "GdiSelectFont"
+          ]
+        },
+        {
+          "site": 2149727900,
+          "word": "0c08741f",
+          "kind": "call",
+          "target": 2149699708,
+          "target_names": [
+            "GdiCreateVecFont"
+          ]
+        },
+        {
+          "site": 2149727928,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AppDBTextOutByBufferID",
+      "address": 2149880460,
+      "candidate_end": 2149880756,
+      "size": 296,
+      "segment": "E04",
+      "decoded_offset": 1161228,
+      "sha256": "70356f53d32ed40e9633e3c980dc82e9e1f76b2579c63d6fdf3a58090a4ea9e4",
+      "transfers": [
+        {
+          "site": 2149880560,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2149880608,
+          "word": "0c092432",
+          "kind": "call",
+          "target": 2149880008,
+          "target_names": [
+            "AppOsdGetOsdDrawContext"
+          ]
+        },
+        {
+          "site": 2149880632,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2149880696,
+          "word": "0c08a504",
+          "kind": "call",
+          "target": 2149749776,
+          "target_names": [
+            "GdiTextOutDB"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GdiTextOutDB",
+      "address": 2149749776,
+      "candidate_end": 2149750704,
+      "size": 928,
+      "segment": "E04",
+      "decoded_offset": 1030544,
+      "sha256": "bfa781f6b219c5e0584f4b8b09b4a19bb06a9615f9d4eac8f21a433424688816",
+      "transfers": [
+        {
+          "site": 2149750032,
+          "word": "0c08b5c7",
+          "kind": "call",
+          "target": 2149766940,
+          "target_names": [
+            "GdiMapAllPoints"
+          ]
+        },
+        {
+          "site": 2149750072,
+          "word": "0c02853e",
+          "kind": "call",
+          "target": 2148144376,
+          "target_names": [
+            "Printf_B"
+          ]
+        },
+        {
+          "site": 2149750116,
+          "word": "0c08a287",
+          "kind": "call",
+          "target": 2149747228,
+          "target_names": [
+            "ConvertDBTextEncodeFormat"
+          ]
+        },
+        {
+          "site": 2149750132,
+          "word": "0c03ef58",
+          "kind": "call",
+          "target": 2148515168,
+          "target_names": [
+            "strcmp"
+          ]
+        },
+        {
+          "site": 2149750156,
+          "word": "0c03ef58",
+          "kind": "call",
+          "target": 2148515168,
+          "target_names": [
+            "strcmp"
+          ]
+        },
+        {
+          "site": 2149750176,
+          "word": "0c03efa0",
+          "kind": "call",
+          "target": 2148515456,
+          "target_names": [
+            "strcpy"
+          ]
+        },
+        {
+          "site": 2149750412,
+          "word": "0280f809",
+          "kind": "indirect-call",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149750472,
+          "word": "0c02cf50",
+          "kind": "call",
+          "target": 2148220224,
+          "target_names": [
+            "CACHE_WriteBackInvalidateDataCacheRegionEx"
+          ]
+        },
+        {
+          "site": 2149750504,
+          "word": "01e00008",
+          "kind": "indirect-jump",
+          "target": null,
+          "target_names": []
+        },
+        {
+          "site": 2149750544,
+          "word": "0c08a287",
+          "kind": "call",
+          "target": 2149747228,
+          "target_names": [
+            "ConvertDBTextEncodeFormat"
+          ]
+        }
+      ]
+    }
+  ],
+  "trace_limitations": [
+    "Function extents end at next distinct recovered symbol address.",
+    "FntDrawTextEx and BlitFont have duplicate names; extents were chosen by observed address.",
+    "Transfers are linear MIPS32 word scan candidates; indirect targets are not resolved by the scan."
+  ],
+  "evidence": [
+    {
+      "role": "Original font setup, width and source lookup, and packed 2-bit raster operations",
+      "words": [
+        {
+          "va": "0x80223abc",
+          "segment": "E04",
+          "u32le_word": "0x8ec34b04",
+          "decoded_offset": "0xf603c"
+        },
+        {
+          "va": "0x80223acc",
+          "segment": "E04",
+          "u32le_word": "0x8cb08578",
+          "decoded_offset": "0xf604c"
+        },
+        {
+          "va": "0x80223b80",
+          "segment": "E04",
+          "u32le_word": "0xae060044",
+          "decoded_offset": "0xf6100"
+        },
+        {
+          "va": "0x80223b00",
+          "segment": "E04",
+          "u32le_word": "0xae090040",
+          "decoded_offset": "0xf6080"
+        },
+        {
+          "va": "0x80223b18",
+          "segment": "E04",
+          "u32le_word": "0xae0b004c",
+          "decoded_offset": "0xf6098"
+        },
+        {
+          "va": "0x80223b8c",
+          "segment": "E04",
+          "u32le_word": "0x14b1ffea",
+          "decoded_offset": "0xf610c"
+        },
+        {
+          "va": "0x80223b9c",
+          "segment": "E04",
+          "u32le_word": "0xae020050",
+          "decoded_offset": "0xf611c"
+        },
+        {
+          "va": "0x8022c09c",
+          "segment": "E04",
+          "u32le_word": "0x016c4826",
+          "decoded_offset": "0xfe61c"
+        },
+        {
+          "va": "0x8022c0d0",
+          "segment": "E04",
+          "u32le_word": "0x14600008",
+          "decoded_offset": "0xfe650"
+        },
+        {
+          "va": "0x8022c0fc",
+          "segment": "E04",
+          "u32le_word": "0x70998802",
+          "decoded_offset": "0xfe67c"
+        },
+        {
+          "va": "0x8022c110",
+          "segment": "E04",
+          "u32le_word": "0x71ee2002",
+          "decoded_offset": "0xfe690"
+        },
+        {
+          "va": "0x8022c120",
+          "segment": "E04",
+          "u32le_word": "0x15a0011a",
+          "decoded_offset": "0xfe6a0"
+        },
+        {
+          "va": "0x8022c164",
+          "segment": "E04",
+          "u32le_word": "0x97e60000",
+          "decoded_offset": "0xfe6e4"
+        },
+        {
+          "va": "0x8022c180",
+          "segment": "E04",
+          "u32le_word": "0x512000ef",
+          "decoded_offset": "0xfe700"
+        },
+        {
+          "va": "0x8022c540",
+          "segment": "E04",
+          "u32le_word": "0x00c37823",
+          "decoded_offset": "0xfeac0"
+        },
+        {
+          "va": "0x8022c554",
+          "segment": "E04",
+          "u32le_word": "0x000d5840",
+          "decoded_offset": "0xfead4"
+        },
+        {
+          "va": "0x8022c560",
+          "segment": "E04",
+          "u32le_word": "0xafa30050",
+          "decoded_offset": "0xfeae0"
+        },
+        {
+          "va": "0x8022c3c4",
+          "segment": "E04",
+          "u32le_word": "0x01e42823",
+          "decoded_offset": "0xfe944"
+        },
+        {
+          "va": "0x8022c3d0",
+          "segment": "E04",
+          "u32le_word": "0x91b50000",
+          "decoded_offset": "0xfe950"
+        },
+        {
+          "va": "0x8022c28c",
+          "segment": "E04",
+          "u32le_word": "0x8fce088c",
+          "decoded_offset": "0xfe80c"
+        },
+        {
+          "va": "0x8022c2a8",
+          "segment": "E04",
+          "u32le_word": "0x01c0f809",
+          "decoded_offset": "0xfe828"
+        },
+        {
+          "va": "0x80226174",
+          "segment": "E04",
+          "u32le_word": "0x73282802",
+          "decoded_offset": "0xf86f4"
+        },
+        {
+          "va": "0x802261a4",
+          "segment": "E04",
+          "u32le_word": "0x00165902",
+          "decoded_offset": "0xf8724"
+        },
+        {
+          "va": "0x802262d8",
+          "segment": "E04",
+          "u32le_word": "0x96180000",
+          "decoded_offset": "0xf8858"
+        },
+        {
+          "va": "0x802262e8",
+          "segment": "E04",
+          "u32le_word": "0x7c1820a0",
+          "decoded_offset": "0xf8868"
+        },
+        {
+          "va": "0x80226300",
+          "segment": "E04",
+          "u32le_word": "0x03041824",
+          "decoded_offset": "0xf8880"
+        },
+        {
+          "va": "0x8022630c",
+          "segment": "E04",
+          "u32le_word": "0x03c31807",
+          "decoded_offset": "0xf888c"
+        },
+        {
+          "va": "0x8022634c",
+          "segment": "E04",
+          "u32le_word": "0x006e2024",
+          "decoded_offset": "0xf88cc"
+        },
+        {
+          "va": "0x802263a8",
+          "segment": "E04",
+          "u32le_word": "0x8d220024",
+          "decoded_offset": "0xf8928"
+        },
+        {
+          "va": "0x802263b0",
+          "segment": "E04",
+          "u32le_word": "0xa1020000",
+          "decoded_offset": "0xf8930"
+        },
+        {
+          "va": "0x80226438",
+          "segment": "E04",
+          "u32le_word": "0x00047040",
+          "decoded_offset": "0xf89b8"
+        }
+      ]
+    },
+    {
+      "role": "Original file route, media selection, FileX calls, and native relocation",
+      "words": [
+        {
+          "va": "0x80261300",
+          "segment": "E04",
+          "u32le_word": "0x0c000418",
+          "decoded_offset": "0x133880"
+        },
+        {
+          "va": "0x80261314",
+          "segment": "E04",
+          "u32le_word": "0x0c088e97",
+          "decoded_offset": "0x133894"
+        },
+        {
+          "va": "0x80223a68",
+          "segment": "E04",
+          "u32le_word": "0xac654b04",
+          "decoded_offset": "0xf5fe8"
+        },
+        {
+          "va": "0x80223a70",
+          "segment": "E04",
+          "u32le_word": "0xac828578",
+          "decoded_offset": "0xf5ff0"
+        },
+        {
+          "va": "0x80261320",
+          "segment": "E04",
+          "u32le_word": "0x1200000e",
+          "decoded_offset": "0x1338a0"
+        },
+        {
+          "va": "0x8026135c",
+          "segment": "E04",
+          "u32le_word": "0x0c0a2d2c",
+          "decoded_offset": "0x1338dc"
+        },
+        {
+          "va": "0x80261374",
+          "segment": "E04",
+          "u32le_word": "0x0c088f75",
+          "decoded_offset": "0x1338f4"
+        },
+        {
+          "va": "0x8028b6f4",
+          "segment": "E04",
+          "u32le_word": "0x0c09038b",
+          "decoded_offset": "0x15dc74"
+        },
+        {
+          "va": "0x80223bd4",
+          "segment": "E04",
+          "u32le_word": "0x0c01f460",
+          "decoded_offset": "0xf6154"
+        },
+        {
+          "va": "0x80223c20",
+          "segment": "E04",
+          "u32le_word": "0x0c01d0cd",
+          "decoded_offset": "0xf61a0"
+        },
+        {
+          "va": "0x80223c5c",
+          "segment": "E04",
+          "u32le_word": "0x0c01c684",
+          "decoded_offset": "0xf61dc"
+        },
+        {
+          "va": "0x80223c6c",
+          "segment": "E04",
+          "u32le_word": "0x0c01f096",
+          "decoded_offset": "0xf61ec"
+        },
+        {
+          "va": "0x80223c80",
+          "segment": "E04",
+          "u32le_word": "0x0c003166",
+          "decoded_offset": "0xf6200"
+        },
+        {
+          "va": "0x80223c88",
+          "segment": "E04",
+          "u32le_word": "0x1000ff92",
+          "decoded_offset": "0xf6208"
+        },
+        {
+          "va": "0x80223e30",
+          "segment": "E04",
+          "u32le_word": "0x0c088e9d",
+          "decoded_offset": "0xf63b0"
+        }
+      ]
+    },
+    {
+      "role": "Default-context staged text conversion and original font dispatch",
+      "words": [
+        {
+          "va": "0x80249318",
+          "segment": "E04",
+          "u32le_word": "0x10800024",
+          "decoded_offset": "0x11b898"
+        },
+        {
+          "va": "0x80249370",
+          "segment": "E04",
+          "u32le_word": "0xafb80014",
+          "decoded_offset": "0x11b8f0"
+        },
+        {
+          "va": "0x80249378",
+          "segment": "E04",
+          "u32le_word": "0x0c08a504",
+          "decoded_offset": "0x11b8f8"
+        },
+        {
+          "va": "0x802493b0",
+          "segment": "E04",
+          "u32le_word": "0x8ce4b4d8",
+          "decoded_offset": "0x11b930"
+        },
+        {
+          "va": "0x80229678",
+          "segment": "E04",
+          "u32le_word": "0xafb50014",
+          "decoded_offset": "0xfbbf8"
+        },
+        {
+          "va": "0x8022967c",
+          "segment": "E04",
+          "u32le_word": "0x8cd40004",
+          "decoded_offset": "0xfbbfc"
+        },
+        {
+          "va": "0x8022968c",
+          "segment": "E04",
+          "u32le_word": "0x0280f809",
+          "decoded_offset": "0xfbc0c"
+        },
+        {
+          "va": "0x80229690",
+          "segment": "E04",
+          "u32le_word": "0x02402821",
+          "decoded_offset": "0xfbc10"
+        },
+        {
+          "va": "0x802296c8",
+          "segment": "E04",
+          "u32le_word": "0x0c02cf50",
+          "decoded_offset": "0xfbc48"
+        },
+        {
+          "va": "0x8023653c",
+          "segment": "E04",
+          "u32le_word": "0x8022c058",
+          "decoded_offset": "0x108abc"
+        }
+      ]
+    },
+    {
+      "role": "Original context glyph callback and index palette words used by the bounded fixture",
+      "words": [
+        {
+          "va": "0x802353dc",
+          "segment": "E04",
+          "u32le_word": "0x00000000",
+          "decoded_offset": "0x10795c"
+        },
+        {
+          "va": "0x802353e0",
+          "segment": "E04",
+          "u32le_word": "0x00000002",
+          "decoded_offset": "0x107960"
+        },
+        {
+          "va": "0x802353e4",
+          "segment": "E04",
+          "u32le_word": "0x00000001",
+          "decoded_offset": "0x107964"
+        },
+        {
+          "va": "0x802353e8",
+          "segment": "E04",
+          "u32le_word": "0x00000003",
+          "decoded_offset": "0x107968"
+        },
+        {
+          "va": "0x80235c44",
+          "segment": "E04",
+          "u32le_word": "0x8022607c",
+          "decoded_offset": "0x1081c4"
+        },
+        {
+          "va": "0x80235c4c",
+          "segment": "E04",
+          "u32le_word": "0x80226748",
+          "decoded_offset": "0x1081cc"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    "The FONTDATA directory records LATINFONT.BIN with short alias LATINF~6.BIN and a declared size of 130886 bytes. The FAT16 reader follows its file chain and checks the terminal marker. The recorded span and hash identify the entire file.",
+    "The native DirectLoadFontEx call uses A:\\FontData\\LatinFont.bin. AppResourceGetPath selects media argument 2 and passes the normalized path to original GdiCreateFont. The modeled FileX stat and read supply the exact verified extent. Native code chooses type 0x202, relocates its internal offsets, and selects the original font operations table at 0x80236538. The native static-table size remains zero.",
+    "The direct fixture supplies unit 84. The staged fixture supplies default buffer ID 0, text ID 0xffff, coordinates (96,64), count 4 and flag 1 to AppDBTextOutByBufferID. Its synthetic source has header u16 1, the four recorded units and a terminating u16 zero. Native GdiTextOutDB conversion forwards the same units from its stack to FntDrawTextEx through 0x8022968c.",
+    "The renderer uses 64 by 48 cells with 16 source bytes per row. The original halfword byte swap consumes the packed 2-bit values in high-bit-first order. Widths 24, 29, 34 and 29 give successive x positions 96, 120, 149 and 183. The fixture's default context skips code 0 and maps codes 1, 2 and 3 to indices 2, 1 and 3.",
+    "The independent packed-byte oracle matches the entire synthetic indexed frame and both eight-byte guards in each case. The two changed-byte counts are 563 and 3346, with exact source coordinates, native call arguments, frame hashes and index histograms recorded below the replay."
+  ],
+  "limitations": [
+    "The verified FAT extent identifies the file bytes supplied in the model. FileX calls, media lookup, allocation, diagnostic logging and inherited raster setup APIs are modeled. Physical filesystem I/O and camera font initialization are outside scope.",
+    "The staged source and layout are controlled inputs tied to previously observed sRGB units. The replay starts at the staged text draw request and covers no native menu event or LCD scanout.",
+    "Pixel writes are palette indices in a synthetic frame. Font palette colors on a camera, stretch, clipping, other text orientations and other assets are outside the fixtures.",
+    "The decoded descriptor declares an inclusive upper bound 0xaa while this file contains 170 packed cells. The tested units are at most 84. Boundary handling for 0xaa is unresolved."
+  ],
+  "reproduction": {
+    "command": "python tools/check_colorspace_glyph.py <local-original-update.bin> <local-analysis.elf> --output <new-local-json>",
+    "dependency": "angr 10.0.5 with VEX"
+  },
+  "input_reference": {
+    "widget": "0x191d00b",
+    "locale": 0,
+    "line": {
+      "va": "0x8092daa0",
+      "segment": "E06-text",
+      "decoded_offset": "0x13ae20",
+      "length_bytes": 8,
+      "sha256": "adda92cf5ff02d3e692ef7a992dad973bf629a47d72e710025f1d46efcd15eca"
+    },
+    "xy": [
+      96,
+      64
+    ],
+    "units": [
+      84,
+      51,
+      40,
+      35
+    ]
+  },
+  "comparison": [
+    {
+      "model": "Pentax K-3 Mark III",
+      "commit": "d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680",
+      "repository_path": "analysis/colorspace-ui-evidence.json",
+      "sha256": "7aa91d515372a489d0a9bc9dd13811db3bad840a42ee72b4f8f5eb6c7b57bd04",
+      "use": "ARM Color Space row preparation assigns model-local text IDs 0x1f6/0x1f7 and style-dependent icons. Its list pending index and confirmation differ from Q7 immediate writes."
+    },
+    {
+      "model": "Pentax K-3 Mark III",
+      "commit": "d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680",
+      "repository_path": "analysis/colorspace-ui-input-evidence.json",
+      "sha256": "b6a21035e533f94d053947ea1c8cc0067cc4d443dc8ae6411e75555927437cad",
+      "use": "Separate ARM direction/focus and presentation callbacks reach their own renderer invalidation and scheduler boundaries. No numerical event, glyph or indexed-pixel compatibility is inferred."
+    }
+  ]
+}

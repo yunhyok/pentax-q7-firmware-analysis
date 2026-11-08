@@ -2,6 +2,8 @@
 
 [HTML 분석 보고서](https://yunhyok.github.io/pentax-q7-firmware-analysis/) · [HTML 원본](index.html) · [측정 근거](analysis/evidence.json)
 
+[글꼴·sRGB 픽셀](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-glyph-report.html): FAT16의 원본 글꼴 파일과 파일 로더·GDI 변환·2비트 글리프 쓰기를 연결하고 두 사례의 전체 인덱스 버퍼를 독립 계산과 대조했습니다.
+
 [NAND 후속 기록](https://yunhyok.github.io/pentax-q7-firmware-analysis/burn-continuation-report.html): 재시도·보호·카드 실패 7사례와 종료 4사례를 추적했습니다. 135청크 뒤 블록 0 재기록과 준비 콜백을 거쳐 반환하는 경로를 확인했으며, 저장장치 응답은 모델입니다.
 
 [선택 강조 픽셀](https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-raster-report.html): 원본 도형·8비트 GDI를 합성 RAM에서 실행해 두 강조 영역과 경계 조건 5사례를 전체 버퍼로 대조했습니다.

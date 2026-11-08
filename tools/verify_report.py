@@ -34,6 +34,8 @@ from verify_io_followup import verify as verify_io
 from build_af_report import main as build_af
 from build_continuation_report import build_burn, build_raster
 from verify_continuation import verify as verify_continuation
+from build_glyph_report import main as build_glyph
+from verify_glyph import verify as verify_glyph
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -149,6 +151,8 @@ def verify_deep(firmware):
     verify_html(ROOT / "burn-continuation-report.html", build_burn)
     verify_html(ROOT / "colorspace-raster-report.html", build_raster)
     verify_continuation()
+    verify_html(ROOT / "colorspace-glyph-report.html", build_glyph)
+    verify_glyph()
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode
@@ -171,6 +175,7 @@ def verify_deep(firmware):
         verify_lifecycle(firmware, outputs)
         verify_io(firmware, outputs)
         verify_continuation(firmware, outputs)
+        verify_glyph(firmware, outputs)
         assert trace(firmware, read("deep-selected-functions.json"), outputs) == deep, "deep transfer mismatch"
         assert trace(firmware, read("selected-functions.json")) == read("threadx-shutter-transfers.json")
         segments = [(va, firmware[offset:offset+size]) for offset,va,size in PLAIN]
