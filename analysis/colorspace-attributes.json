@@ -81,7 +81,7 @@
         "0x80262fd4": "Return synthetic indexed draw RAM metadata for native roll and isolated marker draws.",
         "0x800b3d40": "Record cache-region address and size without CPU cache operations.",
         "0x8029ef58": "Record native show-buffer request before downstream display-context submission.",
-        "0x800ec08c": "Accept the diagnostic log call after show-buffer request."
+        "0x800ec08c": "Return 0 at I43_SetParam after the show-buffer request; skip parameter 0x1bc active draw-context selection."
       },
       "staged": {
         "raster_setup": {

@@ -19,7 +19,7 @@ REFRESH_REQUEST, UI_PERFORM, REFRESH_RETURN = 0x80AE00F0, 0x80ADF734, 0x80ADF980
 QUEUE_SEND, QUEUE_RECEIVE = 0x80125D0C, 0x80125CEC
 OSD_CLEAR, OSD_ATTR, OSD_LINE = 0x8043937C, 0x8024BF9C, 0x8043EB54
 OSD_TEXT, ALIGNED_TEXT, ICON_DRAW, GET_BUFFER = 0x8024928C, 0x802495D8, 0x8043F42C, 0x80262FD4
-CACHE, PUBLISH, DEBUG_LOG = 0x800B3D40, 0x8029EF58, 0x800EC08C
+CACHE, PUBLISH, SET_PARAM = 0x800B3D40, 0x8029EF58, 0x800EC08C
 STRIDE, HEIGHT, FRAME = 960, 480, 0x20000000
 PIXEL_STRIDE, PIXEL_HEIGHT, DECODED, FILL = 96, 160, 0x20100000, 0xA5
 MARKER, ICON_SRC, ICON_BYTES = 0x25, 0x808AEE78, 296
@@ -98,7 +98,7 @@ MODELED = {
     "0x80262fd4": "Return synthetic indexed draw RAM metadata for native roll and isolated marker draws.",
     "0x800b3d40": "Record cache-region address and size without CPU cache operations.",
     "0x8029ef58": "Record native show-buffer request before downstream display-context submission.",
-    "0x800ec08c": "Accept the diagnostic log call after show-buffer request.",
+    "0x800ec08c": "Return 0 at I43_SetParam after the show-buffer request; skip parameter 0x1bc active draw-context selection.",
 }
 
 
@@ -206,7 +206,7 @@ def install_render_hooks(project, angr):
 
     for address, count, result in ((OSD_CLEAR,0,0), (0x801049C4,0,3), (OSD_ATTR,6,1), (OSD_LINE,6,0),
                                    (ICON_DRAW,5,0), (OSD_TEXT,7,0), (ALIGNED_TEXT,0,0), (CACHE,4,0),
-                                   (PUBLISH,3,1), (DEBUG_LOG,2,0), (0x80125BE0,0,1),
+                                   (PUBLISH,3,1), (SET_PARAM,2,0), (0x80125BE0,0,1),
                                    (0x80125F14,0,1), (0x80125F98,0,1), (0x80126090,0,1), (0x801260B0,0,1)):
         project.hook(address, capture(address, count, result))
     project.hook(QUEUE_SEND, Send())

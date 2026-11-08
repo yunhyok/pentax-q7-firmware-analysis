@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "ca124ccbac0afec2e3cb740ce85d39d43da7e933",
-  "updated_at": "2026-11-08T19:22:39+09:00",
+  "baseline_commit": "e42db39349df1c75b5e2859a8f3a9841661dd6bb",
+  "updated_at": "2026-11-08T19:25:53+09:00",
   "goals": {
     "rebuild": {
       "status": "MAIN upper23fixtures plus two separately initialized native Burn prefixes: original FileX open stops before NAND op2; modeled open/geometry proceeds through installed-header op6/op4 models to first card FileX read entry. E01 terminal remains separately validated. No actual storage or update acceptance.",
@@ -195,18 +195,18 @@
         "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
         "tools/check_colorspace_ui.py": "cfc5d3ffed73cd9e420e95813c7b2bfd86f2279be25f2fc620b2f5de2242cb64",
         "colorspace-ui-report.html": "7796b24701e10c01d8ad3b80e75991624c0e6ac348dad900aa66256d5599b02c",
-        "analysis/colorspace-render.json": "4b46ec562312528c701f2d62e2ae86c23b2ee17207ecbd249b49abdc8234b201",
-        "tools/check_colorspace_render.py": "b7e59987909a7ff4b561874ff7c58aed22bc4765dde2ce1f0ebc9234e837a509",
-        "colorspace-render-report.html": "11ef2e2b9ee000f2f5fb6b01c1354ef79be85f02f5feaaf92a35ca4c34dacac3",
+        "analysis/colorspace-render.json": "80a0ef0e4ef262cd70a56efe6ffb2c82e20553b56ebf93b44945478b2a667117",
+        "tools/check_colorspace_render.py": "3fc8175f5a90236a24b24887097d5aa4ce04d02f9167f3b984e8a81fc7339607",
+        "colorspace-render-report.html": "6617f224d99e686735cbe861d195cda9bf6ac897747ea426ab02b9d7c21b92df",
         "analysis/colorspace-raster.json": "46981c50fe8078c8b40d8062b98aca4b0e8e556eb7032dde044e468077bec79b",
         "colorspace-raster-report.html": "459796ecfd4108e0d41318fa5232acf6f9ea768fcb9b6c0f157b75b1e3bf3c60",
         "analysis/colorspace-glyph.json": "be6667479381038bef41253c0cfb14b156f77096218fbddfa13ace6b630d7f1c",
         "tools/check_colorspace_glyph.py": "cc5a69d3a826a0a81137806e5eab44562c7904c2201023067f142340ea6480e2",
         "tools/verify_glyph.py": "7d06336886841817f526d394bffb77f11121978c650f9f16193b72faa0fbaf0a",
         "colorspace-glyph-report.html": "bf1d5662e2eb7b0fe48691d5045aa51c7fc7c3f3aabdc93826794645dbd80a01",
-        "analysis/colorspace-attributes.json": "1792115a76bbc5665667d4100bb4c5f3aafcd8842985430d124c07fd84ac6d5e",
+        "analysis/colorspace-attributes.json": "7604d1cb9649e705b8bb6f2a381841c3bf183eac3268432cac5a5bff0dba5305",
         "tools/check_colorspace_attributes.py": "4c4f24cc88582f9db58318bca674999dc3199c1b32f439ea98ed57e118d3ebc1",
-        "colorspace-attributes-report.html": "3b16b0a905b1a4e605dc4cd3aef5a799df0c374a29e78afdec5ac8bb32687460"
+        "colorspace-attributes-report.html": "5aad400d36d9451e873a56f6fb8f79c5388a17915028ad33320fcd8485f17b27"
       },
       "hash_normalization": "UTF-8 LF bytes",
       "reproduction_command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
@@ -598,10 +598,9 @@
     "validation": "311 original words,21 typed/3 anonymous E01 records,47 main functions,38 ranges reproduced; deterministic HTML PASS."
   },
   "latest_followup": {
-    "scope": "Two separate MAIN Burn prefix fixtures",
-    "validation": "Coordinator reran both original prefixes and publicCLI exactly;98MAIN+11E01words/24MAIN+1typedE01ranges and source hashes verified. Full original448block/ELF/inventory reproduction and49unit tests PASS;2SVG inspected at1265px with no overflow.",
-    "remaining": "No Ex body/card read result or installed-media observation; later selector1/maps/program/reboot remain unverified.",
-    "editorial": "8paragraphs light4.4%character27.6%sentence,goldenPASS,modality0,B6/6; coordinator finalizeraccept."
+    "scope": "Correct render hook role before context-binding continuation",
+    "validation": "Native original I43_SetParam chain inspected; semantic JSON equality after only one role-string replacement proves unchanged prior observations.",
+    "remaining": "Original context selection was modeled away in earlier refresh runs; it remains outside their validation scope."
   },
   "validation_runs": [
     {
@@ -655,5 +654,12 @@
   "glyph_scope_correction": {
     "scope": "Hero, diagram, README/index and render/raster links identify a separate re-input of identical sRGB text into a fresh default-scale context, not continuous original UI state or actual UI attributes.",
     "validation": "Only presentation/scope clarification;2native cases, all source records, original checker and replay hashes unchanged."
+  },
+  "render_model_correction": {
+    "address": "0x800ec08c",
+    "actual": "I43_SetParam",
+    "role": "Parameter0x1bc sets the active draw context; the historical refresh hook returns0 and skips it.",
+    "validation": "Original SetOsd tail-call, parameter and setter source inspected; only role strings and local constant name changed, all replay observations identical.",
+    "remaining": "Separate native registration/selection probe in progress; actual UI lifecycle not yet established."
   }
 }
