@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — 재패킹 검증과 AF·UI 기반 연구</title><meta name="description" content="Q7 448블록 재패킹, 앱 업데이트 검사와 burn loader, AF 추정·렌즈 명령, UI 리소스 경계의 오프라인 검증"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
+<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / RESEARCH CHECKPOINT</p><h1>재패킹 검증과<br><span>AF·UI 기반 연구</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="hdr-task-report.html">FC1·HDR task 분석</a><a href="index.html">전체 분석</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub</a></p></div><aside class="milestone"><strong>448 blocks</strong><span>원본과 바이트 단위 일치</span><strong>0 → 1</strong><span>변경 이미지에서 복원한 코드 실행</span><strong>실기 미검증</strong><span>업데이트 수용·부팅·촬영</span></aside></header>
+<nav aria-label="문서 목차"><a href="#rebuild">재생성</a><a href="#loader">업데이트 검사</a><a href="#af">AF 기반 연구</a><a href="#ui">UI 경계</a><a href="#comparison">K-3·색 처리</a><a href="#validation">검증·한계</a></nav><main>
+<section id="rebuild"><p class="eyebrow">01 / ROUND-TRIP AND CONTROLLED EDIT</p><h2>원본 재생성과 한 명령 변경을 각각 검증했다</h2><p>{{repack}} <a href="analysis/rebuild-evidence.json">[R1: roundtrip·patched]</a></p>{{rebuild_graph}}
+<div class="table-wrap"><table><caption>같은 크기의 오프라인 변경 실험</caption><thead><tr><th>항목</th><th>확인 결과</th></tr></thead><tbody><tr><th>변경 주소</th><td>0x803f0210: GetFirmwareReleaseVersion의 jr ra 지연 슬롯</td></tr><tr><th>명령</th><td>0x00001021 → 0x24020001; 원본 반환 0 / 변경 반환 1</td></tr><tr><th>영향 블록</th><td>E04 index 146; 파일 [4127132, 4139448); 보정 토큰 8개</td></tr><tr><th>압축 비트</th><td>85277 → 85426; 기존 저장 공간 안에 수용</td></tr><tr><th>경계</th><td>파일 길이, 블록·세그먼트 위치와 크기 유지; 모든 복원 바이트 대조</td></tr></tbody></table></div>
+<p>도구는 원본 토큰 중 변경된 이력과 충돌하는 복사 토큰을 해당 블록의 리터럴 코드로 바꿉니다. 다음 블록이 앞 블록을 참조하는 경우도 검사합니다. 필요한 리터럴이 없거나 기존 공간을 넘으면 오류로 중단합니다. 코드 삽입·삭제, 일반 압축기와 재배치는 아직 지원하지 않습니다. <a href="tools/repack_q7.py">[리패커]</a> · <a href="tests/test_repack_q7.py">[경계 테스트]</a></p>
+<p class="note">반환값 변경은 재생성 경로를 확인하기 위한 통제된 실험입니다. AF·UI 기능을 변경한 펌웨어가 아니며, 변경 이미지는 배포하지 않습니다.</p></section>
+
+<section id="loader"><p class="eyebrow">02 / APPLICATION GATE AND BURN LOADER</p><h2>앱 파일 검사와 실제 기록 경로를 구분한다</h2><p>{{gate}} <a href="analysis/rebuild-evidence.json">[R1: application_gate]</a></p>
+<pre><code>footer = file[-32:]
+footer[0:8], [8:16], [16:24] = ORION / KB538 / 77690
+LE32(footer+24) == sum(file[:-32]) mod 2^32
+footer[28:32] = 01 01 17 0a</code></pre>
+<p>식별자 3종 불일치, 체크섬 불일치, 본문 변경 후 체크섬 재계산 여부, 파일 읽기·할당 실패를 검사했습니다. 마지막 버전 4바이트를 바꾼 합성 파일도 이 함수에서는 통과했습니다. 이는 이 함수의 결과이며, 전체 업데이트 정책에서 버전 검사가 없다는 뜻은 아닙니다. <a href="tools/check_update_gate.py">[13사례 원본 명령 재실행]</a></p>
+<p>{{boot}} <a href="analysis/rebuild-evidence.json">[R1: boot_loader]</a></p>
+<div class="table-wrap"><table><caption>원본 BurnGetHandle을 실행한 헤더 분기 — 플래시 함수는 실행하지 않음</caption><thead><tr><th>kind</th><th>hash flag</th><th>선택 결과</th></tr></thead><tbody><tr><th>3</th><td>0 / 1</td><td>BurnNand 0x80012654</td></tr><tr><th>8</th><td>0</td><td>BurnLbaNand 0x8001e328</td></tr><tr><th>5</th><td>0</td><td>BurnSdMmc 0x80010f18</td></tr><tr><th>7</th><td>0</td><td>NULL</td></tr></tbody></table></div>
+<p>E01의 가상 주소는 메인 이미지와 일부 겹치므로, E01 명령은 별도 이미지와 원본 파일 오프셋으로 식별했습니다. E01 함수 범위는 내장 ELF의 STT_FUNC 크기를 사용합니다. 다음 연구 대상은 burn 레코드의 목적지·보호·실제 적용 조건입니다. <a href="tools/check_rebuild_code.py">[헤더 분기·변경 코드 재현]</a></p></section>
+
+<section id="af"><p class="eyebrow">03 / AUTOFOCUS FOUNDATIONS</p><h2>피크 계산, 렌즈 정책과 명령 전달을 나누어 조사한다</h2><p>{{af}} <a href="analysis/portability-evidence.json">[P1: af]</a></p>{{af_graph}}
+<div class="table-wrap"><table><caption>원본 코드에서 확인한 AF 계산 경계</caption><thead><tr><th>지점</th><th>계약·조건</th></tr></thead><tbody><tr><th>Approximation 0x8037d704</th><td>O32 a0=표본 수, a1=i32 위치 배열, a2=float32 대비 배열, v0=i32 위치</td></tr><tr><th>작업 공간</th><td>0x80c24bd4부터 전역 scratch 사용; 순수·재진입 가능 함수로 간주하지 않음</td></tr><tr><th>호출 지점</th><td>CalcFocus 0x8037dccc / WobbCalcFocus 0x80381494; 하나의 진입점 교체는 둘 다 영향</td></tr><tr><th>후속 분기</th><td>iFocusPos 저장, 0x8000 sentinel 조건, 렌즈 관련 보정·기준 위치 차분 → mode 2 요청</td></tr><tr><th>재실행 범위</th><td>합성 곡선 6사례; 표본 수 11의 입력 배열 미접근 경계 포함</td></tr></tbody></table></div>
+<p>LensDriveControl은 모드·방향 등 u8 필드, u16 값과 u32 위치차를 공유 구조에 쓴 뒤 초기화된 콜백을 통지합니다. 하위 제한 모드가 켜진 조건에서는 큐 제출을 막고 status 8을 반환하며, 관측한 대기 시간 초과 경로에는 status 6이 있습니다. RAM에서 확인한 인자는 실제 통신선에서 캡처한 프레임이 아닙니다. <a href="analysis/lens-routing.json">[기존 렌즈 경로]</a> · <a href="analysis/portability-evidence.json">[P1: lens_abi]</a></p>
+<p>공식 자료는 01·02 Q 렌즈의 렌즈 내부 AF 모터를 설명하고, Q7 FAQ는 Adapter Q의 K-mount 렌즈를 수동 초점으로 구분합니다. Q7의 알고리즘 연구에 K-mount 바디 구동계를 그대로 대입하지 않습니다. <a href="https://www.ricoh-imaging.co.jp/english/news/2011/201109.html">[Q 렌즈 모터]</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html">[Q7 지원 조합]</a></p></section>
+
+<section id="ui"><p class="eyebrow">04 / Q7 RESOURCE AND DISPLAY ABI</p><h2>아이콘 ID, 저장 폭과 그리기 규칙을 확인했다</h2><p>{{ui}} <a href="analysis/portability-evidence.json">[P1: ui]</a></p>{{ui_graph}}
+<p>BootStill의 테이블 수로 확인한 범위는 RLE bank ID 1…248과 Zoran bank ID 1001…1546입니다. 디스패치 함수만으로 두 범위 사이의 잘못된 ID가 안전하다고 볼 수 없습니다. 아이콘의 논리 폭과 압축 해제 데이터 폭도 다릅니다.</p>
+<div class="table-wrap"><table><caption>원본 metadata 함수의 재실행 결과</caption><thead><tr><th>아이콘 ID</th><th>논리 폭 × 높이</th><th>저장 폭</th></tr></thead><tbody>{{geometry_rows}}</tbody></table></div>
+<p>LCD 모드 2에서 GetScreenSize가 반환한 내부 좌표는 960×480입니다. 공식 사양의 3.0인치·약 46만 도트와는 서로 다른 단위입니다. 아이콘 30은 32×16 데이터에 24×16 논리 크기를 가지며, 실제 LCD 분기 재실행에서 투명하지 않은 328개 픽셀의 주소·값을 독립 RLE 해석 결과와 대조했습니다. 기본·재색칠 두 경우 모두 일치했습니다. <a href="tools/check_q7_portability.py">[6 geometry·2 draw 재현]</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html">[화면 사양]</a></p>
+<p>문자열과 폰트는 별도 자원 경로입니다. 기존 아이콘만 치환해 메뉴 언어와 글꼴까지 이식했다고 볼 수 없습니다. 다음 단계에서는 자원 길이·캐시·팔레트 경계를 유지한 새 자원 실험과 메뉴의 포커스·확인·취소 상태 전이를 분리해 검증합니다.</p></section>
+
+<section id="comparison"><p class="eyebrow">05 / CROSS-MODEL AND COLOR BOUNDARIES</p><h2>재현할 설계와 기종별 구현을 구분한다</h2><p>K-3 Mark III 비교 기준은 공개 커밋 <code>{{k3_commit}}</code>입니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/1617d141021f95f3a915b000ff701637dcec3967/analysis/update-resource-evidence.json">[K3: 업데이트·자원 근거]</a></p>
+<div class="table-wrap"><table><caption>같은 연구 항목의 차이</caption><thead><tr><th>항목</th><th>Q7</th><th>K-3 Mark III</th></tr></thead><tbody><tr><th>기계어</th><td>MIPS32 little-endian / O32</td><td>기존 분석의 ARM/Thumb; 함수·객체 ABI 호환 미확인</td></tr><tr><th>검사 범위</th><td>footer 3식별자 / 바이트 합</td><td>프로젝트·타입·magic·워드 합을 검사하는 별도 경로</td></tr><tr><th>UI 자원</th><td>내장 두 아이콘 bank / indexed LCD</td><td>ICONBIN 로더·저장·준비 상태의 별도 경로</td></tr><tr><th>입력 설계</th><td>물리 버튼·다이얼에 맞춰 재구성 필요</td><td>세로 스크롤 메뉴·터치·Smart Function 설계</td></tr><tr><th>실기 한계</th><td colspan="2">각 모델의 코드 관측을 상대 모델의 실행 증거로 사용하지 않음</td></tr></tbody></table></div>
+<p>K-3 III GUI 설계 자료는 메뉴 계층·스크롤·입력 대응을 재구현할 때 참고할 수 있습니다. 그 설계와 기존 실행 파일·자원의 바이너리 호환성은 별개입니다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/special/interview/gui.html">[공식 GUI 설계]</a></p>
+<p>{{color}} <a href="final-color-report.html">[계수 생성·Export]</a> · <a href="hdr-task-report.html#meaning">[FC1 유형과 비트의 한계]</a></p></section>
+
+<section id="validation"><p class="eyebrow">06 / REPRODUCTION AND REMAINING WORK</p><h2>파일·명령 검증을 실기 성공으로 확대하지 않는다</h2><p>{{limits}}</p>
+<ul><li>재생성: 전체 448블록 재복원, 원본 byte-identical 및 변경 코드 0→1 실행.</li><li>앱 검사: 13사례; file I/O·allocator·로그를 모델링하고 원본 비교·합산 코드를 실행.</li><li>부트 헤더: 5사례; allocator·로그만 대체하고 플래시 콜백 호출 전 중단.</li><li>AF·UI: 6 AF + 6 geometry + 2 draw 사례; draw buffer getter 한 곳을 대체. 실제 카메라·모터·LCD를 실행하지 않음.</li></ul>
+<pre><code>python -m unittest discover -s tests -v
+python tools/verify_report.py --firmware path/to/fwdc603p.bin
+python tools/repack_q7.py path/to/fwdc603p.bin --output-dir .private/new-roundtrip
+python tools/check_update_gate.py .private/main-expanded.elf --output .private/new-gate.json
+python tools/check_q7_portability.py .private/main-expanded.elf --output .private/new-portability.json</code></pre>
+<p>각 CLI 출력은 새 경로를 사용합니다. 리패커의 펌웨어·ELF 출력은 저장소의 <code>.private</code> 아래로 제한합니다. 압축 공간이 부족하거나 원본 바이트가 기대값과 다르면 변경을 적용하지 않습니다.</p>
+<ul class="sources"><li><a href="analysis/rebuild-evidence.json">R1 · 재생성·앱 검사·boot 근거</a></li><li><a href="analysis/portability-evidence.json">P1 · AF·UI 근거와 공식 출처</a></li><li><a href="analysis/hq-status.json">네 연구 목표의 상태·다음 작업</a></li><li><a href="analysis/implementation-editorial.json">문장 검수 기록</a></li></ul></section>
+</main><footer>독립적인 펌웨어 분석 · Q7 v1.01 · 카메라에 변경 이미지를 기록하지 않았습니다.</footer></body></html>

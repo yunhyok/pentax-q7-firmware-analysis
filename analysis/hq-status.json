@@ -1,0 +1,132 @@
+{
+  "model": "Pentax Q7",
+  "firmware_version": "1.01",
+  "baseline_commit": "ca3a9ba3bb7bdf77a484b2964b4dd15d8c233ba8",
+  "updated_at": "2026-11-08T14:57:38+09:00",
+  "goals": {
+    "rebuild": {
+      "status": "offline round-trip and bounded instruction-change replay passed; camera acceptance unverified",
+      "evidence": [
+        "analysis/rebuild-evidence.json",
+        "tools/repack_q7.py",
+        "tools/check_update_gate.py",
+        "tools/check_rebuild_code.py"
+      ],
+      "gaps": [
+        "General insertion/deletion and relocation",
+        "Full burn-record application and later integrity checks",
+        "Camera update recognition, flash, boot, capture and recovery"
+      ],
+      "next_actions": [
+        "Trace burn-record dispatch, protection and destination handling"
+      ]
+    },
+    "raw_profile": {
+      "status": "firmware color arithmetic and conditional MMIO paths documented; calibrated RAW profile unverified",
+      "evidence": [
+        "final-color-report.html",
+        "hdr-task-report.html"
+      ],
+      "gaps": [
+        "RAW normalization and white-balance domain",
+        "Camera matrix versus DCP coordinate transform",
+        "Matched camera RAW/JPEG and calibration targets"
+      ],
+      "next_actions": [
+        "Provide Q7 coefficient domain and pass-selection evidence to the independent profile workstream"
+      ]
+    },
+    "autofocus": {
+      "status": "foundational research only; no immediate AF patch or physical drive requested",
+      "evidence": [
+        "analysis/portability-evidence.json",
+        "tools/check_q7_portability.py"
+      ],
+      "gaps": [
+        "Lens information to capability/policy mapping",
+        "AF estimator, limits, command and completion semantics across Q lenses"
+      ],
+      "next_actions": [
+        "Trace lens information, capabilities and actuator policy into the existing AF/control path",
+        "Document supported future modification boundaries without applying a lens-specific patch"
+      ]
+    },
+    "ui_port": {
+      "status": "Q7 icon banks, logical geometry and indexed LCD draw ABI verified in bounded replay",
+      "evidence": [
+        "analysis/portability-evidence.json",
+        "tools/check_q7_portability.py"
+      ],
+      "gaps": [
+        "K-3 III design reimplementation",
+        "Menu event/state integration",
+        "Resource relocation, full-screen redraw and physical display"
+      ],
+      "next_actions": [
+        "Test authored resource replacement within existing ID/geometry/palette constraints",
+        "Preserve Q7 physical-input and setting interfaces"
+      ]
+    }
+  },
+  "new_findings": [
+    "All 448 compressed blocks round-trip to the byte-identical original package.",
+    "One MIPS delay-slot instruction can be changed without moving segment or block boundaries; rebuilt analysis code returns 1 instead of 0.",
+    "The application update gate checks three footer IDs and an additive byte checksum excluding the last 32 bytes.",
+    "The supplied burn header selects NAND and has its optional MD5-worker flag set to zero; later integrity checks remain unexcluded.",
+    "Q7 indexed LCD icon rendering uses one byte per palette index; the internal LCD geometry is distinct from physical panel dot count."
+  ],
+  "validation": [
+    {
+      "command": "python -m unittest discover -s tests -p test_repack_q7.py -v",
+      "result": "5 passed",
+      "limits": "Synthetic token and boundary cases"
+    },
+    {
+      "command": "python tools/repack_q7.py <original> --output-dir .private/<new-roundtrip>",
+      "result": "448 blocks; output byte-identical to pinned original",
+      "limits": "No camera execution"
+    },
+    {
+      "command": "python tools/check_update_gate.py <original-analysis.elf> --output <new-result.json>",
+      "result": "13 original MIPS app-gate cases passed",
+      "limits": "Synthetic file I/O and allocator; no actual updater"
+    },
+    {
+      "command": "python tools/check_rebuild_code.py <original> <original-analysis.elf> <rebuilt-analysis.elf> --output <new-result.json>",
+      "result": "Return 0 to 1 and five burn-header dispatch cases passed",
+      "limits": "No flash callbacks executed"
+    },
+    {
+      "command": "python tools/check_q7_portability.py <original-analysis.elf> --output <new-result.json>",
+      "result": "Coordinator replay: 6 AF, 6 geometry, 2 icon cases passed and match worker metadata",
+      "limits": "Bounded synthetic memory and one draw-buffer model; physical camera not exercised"
+    },
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "result": "23 passed",
+      "limits": "Offline tools and synthetic parser/guard tests"
+    },
+    {
+      "command": "python tools/verify_report.py --firmware <original>",
+      "result": "PASS: 448 compressed blocks, full inventory/symbols, prior reports and new 278 VA words + 7 file words reproduced",
+      "limits": "Original firmware evidence; no actual camera"
+    },
+    {
+      "command": "Browser rendering of implementation-report.html",
+      "result": "Three accessible SVG diagrams; inspected rebuild/UI layout and anchor navigation; no document horizontal overflow at 1265 px",
+      "limits": "Desktop viewport only"
+    }
+  ],
+  "artifacts": [
+    "analysis/portability-evidence.json",
+    "tools/repack_q7.py",
+    "tools/check_update_gate.py",
+    "tools/check_rebuild_code.py",
+    "tools/check_q7_portability.py",
+    "analysis/rebuild-evidence.json",
+    "implementation-report.html"
+  ],
+  "blockers": [
+    "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
+  ]
+}

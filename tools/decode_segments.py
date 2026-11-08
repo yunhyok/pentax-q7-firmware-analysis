@@ -20,7 +20,41 @@ MAX_OUTPUT = 16 * 1024 * 1024
 BITS = tuple(f"{n:08b}" for n in range(256))
 
 
-def decode_block(literal_table, distance_table, data, output, size):
+def table_symbol(table, is_literal, take, peek):
+    """Read one compiled Huffman table leaf using a bounded bit reader."""
+    word = table[0]
+    for _ in range(16):
+        kind = word & 3
+        shift = word >> 15
+        if kind == 3:
+            extra = (word >> 12) & 7 if is_literal else 0
+            take(shift - extra)
+            return word & 0x7fff
+        width = (word >> 11) & 15
+        base = (word & 0x7ff) >> 2
+        if kind == 0 and 0 <= shift <= width and width:
+            index = base + peek(width)
+            if index >= len(table):
+                raise ValueError("dense lookup outside table")
+            word = table[index]
+            take(shift if word & 3 == 3 else width)
+        elif kind == 1 and width and 1 <= shift <= 15:
+            side = take(1)
+            cap = shift if side else width
+            base += width if side else 0
+            for count in range(1, cap + 1):
+                if count == cap or take(1) != side:
+                    break
+            index = base + count
+            if index >= len(table):
+                raise ValueError("compact lookup outside table")
+            word = table[index]
+        else:
+            raise ValueError("invalid Huffman descriptor")
+    raise ValueError("Huffman lookup depth exceeded")
+
+
+def decode_block(literal_table, distance_table, data, output, size, tokens=None):
     """Append one block; earlier blocks in this segment supply LZ history."""
     bits = "".join(BITS[value] for value in data)
     cursor = 0
@@ -37,62 +71,30 @@ def decode_block(literal_table, distance_table, data, output, size):
         cursor += width
         return value
 
-    def symbol(table, is_literal):
-        nonlocal cursor
-        word = table[0]
-        for _ in range(16):
-            kind = word & 3
-            shift = word >> 15
-            if kind == 3:
-                # The literal/length leaf shift already counts its extra bits.
-                extra = (word >> 12) & 7 if is_literal else 0
-                take(shift - extra)
-                return word & 0x7fff
-            width = (word >> 11) & 15
-            base = (word & 0x7ff) >> 2
-            if kind == 0 and 0 <= shift <= width and width:
-                # Dense lookup: leaf shift is relative to the minimum depth.
-                index = base + peek(width)
-                if index >= len(table):
-                    raise ValueError("dense lookup outside table")
-                word = table[index]
-                take(shift if word & 3 == 3 else width)
-            elif kind == 1 and width and 1 <= shift <= 15:
-                # Compact lookup: count leading equal bits, up to the cap
-                # for that bit, then consume the opposite bit if reached.
-                side = take(1)
-                cap = shift if side else width
-                base += width if side else 0
-                for count in range(1, cap + 1):
-                    if count == cap or take(1) != side:
-                        break
-                index = base + count
-                if index >= len(table):
-                    raise ValueError("compact lookup outside table")
-                word = table[index]
-            else:
-                raise ValueError("invalid Huffman descriptor")
-        raise ValueError("Huffman lookup depth exceeded")
-
     while True:
-        word = symbol(literal_table, True)
+        start = cursor
+        word = table_symbol(literal_table, True, take, peek)
         if word == 0x403:
             if len(output) != end:
                 raise ValueError("block output length mismatch")
             if "1" in bits[cursor:]:
                 raise ValueError("nonzero padding after end marker")
+            if tokens is not None:
+                tokens.append(("end", 0, 0, start, cursor))
             return cursor
         if len(output) >= end:
             raise ValueError("missing end marker at declared output length")
         if word < 0x400:
             output.append(word >> 2)
+            if tokens is not None:
+                tokens.append(("literal", word >> 2, 0, start, cursor))
             continue
         if not word & 0x800 or word >> 12 > 5:
             raise ValueError("invalid length symbol")
         length = ((word >> 2) & 0x1ff) + take(word >> 12)
         if not 3 <= length <= min(258, end - len(output)):
             raise ValueError("copy length outside block output bound")
-        word = symbol(distance_table, False)
+        word = table_symbol(distance_table, False, take, peek)
         extra = word >> 4
         if extra > 13 or (extra and not word & 8):
             raise ValueError("invalid distance symbol")
@@ -101,6 +103,8 @@ def decode_block(literal_table, distance_table, data, output, size):
             raise ValueError("copy distance exceeds available history")
         history = output[-distance:]
         output.extend((history * ((length + distance - 1) // distance))[:length])
+        if tokens is not None:
+            tokens.append(("copy", length, distance, start, cursor))
 
 
 def decode_segment(data, segment):

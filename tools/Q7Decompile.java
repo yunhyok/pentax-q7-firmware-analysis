@@ -30,6 +30,7 @@ public class Q7Decompile extends GhidraScript {
             // Sidecar extents are candidate boundaries; the evidence retains this limitation.
             Function f = getFunctionAt(a);
             if (f == null) f = currentProgram.getFunctionManager().createFunction(parts[2], a, new AddressSet(a, end), SourceType.USER_DEFINED);
+            else f.setBody(new AddressSet(a, end));
             disassemble(a);
             if (f != null) functions.add(f);
         }
