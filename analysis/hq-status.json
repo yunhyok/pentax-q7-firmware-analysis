@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "441aced49a59f40b090328d7de0fd04ccfeb4a2d",
-  "updated_at": "2026-11-08T17:26:16+09:00",
+  "baseline_commit": "a71eb254326a17e633bc9a9ce930f6f19179fb0a",
+  "updated_at": "2026-11-08T17:38:34+09:00",
   "goals": {
     "rebuild": {
       "status": "Native program-source281-byte changes explained by170 field events plus3072 byte-preserving copy events; native MD5 and card callback connected. Existing C fixed-table package and compiler results retained.",
@@ -145,9 +145,9 @@
         "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
         "tools/check_colorspace_ui.py": "cfc5d3ffed73cd9e420e95813c7b2bfd86f2279be25f2fc620b2f5de2242cb64",
         "colorspace-ui-report.html": "7796b24701e10c01d8ad3b80e75991624c0e6ac348dad900aa66256d5599b02c",
-        "analysis/colorspace-render.json": "4aadc6b95302e05dac36ccf4b22c190315a3613f28d2237995db057b21a2039f",
+        "analysis/colorspace-render.json": "4b46ec562312528c701f2d62e2ae86c23b2ee17207ecbd249b49abdc8234b201",
         "tools/check_colorspace_render.py": "b7e59987909a7ff4b561874ff7c58aed22bc4765dde2ce1f0ebc9234e837a509",
-        "colorspace-render-report.html": "034b48808b3b5b6437a8e808b48248cfba719698c4a9b7c922fc0b539f554deb"
+        "colorspace-render-report.html": "1f4eaa30a9e72e9a89adcde1feadc0bd8d26ecb48ba49b84c09d9a9132febca9"
       },
       "hash_normalization": "UTF-8 LF bytes",
       "reproduction_command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
@@ -486,5 +486,10 @@
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
-  ]
+  ],
+  "render_review_corrections": {
+    "show_request": "Capture-and-return replacement at0x8029ef58; original resumes0x8043ca34 and stops in consumer0x80adf980.",
+    "resource_links": "Full ordered labels and focus_assets metadata pinned; seven valid-but-misconnected mutations rejected.",
+    "validation": "311 original words,21 typed/3 anonymous E01 records,47 main functions,38 ranges reproduced; deterministic HTML PASS."
+  }
 }

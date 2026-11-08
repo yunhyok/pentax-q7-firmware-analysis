@@ -27,6 +27,15 @@ def resource_ranges(value):
             yield from resource_ranges(child)
 
 
+def validate_render_links(render):
+    """Pin ordered resource relationships as well as individual range hashes."""
+    if not __debug__:
+        raise RuntimeError('Validation requires assertions')
+    relationships = [render['labels'], render['focus_assets']]
+    encoded = json.dumps(relationships, sort_keys=True, separators=(',', ':')).encode()
+    assert hashlib.sha256(encoded).hexdigest() == '2e534218e45491cf06055a01a6cf05192b3e1024161c3e962f4f4d95a237ba52'
+
+
 def verify(firmware=None, decoded=None):
     if not __debug__:
         raise RuntimeError('Validation requires assertions')
@@ -35,6 +44,7 @@ def verify(firmware=None, decoded=None):
     validate_hash(header['hash_replay'])
     validate_card(card['replay'])
     validate_render(render['replay'])
+    validate_render_links(render)
     canonical=json.dumps(header['hash_replay'],sort_keys=True,separators=(',',':')).encode()
     assert hashlib.sha256(canonical).hexdigest()==card['comparison']['canonical_replay_sha256']
     assert header['boot_elf_sha256'] == card['boot_elf_sha256'] == BOOT_SHA256

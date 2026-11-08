@@ -13,5 +13,10 @@
   "self_check": "6/6",
   "grade": "B",
   "finalizer": "corrected: remove only from modeled queue APIs; actual fixture models other declared boundaries",
-  "scope": "First paragraph numeric machine-state extension; next10 header/hash and final8 Color Space render paragraphs. FCU entry after JAL/delay slot explicitly distinguished from op5 execution."
+  "scope": "First paragraph numeric machine-state extension; next10 header/hash and final8 Color Space render paragraphs. FCU entry after JAL/delay slot explicitly distinguished from op5 execution.",
+  "subsequent_correction": {
+    "reason": "HQ verified show-request replacement returns to original refresh; execution stops at consumer 0x80adf980, not at the request.",
+    "scope": "render-copy.json buffer paragraph; coordinator source review after the recorded humanize pass",
+    "render_copy_sha256": "91edd990bac17953c17666938db173bbf7dc513b03930974715287380edc626c"
+  }
 }
