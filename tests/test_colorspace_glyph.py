@@ -15,9 +15,26 @@ sys.path.insert(0, str(ROOT/'tools'))
 import check_colorspace_glyph as glyph
 import check_colorspace_attributes as attributes
 import verify_glyph
+import verify_context_binding
 
 
 class GlyphTests(unittest.TestCase):
+    def test_context_selection_rejects_supplied_binding_and_missing_slot_drift(self):
+        original = json.loads((ROOT/'analysis/context-binding.json').read_text(encoding='utf-8'))
+        verify_context_binding.verify()
+        for kind in ('source','missing','model','range'):
+            doc = deepcopy(original)
+            if kind == 'source':
+                doc['source']['selected_functions'][0]['address'] = '0x8043cac4'
+            elif kind == 'missing':
+                doc['bounded_replay']['replay']['missing_slot']['active_after'] = '0x21010000'
+            elif kind == 'model':
+                doc['bounded_replay']['replay']['models']['0x800ec08c'] = 'Supply active context'
+            else:
+                doc['contracts']['initial_inclusive_layer_ranges'][0] = [16,23]
+            with self.subTest(kind=kind),patch.object(verify_context_binding,'read',return_value=doc),self.assertRaises(AssertionError):
+                verify_context_binding.verify()
+
     def test_attribute_linkage_and_scale_observations_reject_drift(self):
         docs = {n:json.loads((ROOT/'analysis'/n).read_text(encoding='utf-8'))
                 for n in ('colorspace-attributes.json','colorspace-glyph.json','colorspace-render.json')}
@@ -85,9 +102,9 @@ class GlyphTests(unittest.TestCase):
                 output.symlink_to(target)
             except OSError as error:
                 self.skipTest(str(error))
-            for script,optimized in ((s,o) for s in ('glyph','attributes') for o in (False,True)):
+            for script,optimized in ((s,o) for s in ('colorspace_glyph','colorspace_attributes','context_binding') for o in (False,True)):
                 result = subprocess.run([sys.executable,*(['-O'] if optimized else []),
-                                         str(ROOT/f'tools/check_colorspace_{script}.py'),
+                                         str(ROOT/f'tools/check_{script}.py'),
                                          'missing.bin','missing.elf','--output',str(output)],
                                         capture_output=True,text=True,timeout=15,cwd=ROOT)
                 self.assertEqual(result.returncode, 2, result.stderr)

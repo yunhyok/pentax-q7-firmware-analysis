@@ -1,0 +1,989 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "scope": "Original Q7 screen-buffer roll, active draw-context stores, and two selector paths through GDI call boundaries.",
+  "related_evidence": [
+    "analysis/colorspace-render.json",
+    "analysis/colorspace-attributes.json"
+  ],
+  "contracts": {
+    "screen_draw_id": "0x80c6ae84",
+    "screen_show_id": "0x80c6ae86",
+    "normal_roll_gate": "u8[0x80c6aea1] == 0",
+    "registry_pointer_global": "0x8029f340",
+    "original_registry_pointer": "0x800eb34c",
+    "registry_slot": "registry + 4 + 4 * id",
+    "active_draw_context": "0x800eb4d8",
+    "show_context": "0x800eb4d4",
+    "max_id_global": "0x800ebd70",
+    "initial_max_id": 71,
+    "layer_ranges_global": "0x800ebd5c",
+    "initial_inclusive_layer_ranges": [
+      [
+        0,
+        7
+      ],
+      [
+        32,
+        39
+      ],
+      [
+        64,
+        71
+      ]
+    ],
+    "draw_parameter": "0x1bc",
+    "parameter_jump_word_va": "0x800f61c0",
+    "draw_setter": "0x8024a59c",
+    "active_store_pc": "0x8024a614",
+    "active_store_vex_pc": "0x8024a610"
+  },
+  "bounded_replay": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / VEX",
+    "replay": {
+      "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+      "seed": {
+        "registry": "0x21020000",
+        "contexts": {
+          "17": "0x21000000",
+          "18": "0x21010000"
+        },
+        "initial_draw": 17,
+        "initial_show": 18,
+        "max_id": 71
+      },
+      "initial_binding": {
+        "kind": "native-active-store",
+        "source_store": "0x8024a614",
+        "vex_pc": "0x8024a610",
+        "context": "0x21000000"
+      },
+      "valid_rolls": [
+        {
+          "draw_before": 17,
+          "draw_after": 18,
+          "events": [
+            {
+              "kind": "attribute-setter",
+              "context": "0x21000000",
+              "extent": [
+                48,
+                48
+              ]
+            },
+            {
+              "kind": "text-render-entry",
+              "context": "0x21000000",
+              "xy": [
+                96,
+                64
+              ],
+              "units": 4
+            },
+            {
+              "kind": "cache",
+              "address": "0x20000000",
+              "size": 460800
+            },
+            {
+              "kind": "publish",
+              "layer": 0,
+              "id": 17,
+              "flag": 1
+            },
+            {
+              "kind": "native-active-store",
+              "source_store": "0x8024a614",
+              "vex_pc": "0x8024a610",
+              "context": "0x21010000"
+            },
+            {
+              "kind": "attribute-setter",
+              "context": "0x21010000",
+              "extent": [
+                48,
+                48
+              ]
+            },
+            {
+              "kind": "text-render-entry",
+              "context": "0x21010000",
+              "xy": [
+                96,
+                64
+              ],
+              "units": 4
+            }
+          ]
+        },
+        {
+          "draw_before": 18,
+          "draw_after": 17,
+          "events": [
+            {
+              "kind": "attribute-setter",
+              "context": "0x21010000",
+              "extent": [
+                48,
+                48
+              ]
+            },
+            {
+              "kind": "text-render-entry",
+              "context": "0x21010000",
+              "xy": [
+                96,
+                64
+              ],
+              "units": 4
+            },
+            {
+              "kind": "cache",
+              "address": "0x20100000",
+              "size": 460800
+            },
+            {
+              "kind": "publish",
+              "layer": 0,
+              "id": 18,
+              "flag": 1
+            },
+            {
+              "kind": "native-active-store",
+              "source_store": "0x8024a614",
+              "vex_pc": "0x8024a610",
+              "context": "0x21000000"
+            },
+            {
+              "kind": "attribute-setter",
+              "context": "0x21000000",
+              "extent": [
+                48,
+                48
+              ]
+            },
+            {
+              "kind": "text-render-entry",
+              "context": "0x21000000",
+              "xy": [
+                96,
+                64
+              ],
+              "units": 4
+            }
+          ]
+        }
+      ],
+      "missing_slot": {
+        "draw_after": 18,
+        "active_after": "0x21000000",
+        "events": [
+          {
+            "kind": "cache",
+            "address": "0x20000000",
+            "size": 460800
+          },
+          {
+            "kind": "publish",
+            "layer": 0,
+            "id": 17,
+            "flag": 1
+          },
+          {
+            "kind": "fallback-log"
+          },
+          {
+            "kind": "attribute-setter",
+            "context": "0x21000000",
+            "extent": [
+              48,
+              48
+            ]
+          },
+          {
+            "kind": "text-render-entry",
+            "context": "0x21000000",
+            "xy": [
+              96,
+              64
+            ],
+            "units": 4
+          }
+        ]
+      },
+      "step_cap_per_call": 1000,
+      "models": {
+        "0x800b3d40": "observe cache request",
+        "0x8029ef58": "record show request before hardware path",
+        "0x802185d0": "observe context before setter body",
+        "0x80229410": "observe context before glyph path",
+        "0x800402cc": "accept display resource lock",
+        "0x800404e8": "accept display resource unlock",
+        "0x800a14f8": "observe missing-slot diagnostic"
+      }
+    }
+  },
+  "source": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "selected_functions": [
+      {
+        "names": [
+          "ScreenOsdLayer_Roll"
+        ],
+        "address": "0x8043ca4c",
+        "candidate_end": "0x8043cb2c",
+        "size": 224,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "5444a651a481504657d5a54bf72acea9a22273bf44b1ee449cc3e2293ab44a57",
+        "segment": "E04",
+        "decoded_offset": "0x30efcc"
+      },
+      {
+        "names": [
+          "ScreenOsdLayer_SetOsd"
+        ],
+        "address": "0x8043c9e0",
+        "candidate_end": "0x8043ca4c",
+        "size": 108,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "d19c844e3d87635be693a6417dfb6ca93e2a110be9151dba3e56f44ed69b2f83",
+        "segment": "E04",
+        "decoded_offset": "0x30ef60"
+      },
+      {
+        "names": [
+          "I43_SetParam"
+        ],
+        "address": "0x800ec08c",
+        "candidate_end": "0x800ec0b0",
+        "size": 36,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "61857dde115bb70f15c854b572378a61d33f7c6f92a11e6c3df068d6414c24fd",
+        "segment": "E03",
+        "original_file_offset": "0x1ee374"
+      },
+      {
+        "names": [
+          "AppSetParam"
+        ],
+        "address": "0x800f20e0",
+        "candidate_end": "0x800f2100",
+        "size": 32,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "5f3d536e330977ed0111bc821ad44ef25d712a24bef0224344cdf4a9229cb232",
+        "segment": "E03",
+        "original_file_offset": "0x1f43c8"
+      },
+      {
+        "names": [
+          "AppSetParamLong"
+        ],
+        "address": "0x800ef220",
+        "candidate_end": "0x800f20e0",
+        "size": 11968,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "28a895b9e5c73ee6cc148d2c64eb884391a7f64fdd98e6f3ab268eb342c4ae84",
+        "segment": "E03",
+        "original_file_offset": "0x1f1508"
+      },
+      {
+        "names": [
+          "AppOsdSetDrawBuffer"
+        ],
+        "address": "0x8024a59c",
+        "candidate_end": "0x8024a62c",
+        "size": 144,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "d311a9e0ca806574a898d904f313487a1f7f5186d3047f409823b2a906f1eab8",
+        "segment": "E04",
+        "decoded_offset": "0x11cb1c"
+      },
+      {
+        "names": [
+          "AppOsdGetOsdDrawContext"
+        ],
+        "address": "0x802490c8",
+        "candidate_end": "0x802490f8",
+        "size": 48,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "6e3dcd7b9cbe89c6079dca96befddd912cce2ee639dd500b142729c2e2610129",
+        "segment": "E04",
+        "decoded_offset": "0x11b648"
+      },
+      {
+        "names": [
+          "AppOsdSetAttributeByBufferID"
+        ],
+        "address": "0x8024bf9c",
+        "candidate_end": "0x8024c594",
+        "size": 1528,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "c07af25e23d36691b7e96d506d5835814dc5129c02bfab7fbaefb3f296b2db00",
+        "segment": "E04",
+        "decoded_offset": "0x11e51c"
+      },
+      {
+        "names": [
+          "AppDBTextOutByBufferID"
+        ],
+        "address": "0x8024928c",
+        "candidate_end": "0x802493b4",
+        "size": 296,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "70356f53d32ed40e9633e3c980dc82e9e1f76b2579c63d6fdf3a58090a4ea9e4",
+        "segment": "E04",
+        "decoded_offset": "0x11b80c"
+      },
+      {
+        "names": [
+          "AppOsdSetDefaultContext"
+        ],
+        "address": "0x8024ad5c",
+        "candidate_end": "0x8024add8",
+        "size": 124,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "b4ce19b7693d209a275bf12a90e628d8d7c20a102fb6a040d024babff49fb126",
+        "segment": "E04",
+        "decoded_offset": "0x11d2dc"
+      },
+      {
+        "names": [
+          "AppOsdCreateBuffer"
+        ],
+        "address": "0x8024a250",
+        "candidate_end": "0x8024a42c",
+        "size": 476,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "b19c4589839658a3777a35677b8aefd1f31f69ef3222e76f4e5c9dbe514c32c7",
+        "segment": "E04",
+        "decoded_offset": "0x11c7d0"
+      },
+      {
+        "names": [
+          "ScreenOsdLayer_Initialize"
+        ],
+        "address": "0x8043bbc4",
+        "candidate_end": "0x8043bc70",
+        "size": 172,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "6dbb1ef44f5a78baab41faddf3eb38d4a91f40245c205f637be28153a6bb062f",
+        "segment": "E04",
+        "decoded_offset": "0x30e144"
+      },
+      {
+        "names": [
+          "ScreenOsdLayer_Setup"
+        ],
+        "address": "0x8043cb2c",
+        "candidate_end": "0x8043cdc4",
+        "size": 664,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "0c6bdb15f0406d66717ad493957b73ad1e05e9e78f91c3f1da1bbad8ce73aef5",
+        "segment": "E04",
+        "decoded_offset": "0x30f0ac"
+      },
+      {
+        "names": [
+          "DirectOSDCreateBufferEx"
+        ],
+        "address": "0x80263298",
+        "candidate_end": "0x802632dc",
+        "size": 68,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "8ef518c64d960072cbaf6e0bc908504d78bd2769ce0e7b2bb317c72e000c7c83",
+        "segment": "E04",
+        "decoded_offset": "0x135818"
+      },
+      {
+        "names": [
+          "AppSelectDisplayOsdEx"
+        ],
+        "address": "0x80286c74",
+        "candidate_end": "0x80286f20",
+        "size": 684,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "1636bd48ea88951af56aa157570f9d095cb760725ccf82fb5a1c855ade3f90e1",
+        "segment": "E04",
+        "decoded_offset": "0x1591f4"
+      },
+      {
+        "names": [
+          "AppOsdSetShowBufferByLayerID"
+        ],
+        "address": "0x8024b940",
+        "candidate_end": "0x8024bad0",
+        "size": 400,
+        "extent_basis": "Next distinct recovered symbol address",
+        "sha256": "5cf1031f85c07656d21372ea99d3ddae2237ed941e33b7adc6ff881f215c50e6",
+        "segment": "E04",
+        "decoded_offset": "0x11dec0"
+      }
+    ],
+    "evidence": [
+      {
+        "role": "Native roll, separate show request and next draw ID parameter",
+        "words": [
+          {
+            "va": "0x8043ca5c",
+            "u32le_word": "0x9604ae84",
+            "segment": "E04",
+            "decoded_offset": "0x30efdc"
+          },
+          {
+            "va": "0x8043ca74",
+            "u32le_word": "0x0c098bf5",
+            "segment": "E04",
+            "decoded_offset": "0x30eff4"
+          },
+          {
+            "va": "0x8043ca94",
+            "u32le_word": "0x0c02cf50",
+            "segment": "E04",
+            "decoded_offset": "0x30f014"
+          },
+          {
+            "va": "0x8043caa0",
+            "u32le_word": "0x9043aea1",
+            "segment": "E04",
+            "decoded_offset": "0x30f020"
+          },
+          {
+            "va": "0x8043cab4",
+            "u32le_word": "0x14600009",
+            "segment": "E04",
+            "decoded_offset": "0x30f034"
+          },
+          {
+            "va": "0x8043cac0",
+            "u32le_word": "0x9605ae84",
+            "segment": "E04",
+            "decoded_offset": "0x30f040"
+          },
+          {
+            "va": "0x8043cac4",
+            "u32le_word": "0x0c10f278",
+            "segment": "E04",
+            "decoded_offset": "0x30f044"
+          },
+          {
+            "va": "0x8043cac8",
+            "u32le_word": "0x9504ae86",
+            "segment": "E04",
+            "decoded_offset": "0x30f048"
+          },
+          {
+            "va": "0x8043ca04",
+            "u32le_word": "0xa604ae84",
+            "segment": "E04",
+            "decoded_offset": "0x30ef84"
+          },
+          {
+            "va": "0x8043ca10",
+            "u32le_word": "0xa503ae86",
+            "segment": "E04",
+            "decoded_offset": "0x30ef90"
+          },
+          {
+            "va": "0x8043ca14",
+            "u32le_word": "0x10e00005",
+            "segment": "E04",
+            "decoded_offset": "0x30ef94"
+          },
+          {
+            "va": "0x8043ca2c",
+            "u32le_word": "0x0c0a7bd6",
+            "segment": "E04",
+            "decoded_offset": "0x30efac"
+          },
+          {
+            "va": "0x8043ca34",
+            "u32le_word": "0x9605ae84",
+            "segment": "E04",
+            "decoded_offset": "0x30efb4"
+          },
+          {
+            "va": "0x8043ca40",
+            "u32le_word": "0x240401bc",
+            "segment": "E04",
+            "decoded_offset": "0x30efc0"
+          },
+          {
+            "va": "0x8043ca44",
+            "u32le_word": "0x0803b023",
+            "segment": "E04",
+            "decoded_offset": "0x30efc4"
+          }
+        ]
+      },
+      {
+        "role": "Parameter 0x1bc to active-context store with index and null checks",
+        "words": [
+          {
+            "va": "0x800ec098",
+            "u32le_word": "0x0c03c838",
+            "segment": "E03",
+            "original_file_offset": "0x1ee380"
+          },
+          {
+            "va": "0x800f20ec",
+            "u32le_word": "0x0c03bc88",
+            "segment": "E03",
+            "original_file_offset": "0x1f43d4"
+          },
+          {
+            "va": "0x800ef220",
+            "u32le_word": "0x2483ffba",
+            "segment": "E03",
+            "original_file_offset": "0x1f1508"
+          },
+          {
+            "va": "0x800ef260",
+            "u32le_word": "0x24e35be8",
+            "segment": "E03",
+            "original_file_offset": "0x1f1548"
+          },
+          {
+            "va": "0x800ef268",
+            "u32le_word": "0x8ca40000",
+            "segment": "E03",
+            "original_file_offset": "0x1f1550"
+          },
+          {
+            "va": "0x800ef26c",
+            "u32le_word": "0x00800008",
+            "segment": "E03",
+            "original_file_offset": "0x1f1554"
+          },
+          {
+            "va": "0x800f61c0",
+            "u32le_word": "0x800efa6c",
+            "segment": "E03",
+            "original_file_offset": "0x1f84a8"
+          },
+          {
+            "va": "0x800efa6c",
+            "u32le_word": "0x0c092967",
+            "segment": "E03",
+            "original_file_offset": "0x1f1d54"
+          },
+          {
+            "va": "0x800efa70",
+            "u32le_word": "0x01002021",
+            "segment": "E03",
+            "original_file_offset": "0x1f1d58"
+          },
+          {
+            "va": "0x8024a5ac",
+            "u32le_word": "0x8c45bd70",
+            "segment": "E04",
+            "decoded_offset": "0x11cb2c"
+          },
+          {
+            "va": "0x8024a5b4",
+            "u32le_word": "0x00a4182b",
+            "segment": "E04",
+            "decoded_offset": "0x11cb34"
+          },
+          {
+            "va": "0x8024a5dc",
+            "u32le_word": "0x8d04f340",
+            "segment": "E04",
+            "decoded_offset": "0x11cb5c"
+          },
+          {
+            "va": "0x8024a5e0",
+            "u32le_word": "0x00103880",
+            "segment": "E04",
+            "decoded_offset": "0x11cb60"
+          },
+          {
+            "va": "0x8024a5e8",
+            "u32le_word": "0x8cc30004",
+            "segment": "E04",
+            "decoded_offset": "0x11cb68"
+          },
+          {
+            "va": "0x8024a5ec",
+            "u32le_word": "0x14600008",
+            "segment": "E04",
+            "decoded_offset": "0x11cb6c"
+          },
+          {
+            "va": "0x8024a610",
+            "u32le_word": "0x0c01013a",
+            "segment": "E04",
+            "decoded_offset": "0x11cb90"
+          },
+          {
+            "va": "0x8024a614",
+            "u32le_word": "0xad23b4d8",
+            "segment": "E04",
+            "decoded_offset": "0x11cb94"
+          }
+        ]
+      },
+      {
+        "role": "Explicit attribute and staged text ID 0 resolve distinct input paths",
+        "words": [
+          {
+            "va": "0x802490cc",
+            "u32le_word": "0x8c46bd70",
+            "segment": "E04",
+            "decoded_offset": "0x11b64c"
+          },
+          {
+            "va": "0x802490d0",
+            "u32le_word": "0x00042880",
+            "segment": "E04",
+            "decoded_offset": "0x11b650"
+          },
+          {
+            "va": "0x802490d4",
+            "u32le_word": "0x00c4182b",
+            "segment": "E04",
+            "decoded_offset": "0x11b654"
+          },
+          {
+            "va": "0x802490e4",
+            "u32le_word": "0x8d07f340",
+            "segment": "E04",
+            "decoded_offset": "0x11b664"
+          },
+          {
+            "va": "0x802490ec",
+            "u32le_word": "0x8c820004",
+            "segment": "E04",
+            "decoded_offset": "0x11b66c"
+          },
+          {
+            "va": "0x8024bfd4",
+            "u32le_word": "0x1480001d",
+            "segment": "E04",
+            "decoded_offset": "0x11e554"
+          },
+          {
+            "va": "0x8024bfe0",
+            "u32le_word": "0x8e30b4d8",
+            "segment": "E04",
+            "decoded_offset": "0x11e560"
+          },
+          {
+            "va": "0x8024c04c",
+            "u32le_word": "0x0c092432",
+            "segment": "E04",
+            "decoded_offset": "0x11e5cc"
+          },
+          {
+            "va": "0x8024c06c",
+            "u32le_word": "0x8e30b4d8",
+            "segment": "E04",
+            "decoded_offset": "0x11e5ec"
+          },
+          {
+            "va": "0x8024c3c8",
+            "u32le_word": "0x0c086174",
+            "segment": "E04",
+            "decoded_offset": "0x11e948"
+          },
+          {
+            "va": "0x802492cc",
+            "u32le_word": "0x14400012",
+            "segment": "E04",
+            "decoded_offset": "0x11b84c"
+          },
+          {
+            "va": "0x80249318",
+            "u32le_word": "0x10800024",
+            "segment": "E04",
+            "decoded_offset": "0x11b898"
+          },
+          {
+            "va": "0x80249320",
+            "u32le_word": "0x0c092432",
+            "segment": "E04",
+            "decoded_offset": "0x11b8a0"
+          },
+          {
+            "va": "0x80249330",
+            "u32le_word": "0x8c8b0018",
+            "segment": "E04",
+            "decoded_offset": "0x11b8b0"
+          },
+          {
+            "va": "0x80249348",
+            "u32le_word": "0x8d04b4d8",
+            "segment": "E04",
+            "decoded_offset": "0x11b8c8"
+          },
+          {
+            "va": "0x80249378",
+            "u32le_word": "0x0c08a504",
+            "segment": "E04",
+            "decoded_offset": "0x11b8f8"
+          },
+          {
+            "va": "0x802493ac",
+            "u32le_word": "0x1000ffdf",
+            "segment": "E04",
+            "decoded_offset": "0x11b92c"
+          },
+          {
+            "va": "0x802493b0",
+            "u32le_word": "0x8ce4b4d8",
+            "segment": "E04",
+            "decoded_offset": "0x11b930"
+          }
+        ]
+      },
+      {
+        "role": "Initial registry, layer bounds and native registration",
+        "words": [
+          {
+            "va": "0x8029f340",
+            "u32le_word": "0x800eb34c",
+            "segment": "E04",
+            "decoded_offset": "0x1718c0"
+          },
+          {
+            "va": "0x800eb394",
+            "u32le_word": "0x00000000",
+            "segment": "E03",
+            "original_file_offset": "0x1ed67c"
+          },
+          {
+            "va": "0x800eb398",
+            "u32le_word": "0x00000000",
+            "segment": "E03",
+            "original_file_offset": "0x1ed680"
+          },
+          {
+            "va": "0x800eb4d4",
+            "u32le_word": "0x00000000",
+            "segment": "E03",
+            "original_file_offset": "0x1ed7bc"
+          },
+          {
+            "va": "0x800eb4d8",
+            "u32le_word": "0x00000000",
+            "segment": "E03",
+            "original_file_offset": "0x1ed7c0"
+          },
+          {
+            "va": "0x800ebd5c",
+            "u32le_word": "0x00000000",
+            "segment": "E03",
+            "original_file_offset": "0x1ee044"
+          },
+          {
+            "va": "0x800ebd60",
+            "u32le_word": "0x00000007",
+            "segment": "E03",
+            "original_file_offset": "0x1ee048"
+          },
+          {
+            "va": "0x800ebd64",
+            "u32le_word": "0x00000020",
+            "segment": "E03",
+            "original_file_offset": "0x1ee04c"
+          },
+          {
+            "va": "0x800ebd68",
+            "u32le_word": "0x00000027",
+            "segment": "E03",
+            "original_file_offset": "0x1ee050"
+          },
+          {
+            "va": "0x800ebd6c",
+            "u32le_word": "0x00000040",
+            "segment": "E03",
+            "original_file_offset": "0x1ee054"
+          },
+          {
+            "va": "0x800ebd70",
+            "u32le_word": "0x00000047",
+            "segment": "E03",
+            "original_file_offset": "0x1ee058"
+          },
+          {
+            "va": "0x8024ad80",
+            "u32le_word": "0x24a6bd5c",
+            "segment": "E04",
+            "decoded_offset": "0x11d300"
+          },
+          {
+            "va": "0x8024adb0",
+            "u32le_word": "0xad30b4d8",
+            "segment": "E04",
+            "decoded_offset": "0x11d330"
+          },
+          {
+            "va": "0x8024adb4",
+            "u32le_word": "0xad10b4d4",
+            "segment": "E04",
+            "decoded_offset": "0x11d334"
+          },
+          {
+            "va": "0x8024adc4",
+            "u32le_word": "0xad500004",
+            "segment": "E04",
+            "decoded_offset": "0x11d344"
+          },
+          {
+            "va": "0x8024a2a0",
+            "u32le_word": "0x24d2bd5c",
+            "segment": "E04",
+            "decoded_offset": "0x11c820"
+          },
+          {
+            "va": "0x8024a2ac",
+            "u32le_word": "0x8c910004",
+            "segment": "E04",
+            "decoded_offset": "0x11c82c"
+          },
+          {
+            "va": "0x8024a2b4",
+            "u32le_word": "0x8c900000",
+            "segment": "E04",
+            "decoded_offset": "0x11c834"
+          },
+          {
+            "va": "0x8024a2e0",
+            "u32le_word": "0x8c6c0004",
+            "segment": "E04",
+            "decoded_offset": "0x11c860"
+          },
+          {
+            "va": "0x8024a2e4",
+            "u32le_word": "0x1180004d",
+            "segment": "E04",
+            "decoded_offset": "0x11c864"
+          },
+          {
+            "va": "0x8024a3e4",
+            "u32le_word": "0xac510004",
+            "segment": "E04",
+            "decoded_offset": "0x11c964"
+          },
+          {
+            "va": "0x8043bbe4",
+            "u32le_word": "0xa7e0ae80",
+            "segment": "E04",
+            "decoded_offset": "0x30e164"
+          },
+          {
+            "va": "0x8043bc30",
+            "u32le_word": "0xa719ae82",
+            "segment": "E04",
+            "decoded_offset": "0x30e1b0"
+          },
+          {
+            "va": "0x8043cbec",
+            "u32le_word": "0x0c098ca6",
+            "segment": "E04",
+            "decoded_offset": "0x30f16c"
+          },
+          {
+            "va": "0x802632b0",
+            "u32le_word": "0x0c092894",
+            "segment": "E04",
+            "decoded_offset": "0x135830"
+          },
+          {
+            "va": "0x802632b4",
+            "u32le_word": "0x00002821",
+            "segment": "E04",
+            "decoded_offset": "0x135834"
+          },
+          {
+            "va": "0x8043cc74",
+            "u32le_word": "0x9685ae82",
+            "segment": "E04",
+            "decoded_offset": "0x30f1f4"
+          },
+          {
+            "va": "0x8043cc78",
+            "u32le_word": "0x9644ae80",
+            "segment": "E04",
+            "decoded_offset": "0x30f1f8"
+          },
+          {
+            "va": "0x8043cc7c",
+            "u32le_word": "0x0c10f278",
+            "segment": "E04",
+            "decoded_offset": "0x30f1fc"
+          },
+          {
+            "va": "0x80286e54",
+            "u32le_word": "0x0c092b57",
+            "segment": "E04",
+            "decoded_offset": "0x1593d4"
+          }
+        ]
+      },
+      {
+        "role": "Show context is a separate layer-0 destination",
+        "words": [
+          {
+            "va": "0x8029ef64",
+            "u32le_word": "0x0c092e50",
+            "segment": "E04",
+            "decoded_offset": "0x1714e4"
+          },
+          {
+            "va": "0x8024b9a4",
+            "u32le_word": "0x8d8bf340",
+            "segment": "E04",
+            "decoded_offset": "0x11df24"
+          },
+          {
+            "va": "0x8024b9b0",
+            "u32le_word": "0x8d300004",
+            "segment": "E04",
+            "decoded_offset": "0x11df30"
+          },
+          {
+            "va": "0x8024b9bc",
+            "u32le_word": "0x16200002",
+            "segment": "E04",
+            "decoded_offset": "0x11df3c"
+          },
+          {
+            "va": "0x8024b9c4",
+            "u32le_word": "0xadb0b4d4",
+            "segment": "E04",
+            "decoded_offset": "0x11df44"
+          },
+          {
+            "va": "0x8024b9dc",
+            "u32le_word": "0x0c0926db",
+            "segment": "E04",
+            "decoded_offset": "0x11df5c"
+          }
+        ]
+      }
+    ]
+  },
+  "findings": [
+    "Original ScreenOsdLayer_Roll retrieves the current draw buffer through the registry and swaps the screen draw and show IDs. The normal SetOsd branch publishes the show request before I43_SetParam(0x1bc, nextDraw).",
+    "The parameter jump table dispatches to AppOsdSetDrawBuffer. A non-null registry slot at an in-range ID produces the native word store to hdcAppOsd. The source store is in the call delay slot at 0x8024a614 and VEX attributes the memory event to 0x8024a610.",
+    "The fixture seeds separate contexts for IDs 17 and 18. Native I43_SetParam first selects 17, and two native rolls select 18 then 17. Each explicit size attribute and staged text ID 0 forwards the matching active pointer to its GDI entry.",
+    "With slot 18 missing, the screen ID advances to 18 and the active pointer stays at context 17. The explicit attribute falls back to that pointer. Flag-1 staged text ID 0 still reads the active pointer directly.",
+    "The initial firmware layer ranges are inclusive [0,7], [32,39] and [64,71]. Original AppOsdCreateBuffer scans its selected layer range and registers the first free context. The secondary ScreenOsdLayer_Setup creation uses layer 0. The initial registry slots 17 and 18 contain zero."
+  ],
+  "limits": [
+    "The earlier refresh fixture also seeds draw IDs 17 and 18. This probe seeds both registry entries and their context fields, then uses original code for active binding. Camera startup allocation and any later range changes are unresolved.",
+    "The native roll follows the branch with 0x80c6aea1 equal to zero. Display resource locks, cache action, show publication, GDI setter and glyph bodies, and the missing-slot diagnostic are modeled at the listed APIs.",
+    "The prior refresh and scaled frame tests are separate runs. This fixture exercises native selectors through GDI call entry. Continuous UI-to-pixel execution, actual display or palette and LCD scanout remain unverified."
+  ],
+  "next_actions": [
+    "Trace the startup registry contents and the layer-0 creation path before the first Color Space refresh."
+  ],
+  "reproduction": {
+    "command": "python tools/check_context_binding.py <original-firmware.bin> <analysis.elf> --output <new-report.json>",
+    "dependency": "angr 10.0.5 with VEX"
+  }
+}

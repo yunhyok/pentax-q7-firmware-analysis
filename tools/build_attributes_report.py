@@ -6,6 +6,16 @@ from build_routing_report import graph
 def main():
     data = read('colorspace-attributes.json')
     values = {k:esc(v) for k,v in read('attributes-copy.json').items()}
+    values.update({k:esc(v) for k,v in read('binding-copy.json').items()})
+    values['binding_graph'] = graph('context-binding','등록 슬롯에 따른 원본 선택 결과',{
+        'present':(20,10,'다음 슬롯에 컨텍스트 있음','시험 ID18 → 컨텍스트 B'),
+        'write':(350,10,'원본 활성 포인터 쓰기','0x8024a614 → 0x800eb4d8'),
+        'new':(700,10,'속성·텍스트 모두 B','GDI 본문은 관측 모델'),
+        'missing':(20,150,'다음 슬롯이 비어 있음','화면 draw ID는 18로 교체'),
+        'retain':(350,150,'활성 포인터 쓰기 없음','이전 컨텍스트 A 유지'),
+        'old':(700,150,'속성 대체·텍스트 모두 A','등록·할당 성공은 별도 조건')},
+        [('present','write',False),('write','new',False),('missing','retain',False),('retain','old',False)],250,
+        '서로 다른 컨텍스트를 등록한 합성 시험입니다. 원본 선택·교체·조회만 실행하고 GDI 본문에서 멈춥니다. 실제 카메라의 ID17·18 할당이나 픽셀 출력은 입증하지 않습니다.','context-binding.json')
     values['boundary_graph'] = graph('attributes-boundary','캡처와 별도 재입력의 경계',{
         'refresh':(20,10,'원본 갱신 4회','속성 72건 · 텍스트 25건'),
         'capture':(350,10,'요청 캡처 모델','sRGB: 48×48 / 간격 0 / 색 2'),

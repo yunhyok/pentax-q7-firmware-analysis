@@ -1,8 +1,8 @@
 {
   "model": "Pentax Q7",
   "firmware_version": "1.01",
-  "baseline_commit": "e42db39349df1c75b5e2859a8f3a9841661dd6bb",
-  "updated_at": "2026-11-08T19:25:53+09:00",
+  "baseline_commit": "7cd3a1ad9997848bcc99d8895e409036f8669161",
+  "updated_at": "2026-11-08T19:35:43+09:00",
   "goals": {
     "rebuild": {
       "status": "MAIN upper23fixtures plus two separately initialized native Burn prefixes: original FileX open stops before NAND op2; modeled open/geometry proceeds through installed-header op6/op4 models to first card FileX read entry. E01 terminal remains separately validated. No actual storage or update acceptance.",
@@ -163,7 +163,7 @@
       "queue_rejection": "Modeled queue API0, no delivery;101 waits,setter6,pending1,outer1,motion-check1,no lower link. Original send-call return0 observed."
     },
     "ui_port": {
-      "status": "Four native refresh captures identify48x48/spacing0/color2 requests. Separate native setter controls select scaled renderer; one full129536-byte indexed frame equals independent oracle under explicit synthetic ID17=ID0 alias. Actual UI binding and continuous refresh remain unverified.",
+      "status": "Captured48x48 attributes and separate full scaled frame remain validated. New3controls execute native roll/default-context binding and attribute/text lookup with distinct seeded registry contexts. Missing next slot changes drawID but retains previous active pointer. SyntheticIDs17/18 are not observed camera allocations.",
       "evidence": [
         "analysis/colorspace-ui.json",
         "tools/check_colorspace_ui.py",
@@ -181,15 +181,18 @@
         "colorspace-glyph-report.html",
         "analysis/colorspace-attributes.json",
         "tools/check_colorspace_attributes.py",
-        "colorspace-attributes-report.html"
+        "colorspace-attributes-report.html",
+        "analysis/context-binding.json",
+        "tools/check_context_binding.py",
+        "tools/verify_context_binding.py"
       ],
       "gaps": [
-        "Actual buffer-context alias for draw IDs17/18 versus text ID0 and continuous full UI refresh to raster",
-        "RGB palette, physical display registration, DMA and LCD",
-        "Other language fonts, range-end glyph and clipping behavior"
+        "Actual initial context allocation and font setup; initial layer ranges are0-7,32-39,64-71 whereas17/18were supplied lookup-test IDs",
+        "Continuous full UI refresh from original setup through raster; current controls stop at GDI entries",
+        "RGB palette, physical display registration, DMA/LCD, other fonts and clipping"
       ],
       "next_actions": [
-        "Trace original context registration and active/default ID selection to replace the synthetic alias before attempting continuous refresh"
+        "Trace native setup/default-context registration and real layer allocation before joining refresh to glyph execution"
       ],
       "stable_evidence": {
         "analysis/colorspace-ui.json": "0458e426cab6946683be671b52693cd3c2bb6bbf94ba1d74c4ffd7af2a4f6da0",
@@ -197,7 +200,7 @@
         "colorspace-ui-report.html": "7796b24701e10c01d8ad3b80e75991624c0e6ac348dad900aa66256d5599b02c",
         "analysis/colorspace-render.json": "80a0ef0e4ef262cd70a56efe6ffb2c82e20553b56ebf93b44945478b2a667117",
         "tools/check_colorspace_render.py": "3fc8175f5a90236a24b24887097d5aa4ce04d02f9167f3b984e8a81fc7339607",
-        "colorspace-render-report.html": "6617f224d99e686735cbe861d195cda9bf6ac897747ea426ab02b9d7c21b92df",
+        "colorspace-render-report.html": "ef37e62140ed21876a79551511ccd318e2b77c3ece4563b37f82fda7f45ff063",
         "analysis/colorspace-raster.json": "46981c50fe8078c8b40d8062b98aca4b0e8e556eb7032dde044e468077bec79b",
         "colorspace-raster-report.html": "459796ecfd4108e0d41318fa5232acf6f9ea768fcb9b6c0f157b75b1e3bf3c60",
         "analysis/colorspace-glyph.json": "be6667479381038bef41253c0cfb14b156f77096218fbddfa13ace6b630d7f1c",
@@ -206,7 +209,10 @@
         "colorspace-glyph-report.html": "bf1d5662e2eb7b0fe48691d5045aa51c7fc7c3f3aabdc93826794645dbd80a01",
         "analysis/colorspace-attributes.json": "7604d1cb9649e705b8bb6f2a381841c3bf183eac3268432cac5a5bff0dba5305",
         "tools/check_colorspace_attributes.py": "4c4f24cc88582f9db58318bca674999dc3199c1b32f439ea98ed57e118d3ebc1",
-        "colorspace-attributes-report.html": "5aad400d36d9451e873a56f6fb8f79c5388a17915028ad33320fcd8485f17b27"
+        "colorspace-attributes-report.html": "e4f4cb7f3474f1e58557b9da4b9ae5cde1d9fb5b997a7b23fd6347f6ef0c6164",
+        "analysis/context-binding.json": "06202757da1b222f384ea79188d64f23f3f8625c2dea097ec8881303948ec3ec",
+        "tools/check_context_binding.py": "612bacafa5597938bb899528569953c94639c00a13dbaa13acafbeec8b6034ad",
+        "tools/verify_context_binding.py": "ff01156703125e8b8cc5183322a1972add6cb6042a162203a7d87e0fc621766d"
       },
       "hash_normalization": "UTF-8 LF bytes",
       "reproduction_command": "python tools/check_colorspace_ui.py <pinned-analysis.elf> --output <new-result.json>",
@@ -241,7 +247,10 @@
         "scaled_frame_cases": 1,
         "attribute_original_words": 71,
         "attribute_function_extents": 12,
-        "scaled_changed_bytes": 2464
+        "scaled_changed_bytes": 2464,
+        "context_binding_controls": 3,
+        "context_binding_original_words": 86,
+        "context_binding_function_extents": 16
       }
     }
   },
@@ -276,7 +285,8 @@
     "Native MAIN DownloadCard reads original64+128byte header; native handle kind3 selects805dd7b8 at+ca4, distinct from E01+1254/80012654. MAIN Burn body is replaced at entry.",
     "With backup flag0, native synchronous MAIN wrapper returns1 and clears updating for both modeled Burn0 and7; asynchronous Thread_Create0 returns0 but keeps updating1. These are software return contracts, not update-success proof.",
     "Captured sRGB requests set48x48 size, zero character-extra fields and palette slot1 index2. Native configured context switches+88c BlitFont to+894 StretchBlitFont;69k-event scaled draw exactly matches full-frame half-step Q16 oracle. Actual ID alias remains unverified.",
-    "MAIN Burn original FileX opening reaches op2 before HostAck/BurnNand (281VEXevents). Separate modeled open/geometry reaches op6 at134 then modeled spare/header replies lead to first card FileX entry at156. Intended payload offset is setup provenance, not a measured FILE cursor."
+    "MAIN Burn original FileX opening reaches op2 before HostAck/BurnNand (281VEXevents). Separate modeled open/geometry reaches op6 at134 then modeled spare/header replies lead to first card FileX entry at156. Intended payload offset is setup provenance, not a measured FILE cursor.",
+    "Native SetOsd→I43_SetParam(0x1bc)→AppOsdSetDrawBuffer writes active800eb4d8 from the registry. Distinct syntheticcontexts17/18roll correctly; missing nextslot leaves oldactive and both selector paths useit. Static initial allocation intervals0-7/32-39/64-71 do not establish actual allocation of17/18."
   ],
   "validation": [
     {
@@ -587,7 +597,10 @@
     "analysis/main-burn-prefix.json",
     "tools/check_main_burn.py",
     "tools/verify_main_burn.py",
-    "main-burn-prefix-report.html"
+    "main-burn-prefix-report.html",
+    "analysis/context-binding.json",
+    "tools/check_context_binding.py",
+    "tools/verify_context_binding.py"
   ],
   "blockers": [
     "Camera update/boot/capture and display acceptance remain unverified; they do not block ongoing offline or AF foundational research."
@@ -598,9 +611,10 @@
     "validation": "311 original words,21 typed/3 anonymous E01 records,47 main functions,38 ranges reproduced; deterministic HTML PASS."
   },
   "latest_followup": {
-    "scope": "Correct render hook role before context-binding continuation",
-    "validation": "Native original I43_SetParam chain inspected; semantic JSON equality after only one role-string replacement proves unchanged prior observations.",
-    "remaining": "Original context selection was modeled away in earlier refresh runs; it remains outside their validation scope."
+    "scope": "Conditional native OSD context selection and seeded-ID provenance",
+    "validation": "Private and publicCLI3control observations independently exact;86original words/16ranges verified from original and decoded ELF. Full original448block/ELF/inventory reproduction and50unit tests PASS; new conditional SVG inspected at1265px without horizontal overflow.",
+    "remaining": "Actual setup/allocator/font state and continuous refresh-to-pixel remain open; GDI bodies and device are modeled.",
+    "editorial": "5paragraphs light5.9%character35.3%sentence,goldenPASS,modality0,B6/6; rootfinalizeraccept. Prior attrs limits separately clarified syntheticID provenance."
   },
   "validation_runs": [
     {
@@ -632,6 +646,11 @@
       "command": "check_main_burn.py original firmware and expanded ELF; verify_main_burn",
       "result": "Two fresh-project runs exactly match worker results;281 and134/156events with explicit model sets; source98+11words and24+1ranges verified",
       "limits": "Original caller arguments re-input into new state; synthetic installed header and geometry; no actual FileX cursor, payload, NAND or reboot"
+    },
+    {
+      "command": "check_context_binding.py original and expanded ELF; source/metadata verification",
+      "result": "Two sequential validrolls and one missing-slot control exact; original active store and both GDI receiver pointers checked",
+      "limits": "Supplied registry and contexts, GDIbody models, display publish/cache/locks modeled; no actual initialallocation or pixels"
     }
   ],
   "af_queue_regression": {
@@ -641,11 +660,11 @@
     "scheduled_delivery": "First wait scheduled; native normal101/no worker versus condition-deleted mutant1/worker1. Only worker_delivery_wait null→1 changes in public replay."
   },
   "usage_checkpoint": {
-    "remaining_percent": 15,
-    "decision": "checkpoint",
+    "remaining_percent": 10,
+    "decision": "critical advisory; user authorized continuation to5percent",
     "current_task_may_continue": true,
     "stop_threshold_percent": 5,
-    "observed_at": "2026-11-08T19:22:39+09:00"
+    "observed_at": "2026-11-08T19:35:43+09:00"
   },
   "terminal_comparison_correction": {
     "scope": "Comparison prose now states modeled header writeback, native ready callback and terminal return.",
@@ -660,6 +679,6 @@
     "actual": "I43_SetParam",
     "role": "Parameter0x1bc sets the active draw context; the historical refresh hook returns0 and skips it.",
     "validation": "Original SetOsd tail-call, parameter and setter source inspected; only role strings and local constant name changed, all replay observations identical.",
-    "remaining": "Separate native registration/selection probe in progress; actual UI lifecycle not yet established."
+    "remaining": "Followup3controls prove native selection under supplied registry; actual startup/allocation still open."
   }
 }
