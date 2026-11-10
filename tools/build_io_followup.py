@@ -47,8 +47,8 @@ WRITE_ROLES = (
     (0x8001AC48, 0x8001AC68, '섹션 0 정보 36바이트를 <code>+0x3b0</code>에 복사', True),
     (0x8001AC8C, 0x8001ACB4, '섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사', True),
     (0x8001AF50, 0x8001AF54, '설치된 헤더의 두 값을 <code>+0x310</code>, <code>+0x314</code>에 복사', True),
-    (0x8001AF58, 0x8001AF58, '<code>+0x230</code>에 복사 (이번 입력에서는 같은 값)', False),
-    (0x8001AF78, 0x8001AF84, '설치된 헤더 <code>0x318</code>~<code>0x398</code>의 128바이트 복사 (이번 입력에서는 같은 값)', False),
+    (0x8001AF58, 0x8001AF58, '<code>+0x230</code>에 복사 (이 입력에서는 같은 값)', False),
+    (0x8001AF78, 0x8001AF84, '설치된 헤더 <code>0x318</code>~<code>0x398</code>의 128바이트 복사 (이 입력에서는 같은 값)', False),
 )
 CARD_CASES = {
     'match': '다이제스트가 일치',
@@ -71,6 +71,7 @@ WORKER_CASES = {
 }
 WRAPPERS = {'0x8001ba40': 'BurnHashInit', '0x8001ba74': 'BurnHashUpdate', '0x8001baac': 'BurnHashFanalize'}
 EXTENTS = {'ELF32 STT_FUNC st_size': 'ELF 심볼 크기'}
+FUNCTIONS = {'MD5 compression helper': 'MD5 압축 함수 (이름 없음)', 'sCardFunc.read callback (unnamed)': '카드 읽기 함수 (이름 없음)'}
 WORD_ROLES = {
     'Native program-buffer writes, one witness per observed instruction': '기록 버퍼에 쓴 명령 (관측한 명령마다 하나)',
     'Section map size arithmetic and header destinations': '섹션 맵의 크기 계산과 헤더 안 목적지',
@@ -134,7 +135,7 @@ def build_loader():
 
     v = {}
     v['range_rows'] = ''.join(
-        f'<tr><td><code>{lo:#05x}</code>~<code>{hi - 1:#05x}</code></td><td class="n">{hi - lo}</td>'
+        f'<tr><td><code>{lo:#05x}</code>{"" if hi - lo == 1 else f"~<code>{hi - 1:#05x}</code>"}</td><td class="n">{hi - lo}</td>'
         f'<td>{"MBR 파티션 표" if lo >= 0x400 else "헤더"}</td></tr>' for lo, hi in ranges)
     groups = []
     for g in trace['groups']:
@@ -184,7 +185,7 @@ def build_loader():
         seen.add(f['address'])
         basis = EXTENTS.get(f['extent_basis'], '분석자가 정한 경계')
         rows.append(
-            f'<tr><th scope="row">{code(f["name"])}</th><td><code>{f["address"]:#x}</code>~<code>{f["candidate_end"]:#x}</code></td>'
+            f'<tr><th scope="row">{FUNCTIONS.get(f["name"]) or code(f["name"])}</th><td><code>{f["address"]:#x}</code>~<code>{f["candidate_end"]:#x}</code></td>'
             f'<td class="n">{n(f["size"])}</td><td>{code(f["original_file_offset"])}</td><td>{basis}</td>'
             f'<td>{code(f["sha256"][:16] + "…")}</td></tr>')
     v['function_rows'] = ''.join(rows)

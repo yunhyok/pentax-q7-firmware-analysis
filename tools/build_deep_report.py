@@ -1,4 +1,4 @@
-"""Render the follow-up HTML from reviewed copy and measured evidence."""
+"""Render deep-report.html from measured evidence; also defines the shared helpers every builder imports."""
 import html
 import json
 from pathlib import Path
@@ -81,9 +81,7 @@ def _jpeg_figure():
         "등록하는 관계이며 실행 순서를 뜻하지 않습니다. 양자화 테이블이 하드웨어 레지스터에 들어가는 지점은 그리지 않았습니다.")
     figure = figure.replace('<a href="analysis/deep-evidence.json">[S3]</a>',
                             '<a href="analysis/deep-evidence.json">[근거: deep-evidence.json]</a>')
-    legend = ('<ul class="dg-legend"><li><i class="static"></i>실선: 명령어에서 읽은 직접 호출</li>'
-              '<li><i class="open"></i>점선: 등록 관계(호출 아님)</li></ul>')
-    return figure.replace('</figure>', legend + '</figure>')
+    return figure
 
 
 def main():
@@ -136,11 +134,11 @@ def main():
     values["function_rows"] = "".join(
         f'<tr id="fn-{f["address"]:08x}"><th scope="row">{esc(f["name"])}</th><td><code>0x{f["address"]:08x}</code></td>'
         f'<td class="n">{f["size"]:,}</td><td class="n">{len(f["transfers"])}</td>'
-        f'<td class="n">{warnings[f["address"]]}</td><td>{esc(f.get("segment", "E03 plain"))}</td></tr>'
+        f'<td class="n">{warnings[f["address"]]}</td><td>{"E04" if f.get("segment") == "E04" else "E03"}</td></tr>'
         for f in functions)
 
     math = read("color-math-checks.json")
-    names = {0x8041BC90: "MatrixMultiplication", 0x8041BE94: "HueShift"}
+    names = {0x8041BC90: "행렬 곱", 0x8041BE94: "색상 회전"}
     values["math_engine"] = esc(math["engine"])
     values["math_count"] = str(len(math["cases"]))
     values["math_passed"] = str(sum(1 for c in math["cases"] if c["passed"]))

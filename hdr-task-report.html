@@ -1,49 +1,365 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — FC1 비트의 출처와 HDR task 완료</title><meta name="description" content="FC1 입력 유형·직접 설정 경로와 HDR task 생성, 큐 제출, 인터럽트·콜백 완료의 조건부 분석"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
-<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / FOLLOW-UP 06</p><h1>FC1 비트의 출처와<br><span>HDR task 완료</span></h1><p class="lead">FC1 제어 워드가 어떤 입력에서 만들어지는지 추적하고 HDR 패스가 task로 만들어져 큐에 들어간 뒤 완료를 알리는 경로까지 연결했습니다. 비트의 소프트웨어 출처와 ISP 내부의 물리적 동작은 구분했습니다.</p><p class="links"><a href="hdr-control-report.html">이전 패스·제어값</a><a href="index.html">전체 분석</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub</a></p></div><aside class="milestone"><strong>4 tasks</strong><span>공통 CIpuTaskC12 · 서로 다른 설정</span><strong>2개 경계</strong><span>드라이버 IRQ 대기 / 상위 PathWait</span><strong>미확정</strong><span>FC1 bit 0의 물리적 연산</span></aside></header>
-<nav aria-label="문서 목차"><a href="#meaning">FC1 비트</a><a href="#tasks">task 생성</a><a href="#submit">큐·시작</a><a href="#completion">완료 조건</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·한계</a></nav><main>
-<section id="meaning"><p class="eyebrow">01 / CONTROL WORD PROVENANCE</p><h2>입력 유형에 따른 소프트웨어 조건까지 확인했다</h2><p>FIPLIB의 해당 분기에서 FC1 bit 0은 저장된 토폴로지 입력 유형이 0인지 나타냅니다. 이 유형의 심볼은 fiplib_pass_input_type입니다. 입력 형식과 관계가 있지만 RGB·YUV라는 이름만으로 값이 나뉘지는 않습니다. 비트가 ISP 내부에서 수행하는 연산은 아직 확인하지 못했습니다. <a href="analysis/fc1-semantics.json">[S1: 형식·유형·소비 지점]</a></p><figure class="diagram"><figcaption>FC1 제어 워드의 서로 다른 출처</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 320" role="img" aria-labelledby="fc1-meaning-title fc1-meaning-desc"><title id="fc1-meaning-title">FC1 제어 워드의 서로 다른 출처</title><desc id="fc1-meaning-desc">FIPLIB 값은 Export payload+0x12c와 ID 0xab setter를 거칩니다. 직접 입력은 ID 0xf setter를 거쳐 같은 객체 필드에 도달합니다. 활성화 주소 0xb60000ec는 별개입니다.</desc><defs><marker id="fc1-meaning-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#fc1-meaning-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#fc1-meaning-arrow)"/><path class="e" d="M668 72V124" marker-end="url(#fc1-meaning-arrow)"/><path class="e" d="M240 154H552" marker-end="url(#fc1-meaning-arrow)"/><path class="e" d="M668 184V236" marker-end="url(#fc1-meaning-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">저장된 입력 유형 T</text><text class="s mono" x="20" y="57">input_format_mode에서 분류</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">패스별 Top_BlockControls</text><text class="s mono" x="284" y="57">해당 분기: bit = (T == 0)</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">FIPLIB Export</text><text class="s mono" x="564" y="57">mode 1: payload+0x12c</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">상위 descriptor 0xf</text><text class="s mono" x="20" y="169">version c/d/f: 원시 u32</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">ID 0xab / 0xf setter</text><text class="s mono" x="564" y="169">같은 filter+0x48에 저장</text><rect class="b" x="552" y="236" width="232" height="60" rx="8"/><text class="t" x="564" y="261">writer: 0xb60000fc</text><text class="s mono" x="564" y="281">물리적 비트 동작 미확정</text></svg></div><p>FIPLIB 값은 Export payload+0x12c와 ID 0xab setter를 거칩니다. 직접 입력은 ID 0xf setter를 거쳐 같은 객체 필드에 도달합니다. 활성화 주소 0xb60000ec는 별개입니다. <a href="analysis/fc1-semantics.json">[근거]</a></p></figure>
-<p>기본 생성자의 심볼 서명과 <code>object+0x18</code> 기록으로 T의 enum 유형을 확인했습니다. 파생 IPU 생성자는 <code>input_format_mode</code>를 분류해 T를 저장합니다. 이후 SetInputFormat은 <code>+0x50</code>만 바꾸므로, T를 매번 최신 형식에서 다시 계산한다고 보면 안 됩니다. <a href="analysis/fc1-semantics.json">[S1: 생성자·setter]</a></p>
-<div class="table-wrap"><table><caption>원본 ImageTypeName·변환 함수·생성자를 연결한 사례</caption><thead><tr><th>원본 형식 이름</th><th>input format</th><th>T</th><th>판단 범위</th></tr></thead><tbody><tr><th>RGB_48</th><td>0xd</td><td>1</td><td rowspan="2">이름이 RGB와 YUV여도 같은 분류</td></tr><tr><th>YUV_444_16</th><td>0xd</td><td>1</td></tr><tr><th>RGB_10_12_10</th><td>0x16</td><td>0</td><td rowspan="2">다른 RGB·YUV 형식도 함께 T=0</td></tr><tr><th>YUV_422</th><td>2</td><td>0</td></tr><tr><th>LUMA-Y</th><td>0</td><td>2</td><td>값 2를 소비하는 별도 operation-mode 분기 존재</td></tr></tbody></table></div>
-<p>따라서 bit 0을 <strong>RGB/YUV 선택, 행렬 bypass, 반올림 또는 clipping</strong>으로 명명할 근거는 확보하지 못했습니다. 적용되는 패스 분기 안에서는 “T가 0인지를 나타내는 비트”로 설명할 수 있습니다. 1x0·기본 5x1 등 강제로 0을 쓰는 분기도 있으며, <a href="hdr-control-report.html#controls">이번 HDR 네 패스의 제어 워드는 모두 0</a>입니다.</p>
-<div class="table-wrap"><table><caption>FC1 제어 워드의 직접 입력 경로</caption><thead><tr><th>입력</th><th>제어 워드 처리</th><th>확인 내용</th></tr></thead><tbody><tr><th>상위 ID 0xf / version 0·6</th><td>0으로 설정</td><td>같은 입력 bit 0을 바꿔도 결과는 0</td></tr><tr><th>상위 ID 0xf / version 0xc·0xd·0xf</th><td>descriptor+0x2c의 u32 복사</td><td>상위 비트도 포함하여 전달</td></tr><tr><th>FIPLIB ID 0xab / version 0xc·0xf</th><td>payload 제어 워드의 u32 복사</td><td>FC1 writer는 저장된 전체 워드를 기록</td></tr></tbody></table></div>
-<p>버전별 두 사례에서 행렬 입력을 고정하고 bit 0만 바꿔, 총 14사례·168개 쓰기를 순서대로 대조했습니다. 이 결과는 값의 전달을 검증한 것이며, 그 값에 따른 픽셀 차이를 계산한 결과는 아닙니다. FC2·FC3·FC4의 유사한 packing과 다른 기본 모드도 확인했지만, 이를 FC1 실리콘 동작의 증거로 사용하지 않았습니다. <a href="analysis/fc1-semantics.json">[S1: replay·다른 FC 블록]</a></p></section>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FC1 제어 비트의 출처와 HDR task의 생성·완료 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Q7의 FC1 제어 워드 bit 0이 어떤 입력에서 정해지는지, HDR의 네 패스가 task로 만들어져 큐에 들어가고 인터럽트·콜백·PathWait로 완료되는 과정을 원본 코드로 대조한 기록입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html" aria-current="true">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-color.html">색 처리와 HDR</a></li><li aria-current="page">FC1 제어 비트와 HDR task 완료</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">색 처리와 HDR · HDR 색 단계 3/3: 제어 비트와 task</p>
+<h1>FC1 제어 비트의 출처와 HDR task의 생성·완료</h1>
+<p class="lead">FC1에는 계수와 별개로 제어 워드가 하나 있습니다. 그 비트가 무엇으로 정해지는지 따라가고, HDR의 네 패스가 하드웨어 작업으로 넘어가 끝났다고 알려지기까지의 과정을 정리했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 설정값이 하드웨어 작업이 되기까지</a></li><li><a href="#meaning">FC1 제어 비트는 입력 유형이 0인지를 나타냅니다</a></li><li><a href="#tasks">네 패스는 같은 task 클래스로 만들어집니다</a></li><li><a href="#submit">task는 큐를 거쳐 드라이버 스레드가 시작합니다</a></li><li><a href="#completion">인터럽트 하나는 HDR 완료가 아닙니다</a></li><li><a href="#comparison">K-3 Mark III와 비교</a></li><li><a href="#validation">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-<section id="tasks"><p class="eyebrow">02 / WRAPPERS BECOME TASKS</p><h2>네 FIPLIB 패스는 공통 task 클래스로 변환된다</h2><p>FIPLIB 패스 클래스와 드라이버 task 클래스는 서로 다릅니다. 네 HDR 패스는 각각의 입력·출력 설정을 유지하면서 공통 CIpuTaskC12 객체로 구성됩니다. 마지막 인덱스 3에는 최종 출력용 토폴로지 설정이 적용됩니다. 슬롯이 비어 있으면 뒤의 변환·제출 루프는 그 슬롯을 건너뜁니다. <a href="analysis/task-create-followup.json">[T1: task 생성·최종 출력]</a></p><figure class="diagram"><figcaption>네 패스에서 큐 제출까지</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 208" role="img" aria-labelledby="hdr-tasks-title hdr-tasks-desc"><title id="hdr-tasks-title">네 패스에서 큐 제출까지</title><desc id="hdr-tasks-desc">형식별 FIPLIB 클래스와 드라이버 task 클래스를 구분했습니다. task 슬롯이 존재하고 앞선 설정이 성공해야 뒤의 제출 경로로 이어집니다. 재실행의 크기·대체 함수는 검증 절에 명시합니다.</desc><defs><marker id="hdr-tasks-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#hdr-tasks-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#hdr-tasks-arrow)"/><path class="e" d="M240 154H272" marker-end="url(#hdr-tasks-arrow)"/><path class="e" d="M504 154H552" marker-end="url(#hdr-tasks-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">1x0 → 1x1 → 5x1 → 0x1</text><text class="s mono" x="20" y="57">FIPLIB wrapper 0·1·2·3</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">CalculateTopology</text><text class="s mono" x="284" y="57">C12 handler / CreateTask</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">CIpuTaskC12 × 4</text><text class="s mono" x="564" y="57">task class는 네 패스 공통</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">TranslateFilters → Commit</text><text class="s mono" x="20" y="169">설정 변환 / subimage 준비</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">processor Go → task Go</text><text class="s mono" x="284" y="169">mode 0 / CBC 0</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">driver+0x224 큐</text><text class="s mono" x="564" y="169">task pointer / wait 0</text></svg></div><p>형식별 FIPLIB 클래스와 드라이버 task 클래스를 구분했습니다. task 슬롯이 존재하고 앞선 설정이 성공해야 뒤의 제출 경로로 이어집니다. 재실행의 크기·대체 함수는 검증 절에 명시합니다. <a href="analysis/task-create-followup.json">[근거]</a></p></figure>
-<div class="table-wrap"><table><caption>객체·함수 연결</caption><thead><tr><th>단계</th><th>원본 코드</th><th>역할</th></tr></thead><tbody><tr><th>범위 순회</th><td>CalculateTopology 0x80339040</td><td>processor의 선택 범위와 wrapper kind 확인</td></tr><tr><th>IPU task 생성</th><td>C12 handler vtable+0x18 → 0x80345850</td><td>새 객체 크기 0x2a8; CIpuTaskC12 생성자 0x80355294</td></tr><tr><th>task 보관</th><td>processor+0x204+4×index</td><td>네 패스의 task 슬롯</td></tr><tr><th>task 구분</th><td>SetTaskId 0x8035281c → task+0x2a0</td><td>topology의 pass/task ID. 필터 UID와 별도</td></tr><tr><th>최종 설정</th><td>index == N−1</td><td>index 3에 최종 출력 토폴로지 적용</td></tr></tbody></table></div>
-<div class="table-wrap"><table><caption>512×128 합성 입력에서 원본 생성·변환·Commit을 실행한 결과</caption><thead><tr><th>패스 / 클래스</th><th>task ID</th><th>최종 플래그</th><th>하위 이미지 수</th><th>FC1 UID</th><th>enabled</th><th>제어 워드</th></tr></thead><tbody><tr><th>0 / 1x0</th><td>0</td><td>0</td><td>1</td><td>9</td><td>0</td><td>0</td></tr><tr><th>1 / 1x1</th><td>1</td><td>0</td><td>1</td><td>35</td><td>1</td><td>0</td></tr><tr><th>2 / 5x1</th><td>2</td><td>0</td><td>1</td><td>61</td><td>0</td><td>0</td></tr><tr><th>3 / 0x1</th><td>3</td><td>1</td><td>1</td><td>87</td><td>1</td><td>0</td></tr></tbody></table></div>
-<p>네 task의 <code>+0x228</code>(모드)와 <code>+0x234</code> 필드는 모두 0이었고, processor의 완료 목표 <code>+0x2f0</code>는 1이었습니다. 이어 같은 processor의 Go를 호출하자 큐에 task ID <code>0→1→2→3</code>이 들어갔습니다. 최종 플래그는 “이 패스만 제출”한다는 뜻이 아니며, 이 조건에서는 네 패스 모두 제출됩니다. <a href="analysis/task-create-followup.json">[T1: replay.result]</a></p>
-<p>FC1 UID <code>9·35·61·87</code>은 이 합성 실행에서 생성된 값이며 카메라 전체의 고정 식별자가 아닙니다. WriteAll은 필터 UID를 드라이버에 기록된 UID와 비교해 writer 호출을 결정합니다. task ID는 별도 필드에 저장됩니다. 활성화값 <code>0·1·0·1</code>과 제어 워드 <code>0·0·0·0</code>은 이전 패스 분석과 일치했습니다. <a href="analysis/task-create-followup.json">[T1: uid_boundary]</a></p>
-<p class="note">kind 0 생성 코드에서 메모리 할당 실패 후 복구하는 경로는 확인하지 못했습니다. 뒤 루프의 NULL 슬롯 검사를 생성 실패 복구와 같은 동작으로 해석하지 않습니다. 재사용·다른 wrapper kind·다른 디스크립터는 별도 분기입니다.</p></section>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>해당 패스 분기에서 FC1 제어 워드의 bit 0은 <strong>패스에 저장된 입력 유형 값이 0인지</strong>를 나타냅니다. 이름이 RGB인 형식과 YUV인 형식이 같은 값으로 묶이므로, 이 비트를 “RGB/YUV 선택” 같은 이름으로 부를 근거는 없습니다. 하드웨어에서 하는 일은 확인하지 못했습니다.</li>
+<li>HDR의 네 패스는 모두 <strong>같은 task 클래스</strong>(CIpuTaskC12)로 만들어지고, 큐에 task 0→1→2→3 순서로 들어갑니다.</li>
+<li>완료는 세 층으로 나뉩니다. 하드웨어 인터럽트 하나는 하위 이미지 하나의 완료이고, task와 processor가 각각 개수를 센 뒤 네 번째 패스가 끝나야 HDR 경로의 대기(PathWait)가 풀립니다.</li>
+<li>원본 코드를 FC1 비트 59사례, task 생성 1회, 완료 경로 17사례로 실행했습니다. 인터럽트와 RTOS 결과는 주입한 값이며 실제 카메라의 동작이 아닙니다.</li>
+</ul>
+</section>
 
-<section id="submit"><p class="eyebrow">03 / QUEUE AND HARDWARE START</p><h2>Go는 큐에 등록하고 드라이버가 실행한다</h2><p>task의 Go는 포인터를 큐에 넣습니다. 드라이버 스레드는 포인터를 꺼낸 뒤 필터와 영상 설정을 기록하고 하드웨어 시작 기록을 수행합니다. 큐 등록 성공, 시작 기록, 완료 이벤트는 서로 다른 단계입니다. 큐 전송 오류와 완료 대기 오류는 정상 완료 통지로 처리되지 않습니다. <a href="analysis/task-completion-followup.json">[D1: queue_and_start·worker_wait]</a></p>
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>형식 이름·변환·토폴로지 생성자·FC1 setter·writer (59사례)</li>
+<li>FIPLIB 계산부터 task 4개 생성·설정 변환·Commit, 같은 processor의 Go와 큐 전송</li>
+<li>큐 wrapper, IRQ 처리기, 드라이버 1회 반복, 콜백 체인 (17사례)</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>RunTask의 시작 기록 순서와 드라이버 대기 분기</li>
+<li>PathWait가 기다리는 이벤트 비트와 IpuToneMapRgb의 성공 분기</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>512×128 합성 입력과 합성 감마 LUT, 대체 함수 24개</li>
+<li>인터럽트 호출과 이벤트 대기 결과(주입)</li>
+<li>레지스터 대신 RAM에 기록(MMIO 모델)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>FC1 제어 bit 0의 하드웨어 기능</li>
+<li>실제 인터럽트의 발생 시각, tick 주기, DMA·캐시 일관성</li>
+<li>메모리 할당 실패 뒤의 복구, 최종 픽셀 값</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 설정값이 하드웨어 작업이 되기까지</h2>
+<p>앞의 두 문서에서 HDR 계수가 FC1 레지스터까지 보존되고(<a href="final-color-report.html">출력 선택과 계수</a>), 네 패스 중 두 패스에서 FC1이 켜지며 네 패스가 모두 제출 대상이라는 것(<a href="hdr-control-report.html">FC1 활성화와 제출 범위</a>)을 확인했습니다. FC1은 RGB를 밝기·색차(YUV)로 바꾸는 색 변환 단계로 보이지만, 이 이름은 함수 이름과 계수에서 끌어낸 추정입니다.</p>
+<p>이 문서는 남은 두 질문을 다룹니다. 하나는 제어 워드의 비트가 어디서 오는지이고, 다른 하나는 “제출 대상”이 실제로 하드웨어에 넘어가고 끝났다고 알려지는 과정입니다.</p>
+<ol class="flow">
+<li class="ok"><strong>계수 보존</strong><span><a href="final-color-report.html#values">출력 선택과 계수</a></span></li>
+<li class="ok"><strong>패스별 활성화</strong><span><a href="hdr-control-report.html#controls">FC1 활성화와 제출 범위</a></span></li>
+<li class="key"><strong>제어 비트, task 생성·완료</strong><span>이 문서</span></li>
+</ol>
+<dl class="kv">
+<dt>task</dt><dd>패스 하나를 IPU 하드웨어에 맡기는 작업 객체. 드라이버가 하나씩 꺼내 실행합니다.</dd>
+<dt>큐</dt><dd>task 포인터를 넣고 꺼내는 RTOS 메시지 대기열. Q7의 RTOS는 ThreadX입니다.</dd>
+<dt>IRQ</dt><dd>하드웨어가 일을 끝냈다고 CPU에 알리는 인터럽트. 처리 함수(ISR)가 이벤트 비트를 켭니다.</dd>
+<dt>하위 이미지</dt><dd>한 패스의 이미지를 나눠 처리하는 조각. 조각마다 같은 task를 다시 큐에 넣습니다.</dd>
+<dt>PathWait</dt><dd>HDR 코드가 경로 전체의 완료 이벤트를 기다리는 함수. 통과해야 HDR 처리가 다음 단계로 갑니다.</dd>
+</dl>
+<p>색 처리 주제 전체는 <a href="guide-color.html">색 처리·HDR 안내</a>에서 볼 수 있습니다.</p>
+</section>
+
+<section id="meaning">
+<h2>FC1 제어 비트는 입력 유형이 0인지를 나타냅니다</h2>
+<p class="takeaway">해당 패스 분기에서 bit 0은 “저장된 토폴로지 입력 유형 T가 0인가”이며, 직접 입력 경로에서는 상위 디스크립터의 32비트 값이 그대로 들어가기도 합니다.</p>
+
+<figure class="diagram">
+<figcaption>FC1 제어 워드(<code>0xb60000fc</code>)의 비트 배치와 값을 만드는 경로</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="dg-bits-title dg-bits-desc">
+<title id="dg-bits-title">FC1 제어 워드의 비트 구성</title>
+<desc id="dg-bits-desc">32비트 제어 워드에서 FIPLIB Export는 bit 0에 FC 블록 +0xc의 최하위 비트를, bit 1부터 4에 FC 블록 +0xd의 하위 4비트를 넣고 나머지는 0으로 둡니다. mode 1에서는 +0xd가 0입니다. 값을 만드는 경로는 세 가지입니다. 패스 플래그 경로에서는 Top_BlockControls가 T == 0을 bit 0으로 정합니다. 상위 디스크립터 ID 0xf version 0xc, 0xd, 0xf는 descriptor+0x2c의 32비트 값을 상위 비트까지 그대로 복사합니다. version 0과 6은 항상 0을 씁니다. FC1 writer는 저장된 32비트 전체를 0xb60000fc에 쓰며, 활성화는 별도 주소 0xb60000ec입니다.</desc>
+<defs><marker id="dg-bits-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="n mid" x="224" y="24">bit 31 … 5</text>
+<text class="n mid" x="540" y="24">bit 4 … 1</text>
+<text class="n mid" x="716" y="24">bit 0</text>
+<rect class="b mute" x="8" y="32" width="432" height="56" rx="6"/>
+<text class="s mid" x="224" y="66">이 Export 경로에서는 0</text>
+<rect class="b static" x="440" y="32" width="200" height="56" rx="6"/>
+<text class="s mid mono" x="540" y="56">FC 블록 +0xd</text>
+<text class="s mid" x="540" y="77">mode 1에서는 0</text>
+<rect class="b key" x="640" y="32" width="152" height="56" rx="6"/>
+<text class="t mid" x="716" y="56">FC +0xc &amp; 1</text>
+<text class="s mid" x="716" y="77">T == 0 여부</text>
+<text class="s mono" x="8" y="114">payload+0x12c = (FC+0xc &amp; 1) | ((FC+0xd &amp; 0xf) &lt;&lt; 1)</text>
+<text class="h" x="8" y="144">이 워드를 채우는 세 가지 경로</text>
+<rect class="b ok" x="8" y="154" width="248" height="56" rx="8"/>
+<text class="t" x="20" y="177">패스 플래그 (mode 1)</text>
+<text class="s mono" x="20" y="198">Top_BlockControls: T == 0</text>
+<rect class="b ok" x="276" y="154" width="248" height="56" rx="8"/>
+<text class="t" x="288" y="177">직접 입력 v0xc·0xd·0xf</text>
+<text class="s" x="288" y="198">32비트 값을 상위 비트까지 복사</text>
+<rect class="b ok" x="544" y="154" width="248" height="56" rx="8"/>
+<text class="t" x="556" y="177">직접 입력 v0·6</text>
+<text class="s" x="556" y="198">항상 0</text>
+<rect class="b ok" x="8" y="236" width="248" height="52" rx="8"/>
+<text class="t" x="20" y="258">FC1 writer</text>
+<text class="s" x="20" y="278">저장된 32비트 전체를 기록</text>
+<rect class="b key" x="276" y="236" width="248" height="52" rx="8"/>
+<text class="t" x="288" y="258">제어 워드 레지스터</text>
+<text class="s mono" x="288" y="278">0xb60000fc</text>
+<rect class="b mute" x="544" y="236" width="248" height="52" rx="8"/>
+<text class="t" x="556" y="258">활성화는 별도 주소</text>
+<text class="s mono" x="556" y="278">0xb60000ec</text>
+<path class="e" d="M256 262H274" marker-end="url(#dg-bits-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="static"></i>코드를 읽어 확인</li><li><i class="key"></i>bit 0과 기록 대상 레지스터</li></ul>
+</figure>
+
+<p>FIPLIB의 해당 분기에서 FC1 bit 0은 저장된 토폴로지 입력 유형 T가 0인지를 나타냅니다. 이 유형의 원본 타입 이름은 <code>fiplib_pass_input_type</code>입니다. 입력 형식과 관계가 있지만, RGB·YUV라는 이름만으로 값이 갈리지는 않습니다. <a href="analysis/fc1-semantics.json">[근거: software_label, topology_type]</a></p>
+<p>기본 생성자의 심볼 서명과 <code>object+0x18</code> 기록으로 T의 타입을 확인했습니다. 파생 IPU 생성자는 <code>input_format_mode</code>를 분류해 T를 저장합니다. 그 뒤 SetInputFormat은 <code>+0x50</code>만 바꾸므로, T가 매번 최신 형식에서 다시 계산된다고 보면 안 됩니다. <a href="analysis/fc1-semantics.json">[근거: format_mutators]</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>입력 형식 번호로 T를 정하는 규칙 (위에서부터 차례로 검사)</caption>
+<thead><tr><th class="n">T</th><th>조건</th><th>해당 입력 형식</th></tr></thead>
+<tbody><tr><th scope="row" class="n">0</th><td><code>u32 input format &lt; 26 and (1 &lt;&lt; format) &amp; 0x023e000c != 0</code></td><td>0x2, 0x3, 0x11, 0x12, 0x13, 0x14, 0x15, 0x19</td></tr><tr><th scope="row" class="n">2</th><td><code>u32 input format &lt; 26 and (1 &lt;&lt; format) &amp; 0x203 != 0</code></td><td>0x0, 0x1, 0x9</td></tr><tr><th scope="row" class="n">1</th><td><code>u32 input format &lt; 26 and (1 &lt;&lt; format) &amp; 0x2010 != 0</code></td><td>0x4, 0xd</td></tr><tr><th scope="row" class="n">0</th><td><code>otherwise, including u32 input format &gt;= 26</code></td><td>그 밖의 값</td></tr></tbody>
+</table></div>
+<div class="table-wrap"><table class="fit">
+<caption>원본 ImageTypeName·변환 함수·생성자를 이어 실행한 예. 이름이 RGB와 YUV여도 같은 T로 묶입니다.</caption>
+<thead><tr><th>원본 형식 이름</th><th class="n">디스크립터 type</th><th>input format</th><th class="n">T</th></tr></thead>
+<tbody><tr><th scope="row">RGB_48</th><td class="n">6</td><td><code>0xd</code></td><td class="n">1</td></tr><tr><th scope="row">YUV_422</th><td class="n">8</td><td><code>0x2</code></td><td class="n">0</td></tr><tr><th scope="row">YUV_444_16</th><td class="n">12</td><td><code>0xd</code></td><td class="n">1</td></tr><tr><th scope="row">RGB_10_12_10</th><td class="n">16</td><td><code>0x16</code></td><td class="n">0</td></tr><tr><th scope="row">LUMA-Y</th><td class="n">17</td><td><code>0x0</code></td><td class="n">2</td></tr><tr><th scope="row">LIMAGE_32</th><td class="n">20</td><td><code>0x12</code></td><td class="n">0</td></tr></tbody>
+</table></div>
+<p>RGB_48과 YUV_444_16은 같은 형식 <code>0xd</code>, T=1이고, RGB_10_12_10과 YUV_422는 함께 T=0입니다. 그래서 bit 0을 <strong>RGB/YUV 선택, 행렬 bypass, 반올림, clipping</strong> 중 무엇으로도 이름 붙일 근거가 없습니다. 적용되는 패스 분기 안에서 “T가 0인지를 나타내는 비트”라고만 설명할 수 있습니다. 0x1 클래스의 operation-mode 함수 <code>0x80178770</code>은 같은 T를 2와 비교하는 별도 분기를 가집니다.</p>
+<p>1x0이나 기본 5x1처럼 플래그를 늘 0으로 쓰는 분기도 있습니다. 이번 HDR 네 패스의 제어 워드는 모두 0입니다(<a href="hdr-control-report.html#controls">패스별 값</a>). location 10은 T=0이지만 플래그를 0으로 고정하는 5x1 기본 방식을 쓰고, 마지막 0x1 패스는 Q=0·T=1이라 역시 0입니다.</p>
+
+<h3>직접 입력 경로</h3>
+<div class="table-wrap"><table class="compact">
+<caption>FC1 제어 워드를 FIPLIB 계산 없이 채우는 경로</caption>
+<thead><tr><th>입력</th><th>제어 워드로 들어가는 값</th><th>setter</th></tr></thead>
+<tbody><tr><th scope="row">ID <code>0xf</code> · version 0, 0x6</th><td><code>0</code></td><td><code>0x80321a5c</code>, <code>0x80321aac</code></td></tr><tr><th scope="row">ID <code>0xf</code> · version 0xc, 0xd, 0xf</th><td><code>u32[descriptor+0x2c]</code></td><td><code>0x80321afc</code>, <code>0x80321b84</code>, <code>0x80321b40</code></td></tr><tr><th scope="row">ID <code>0xab</code> · version 0xc, 0xf</th><td><code>u32[u32[descriptor+0x1c]+0x12c]</code></td><td><code>0x8031f64c</code>, <code>0x8031f6bc</code></td></tr></tbody>
+</table></div>
+<p>version 0·6은 입력 bit 0을 바꿔도 결과가 0입니다. version <code>0xc</code>·<code>0xd</code>·<code>0xf</code>와 FIPLIB ID <code>0xab</code>는 32비트 값을 상위 비트까지 그대로 옮기고, FC1 setter가 <code>filter+0x48</code>에 저장한 워드 전체를 writer가 씁니다. 버전마다 행렬 입력을 고정하고 bit 0만 바꾼 두 사례씩, 모두 14사례와 순서가 있는 쓰기 168회를 대조했습니다. <a href="analysis/fc1-semantics.json">[근거: descriptor_sources, replay]</a></p>
+<details class="evidence"><summary>직접 입력 14사례의 입력값과 기록값</summary>
+<div class="table-wrap"><table class="compact fit">
+<caption>사례마다 계수·보조값 11회와 제어 워드 1회를 씁니다.</caption>
+<thead><tr><th>디스크립터</th><th>입력 제어 워드</th><th>기록된 제어 워드</th><th class="n">쓰기</th></tr></thead>
+<tbody><tr><th scope="row">ID <code>0xf</code> · v<code>0x0</code></th><td><code>0xa5920040</code></td><td><code>0x00000000</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0x0</code></th><td><code>0xa5920041</code></td><td><code>0x00000000</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0x6</code></th><td><code>0xa5920040</code></td><td><code>0x00000000</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0x6</code></th><td><code>0xa5920041</code></td><td><code>0x00000000</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0xc</code></th><td><code>0xa5920040</code></td><td><code>0xa5920040</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0xc</code></th><td><code>0xa5920041</code></td><td><code>0xa5920041</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0xd</code></th><td><code>0xa5920040</code></td><td><code>0xa5920040</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0xd</code></th><td><code>0xa5920041</code></td><td><code>0xa5920041</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0xf</code></th><td><code>0xa5920040</code></td><td><code>0xa5920040</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xf</code> · v<code>0xf</code></th><td><code>0xa5920041</code></td><td><code>0xa5920041</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xab</code> · v<code>0xc</code></th><td><code>0xa5920040</code></td><td><code>0xa5920040</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xab</code> · v<code>0xc</code></th><td><code>0xa5920041</code></td><td><code>0xa5920041</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xab</code> · v<code>0xf</code></th><td><code>0xa5920040</code></td><td><code>0xa5920040</code></td><td class="n">12</td></tr><tr><th scope="row">ID <code>0xab</code> · v<code>0xf</code></th><td><code>0xa5920041</code></td><td><code>0xa5920041</code></td><td class="n">12</td></tr></tbody>
+</table></div>
+</details>
+<p>이 결과는 값이 어떻게 전달되는지를 확인한 것입니다. 값에 따라 픽셀이 어떻게 달라지는지는 계산하지 않았습니다. FC2·FC3·FC4도 같은 패킹 함수를 쓰고 기본 모드가 다르지만(mode 2·4는 YUV→RGB 기본 계수를 고름), 이것을 FC1 하드웨어 동작의 증거로 쓰지 않았습니다.</p>
+<details class="evidence"><summary>같은 패킹 함수를 쓰는 다른 FC 블록</summary>
+<div class="table-wrap"><table class="compact fit">
+<caption>레지스터 위치와 setter·writer. 비트의 하드웨어 동작이 같다는 근거는 아닙니다.</caption>
+<thead><tr><th>블록</th><th class="n">mode</th><th>제어 워드 payload</th><th>레지스터</th><th>setter / writer</th></tr></thead>
+<tbody><tr><th scope="row">FC2</th><td class="n">2</td><td><code>+0x15c</code></td><td><code>0xb6000870</code></td><td><code>0x80354668</code> / <code>0x80354970</code></td></tr><tr><th scope="row">FC3</th><td class="n">3</td><td><code>+0x18c</code></td><td><code>0xb60008b0</code></td><td><code>0x8032f054</code> / <code>0x8032f0c4</code></td></tr><tr><th scope="row">FC4</th><td class="n">4</td><td><code>+0x1bc</code></td><td><code>0xb6000c70</code></td><td><code>0x803313e0</code> / <code>0x803316e8</code></td></tr></tbody>
+</table></div>
+</details>
+</section>
+
+<section id="tasks">
+<h2>네 패스는 같은 task 클래스로 만들어집니다</h2>
+<p class="takeaway">FIPLIB 패스 클래스와 드라이버 task 클래스는 다르며, 네 HDR 패스는 각자의 설정을 가진 채 공통 CIpuTaskC12 객체로 만들어집니다.</p>
+<p>마지막 index 3에는 최종 출력용 토폴로지 설정이 적용됩니다. 슬롯이 비어 있으면 뒤의 변환·제출 루프가 그 슬롯을 건너뜁니다. <a href="analysis/task-create-followup.json">[근거: wrapper_to_task, task_class_id_and_callbacks]</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>객체·함수 연결</caption>
+<thead><tr><th>단계</th><th>원본 코드</th><th>역할</th></tr></thead>
+<tbody>
+<tr><th scope="row">범위 순회</th><td>CalculateTopology <code>0x80339040</code></td><td>processor의 선택 범위와 wrapper kind 확인</td></tr>
+<tr><th scope="row">IPU task 생성</th><td>C12 처리기 vtable+0x18 → <code>0x80345850</code></td><td>새 객체 크기 <code>0x2a8</code>, CIpuTaskC12 생성자 <code>0x80355294</code></td></tr>
+<tr><th scope="row">task 보관</th><td><code>processor+0x204+4×index</code></td><td>네 패스의 task 슬롯</td></tr>
+<tr><th scope="row">task 구분</th><td>SetTaskId <code>0x8035281c</code> → <code>task+0x2a0</code></td><td>토폴로지의 패스/task ID. 필터 UID와 별개</td></tr>
+<tr><th scope="row">최종 설정</th><td>index == N−1</td><td>index 3에 최종 출력 토폴로지 적용</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<caption>512×128 합성 입력에서 원본 생성·변환·Commit을 실행한 결과. task vtable은 네 개 모두 <code>0x804ff1e0</code>입니다.</caption>
+<thead><tr><th>패스 / 클래스</th><th class="n">task ID</th><th class="n">최종 표시</th><th class="n">하위 이미지 수</th><th class="n">FC1 UID</th><th class="n">enabled</th><th class="n">제어 워드</th></tr></thead>
+<tbody><tr><th scope="row">0 / 1x0</th><td class="n">0</td><td class="n">0</td><td class="n">1</td><td class="n">9</td><td class="n">0</td><td class="n">0</td></tr><tr><th scope="row">1 / 1x1</th><td class="n">1</td><td class="n">0</td><td class="n">1</td><td class="n">35</td><td class="n">1</td><td class="n">0</td></tr><tr><th scope="row">2 / 5x1</th><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">61</td><td class="n">0</td><td class="n">0</td></tr><tr><th scope="row">3 / 0x1</th><td class="n">3</td><td class="n">1</td><td class="n">1</td><td class="n">87</td><td class="n">1</td><td class="n">0</td></tr></tbody>
+</table></div>
+<p>네 task의 <code>+0x228</code>(모드)와 <code>+0x234</code> 필드는 모두 0이었고, processor의 완료 목표 <code>+0x2f0</code>는 1이었습니다. 이어 같은 processor의 Go를 호출하자 큐에 task ID 0→1→2→3가 들어갔습니다. 최종 표시는 “이 패스만 제출한다”는 뜻이 아니며, 이 조건에서는 네 패스가 모두 제출됩니다. <a href="analysis/task-create-followup.json">[근거: replay.result]</a></p>
+<p>FC1 UID 9·35·61·87는 이 합성 실행에서 생긴 값이며 카메라 전체에서 고정된 식별자가 아닙니다. WriteAll은 필터 UID를 드라이버에 기록된 UID와 비교해 writer 호출을 정합니다. task ID는 별도 필드에 저장됩니다. enabled 0·1·0·1와 제어 워드 0·0·0·0는 <a href="hdr-control-report.html#controls">패스별 분석</a>과 일치했습니다. <a href="analysis/task-create-followup.json">[근거: uid_boundary]</a></p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>kind 0 생성 코드에서 메모리 할당이 실패했을 때 복구하는 경로는 확인하지 못했습니다. 뒤 루프의 NULL 슬롯 검사를 생성 실패 복구와 같은 동작으로 해석하지 않습니다. 재사용, 다른 wrapper kind, 다른 디스크립터는 별도 분기입니다.</p></div>
+</section>
+
+<section id="submit">
+<h2>task는 큐를 거쳐 드라이버 스레드가 시작합니다</h2>
+<p class="takeaway">Go는 task 포인터를 큐에 넣을 뿐이며, 드라이버 스레드가 꺼내 필터·영상 설정을 기록하고 하드웨어 시작 기록을 합니다.</p>
+
+<figure class="diagram">
+<figcaption>HDR task 하나의 일생: 생성 → 큐 → 시작 → IRQ → 하위 이미지 → processor 집계 → PathWait</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 470" role="img" aria-labelledby="dg-seq-title dg-seq-desc">
+<title id="dg-seq-title">HDR task 생성부터 완료까지의 호출 순서</title>
+<desc id="dg-seq-desc">다섯 생명선은 왼쪽부터 HDR 경로, processor, task, 드라이버 스레드, IPU 하드웨어와 인터럽트입니다. HDR 경로의 PathGo가 processor의 Commit으로 이어지고, processor가 task 네 개를 만든 뒤 Go로 범위 0부터 4 미만의 task를 차례로 시작합니다. task는 AddTask로 드라이버 큐에 들어가고, 드라이버 스레드는 RunTask로 설정을 쓰고 시작 기록을 합니다. 하드웨어의 완료 인터럽트가 드라이버 이벤트를 켜면 드라이버는 event 2를 통지해 task의 Update를 부릅니다. 하위 이미지가 남아 있으면 task는 자신을 다시 큐에 넣습니다. 모두 끝나면 OnProcessingDone으로 processor에 알리고, processor는 네 번째 패스 완료 때 IpuCallBack으로 경로 이벤트 bit 0을 켭니다. HDR 경로는 그 뒤 PathWait를 통과합니다. 인터럽트는 실제로 관측하지 않았고 재실행에서는 주입했습니다.</desc>
+<defs>
+<marker id="dg-seq-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-seq-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b static" x="13" y="8" width="150" height="52" rx="8"/>
+<text class="t mid" x="88" y="30">HDR 경로</text>
+<text class="s mid mono" x="88" y="50">IpuToneMapRgb</text>
+<rect class="b ok" x="173" y="8" width="150" height="52" rx="8"/>
+<text class="t mid" x="248" y="30">processor</text>
+<text class="s mid mono" x="248" y="50">CImageProcessor</text>
+<rect class="b ok" x="333" y="8" width="150" height="52" rx="8"/>
+<text class="t mid" x="408" y="30">task × 4</text>
+<text class="s mid mono" x="408" y="50">CIpuTaskC12</text>
+<rect class="b ok" x="493" y="8" width="150" height="52" rx="8"/>
+<text class="t mid" x="568" y="30">드라이버 스레드</text>
+<text class="s mid mono" x="568" y="50">ThrIpuDriver</text>
+<rect class="b open" x="653" y="8" width="140" height="52" rx="8"/>
+<text class="t mid" x="723" y="30">IPU · 인터럽트</text>
+<text class="s mid mono" x="723" y="50">IsrIpuDone</text>
+<path class="e dash" d="M88 60V452"/>
+<path class="e dash" d="M248 60V452"/>
+<path class="e dash" d="M408 60V452"/>
+<path class="e dash" d="M568 60V452"/>
+<path class="e dash" d="M723 60V452"/>
+<text class="s mid" x="168" y="84">PathGo → Commit</text>
+<path class="e" d="M88 92H246" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid" x="328" y="119">CreateTask × 4</text>
+<path class="e" d="M248 127H406" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid" x="328" y="154">Go: [0, 4) 차례로</text>
+<path class="e" d="M248 162H406" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid" x="488" y="189">AddTask → 큐</text>
+<path class="e" d="M408 197H566" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid" x="645" y="224">RunTask · 시작 기록</text>
+<path class="e" d="M568 232H721" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid topen" x="645" y="259">완료 IRQ → 이벤트</text>
+<path class="e open" d="M723 267H570" marker-end="url(#dg-seq-ao)"/>
+<text class="s mid" x="488" y="294">Notify(2) → Update</text>
+<path class="e" d="M568 302H410" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid" x="488" y="329">조각이 남으면 재큐잉</text>
+<path class="e dash" d="M408 337H566" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid" x="328" y="364">OnProcessingDone</text>
+<path class="e" d="M408 372H250" marker-end="url(#dg-seq-ah)"/>
+<text class="s mid" x="168" y="399">4번째 완료 → bit 0</text>
+<path class="e" d="M248 407H90" marker-end="url(#dg-seq-ah)"/>
+<text class="t" x="98" y="440">PathWait 통과</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="static"></i>코드를 읽어 연결</li><li><i class="open"></i>실제 하드웨어 사건(재실행에서는 주입)</li></ul>
+</figure>
+
 <pre><code>CIpuTask::Go → CIpuDriver::AddTask
-  queue = driver+0x224, message = task pointer, wait = 0
-ThrIpuDriver: receive → mutex → clear completion bit → RunTask
+  큐 = driver+0x224, 메시지 = task 포인터, wait = 0
+ThrIpuDriver: 받기 → mutex → 완료 비트 지우기 → RunTask
 RunTask: WriteAll → RunPreActivation → IRQ 설정
   MMIO[0xb60001cc] = 1
   read MMIO[0xb0802024]
   MMIO[0xb6000000] = 0
-worker: wait(driver+0x30c, bit 0, option 1, 5000 ticks)</code></pre>
-<p>RunTask의 vtable+0x2c는 C12의 WriteAll <code>0x80357098</code>로 연결됩니다. WriteAll은 드라이버의 관찰자 포인터를 현재 <code>task+8</code>로 등록합니다. 이 연결로 완료 통지가 현재 task의 Update에 도달합니다. 완료 대기에 성공하면 PowerOff 뒤 event 2를 통지하고, 실패하면 OsSysHaltEx 경로로 들어갑니다. <a href="analysis/task-completion-followup.json">[D1: observer_chain·실행 분기]</a></p>
-<p>대기값 5000은 tick 수입니다. tick 주기를 검증하지 않았으므로 밀리초로 환산하지 않았습니다. option 1과 2는 공식 <a href="https://github.com/eclipse-threadx/threadx/blob/master/common/inc/tx_api.h">ThreadX 헤더의 OR_CLEAR·AND 상수</a>와 대조했으며, 이 최신 헤더를 Q7의 RTOS 버전 증거로 사용하지는 않았습니다.</p></section>
+드라이버: wait(driver+0x30c, bit 0, option 1, 5,000 ticks)</code></pre>
+<p>RunTask의 vtable+0x2c는 C12의 WriteAll <code>0x80357098</code>로 이어집니다. WriteAll은 드라이버의 관찰자 포인터를 현재 <code>task+8</code>로 등록하고, 이 연결로 완료 통지가 현재 task의 Update에 닿습니다. 사이의 읽기 <code>0xb0802024</code>에는 하드웨어 뜻을 붙이지 않았습니다. <a href="analysis/task-completion-followup.json">[근거: queue_and_start, observer_chain]</a></p>
+<p>큐 등록 성공, 시작 기록, 완료 이벤트는 서로 다른 단계입니다. 큐 전송이 실패하면(0이 아닌 반환) OsSysHaltEx로 들어가고, 완료 대기가 실패해도 진단을 출력한 뒤 OsSysHaltEx로 갑니다. 어느 쪽도 정상 완료 통지로 처리되지 않습니다. 대기에 성공하면 PowerOff 뒤 event 2를 통지합니다. <a href="analysis/task-completion-followup.json">[근거: worker_wait]</a></p>
+<p>대기값 5,000은 tick 수입니다. tick 주기를 확인하지 않았으므로 밀리초로 바꾸지 않았습니다. option 1과 2는 <a href="https://github.com/eclipse-threadx/threadx/blob/master/common/inc/tx_api.h">ThreadX 공식 헤더의 OR_CLEAR·AND 상수</a>와 대조했으며, 이 최신 헤더를 Q7 RTOS 버전의 증거로 쓰지는 않았습니다.</p>
+</section>
 
-<section id="completion"><p class="eyebrow">04 / COMPLETION IS LAYERED</p><h2>IRQ 완료, task 완료, HDR 대기 해제를 구분한다</h2><p>완료 인터럽트는 우선 드라이버 이벤트를 깨웁니다. task는 남은 하위 이미지가 있으면 자신을 다시 큐에 넣고, 처리가 끝나면 processor에 알립니다. processor는 패스 완료 수와 별도 완료 횟수를 확인합니다. 따라서 한 번의 인터럽트를 HDR 전체 완료로 해석할 수 없습니다. <a href="analysis/task-completion-followup.json">[D1: 완료 집계]</a></p><figure class="diagram"><figcaption>IRQ에서 HDR 대기 해제까지의 조건부 연결</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 320" role="img" aria-labelledby="hdr-done-title hdr-done-desc"><title id="hdr-done-title">IRQ에서 HDR 대기 해제까지의 조건부 연결</title><desc id="hdr-done-desc">행은 위에서 아래로 이어지는 소프트웨어 경로입니다. 점선은 이벤트 대기 경계이며 실제 IRQ·스케줄링 관측을 뜻하지 않습니다. 남은 하위 이미지가 있으면 중간 행에서 같은 task를 다시 제출합니다.</desc><defs><marker id="hdr-done-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#hdr-done-arrow)"/><path class="e dash" d="M504 42H552" marker-end="url(#hdr-done-arrow)"/><path class="e" d="M240 154H272" marker-end="url(#hdr-done-arrow)"/><path class="e" d="M504 154H552" marker-end="url(#hdr-done-arrow)"/><path class="e" d="M240 266H272" marker-end="url(#hdr-done-arrow)"/><path class="e dash" d="M504 266H552" marker-end="url(#hdr-done-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">IsrIpuDone</text><text class="s mono" x="20" y="57">등록 ID 0x29 / 실제 IRQ 미관측</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">driver+0x30c / bit 0</text><text class="s mono" x="284" y="57">counter +0x34c 증가</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">드라이버 대기 성공</text><text class="s mono" x="564" y="57">PowerOff → Notify(event 2)</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">task Update</text><text class="s mono" x="20" y="169">하위 이미지가 남으면 재큐잉</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">OnProcessingDone</text><text class="s mono" x="284" y="169">끝난 task → processor</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">processor Update</text><text class="s mono" x="564" y="169">패스·완료 횟수 조건</text><rect class="b" x="8" y="236" width="232" height="60" rx="8"/><text class="t" x="20" y="261">CObserverWrapper</text><text class="s mono" x="20" y="281">IpuCallBack(event 2)</text><rect class="b" x="272" y="236" width="232" height="60" rx="8"/><text class="t" x="284" y="261">0x815a1bc4 / bit 0</text><text class="s mono" x="284" y="281">보조 이벤트와 구분</text><rect class="b" x="552" y="236" width="232" height="60" rx="8"/><text class="t" x="564" y="261">PathWait 성공 분기</text><text class="s mono" x="564" y="281">IpuToneMapRgb 후속 정리</text></svg></div><p>행은 위에서 아래로 이어지는 소프트웨어 경로입니다. 점선은 이벤트 대기 경계이며 실제 IRQ·스케줄링 관측을 뜻하지 않습니다. 남은 하위 이미지가 있으면 중간 행에서 같은 task를 다시 제출합니다. <a href="analysis/task-completion-followup.json">[근거]</a></p></figure>
-<div class="table-wrap"><table><caption>이벤트 주소와 마스크 — 서로 다른 완료·보조 신호</caption><thead><tr><th>신호</th><th>주소·마스크</th><th>조건</th></tr></thead><tbody><tr><th>IPU done ISR</th><td>driver+0x30c / 0x1</td><td>매 ISR 진입에서 카운터 증가 후 설정</td></tr><tr><th>드라이버 보조 이벤트</th><td>0x815ccc74 / 0x40000000</td><td>end ≥ 2, 증가 전 IRQ count == end−2</td></tr><tr><th>NR phase 2 통지</th><td>0x815a1bc4 / 0x04000000</td><td>기본 네 패스의 완료 수가 2일 때</td></tr><tr><th>상위 path 완료</th><td>0x815a1bc4 / 0x1</td><td>processor 완료 통지 event 2 → IpuCallBack</td></tr></tbody></table></div>
-<p>task의 <code>+0x220</code>은 완료한 하위 이미지 수, <code>+0x224</code>는 비교 대상 수입니다. 모드 <code>+0x228 == 0</code>에서 아직 남았으면 CommitSubImage 후 같은 task를 재큐잉하고 event 4를 보냅니다. 모두 끝나면 OnProcessingDone이 event 2를 processor에 전달합니다. 모드 1·2는 별도 분기입니다. <a href="analysis/task-completion-followup.json">[D1: subimage_completion]</a></p>
-<p>mode 0·CBC 0, 네 task 슬롯이 모두 존재하고 task당 하위 이미지가 하나인 재실행에서는 processor의 완료 수가 1→2→3→4로 증가했습니다. 두 번째 통지는 NR phase 보조 이벤트를 만들고, 네 번째 통지가 최종 path bit 0을 설정했습니다. 마지막에는 별도 완료 횟수 <code>+0x2f4</code>와 목표 <code>+0x2f0</code>도 비교하며, 조건에 따라 임시 자원 정리와 phase 3 설정을 거칩니다. <a href="tools/check_ipu_completion.py">[17사례 재현 도구]</a></p>
-<p>type 0의 PathWait은 <code>0x815a1bc4</code>의 bit 0을 기다립니다. fresh path의 제한 시간은 <code>path+0xac = 40000 ticks</code>입니다. IpuToneMapRgb는 PathGo 다음 PathWait의 성공 분기를 거쳐 정리·성공 반환으로 이어집니다. 보조 이벤트가 먼저 설정됐다는 사실만으로 이 대기를 통과한 것은 아닙니다. <a href="analysis/task-completion-followup.json">[D1: path_wait_binding]</a></p></section>
+<section id="completion">
+<h2>인터럽트 하나는 HDR 완료가 아닙니다</h2>
+<p class="takeaway">IRQ 완료, task 완료, HDR 대기 해제는 서로 다른 단계이며, 네 번째 패스가 끝나야 PathWait가 기다리는 비트가 켜집니다.</p>
+<p>완료 인터럽트는 먼저 드라이버 이벤트를 깨웁니다. task는 남은 하위 이미지가 있으면 자신을 다시 큐에 넣고, 다 끝나면 processor에 알립니다. processor는 패스 완료 수와 별도 완료 횟수를 확인합니다. <a href="analysis/task-completion-followup.json">[근거: done_irq_and_early_event, subimage_completion, processor_aggregation]</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>이벤트 주소와 마스크: 서로 다른 완료·보조 신호</caption>
+<thead><tr><th>신호</th><th>주소 · 마스크</th><th>조건</th></tr></thead>
+<tbody>
+<tr><th scope="row">IPU 완료 ISR</th><td><code>driver+0x30c</code> / <code>0x1</code></td><td>등록 번호 <code>0x29</code>의 ISR. 들어올 때마다 카운터 <code>driver+0x34c</code>를 올린 뒤 설정. 등록 번호는 소프트웨어 값이며 물리적 인터럽트 출처는 확인하지 않음</td></tr>
+<tr><th scope="row">드라이버 보조 이벤트</th><td><code>0x815ccc74</code> / <code>0x40000000</code></td><td>end ≥ 2이고, 올리기 전 IRQ 카운트 == end−2</td></tr>
+<tr><th scope="row">NR 단계 2 통지</th><td><code>0x815a1bc4</code> / <code>0x04000000</code></td><td>기본 네 패스의 완료 수가 2일 때</td></tr>
+<tr><th scope="row">상위 경로 완료</th><td><code>0x815a1bc4</code> / <code>0x1</code></td><td>processor 완료 통지 event 2 → IpuCallBack</td></tr>
+</tbody></table></div>
+<p>task의 <code>+0x220</code>은 끝난 하위 이미지 수, <code>+0x224</code>는 비교 대상 수입니다. 모드 <code>+0x228 == 0</code>에서 아직 남았으면 CommitSubImage 뒤 같은 task를 다시 큐에 넣고 event 4를 보냅니다. 다 끝나면 OnProcessingDone이 event 2를 processor에 전달합니다. 모드 1·2는 별도 분기입니다.</p>
+<div class="two">
+<div class="table-wrap"><table class="fit">
+<caption>IRQ 처리기 재실행: 보조 이벤트가 켜지는 조건</caption>
+<thead><tr><th class="n">end</th><th class="n">카운터</th><th class="n">다음 값</th><th>보조 이벤트</th></tr></thead>
+<tbody><tr><td class="n">0</td><td class="n">0</td><td class="n">1</td><td>아니요</td></tr><tr><td class="n">1</td><td class="n">0</td><td class="n">1</td><td>아니요</td></tr><tr><td class="n">2</td><td class="n">0</td><td class="n">1</td><td>예</td></tr><tr><td class="n">4</td><td class="n">0</td><td class="n">1</td><td>아니요</td></tr><tr><td class="n">4</td><td class="n">1</td><td class="n">2</td><td>아니요</td></tr><tr><td class="n">4</td><td class="n">2</td><td class="n">3</td><td>예</td></tr><tr><td class="n">4</td><td class="n">3</td><td class="n">4</td><td>아니요</td></tr></tbody>
+</table></div>
+<div class="table-wrap"><table class="fit">
+<caption>네 패스 콜백 재실행 (task당 하위 이미지 1개)</caption>
+<thead><tr><th>패스</th><th class="n">완료 수</th><th>경로 이벤트</th><th>HDR 완료</th></tr></thead>
+<tbody><tr><th scope="row">0</th><td class="n">1</td><td>없음</td><td>아니요</td></tr><tr><th scope="row">1</th><td class="n">2</td><td><code>0x04000000</code></td><td>아니요</td></tr><tr><th scope="row">2</th><td class="n">3</td><td>없음</td><td>아니요</td></tr><tr><th scope="row">3</th><td class="n">4</td><td><code>0x00000001</code></td><td>예</td></tr></tbody>
+</table></div>
+</div>
+<p>mode 0·CBC 0, task 슬롯 네 개가 모두 있고 task당 하위 이미지가 하나인 재실행에서 processor의 완료 수는 1→2→3→4로 늘었습니다. 두 번째 통지는 NR 단계 보조 이벤트를 만들고, 네 번째 통지가 최종 경로 bit 0을 켰습니다. 마지막에는 별도 완료 횟수 <code>+0x2f4</code>와 목표 <code>+0x2f0</code>도 비교하며, 조건에 따라 임시 자원 정리와 단계 3 설정을 거칩니다. <a href="tools/check_ipu_completion.py">[재현 도구]</a></p>
+<p>type 0의 PathWait은 <code>0x815a1bc4</code>의 bit 0을 기다립니다. 새 경로의 제한 시간은 <code>path+0xac</code> = 40000 ticks입니다. IpuToneMapRgb는 PathGo 다음 PathWait의 성공 분기를 거쳐 정리와 성공 반환으로 갑니다. 보조 이벤트가 먼저 켜졌다고 해서 이 대기를 통과한 것은 아닙니다. <a href="analysis/task-completion-followup.json">[근거: path_wait_binding]</a></p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>IRQ 호출과 이벤트 대기 결과는 주입한 값입니다. WriteAll, 기하 결과, 정리 작업 일부를 모델링했고, 드라이버 루프와 콜백 체인은 따로 실행했습니다. 하위 이미지를 다시 큐에 넣으면 task 수와 IRQ 수가 달라집니다.</p></div>
+</section>
 
-<section id="comparison"><p class="eyebrow">05 / K-3 MARK III COMPARISON</p><h2>같은 질문을 기종별 근거로 대조했다</h2><p>K-3mk3에서는 R2y 제어 비트와 별도 행렬 모드, RAW·JPEG 작업 큐와 JPEG 완료 콜백을 대조했습니다. 두 기종 모두 설정·제출·완료를 나누어 추적할 수 있지만, 주소와 작업 구조가 다릅니다. K-3의 비트 의미나 JPEG 완료 조건을 Q7 HDR에 그대로 적용하지 않았습니다. <a href="analysis/task-comparison.json">[K1: 고정 커밋·blob 해시]</a></p><p>참조 공개 커밋: <code>614d1fe46b0041819f70f61559dc5e267183f717</code>. 해당 커밋의 파일 6개를 해시로 고정했습니다.</p>
-<div class="table-wrap"><table><caption>Q7과 K-3mk3의 확인 범위</caption><thead><tr><th>질문</th><th>K-3mk3</th><th>Q7</th></tr></thead><tbody><tr><th>제어 비트의 의미</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/614d1fe46b0041819f70f61559dc5e267183f717/analysis/isp-semantics-evidence.json">R2y 8개 제어값 집계 → R+0x10 bit 0</a>; 별도 R+0x80 행렬 모드. 물리적 기능 미확정</td><td>저장된 입력 유형에서 생성되는 FC1 bit와 원시 u32 setter를 구분. 물리적 기능 미확정</td></tr><tr><th>작업 제출</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/614d1fe46b0041819f70f61559dc5e267183f717/analysis/deep-evidence.json">RAW/JPEG 모듈의 비동기 메시지·큐 연결</a></td><td>네 wrapper → 공통 C12 task → driver 큐. task와 하위 이미지 수 구분</td></tr><tr><th>완료 전달</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/614d1fe46b0041819f70f61559dc5e267183f717/analysis/pipeline-evidence.json">JPEG IRQ 조건 → code length → 0x00e00001·0x00c00003 콜백</a></td><td>IPU done → driver event → task/processor 집계 → IpuCallBack → PathWait</td></tr><tr><th>관측 한계</th><td>실제 IRQ·인코더·픽셀 관측 없음</td><td>제한된 원본 코드 재실행. 실제 센서·IRQ·DMA·픽셀 관측 없음</td></tr></tbody></table></div></section>
+<section id="comparison">
+<h2>K-3 Mark III와 비교</h2>
+<p>K-3 Mark III에서는 R2y 제어 비트와 별도 행렬 모드, RAW·JPEG 작업 큐, JPEG 완료 콜백을 대조했습니다. 두 기종 모두 설정·제출·완료를 나눠 추적할 수 있지만 주소와 작업 구조가 다릅니다. K-3의 비트 뜻이나 JPEG 완료 조건을 Q7 HDR에 그대로 적용하지 않았습니다. 참조한 공개 커밋은 <code>614d1fe46b0041819f70f61559dc5e267183f717</code>이고, 그 커밋의 파일 6개를 해시로 고정했습니다. <a href="analysis/task-comparison.json">[근거: comparisons, source_blobs]</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>Q7과 K-3 Mark III의 확인 범위</caption>
+<thead><tr><th>질문</th><th>K-3 Mark III</th><th>Q7 (이 문서)</th></tr></thead>
+<tbody>
+<tr><th scope="row">제어 비트의 뜻</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/614d1fe46b0041819f70f61559dc5e267183f717/analysis/isp-semantics-evidence.json">R2y 제어값 8개 집계 → R+0x10 bit 0</a>, 별도 R+0x80 행렬 모드. 물리적 기능 미확정</td><td>저장된 입력 유형에서 나오는 FC1 비트와 32비트 원값 setter를 구분. 물리적 기능 미확정</td></tr>
+<tr><th scope="row">작업 제출</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/614d1fe46b0041819f70f61559dc5e267183f717/analysis/deep-evidence.json">RAW/JPEG 모듈의 비동기 메시지·큐 연결</a></td><td>wrapper 네 개 → 공통 C12 task → 드라이버 큐. task와 하위 이미지 수 구분</td></tr>
+<tr><th scope="row">완료 전달</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/614d1fe46b0041819f70f61559dc5e267183f717/analysis/pipeline-evidence.json">JPEG IRQ 조건 → code length → <code>0x00e00001</code>·<code>0x00c00003</code> 콜백</a></td><td>IPU 완료 → 드라이버 이벤트 → task·processor 집계 → IpuCallBack → PathWait</td></tr>
+<tr><th scope="row">관측 한계</th><td>실제 IRQ·인코더·픽셀 관측 없음</td><td>제한된 원본 코드 재실행. 실제 센서·IRQ·DMA·픽셀 관측 없음</td></tr>
+</tbody></table></div>
+<p class="small muted">세 문서는 서로 다른 시점의 K-3 공개 커밋을 각각 고정해 인용합니다. 커밋이 다른 것은 근거를 고정한 시점이 달라서이며 내용이 충돌하는 것은 아닙니다.</p>
+</section>
 
-<section id="validation"><p class="eyebrow">06 / REPRODUCTION AND LIMITS</p><h2>소프트웨어 분기와 실기 동작의 경계</h2><p>선별 함수 후보 <strong>90개</strong>, 명령·데이터 워드 <strong>609건</strong>을 원본 펌웨어와 대조했습니다. 함수 후보 범위는 다음 sidecar 주소까지이며 공식 함수 크기가 아닙니다. 전체 디컴파일과 원본 BIN·추출 ELF는 공개하지 않습니다.</p>
-<ul><li><strong>FC1 의미:</strong> 원본 형식 매핑·생성자·setter·writer 59사례. task 스케줄링이나 픽셀 연산을 실행하지 않았습니다.</li><li><strong>task 생성·제출:</strong> 512×128 입력·합성 gamma LUT와 기본 HDR 보조 디스크립터를 사용했습니다. 원본 FIPLIB 기하 계산·Export·CalculateTopology·TranslateFilters·네 task의 가상 Commit을 실행한 뒤 같은 processor의 Go를 별도로 호출했습니다. 메모리 할당·환경 함수·큐 전송 성공은 대체했으며 task와 wrapper 결과는 주입하지 않았습니다. PathGo의 외부 동기화·실제 큐 소비는 제외했습니다. <a href="analysis/task-create-followup.json">[T1: 전체 대체 함수·범위]</a></li><li><strong>완료 경로:</strong> IRQ 조건 7, 큐 전송 2, 드라이버 대기 2, 네 패스 콜백 4, 하위 이미지 2의 총 17사례. IRQ와 RTOS 결과를 주입했으며 WriteAll·기하 결과·정리 작업 일부를 모델링했습니다. 드라이버 루프와 콜백 체인은 별도 구간으로 실행했습니다.</li></ul>
+<section id="validation">
+<h2>한계와 재현 방법</h2>
+<ul>
+<li><strong>FC1 비트:</strong> 원본 형식 매핑·생성자·setter·writer 59사례(형식 분류 28, 디스크립터 매핑 17, 직접 입력 기록 14). task 스케줄링이나 픽셀 연산은 실행하지 않았습니다.</li>
+<li><strong>task 생성·제출:</strong> 512×128 입력, 합성 감마 LUT, 기본 HDR 보조 디스크립터를 썼습니다. 원본 FIPLIB 기하 계산·Export·CalculateTopology·TranslateFilters·네 task의 가상 Commit을 실행한 뒤 같은 processor의 Go를 따로 호출했습니다. 메모리 할당·환경 함수·큐 전송 성공은 대체했고, task와 wrapper 결과를 주입하지는 않았습니다. PathGo의 외부 동기화와 실제 큐 소비는 빠져 있습니다. <a href="analysis/task-create-followup.json">[근거: replay]</a></li>
+<li><strong>완료 경로:</strong> IRQ 조건 7, 큐 전송 2, 드라이버 대기 2, 네 패스 콜백 4, 하위 이미지 2, 모두 17사례입니다. IRQ와 RTOS 결과를 주입했습니다.</li>
+<li>FC1 제어 bit 0의 물리적 기능을 정하려면 칩 레지스터 문서나, 조건을 통제한 실기 레지스터·픽셀 관측이 더 필요합니다. 큐와 콜백이 소프트웨어에서 성공했다는 것은 영상이 정확하다는 증거가 아닙니다.</li>
+<li>실제 인터럽트 발생 시각, DMA·캐시 일관성, 최종 픽셀 값은 관측하지 않았습니다.</li>
+</ul>
+<details class="evidence"><summary>task 생성 재실행의 대체 함수 24개</summary>
+<div class="table-wrap"><table class="compact fit">
+<caption>원본 대신 모델이 처리한 함수</caption>
+<thead><tr><th>주소</th><th>모델이 하는 일 (원문)</th></tr></thead>
+<tbody><tr><th scope="row"><code>0x801d12f4</code></th><td>IpuInit</td></tr><tr><th scope="row"><code>0x800d9ac8</code></th><td>_tx_counter_get</td></tr><tr><th scope="row"><code>0x800d9df0</code></th><td>_tx_thread_interrupt_control</td></tr><tr><th scope="row"><code>0x800cdb00</code></th><td>_tx_mutex_create</td></tr><tr><th scope="row"><code>0x800cbee4</code></th><td>_tx_mutex_get</td></tr><tr><th scope="row"><code>0x800d193c</code></th><td>_tx_mutex_put</td></tr><tr><th scope="row"><code>0x800ad120</code></th><td>CObservable constructor</td></tr><tr><th scope="row"><code>0x800b6a40</code></th><td>CObserver constructor</td></tr><tr><th scope="row"><code>0x800ad164</code></th><td>CObservable::Register</td></tr><tr><th scope="row"><code>0x800a1310</code></th><td>Fprintf_B</td></tr><tr><th scope="row"><code>0x8009d910</code></th><td>TimingMarkF</td></tr><tr><th scope="row"><code>0x8009bdd8</code></th><td>TimingMarkIsGroupEnabled</td></tr><tr><th scope="row"><code>0x800213fc</code></th><td>SmdbIsZLightEnabled returns 0</td></tr><tr><th scope="row"><code>0x8000c598</code></th><td>PoolFreeEx</td></tr><tr><th scope="row"><code>0x8000d8e8</code></th><td>operator delete with diagnostics</td></tr><tr><th scope="row"><code>0x8000bf28</code></th><td>PoolAllocEx</td></tr><tr><th scope="row"><code>0x8000d8bc</code></th><td>operator new</td></tr><tr><th scope="row"><code>0x8000d828</code></th><td>operator new with alignment</td></tr><tr><th scope="row"><code>0x804f60f4</code></th><td>operator new</td></tr><tr><th scope="row"><code>0x80b1f120</code></th><td>MemAlloc</td></tr><tr><th scope="row"><code>0x80333e38</code></th><td>CIpuDriver::GetDriver returns modeled driver</td></tr><tr><th scope="row"><code>0x800d7c04</code></th><td>_tx_queue_send records message and returns success</td></tr><tr><th scope="row"><code>0x800d6aa4</code></th><td>OsSysHaltEx fails replay if reached</td></tr><tr><th scope="row"><code>0x800a2180</code></th><td>__assfail fails replay if reached</td></tr></tbody>
+</table></div>
+</details>
+<details class="evidence"><summary>완료 경로 재실행에서 모델링한 함수</summary>
+<div class="table-wrap"><table class="compact fit">
+<caption>큐·이벤트·정리 함수의 모델</caption>
+<thead><tr><th>주소</th><th>모델이 하는 일 (원문)</th></tr></thead>
+<tbody><tr><th scope="row"><code>0x800d7c04</code></th><td>queue_send status and captured message</td></tr><tr><th scope="row"><code>0x800cf768</code></th><td>queue_receive supplies one task pointer</td></tr><tr><th scope="row"><code>0x800d8ea8</code></th><td>event_flags_set captures arguments</td></tr><tr><th scope="row"><code>0x800cc3b4</code></th><td>event_flags_get supplies success or timeout</td></tr><tr><th scope="row"><code>0x800cbee4</code></th><td>mutex_get</td></tr><tr><th scope="row"><code>0x800d193c</code></th><td>mutex_put</td></tr><tr><th scope="row"><code>0x800d9ac8</code></th><td>counter_get</td></tr><tr><th scope="row"><code>0x800d0aa4</code></th><td>IRQ mask</td></tr><tr><th scope="row"><code>0x8035285c</code></th><td>debug dump</td></tr><tr><th scope="row"><code>0x800a1310</code></th><td>diagnostic print</td></tr><tr><th scope="row"><code>0x80357098</code></th><td>WriteAll records invocation; device/filter programming omitted</td></tr><tr><th scope="row"><code>0x80334054</code></th><td>PowerOff</td></tr><tr><th scope="row"><code>0x80357f28</code></th><td>CalculateHeight returns synthetic 128</td></tr><tr><th scope="row"><code>0x80351890</code></th><td>CommitSubImage</td></tr><tr><th scope="row"><code>0x80339600</code></th><td>FreeTempResources</td></tr><tr><th scope="row"><code>0x80339ea0</code></th><td>endianity follow-up</td></tr></tbody>
+</table></div>
+</details>
+<p>검증 대상은 선별 함수 후보 90개와 명령·데이터 워드 609건입니다. 함수 후보 범위는 다음 심볼 주소까지이며 공식 함수 크기가 아닙니다. 전체 디컴파일, 원본 BIN, 추출 ELF는 공개하지 않습니다. <a href="tools/verify_task_followup.py">[검증 코드]</a></p>
 <pre><code>python -m unittest discover -s tests -v
 python tools/verify_report.py --firmware path/to/fwdc603p.bin
 python tools/check_fc1_semantics.py .private/main-expanded.elf --output .private/semantics-recheck.json
 python tools/check_hdr_tasks.py .private/main-expanded.elf --output .private/tasks-recheck.json
 python tools/check_ipu_completion.py .private/main-expanded.elf --output .private/completion-recheck.json</code></pre>
-<p>원본 명령 재실행에는 합성 영상 크기와 객체, 모델링한 메모리 할당·RTOS 결과가 포함됩니다. 재실행 구간과 대체 함수는 근거 파일에 공개했습니다. 실제 인터럽트 발생 시각, DMA·캐시 일관성, 최종 픽셀 값은 관측하지 않았습니다.</p><p class="note">FC1 제어 bit 0의 물리적 기능을 확정하려면 칩 레지스터 문서나 조건을 통제한 실기 레지스터·픽셀 관측이 추가로 필요합니다. 큐·콜백의 소프트웨어 성공은 영상 정확성의 증거가 아닙니다.</p>
-<ul class="sources"><li><a href="analysis/fc1-semantics.json">S1 · FC1 유형·직접 제어 워드</a> · <a href="tools/check_fc1_semantics.py">재현 도구</a></li><li><a href="analysis/task-create-followup.json">T1 · task 생성·설정·제출</a> · <a href="tools/check_hdr_tasks.py">재현 도구</a></li><li><a href="analysis/task-completion-followup.json">D1 · IRQ·콜백·대기 조건</a> · <a href="tools/check_ipu_completion.py">재현 도구</a></li><li><a href="analysis/task-comparison.json">K1 · K-3 대조</a> · <a href="analysis/task-editorial.json">문장 검수</a></li></ul></section>
-</main><footer>독립적인 펌웨어 분석 · Q7 v1.01 · 비트의 생성 조건과 하드웨어 의미를 구분했습니다.</footer></body></html>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/fc1-semantics.json">analysis/fc1-semantics.json</a> — FC1 입력 유형과 직접 제어 워드 경로 · <a href="tools/check_fc1_semantics.py">재현 도구</a></li>
+<li><a href="analysis/task-create-followup.json">analysis/task-create-followup.json</a> — task 생성·설정·제출 · <a href="tools/check_hdr_tasks.py">재현 도구</a></li>
+<li><a href="analysis/task-completion-followup.json">analysis/task-completion-followup.json</a> — IRQ·콜백·대기 조건 · <a href="tools/check_ipu_completion.py">재현 도구</a></li>
+<li><a href="analysis/task-comparison.json">analysis/task-comparison.json</a> — K-3 Mark III 고정 커밋과 파일 해시</li>
+<li><a href="tools/verify_task_followup.py">tools/verify_task_followup.py</a> — 근거 검증 도구</li>
+<li><a href="https://github.com/eclipse-threadx/threadx/blob/master/common/inc/tx_api.h">Eclipse ThreadX, tx_api.h</a> — 이벤트 플래그 옵션 상수 이름(OR_CLEAR, AND). Q7 RTOS 버전의 증거로는 쓰지 않음</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html" aria-current="page">FC1 제어 비트와 HDR task 완료</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="hdr-control-report.html"><small>← 이전</small>HDR 네 패스의 FC1 활성화</a><a class="next" href="guide-af.html"><small>다음 →</small>AF·렌즈 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

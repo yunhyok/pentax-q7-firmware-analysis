@@ -39,21 +39,21 @@
     {"id": "update", "title": "업데이트와 재패킹", "nav": "업데이트", "hub": "guide-update.html", "pages": [
       {"file": "guide-update.html", "label": "업데이트·재패킹 안내"},
       {"file": "implementation-report.html", "label": "재패킹 검증과 업데이트 검사"},
-      {"file": "update-service-report.html", "label": "메인 업데이트 진입과 반환값"},
-      {"file": "loader-lens-report.html", "label": "Loader 입력 검증과 렌즈 정책"},
-      {"file": "main-burn-prefix-report.html", "label": "메인 Burn의 매체 열기"},
-      {"file": "loader-hash-report.html", "label": "기록 헤더와 MD5 경로"},
-      {"file": "burn-continuation-report.html", "label": "NAND 재시도와 최종 반환"},
-      {"file": "storage-readiness-report.html", "label": "저장 경계와 렌즈 준비 상태"},
+      {"file": "update-service-report.html", "label": "MAIN의 업데이트 진입과 반환값"},
+      {"file": "loader-lens-report.html", "label": "Loader 입력 검증과 렌즈 AF 정책"},
+      {"file": "main-burn-prefix-report.html", "label": "MAIN Burn의 매체 열기와 헤더 요청"},
+      {"file": "loader-hash-report.html", "label": "첫 블록 281바이트와 MD5 경로"},
+      {"file": "burn-continuation-report.html", "label": "NAND 기록의 재시도와 마무리"},
+      {"file": "storage-readiness-report.html", "label": "기록 전 저장장치 검사와 렌즈 준비"},
       {"file": "recompiled-numeric-report.html", "label": "색 행렬 함수 C 재컴파일"}
     ]},
     {"id": "color", "title": "색 처리와 HDR", "nav": "색·HDR", "hub": "guide-color.html", "pages": [
       {"file": "guide-color.html", "label": "색 처리·HDR 안내"},
-      {"file": "routing-report.html", "label": "렌즈 명령·ISP 레지스터·출력 경계"},
-      {"file": "pixel-report.html", "label": "HDR 버퍼와 색 처리 패스"},
-      {"file": "final-color-report.html", "label": "HDR 제출 분기와 FC 계수"},
-      {"file": "hdr-control-report.html", "label": "HDR FC1 활성화와 제출 패스"},
-      {"file": "hdr-task-report.html", "label": "FC1 비트와 HDR task 완료"}
+      {"file": "routing-report.html", "label": "AF 수신자·색 행렬 레지스터·JPEG 저장"},
+      {"file": "pixel-report.html", "label": "HDR 버퍼의 JPEG 경로와 색 필터"},
+      {"file": "final-color-report.html", "label": "HDR 출력 선택과 FC1 계수"},
+      {"file": "hdr-control-report.html", "label": "HDR 네 패스의 FC1 활성화"},
+      {"file": "hdr-task-report.html", "label": "FC1 제어 비트와 HDR task 완료"}
     ]},
     {"id": "af", "title": "AF와 렌즈 제어", "nav": "AF", "hub": "guide-af.html", "pages": [
       {"file": "guide-af.html", "label": "AF·렌즈 안내"},

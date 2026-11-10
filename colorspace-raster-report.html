@@ -1,11 +1,255 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — 선택 강조의 인덱스 픽셀</title><meta name="description" content="Color Space 강조 도형의 원본 MIPS와 GDI 픽셀 쓰기 검증"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head><body>
-<header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / INDEXED RASTER</p><h1>선택 강조의<br><span>인덱스 픽셀</span></h1><p class="lead">Color Space 선택 강조의 다섯 도형 요청을 원본 그리기 함수에 넣어 인덱스 픽셀 쓰기까지 확인했습니다. 두 선택 위치 모두 129,536바이트 버퍼 전체가 독립 계산과 일치했습니다. 좌표 배율과 버퍼 연결은 합성 조건이며 실제 LCD의 색이나 출력을 재현한 결과는 아닙니다.</p><p class="links"><a href="colorspace-render-report.html">UI 갱신·리소스</a><a href="colorspace-ui-report.html">설정·확정·취소</a><a href="index.html">전체 분석</a></p></div><aside class="milestone"><strong>7 CASES</strong><span>두 강조 영역 + 다섯 경계 사례</span><strong>34,560 B</strong><span>선택 영역별 변경 바이트</span><strong>3 API</strong><span>실행을 대체한 경계</span></aside></header>
-<nav aria-label="문서 목차"><a href="#branches">경로 선택</a><a href="#context">컨텍스트</a><a href="#pixels">픽셀 검증</a><a href="#comparison">K-3 대조</a><a href="#limits">출력 경계</a></nav><main><p class="update-banner"><strong>후속 근거:</strong> <a href="colorspace-glyph-report.html">기본 배율 글리프 시험</a>에서 동일 sRGB 텍스트를 새 컨텍스트에 별도로 입력했습니다. 실제 UI 배율과 상태를 이어받은 실행은 아닙니다.</p>
-<section id="branches"><p class="eyebrow">01 / DIRECT STORES OR GDI</p><h2>강조 테두리는 서로 다른 쓰기 경로를 사용한다</h2><p>원본 DrawShape_Line의 style 0 분기는 변환된 폭과 x 좌표로 쓰기 경로를 고릅니다. 폭이 32의 배수이고 x가 짝수이면 word 루프를, 그 밖에서 폭이 16의 배수이고 x가 짝수이면 halfword 루프를 사용합니다. 나머지는 브러시 색을 설정하고 GDI 사각형 채우기로 보냅니다. 다른 style과 실물 CPU의 비정렬 쓰기는 이번 사례에 포함하지 않았습니다. <a href="analysis/colorspace-raster.json">[R1: findings.branches·evidence]</a></p><figure class="diagram"><figcaption>변환한 폭과 x 좌표로 경로를 선택한다</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 208" role="img" aria-labelledby="raster-branch-title raster-branch-desc"><title id="raster-branch-title">변환한 폭과 x 좌표로 경로를 선택한다</title><desc id="raster-branch-desc">폭 32의 배수인 조건을 먼저 평가합니다. 이 재현은 좌표 배율을 0으로 초기화해 항등 변환 경로를 사용합니다.</desc><defs><marker id="raster-branch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M272 42H240" marker-end="url(#raster-branch-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#raster-branch-arrow)"/><path class="e" d="M388 72V124" marker-end="url(#raster-branch-arrow)"/><path class="e" d="M124 72V124" marker-end="url(#raster-branch-arrow)"/><path class="e" d="M668 72V124" marker-end="url(#raster-branch-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">폭 %32 == 0 · x 짝수</text><text class="s mono" x="20" y="57">word 루프 / 0x8043ecfc</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">DrawShape_Line / style 0</text><text class="s mono" x="284" y="57">원본 좌표 변환 후 분기</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37" textLength="208" lengthAdjust="spacingAndGlyphs">그 밖: 폭 %16 == 0 · x 짝수</text><text class="s mono" x="564" y="57">halfword / 0x8043ed94</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">나머지 → GDI 채우기</text><text class="s mono" x="284" y="169">홀수 x · 폭 4 · 폭 712 등</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">32×2 사례 → 64바이트</text><text class="s mono" x="20" y="169">높이 0 사례 → 쓰기 없음</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">강조의 위·아래 폭 720</text><text class="s mono" x="564" y="169">두 직접 쓰기 패스</text></svg></div><p>폭 32의 배수인 조건을 먼저 평가합니다. 이 재현은 좌표 배율을 0으로 초기화해 항등 변환 경로를 사용합니다. <a href="analysis/colorspace-raster.json">[근거]</a></p></figure><p>Color Space에서 얻은 다섯 요청은 halfword·GDI·halfword·GDI·GDI 순서로 실행됐습니다. y=64와 y=112 두 사례에서 요청 하나가 끝날 때마다 버퍼 전체를 대조했습니다. 최종 변경 영역은 각각 34,560바이트이며 겹쳐 쓰는 부분과 그대로 남는 부분도 비교에 포함했습니다. 인덱스 0x4d·0x4e·0x4f가 실제로 어떤 RGB 색인지는 아직 확인하지 않았습니다. <a href="tools/check_colorspace_raster.py">[R2: CASES·ordered rectangle oracle]</a></p></section>
-<section id="context"><p class="eyebrow">02 / ORIGINAL 8-BIT CONTEXT</p><h2>간접 채우기의 수신자를 원본 템플릿으로 정한다</h2><p>원본 GdiCreateDisplayContextEx가 sDcOsd8 템플릿을 복사하고 원본 비트맵 생성·선택 함수가 합성 버퍼의 주소와 크기를 연결합니다. 컨텍스트 +0x880의 함수 포인터는 8비트 FillRect인 0x80225820을 선택합니다. 좌표 변환·경계 잘림·memset은 원본을 실행했고 메모리 할당·GetBuffer·캐시 API 세 곳만 대체했습니다. <a href="analysis/colorspace-raster.json">[R1: context_template·findings.gdi]</a></p><figure class="diagram"><figcaption>원본 컨텍스트에서 8비트 간접 채우기까지</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 208" role="img" aria-labelledby="raster-context-title raster-context-desc"><title id="raster-context-title">원본 컨텍스트에서 8비트 간접 채우기까지</title><desc id="raster-context-desc">점선은 합성 연결 조건입니다. 기본 포인터가 0인 fallback은 정적으로만 확인했으며 카메라의 초기화 상태를 뜻하지 않습니다.</desc><defs><marker id="raster-context-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#raster-context-arrow)"/><path class="e dash" d="M504 42H552" marker-end="url(#raster-context-arrow)"/><path class="e dash" d="M668 72V124" marker-end="url(#raster-context-arrow)"/><path class="e" d="M552 154H504" marker-end="url(#raster-context-arrow)"/><path class="e" d="M272 154H240" marker-end="url(#raster-context-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">GdiCreateDisplayContextEx</text><text class="s mono" x="20" y="57">원본 sDcOsd8 템플릿 복사</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">비트맵 생성 · 선택</text><text class="s mono" x="284" y="57">합성 736×176 / 8비트</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">기본 컨텍스트 = ID17 조회</text><text class="s mono" x="564" y="57">시험 도구가 연결</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">8비트 FillRect 0x80225820</text><text class="s mono" x="20" y="169">원본 clipping → memset</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">GDI 채우기 간접 호출</text><text class="s mono" x="284" y="169">context +0x880</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">원본 브러시 설정 · 도형 0</text><text class="s mono" x="564" y="169">동일 컨텍스트에 적용</text></svg></div><p>점선은 합성 연결 조건입니다. 기본 포인터가 0인 fallback은 정적으로만 확인했으며 카메라의 초기화 상태를 뜻하지 않습니다. <a href="analysis/colorspace-raster.json">[근거]</a></p></figure><p>시험에서는 기본 컨텍스트 포인터 0x800eb4d8과 버퍼 ID 17의 조회 결과를 같은 컨텍스트로 맞췄습니다. 원본 속성 설정 코드는 기본 포인터가 0이면 선택한 컨텍스트 대신 psDcOsd를 사용할 수 있습니다. 이 조건을 빼면 브러시 설정과 채우기가 다른 컨텍스트를 볼 수 있으므로 재현 조건에 명시했습니다. 실제 카메라 초기화의 오류를 발견했다는 뜻은 아닙니다. <a href="analysis/colorspace-raster.json">[R1: findings.binding·evidence]</a></p></section>
-<section id="pixels"><p class="eyebrow">03 / WHOLE BUFFER COMPARISON</p><h2>겹침·경계·그대로 남은 픽셀을 모두 대조한다</h2><p>추가 다섯 사례는 word·halfword 직접 쓰기, 홀수 x의 GDI 선택, 오른쪽·아래 경계 잘림, 높이 0을 확인합니다. 736×176 버퍼의 (733,174)에 7×4 GDI 사각형을 요청하면 경계 안의 3×2, 총 6바이트만 바뀝니다. 직접 쓰기 경로의 범위 초과는 시험하지 않았으며 GDI의 잘림 동작을 그 경로에도 적용할 수는 없습니다. <a href="analysis/colorspace-raster.json">[R1: replay.cases]</a></p><div class="table-wrap"><table><caption>전체 버퍼는 각 사례에서 736×176 바이트. 마지막 요청 후의 해시 접두어</caption><thead><tr><th>사례</th><th>원본 분기</th><th>변경 바이트</th><th>전체 버퍼 SHA-256</th></tr></thead><tbody><tr><th>srgb-highlight</th><td>halfword → gdi → halfword → gdi → gdi</td><td>34,560</td><td><code>fde755d376e662d2…</code></td></tr><tr><th>adobergb-highlight</th><td>halfword → gdi → halfword → gdi → gdi</td><td>34,560</td><td><code>80e1512dfcb906be…</code></td></tr><tr><th>word-aligned</th><td>word</td><td>64</td><td><code>ec227307435a5935…</code></td></tr><tr><th>halfword-aligned</th><td>halfword</td><td>32</td><td><code>ad1e41fd649f7765…</code></td></tr><tr><th>odd-x-gdi</th><td>gdi</td><td>64</td><td><code>07721715242f1389…</code></td></tr><tr><th>gdi-clipped-edge</th><td>gdi</td><td>6</td><td><code>6a3eb38dbf209ddd…</code></td></tr><tr><th>zero-height</th><td>word</td><td>0</td><td><code>88d973bfe19a61fc…</code></td></tr></tbody></table></div><p>메모리 검사는 기호식 주소와 허용 범위를 벗어난 접근을 거부합니다. 쓰기는 스택·컨텍스트·비트맵 디스크립터·합성 프레임에만 허용하고 매 요청 뒤 양쪽 8바이트 보호 영역도 확인했습니다. 기록한 쓰기 횟수는 VEX의 메모리 이벤트 수이며 실물 버스 트랜잭션 수가 아닙니다. <a href="tools/check_colorspace_raster.py">[R2: guard·whole-frame equality]</a></p><p>VEX 이벤트의 <code>pc</code>는 <code>scratch.ins_addr</code>입니다. 예를 들어 <code>0x800fb7ec</code>에 귀속된 쓰기의 실제 MIPS 저장 명령은 지연 슬롯 <code>0x800fb7f0</code>입니다. 홀수 x 사례에서는 SWR 변환으로 이벤트 크기 합이 66바이트지만 변경된 픽셀은 64바이트입니다. 전체 버퍼 대조를 판정 기준으로 사용했습니다. <a href="analysis/colorspace-raster.json">[R1: findings.bounds·evidence]</a></p></section>
-<section id="comparison"><p class="eyebrow">04 / K-3 MARK III COMPARISON</p><h2>공통 UI 동작과 기종별 렌더러를 구분한다</h2><p>K-3 Mark III의 Color Space 자료는 기종별 텍스트 ID·아이콘·pending 선택값과 표시 갱신 경계를 제공합니다. Q7에서는 즉시 설정·취소 복원 방식에 더해 선택 강조의 인덱스 쓰기를 확인했습니다. 이 결과는 UI 동작을 재구현할 때 쓰기 순서와 강조 형상을 정하는 근거이며 K-3의 렌더러나 리소스 ABI를 Q7에 그대로 이식할 수 있다는 근거는 아닙니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680/analysis/colorspace-ui-evidence.json">[K1: 고정 커밋의 Color Space 근거]</a></p></section>
-<section id="limits"><p class="eyebrow">05 / REMAINING OUTPUT BOUNDARIES</p><h2>인덱스 RAM에서 실제 표시까지는 남아 있다</h2><p>이번 도구는 앞선 원본 갱신에서 얻은 도형 인수를 입력으로 사용합니다. 전체 UI 생산자부터 도형 픽셀까지 한 번에 연속 실행하는 과정은 이번 검증 범위 밖입니다. 글리프·실제 팔레트·비단위 배율·장치 등록·DMA·LCD는 미검증입니다. 다음 단계는 글꼴 리소스와 간접 렌더러를 잇고 전체 갱신 경로에 픽셀 검사를 연결하는 것입니다. <a href="analysis/colorspace-raster.json">[R1: limitations]</a></p><figure class="diagram"><figcaption>현재 확인한 픽셀과 남은 출력 경계</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 208" role="img" aria-labelledby="raster-coverage-title raster-coverage-desc"><title id="raster-coverage-title">현재 확인한 픽셀과 남은 출력 경계</title><desc id="raster-coverage-desc">점선은 이전 실행의 인수를 이번 시험에 전달했다는 뜻입니다. 전체 화면 생산자부터 픽셀까지 하나의 연속 실행은 아직 없습니다.</desc><defs><marker id="raster-coverage-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e dash" d="M240 42H272" marker-end="url(#raster-coverage-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#raster-coverage-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">이전 원본 UI 갱신</text><text class="s mono" x="20" y="57">다섯 도형 인수 관측</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">이번 원본 도형 실행</text><text class="s mono" x="284" y="57">각 요청 뒤 전체 RAM 대조</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">인덱스 픽셀 일치</text><text class="s mono" x="564" y="57">두 위치 / 각 34,560바이트</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">텍스트 글리프</text><text class="s mono" x="20" y="169">리소스 · 간접 함수 연결 필요</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">실제 RGB 팔레트</text><text class="s mono" x="284" y="169">인덱스와 RGB를 구분</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">DMA · LCD</text><text class="s mono" x="564" y="169">장치 출력 미검증</text></svg></div><p>점선은 이전 실행의 인수를 이번 시험에 전달했다는 뜻입니다. 전체 화면 생산자부터 픽셀까지 하나의 연속 실행은 아직 없습니다. <a href="analysis/colorspace-raster.json">[근거]</a></p></figure><div class="table-wrap"><table><caption>원본 함수 실행을 대체한 세 API. 관측용 breakpoint는 대체 함수가 아님</caption><thead><tr><th>주소</th><th>모델</th></tr></thead><tbody><tr><th><code>0x8000bf28</code></th><td>Return zeroed synthetic allocations for one display context and one bitmap.</td></tr><tr><th><code>0x80262fd4</code></th><td>Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.</td></tr><tr><th><code>0x800b3d40</code></th><td>Record cache address/length and return0 without CPU cache operations.</td></tr></tbody></table></div><p>원본 50개 워드, 이름이 고유한 함수 22개, 이름이 중복된 FillRect 범위 2개, 컨텍스트 템플릿 1개를 주소·해시로 대조합니다. 원본 리소스·전체 코드·실제 화면 사진을 공개한 자료는 아닙니다.</p><pre><code>python tools/check_colorspace_raster.py .private/main-expanded.elf --output .private/raster-new.json
-python tools/verify_report.py --firmware &lt;original fwdc603p.bin&gt;</code></pre><p><a href="analysis/colorspace-raster.json">R1 근거 JSON</a> · <a href="tools/check_colorspace_raster.py">R2 재현 도구</a> · <a href="analysis/continuation-editorial.json">한국어 검토</a> · <a href="analysis/hq-status.json">연구 상태</a></p></section>
-</main><footer>선택 강조의 호출 관계와 인덱스 쓰기를 재구성한 분석. 실제 화면의 색·글꼴·LCD 출력을 뜻하지 않습니다.</footer></body></html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>선택 강조 사각형이 픽셀로 칠해지는 과정 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Q7 Color Space 화면의 선택 강조 사각형 다섯 개를 원본 도형 함수와 8비트 GDI로 합성 RAM에 실행하고, 두 강조 위치와 경계 조건 5개를 버퍼 전체로 독립 계산과 대조한 기록입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-ui.html">화면과 글꼴</a></li><li aria-current="page">선택 강조의 픽셀</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">화면과 글꼴 · ③ 강조 픽셀: 사각형이 버퍼에 칠해지기까지</p>
+<h1>선택 강조 사각형이 픽셀로 칠해지는 과정</h1>
+<p class="lead">선택된 줄을 둘러싼 강조 표시는 사각형 다섯 개로 그려집니다. 이 사각형들이 화면 버퍼에 어떤 번호로, 어떤 코드 경로를 거쳐 칠해지는지 원본 코드로 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 강조 표시가 만들어지는 곳</a></li><li><a href="#branches">테두리마다 다른 쓰기 경로를 탑니다</a></li><li><a href="#context">GDI 채우기는 원본 8비트 컨텍스트로 실행했습니다</a></li><li><a href="#pixels">경계 조건까지 버퍼 전체를 대조했습니다</a></li><li><a href="#comparison">K-3 Mark III와 비교</a></li><li><a href="#limits">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>그리기 요청 단계에서 기록한 사각형 다섯 개를 원본 도형 함수에 넣어 실행했습니다. 테두리는 폭과 x 좌표에 따라 <strong>직접 쓰기 루프</strong> 또는 <strong>GDI 사각형 채우기</strong>로 나뉘어 칠해집니다.</li>
+<li>두 강조 위치(sRGB, AdobeRGB) 모두 요청 하나마다 <strong>129,536바이트 버퍼 전체</strong>를 독립 계산과 비교했고 전부 같았습니다. 최종적으로 바뀐 바이트는 각각 34,560개(720×48)입니다.</li>
+<li>경계 조건 시험 5개(정렬된 word·halfword 쓰기, 홀수 x, 오른쪽·아래 잘림, 높이 0)도 같은 방식으로 대조했습니다.</li>
+<li>쓴 값은 팔레트 번호 <code>0x4d·0x4e·0x4f</code>입니다. 이 번호가 실제 어떤 색인지, 버퍼가 LCD로 나가는 과정은 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>도형 함수의 경로 선택과 직접 쓰기 루프</li>
+<li>원본 8비트 컨텍스트 템플릿 복사, 비트맵 생성·선택, 좌표 변환·잘림·<code>memset</code></li>
+<li>7개 사례의 버퍼 전체와 앞뒤 보호 영역 일치</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>사각형 인수: <a href="colorspace-render-report.html#focus">그리기 경로</a>에서 기록한 값을 다시 입력</li>
+<li>736×176 합성 버퍼(초기값 165), 좌표 배율 0(항등 변환)</li>
+<li>기본 컨텍스트와 버퍼 ID 17을 같은 컨텍스트로 연결</li>
+<li>메모리 할당·버퍼 정보·캐시 API 3곳</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>화면 갱신부터 픽셀까지 한 번에 이어진 실행</li>
+<li>실제 팔레트 RGB, 화면 전송(DMA), LCD</li>
+<li>다른 도형 스타일, 배율 변경, 직접 쓰기 경로의 범위 초과</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 강조 표시가 만들어지는 곳</h2>
+<p>색공간 화면에서 선택된 줄은 가로로 긴 강조 사각형으로 표시됩니다. <a href="colorspace-render-report.html#focus">그리기 경로</a>에서 이 강조가 위·왼쪽·아래·오른쪽 테두리와 안쪽, 모두 사각형 다섯 개의 요청이라는 것을 확인했습니다. 이 문서는 그 요청이 화면 버퍼의 바이트로 바뀌는 단계를 다룹니다.</p>
+<ol class="flow">
+<li class="ok"><strong>① 선택·확정·취소</strong><span><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></span></li>
+<li class="ok"><strong>② 그리기 요청</strong><span><a href="colorspace-render-report.html">그리기 경로</a></span></li>
+<li class="key"><strong>③ 강조 픽셀</strong><span>이 문서</span></li>
+<li class="ok"><strong>④ 글자 픽셀</strong><span><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></span></li>
+<li class="ok"><strong>⑤ 글자 크기·컨텍스트</strong><span><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></span></li>
+<li class="open"><strong>팔레트·LCD</strong><span>미확인</span></li>
+</ol>
+<p>읽는 데 필요한 말은 세 가지입니다.</p>
+<dl class="kv">
+<dt>인덱스 버퍼</dt><dd>픽셀 하나가 1바이트이고, 그 값은 색이 아니라 <dfn title="픽셀마다 색 대신 팔레트(색표)의 번호를 저장하는 방식">팔레트 번호</dfn>입니다. 이 시험의 버퍼는 가로 736바이트 × 세로 176줄입니다.</dd>
+<dt><dfn title="Graphics Device Interface. 사각형 채우기, 글자 출력 같은 그리기 기능을 모아 둔 펌웨어 내부 계층">GDI</dfn></dt><dd>그리기 기능을 모아 둔 계층입니다. 좌표 변환과 화면 밖 잘라내기를 한 뒤 메모리를 채웁니다.</dd>
+<dt>컨텍스트</dt><dd>그릴 버퍼, 브러시 색, 그리기 함수 표를 담은 구조체입니다. 8비트 화면용 템플릿 <code>sDcOsd8</code>을 복사해 만듭니다.</dd>
+</dl>
+</section>
+
+<section id="branches">
+<h2>테두리마다 다른 쓰기 경로를 탑니다</h2>
+<p class="takeaway">도형 함수는 사각형의 폭과 x 좌표를 보고 세 경로 중 하나를 고릅니다. 강조의 위·아래 테두리는 halfword 루프로, 왼쪽·오른쪽 테두리와 안쪽은 GDI 채우기로 칠해집니다.</p>
+
+<figure class="diagram">
+<figcaption>원본 <code>DrawShape_Line</code>(스타일 0)의 경로 선택</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 330" role="img" aria-labelledby="dg-raster-branch-title dg-raster-branch-desc">
+<title id="dg-raster-branch-title">폭과 x 좌표로 쓰기 경로를 고르는 순서</title>
+<desc id="dg-raster-branch-desc">사각형 요청이 들어오면 원본 코드가 좌표를 변환한 뒤 먼저 폭이 32의 배수이고 x가 짝수인지 봅니다. 그렇다면 4바이트씩 쓰는 word 루프를 씁니다. 아니면 폭이 16의 배수이고 x가 짝수인지 봅니다. 그렇다면 2바이트씩 쓰는 halfword 루프를 씁니다. 둘 다 아니면 브러시 색을 정하고 GDI 사각형 채우기로 보냅니다. 강조의 위·아래 테두리(폭 720)는 halfword, 왼쪽·오른쪽 테두리(폭 4)와 안쪽(폭 712)은 GDI로 갔습니다.</desc>
+<defs><marker id="dg-raster-branch-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b model" x="8" y="20" width="184" height="64" rx="8"/>
+<text class="t" x="20" y="46">사각형 요청</text>
+<text class="s" x="20" y="67">x, y, 폭, 높이, 번호</text>
+<rect class="b ok" x="236" y="20" width="250" height="64" rx="8"/>
+<text class="t" x="248" y="46">폭 % 32 = 0 이고 x 짝수?</text>
+<text class="s" x="248" y="67">좌표 변환 뒤 판단</text>
+<rect class="b ok" x="236" y="132" width="250" height="64" rx="8"/>
+<text class="t" x="248" y="158">폭 % 16 = 0 이고 x 짝수?</text>
+<text class="s" x="248" y="179">첫 조건이 아닐 때</text>
+<rect class="b key" x="560" y="20" width="232" height="64" rx="8"/>
+<text class="t" x="572" y="46">word 루프 (4바이트)</text>
+<text class="s" x="572" y="67">사례: 32×2 → 64바이트</text>
+<rect class="b key" x="560" y="132" width="232" height="64" rx="8"/>
+<text class="t" x="572" y="158">halfword 루프 (2바이트)</text>
+<text class="s" x="572" y="179">강조 위·아래 (폭 720)</text>
+<rect class="b key" x="560" y="244" width="232" height="76" rx="8"/>
+<text class="t" x="572" y="270">GDI 사각형 채우기</text>
+<text class="s" x="572" y="291">강조 좌우 (폭 4)·안쪽 (폭 712)</text>
+<text class="s" x="572" y="310">홀수 x, 경계 잘림 사례</text>
+<path class="e" d="M192 52H234" marker-end="url(#dg-raster-branch-ah)"/>
+<path class="e" d="M486 52H558" marker-end="url(#dg-raster-branch-ah)"/>
+<text class="n" x="500" y="44">예</text>
+<path class="e" d="M361 84V130" marker-end="url(#dg-raster-branch-ah)"/>
+<text class="n" x="371" y="112">아니요</text>
+<path class="e" d="M486 164H558" marker-end="url(#dg-raster-branch-ah)"/>
+<text class="n" x="500" y="156">예</text>
+<path class="e" d="M361 196V282H558" marker-end="url(#dg-raster-branch-ah)"/>
+<text class="n" x="371" y="230">아니요 → 브러시 색 설정</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드가 판단</li><li><i class="key"></i>실제로 픽셀을 쓰는 경로</li><li><i class="model"></i>앞 문서에서 기록한 입력</li></ul>
+</figure>
+<p>폭 720은 32의 배수가 아니므로(720 = 32 × 22.5) 첫 조건을 통과하지 못하고, 16의 배수(16 × 45)라서 halfword 루프로 갑니다. 폭 4와 712는 16의 배수가 아니어서 GDI로 갑니다. word 루프의 저장 명령은 <code>0x8043ecfc</code>, halfword 루프는 <code>0x8043ed94</code>에 있습니다. 이 시험은 좌표 배율을 0으로 초기화해 좌표가 바뀌지 않는 항등 변환 경로를 썼습니다. 다른 스타일과 실물 CPU의 비정렬 쓰기 동작은 이 사례로 확인하지 않습니다. <a href="analysis/colorspace-raster.json">[근거: findings.branches]</a></p>
+
+<h3>강조 하나를 칠하는 다섯 단계</h3>
+<p>sRGB 강조(y = 64)의 다섯 요청은 halfword·GDI·halfword·GDI·GDI 순서로 실행됐습니다. 요청 하나가 끝날 때마다 버퍼 전체를 따로 계산한 결과와 비교했습니다. “바뀐 바이트”는 처음 상태와 다른 바이트의 누적 개수입니다.</p>
+<div class="table-wrap"><table>
+<caption>sRGB 강조의 요청별 결과 (AdobeRGB 강조는 y만 48 아래이고 바뀐 바이트 수가 같습니다)</caption>
+<thead><tr><th>순서</th><th>요청 (x, y, 폭, 높이, 번호)</th><th>경로</th><th class="n">바뀐 바이트 (누적)</th><th>VEX 쓰기 이벤트</th></tr></thead>
+<tbody><tr><th scope="row">1 위</th><td>(0, 64, 720, 6, <code>0x4d</code>)</td><td>halfword</td><td class="n">4,320</td><td><code>0x8043ed94</code> 2B×2,160</td></tr><tr><th scope="row">2 왼쪽</th><td>(0, 64, 4, 44, <code>0x4d</code>)</td><td>GDI</td><td class="n">4,472</td><td><code>0x800fb7ec</code> 1B×176</td></tr><tr><th scope="row">3 아래</th><td>(0, 108, 720, 4, <code>0x4f</code>)</td><td>halfword</td><td class="n">7,352</td><td><code>0x8043ed94</code> 2B×1,440</td></tr><tr><th scope="row">4 오른쪽</th><td>(716, 68, 4, 44, <code>0x4f</code>)</td><td>GDI</td><td class="n">7,504</td><td><code>0x800fb7ec</code> 1B×176</td></tr><tr><th scope="row">5 안쪽</th><td>(4, 68, 712, 40, <code>0x4e</code>)</td><td>GDI</td><td class="n">34,560</td><td><code>0x800fb7a8</code> 4B×1,760 · <code>0x800fb7ac</code> 4B×1,760 · <code>0x800fb7b0</code> 4B×1,760 · <code>0x800fb7b8</code> 4B×1,760 · <code>0x800fb7d8</code> 4B×80</td></tr></tbody>
+</table></div>
+<p>누적 수가 사각형 넓이의 합보다 작은 것은 겹치는 부분 때문입니다. 예를 들어 왼쪽 테두리(4×44 = 176)는 위 테두리와 4×6 = 24바이트가 겹치므로 152만 늘었습니다. 안쪽이 마지막에 칠해지면서 위 테두리의 아래 두 줄을 덮고, 최종 결과는 강조 영역 전체 720×48 = 34,560바이트입니다. 겹쳐 쓴 곳과 그대로 남은 곳 모두 비교에 들어갔습니다. <a href="analysis/colorspace-raster.json">[근거: findings.highlight, replay.cases]</a></p>
+</section>
+
+<section id="context">
+<h2>GDI 채우기는 원본 8비트 컨텍스트로 실행했습니다</h2>
+<p class="takeaway">GDI가 어느 함수로 채울지는 컨텍스트 안의 함수 포인터가 정합니다. 원본 템플릿을 복사해 컨텍스트를 만들었더니 8비트 화면용 <code>FillRect</code>가 선택됐습니다.</p>
+
+<figure class="diagram">
+<figcaption>컨텍스트 준비에서 메모리 채우기까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 250" role="img" aria-labelledby="dg-raster-ctx-title dg-raster-ctx-desc">
+<title id="dg-raster-ctx-title">원본 8비트 컨텍스트에서 간접 채우기까지</title>
+<desc id="dg-raster-ctx-desc">윗줄: 원본 GdiCreateDisplayContextEx가 sDcOsd8 템플릿을 복사하고, 원본 비트맵 생성·선택 함수가 736×176 합성 버퍼를 연결합니다. 시험 도구는 기본 컨텍스트 포인터와 버퍼 ID 17의 조회 결과를 이 컨텍스트로 맞춥니다. 아랫줄: 원본 브러시 설정이 같은 컨텍스트에 색을 넣고, GDI 채우기는 컨텍스트 +0x880의 함수 포인터를 따라 8비트 FillRect 0x80225820을 부르며, 좌표 변환·잘림 뒤 memset으로 버퍼를 채웁니다.</desc>
+<defs>
+<marker id="dg-raster-ctx-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-raster-ctx-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<text class="h" x="8" y="20">컨텍스트 준비</text>
+<rect class="b ok" x="8" y="32" width="230" height="64" rx="8"/>
+<text class="t" x="20" y="58">컨텍스트 만들기</text>
+<text class="s" x="20" y="79">sDcOsd8 템플릿 복사</text>
+<rect class="b ok" x="284" y="32" width="230" height="64" rx="8"/>
+<text class="t" x="296" y="58">비트맵 생성·선택</text>
+<text class="s" x="296" y="79">합성 736×176 · 8비트</text>
+<rect class="b model" x="560" y="32" width="232" height="64" rx="8"/>
+<text class="t" x="572" y="58">기본 포인터 = ID 17</text>
+<text class="s" x="572" y="79">시험 도구가 연결</text>
+<text class="h" x="8" y="148">사각형 채우기</text>
+<rect class="b ok" x="560" y="160" width="232" height="64" rx="8"/>
+<text class="t" x="572" y="186">브러시 색 설정</text>
+<text class="s" x="572" y="207">같은 컨텍스트에 적용</text>
+<rect class="b ok" x="284" y="160" width="230" height="64" rx="8"/>
+<text class="t" x="296" y="186">GDI 간접 호출</text>
+<text class="s" x="296" y="207">컨텍스트 +0x880</text>
+<rect class="b key" x="8" y="160" width="230" height="64" rx="8"/>
+<text class="t" x="20" y="186">8비트 FillRect</text>
+<text class="s" x="20" y="207">좌표 변환·잘림 → memset</text>
+<path class="e" d="M238 64H282" marker-end="url(#dg-raster-ctx-ah)"/>
+<path class="e model" d="M514 64H558" marker-end="url(#dg-raster-ctx-am)"/>
+<path class="e model" d="M676 96V158" marker-end="url(#dg-raster-ctx-am)"/>
+<path class="e" d="M560 192H516" marker-end="url(#dg-raster-ctx-ah)"/>
+<path class="e" d="M284 192H240" marker-end="url(#dg-raster-ctx-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행</li><li><i class="model"></i>시험 조건으로 정한 연결</li><li><i class="key"></i>버퍼를 실제로 채우는 함수</li></ul>
+</figure>
+<p>원본 <code>GdiCreateDisplayContextEx</code>가 <code>sDcOsd8</code> 템플릿을 복사하고, 원본 비트맵 생성·선택 함수가 합성 버퍼의 주소와 크기를 연결합니다. 일반 <code>FillRect</code> <code>0x8022cf9c</code>는 컨텍스트 +<code>0x880</code>의 포인터를 따라 8비트 <code>FillRect</code> <code>0x80225820</code>을 부릅니다. 좌표 변환, 경계 잘림, <code>memset</code>은 원본을 실행했고, 메모리 할당·버퍼 정보(<code>GetBuffer</code>)·캐시 API 세 곳만 대체했습니다. <a href="analysis/colorspace-raster.json">[근거: context_template, findings.gdi]</a></p>
+
+<div class="callout model"><strong class="label">시험 조건: 두 컨텍스트 포인터를 같게 맞춤</strong>
+<p>시험은 기본 컨텍스트 포인터 <code>0x800eb4d8</code>과 버퍼 ID 17의 조회 결과를 같은 컨텍스트로 맞췄습니다. 원본 속성 설정 함수 <code>AppOsdSetAttributeByBufferID</code>는 기본 포인터가 0이면 고른 컨텍스트 대신 <code>psDcOsd</code>를 쓸 수 있습니다. 이 조건을 빼면 브러시 설정과 채우기가 서로 다른 컨텍스트를 볼 수 있으므로 재현 조건에 적었습니다. 카메라 초기화에서 오류를 발견했다는 뜻이 아니며, 실제 연결은 <a href="colorspace-attributes-report.html#binding">조건부 컨텍스트 선택</a>에서 따로 다룹니다. <a href="analysis/colorspace-raster.json">[근거: findings.binding]</a></p></div>
+</section>
+
+<section id="pixels">
+<h2>경계 조건까지 버퍼 전체를 대조했습니다</h2>
+<p class="takeaway">강조 두 개 외에 경계 조건 다섯 개를 더 실행했습니다. 모든 사례에서 버퍼 전체와 앞뒤 보호 영역이 독립 계산과 같았습니다.</p>
+<div class="table-wrap"><table>
+<caption>7개 사례. 버퍼는 각 사례마다 736×176 = 129,536바이트이며, 해시는 마지막 요청 뒤의 값입니다</caption>
+<thead><tr><th>사례</th><th>요청 (x, y, 폭, 높이, 번호)</th><th>원본 경로</th><th class="n">바뀐 바이트</th><th>전체 버퍼 SHA-256 (앞 16자리)</th></tr></thead>
+<tbody><tr><th scope="row">sRGB 강조 (y = 64)</th><td>5개 (위 표)</td><td>halfword → GDI → halfword → GDI → GDI</td><td class="n">34,560</td><td><code>fde755d376e662d2…</code></td></tr><tr><th scope="row">AdobeRGB 강조 (y = 112)</th><td>5개 (위 표)</td><td>halfword → GDI → halfword → GDI → GDI</td><td class="n">34,560</td><td><code>80e1512dfcb906be…</code></td></tr><tr><th scope="row">word 정렬 (폭 32, x 짝수)</th><td>(0, 2, 32, 2, <code>0x4d</code>)</td><td>word</td><td class="n">64</td><td><code>ec227307435a5935…</code></td></tr><tr><th scope="row">halfword 정렬 (폭 16, x 짝수)</th><td>(0, 2, 16, 2, <code>0x4e</code>)</td><td>halfword</td><td class="n">32</td><td><code>ad1e41fd649f7765…</code></td></tr><tr><th scope="row">홀수 x</th><td>(1, 2, 32, 2, <code>0x4f</code>)</td><td>GDI</td><td class="n">64</td><td><code>07721715242f1389…</code></td></tr><tr><th scope="row">오른쪽·아래 경계 잘림</th><td>(733, 174, 7, 4, <code>0x4d</code>)</td><td>GDI</td><td class="n">6</td><td><code>6a3eb38dbf209ddd…</code></td></tr><tr><th scope="row">높이 0</th><td>(0, 2, 32, 0, <code>0x4d</code>)</td><td>word</td><td class="n">0</td><td><code>88d973bfe19a61fc…</code></td></tr></tbody>
+</table></div>
+<p>경계 잘림 사례는 버퍼 오른쪽 아래 (733, 174)에 7×4 사각형을 요청합니다. 버퍼 안에 남는 3×2, 모두 6바이트만 바뀌었습니다. 직접 쓰기 경로의 범위 초과는 시험하지 않았으므로 GDI의 잘림 동작을 그 경로에도 적용할 수는 없습니다.</p>
+<details class="evidence"><summary>메모리 검사 방식과 VEX 이벤트 읽는 법</summary>
+<ul>
+<li>메모리 검사는 기호식 주소와 허용 범위를 벗어난 접근을 거부합니다. 원본 이미지 범위와 미리 넣은 전역 값은 읽을 수 있고, 쓰기는 스택·컨텍스트·비트맵 설명자·합성 프레임에만 허용합니다. 요청마다 앞뒤 8바이트 보호 영역도 확인했습니다.</li>
+<li>기록한 쓰기 횟수는 VEX의 메모리 이벤트 수이며 실물 버스 트랜잭션 수가 아닙니다.</li>
+<li>VEX 이벤트의 <code>pc</code>는 <code>scratch.ins_addr</code>입니다. 그래서 지연 슬롯의 저장 명령이 앞의 분기 주소로 기록될 수 있습니다. <code>0x800fb7b8</code>·<code>0x800fb7d8</code>·<code>0x800fb7ec</code>로 기록된 쓰기는 실제로 <code>0x800fb7bc</code>·<code>0x800fb7dc</code>·<code>0x800fb7f0</code>의 MIPS 저장 명령입니다.</li>
+<li>홀수 x 사례에서는 <code>SWR</code> 변환 때문에 이벤트 크기의 합이 66바이트이지만 바뀐 픽셀은 64바이트입니다. 판정 기준은 버퍼 전체 대조입니다.</li>
+</ul>
+<p class="small muted"><a href="analysis/colorspace-raster.json">[근거: findings.bounds]</a> · <a href="tools/check_colorspace_raster.py">[재현 도구: guard·전체 프레임 비교]</a></p>
+</details>
+</section>
+
+<section id="comparison">
+<h2>K-3 Mark III와 비교</h2>
+<p>K-3 Mark III의 색공간 자료는 기종별 텍스트 ID·아이콘·보류 선택값과 화면 갱신 경계를 알려 줍니다. Q7에서는 즉시 기록·취소 복원 방식에 더해 선택 강조의 인덱스 쓰기를 확인했습니다. 이 결과는 화면을 다시 만들 때 쓰기 순서와 강조 모양을 정하는 근거가 됩니다. K-3 Mark III의 렌더러나 자원 형식을 Q7에 그대로 옮길 수 있다는 근거는 아닙니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680/analysis/colorspace-ui-evidence.json">[고정 커밋의 K-3 Mark III 색공간 근거]</a></p>
+</section>
+
+<section id="limits">
+<h2>한계와 재현 방법</h2>
+<p class="takeaway">인덱스 RAM에 쓰인 번호까지는 확인했고, 그 뒤 실제 색과 화면 출력은 남아 있습니다.</p>
+<ul>
+<li>사각형 인수는 앞선 원본 갱신에서 얻은 값을 입력으로 썼습니다. 화면 갱신부터 도형 픽셀까지 한 번에 이어서 실행하지는 않았습니다.</li>
+<li>합성 인덱스 RAM은 팔레트 번호가 쓰였다는 것만 보여 줍니다. 실제 RGB나 LCD 출력은 아닙니다.</li>
+<li>글자, 0이 아닌 다른 스타일, 배율 변경, 실제 팔레트, 장치 등록, 화면 전송, DMA, LCD는 확인하지 않았습니다. 컨텍스트를 만든 것이 장치 등록을 뜻하지는 않습니다.</li>
+<li>글자 픽셀은 <a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>에서 별도로 확인했습니다. 같은 “sRGB” 글자를 새 기본 배율 컨텍스트에 넣은 시험이며, 실제 화면 상태를 이어받은 실행은 아닙니다.</li>
+</ul>
+<details class="evidence"><summary>모델로 대체한 API 3곳</summary>
+<div class="table-wrap"><table class="compact">
+<caption>원본 함수 실행을 대체한 API. 관측용 중단점은 대체 함수가 아닙니다</caption>
+<thead><tr><th>주소</th><th>모델이 하는 일 (원문)</th></tr></thead>
+<tbody><tr><th scope="row"><code>0x8000bf28</code></th><td>Return zeroed synthetic allocations for one display context and one bitmap.</td></tr><tr><th scope="row"><code>0x80262fd4</code></th><td>Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.</td></tr><tr><th scope="row"><code>0x800b3d40</code></th><td>Record cache address/length and return0 without CPU cache operations.</td></tr></tbody>
+</table></div>
+</details>
+<details class="evidence"><summary>대조한 원본 범위</summary>
+<p>원본 워드 50개, 이름이 고유한 함수 22개, 이름이 겹치는 <code>FillRect</code> 범위 2개, 컨텍스트 템플릿 1개를 주소·해시로 대조합니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>이름이 겹치는 범위와 컨텍스트 템플릿</caption>
+<thead><tr><th>이름·역할</th><th>주소</th><th class="n">길이</th><th>SHA-256</th></tr></thead>
+<tbody><tr><th scope="row"><code>FillRect</code> · 일반 간접 분배</th><td><code>0x8022cf9c</code></td><td class="n">64</td><td><code class="wrap">5fc75c5e65bc89f215f3b752df8494be1f9bd0c0f32f4c40699fdabd0167d859</code></td></tr><tr><th scope="row"><code>FillRect</code> · 8비트 컨텍스트 렌더러</th><td><code>0x80225820</code></td><td class="n">516</td><td><code class="wrap">24d18c90e4046ad5abce88e009f30a1be69e5c64b70e2d9cbaf3635cbd5c79ab</code></td></tr><tr><th scope="row"><code>sDcOsd8</code> 컨텍스트 템플릿</th><td><code>0x802353b8</code></td><td class="n">2,224</td><td><code class="wrap">331cfb5882a8d8e7919a53980e19dc3bc1fbc4522d7d1b70b4301becdfde9666</code></td></tr></tbody>
+</table></div>
+</details>
+<pre><code>python tools/check_colorspace_raster.py .private/main-expanded.elf --output .private/raster-new.json
+python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre>
+<p class="small muted">원본 자원, 전체 코드, 실제 화면 사진은 공개하지 않습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/colorspace-raster.json">analysis/colorspace-raster.json</a> — 7개 사례의 요청별 결과, 컨텍스트 템플릿, 모델 경계, 원본 워드</li>
+<li><a href="tools/check_colorspace_raster.py">tools/check_colorspace_raster.py</a> — 원본 코드로 다시 실행하고 순서대로 칠한 사각형 계산과 비교하는 도구</li>
+<li><a href="analysis/colorspace-render.json">analysis/colorspace-render.json</a> — 사각형 인수를 기록한 그리기 경로의 근거</li>
+<li><a href="analysis/hq-status.json">analysis/hq-status.json</a> — 연구 목표별 상태 기록</li>
+<li><a href="https://en.wikipedia.org/wiki/Indexed_color">Wikipedia: Indexed color</a> — 팔레트 번호로 픽셀을 저장하는 방식의 일반 설명</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html" aria-current="page">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-render-report.html"><small>← 이전</small>색공간 화면: 그리기 경로</a><a class="next" href="colorspace-glyph-report.html"><small>다음 →</small>글꼴 로딩과 글리프 픽셀</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

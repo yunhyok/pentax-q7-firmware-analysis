@@ -1,60 +1,119 @@
 """Render AF request, cached completion and sequence-stop boundaries."""
 from build_deep_report import ROOT, read, esc
-from build_routing_report import graph
+
+# Short Korean descriptions of the fixture names in analysis/af-completion.json.
+CASE_LABELS = {
+    'search-ack-then-motion': '검색 성공 뒤 이동값 1 → 2 → 0',
+    'phase-four-conditional-advance': '캡처 단계 4로 시작한 검색',
+    'search-map-denied-then-invalid-zero': '연산 맵이 검색을 거부, 유효성 0인 이동값 0이 계속됨',
+    'search-link-error-then-failed-regular-zero': '하위 링크 실패 뒤 정기 통신 실패로 캐시가 0',
+    'search-late-worker-at-timeout': '작업자가 101번째 대기에서 결과를 기록',
+    'search-inhibited-immediate-notify': '구동 제한 1, 대기 플래그 0: 큐 없이 즉시 완료',
+    'search-ready-clear-forwarded': 'map-ready 0·AF 지원 0인데 검색이 하위 API까지 전달',
+    'stop-ack-while-cache-moving': '이동 중 정지 명령 성공',
+    'stop-map-denied-clears-check': '정지가 연산 맵에서 거부돼도 확인 상태 0',
+    'stop-timeout-clears-check': '정지 메시지가 전달되지 않아 시간 초과',
+    'reset-zero-during-motion-check': '상태 2에서 렌즈 제어 리셋',
+    'search-queue-rejected': '큐가 제출을 거부(0)',
+}
+WAIT_LABELS = {
+    'invalid-zero': '유효하지 않은 0',
+    'invalid-moving-then-zero': '유효하지 않은 이동값 뒤 0',
+    'nonzero-through-bound': '0x80을 계속 유지',
+}
+ABORT_LABELS = {
+    'notify-no-sequence': '시퀀스 비활성',
+    'notify-active-awake': '활성, 깨어 있음',
+    'notify-active-sleeping': '활성, 잠듦',
+    'notify-deferred-bk-cancel': 'blBKControl 1: 취소 보류',
+    'separate-exit-wait': '별도 종료 대기',
+}
+MODES = {0: '검색', 1: '정지'}
+ENTRIES = {'notify': '명령 <code>0xe0002</code>', 'exit-wait': '<code>WaitAFComplete</code>'}
+
+
+def name_cell(name, labels, show_name=False):
+    tail = f'<br><span class="small muted">{esc(name)}</span>' if show_name else ''
+    return f'<th scope="row">{esc(labels[name])}{tail}</th>'
+
+
+def event_text(event):
+    if event[0] == 'set':
+        return f'깨움 0x{event[1]:x}'
+    _, mask, mode, timeout, release, status = event
+    assert (mode, timeout) == (1, 0xFFFFFFFF)
+    return f'0x{mask:02x} 대기 ({release}, {status})'
 
 
 def main():
-    data=read('af-completion.json')
-    v={k:esc(t) for k,t in read('af-copy.json').items()}
-    v['route_graph']=graph('af-route','AF 요청과 렌즈 작업자의 반환 경로',{
-        'drive':(20,10,'LensDriveControl','0x8037eb78 → 알림 0x6003c'),
-        'capture':(350,10,'원본 캡처 수신자','점프 테이블 → ExecuteFocusControl'),
-        'set':(700,10,'검색 / 정지 setter','pending 설정 · 메시지 6 / 8'),
-        'result':(20,150,'결과 기록 · pending 해제','바깥 수신자 반환 1과 구분'),
-        'link':(350,150,'원본 LensCommunication','허용 맵 → 길이·모드 → 하위 API'),
-        'worker':(700,150,'원본 LensComThreadMain','한 메시지 소비 후 중단')},
-        [('drive','capture',False),('capture','set',False),('set','worker',True),('worker','link',False),('link','result',False)],250,
-        '점선: 제출된 메시지와 렌즈 RAM을 옮기는 직렬화 모델. 하위 API 응답도 합성 값입니다.','af-completion.json')
-    v['state_graph']=graph('af-state','캐시 기반 완료의 두 단계',{
-        'arm':(20,10,'검색 후 request+1 == 1','setter 7 / 4 / 6에도 대기 설정'),
-        'one':(350,10,'상태 1 / 시작 확인','motion==1 또는 count≥6 / 우회'),
-        'two':(700,10,'상태 2 / 종료 확인','motion==0일 때만 완료'),
-        'done':(700,150,'상태 0 · 완료 알림 두 개','0x6003f / 0x10060032'),
-        'valid':(350,150,'getter의 별도 유효성 반환','이 콜백의 조건에 사용하지 않음'),
-        'zero':(20,150,'정기 통신 실패 / 제어 리셋','원본 코드가 캐시를 0으로 변경')},
-        [('arm','one',False),('one','two',False),('two','done',False)],250,
-        '조건을 만족한 상태 1 콜백에서는 완료하지 않습니다. 연속 0 입력: 7회째 상태 2, 8회째 완료. 우회 플래그는 정적 조건입니다.','af-completion.json')
-    v['phase_graph']=graph('af-phase','AF 완료와 촬영 단계 전이는 별도 조건',{
-        'start':(20,10,'검색 알림 0x6003e','단계가 2일 때 3으로'),
-        'phase':(350,10,'완료 알림 0x6003f','단계가 4일 때만 5로'),
-        'flag':(700,10,'완료 알림 0x10060032','blFocusCompleteflag 설정'),
-        'case2':(20,150,'초기 단계 2 사례','AF 완료 뒤에도 단계 3'),
-        'case4':(350,150,'초기 단계 4 별도 사례','완료 시 단계 5'),
-        'physical':(700,150,'실제 초점 · 렌즈 정지','이 소프트웨어 플래그만으론 미확정')},
-        [('start','case2',False),('phase','case4',False)],250,
-        '단계 4는 시험 입력입니다. 실제 촬영이 3에서 4로 진행하는 경로를 이 실행에서 재현한 것은 아닙니다.','af-completion.json')
-    v['abort_graph']=graph('af-abort','AF 시퀀스 취소 요청과 종료 대기',{
-        'command':(350,10,'명령 0xe0002','OnNotifyCommand'),
-        'guard':(20,10,'blBKControl == 1','취소 플래그만 설정'),
-        'stop':(700,10,'그 밖: StopAF(1)','CAF enable=0 / quit=1'),
-        'exit':(20,150,'종료 이벤트 0x08 대기','mode 1 / timeout 0xffffffff'),
-        'wake':(350,150,'잠든 시퀀스만 깨움','이벤트 0x10'),
-        'sequence':(700,150,'시퀀스 활성 == 1','정지 요청 플래그 설정')},
-        [('command','guard',False),('command','stop',False),('stop','sequence',False),('sequence','wake',False),('wake','exit',True)],250,
-        '활성 상태지만 깨어 있으면 깨우기 없이 종료 대기. 이벤트 전달·반환은 모델이며 렌즈 정지 명령과 같은 완료 신호가 아닙니다.','af-completion.json')
-    rows=[]
-    for row in data['replay']['command_cases']:
-        drives=[s for s in row['steps'] if s['action']=='drive']
-        final=row['steps'][-1]
-        rows.append(f'<tr><th>{esc(row["name"])}</th><td>{" → ".join(str(s["setter_return"]) for s in drives)}</td><td>{" → ".join(str(s["waits"]) for s in drives)}</td><td>{final["motion_check_state"]}</td><td>{final["af_complete"]}</td><td>{final["capture_phase"]}</td></tr>')
-    v['case_rows']=''.join(rows)
-    v['boundary_rows']=''.join(f'<tr><th><code>{a}</code></th><td>{esc(t)}</td></tr>' for a,t in data['replay']['modeled_boundaries'].items())
-    v['k3_commit']=data['comparison']['commit']
-    page=(ROOT/'analysis/af-template.html').read_text(encoding='utf-8')
-    for k,value in v.items(): page=page.replace('{{'+k+'}}',value)
+    data = read('af-completion.json')
+    replay = data['replay']
+    v = {}
+    v['command_count'] = str(len(replay['command_cases']))
+    v['wait_count'] = str(len(replay['wait_cases']))
+    v['abort_count'] = str(len(replay['abort_cases']))
+    v['total_cases'] = str(sum(len(replay[k]) for k in ('command_cases', 'wait_cases', 'abort_cases')))
+    v['boundary_count'] = str(len(replay['modeled_boundaries']))
+    v['words'] = str(sum(len(e['words']) for e in data['evidence']))
+    v['functions'] = str(len(data['selected_functions']))
+    v['engine'] = esc(replay['engine'])
+
+    rows = []
+    for row in replay['command_cases']:
+        drives = [s for s in row['steps'] if s['action'] == 'drive']
+        final = row['steps'][-1]
+        rows.append(
+            f'<tr>{name_cell(row["name"], CASE_LABELS, True)}'
+            f'<td>{" → ".join(MODES[s["mode"]] for s in drives)}</td>'
+            f'<td>{" → ".join(str(s["setter_return"]) for s in drives)}</td>'
+            f'<td>{" → ".join(str(s["waits"]) for s in drives)}</td>'
+            f'<td class="n">{final["motion_check_state"]}</td><td class="n">{final["af_complete"]}</td>'
+            f'<td class="n">{final["capture_phase"]}</td></tr>')
+    v['case_rows'] = ''.join(rows)
+
+    pair = lambda p: f'({p[0]}, {p[1]})'
+    v['wait_rows'] = ''.join(
+        f'<tr>{name_cell(c["name"], WAIT_LABELS)}<td>{pair(c["initial"])}</td>'
+        f'<td>{", ".join(pair(s) for s in c["samples"]) or "없음"}</td><td class="n">{c["waits"]}</td>'
+        f'<td>{"함수가 반환" if c["returned"] else "도구가 다음 대기 분기에서 중단 (<code>" + c["stop_pc"] + "</code>)"}</td></tr>'
+        for c in replay['wait_cases'])
+
+    v['abort_rows'] = ''.join(
+        f'<tr>{name_cell(c["name"], ABORT_LABELS)}<td>{ENTRIES[c["entry"]]}</td>'
+        f'<td>{c["sequence"]} / {c["sleeping"]}</td><td class="n">{c["bk_control"]}</td>'
+        f'<td>{"<br>".join(event_text(e) for e in c["events"]) or "없음"}</td>'
+        f'<td class="n">{c["stop_command"]}</td><td>{c["enable_caf"]} / {c["quit_caf"]}</td><td class="n">{c["bk_cancel"]}</td></tr>'
+        for c in replay['abort_cases'])
+
+    reg = data['queue_delivery_regression']
+    v['reg_submission'] = str(reg['submission_status'])
+    v['reg_poll'] = str(reg['scheduled_poll'])
+    v['regression_rows'] = ''.join(
+        f'<tr><th scope="row">{label}</th><td class="n">{r["waits"]}</td>'
+        f'<td>{"없음" if r["worker_result"] is None else r["worker_result"]}</td><td class="n">{r["pending"]}</td>'
+        f'<td class="n">{r["setter_result"]}</td><td class="n">{r["link_calls"]}</td></tr>'
+        for label, r in (('정상 시험', reg['normal']),
+                         ('시험용 변형' + (' (검사가 거부함)' if reg['mutant']['rejected'] else ''), reg['mutant'])))
+
+    v['boundary_rows'] = ''.join(
+        f'<tr><th scope="row"><code>{a}</code></th><td>{esc(t)}</td></tr>'
+        for a, t in replay['modeled_boundaries'].items())
+    v['evidence_rows'] = ''.join(
+        f'<tr><th scope="row">{esc(e["role"])}</th><td class="n">{len(e["words"])}</td></tr>' for e in data['evidence'])
+    v['function_rows'] = ''.join(
+        f'<tr><th scope="row"><code class="wrap">{esc(f["name"])}</code></th><td><code>0x{f["address"]:08x}</code></td>'
+        f'<td class="n">{f["size"]:,}</td><td><code>{f["sha256"][:16]}…</code></td></tr>'
+        for f in data['selected_functions'])
+    v['trace_limits'] = ' '.join(esc(t) for t in data['trace_limitations'])
+    v['k3_commit'] = data['comparison']['commit']
+
+    page = (ROOT/'analysis/af-template.html').read_text(encoding='utf-8')
+    for key, value in v.items():
+        page = page.replace('{{'+key+'}}', value)
     assert '{{' not in page
-    (ROOT/'af-completion-report.html').write_text(page,encoding='utf-8',newline='\n')
+    (ROOT/'af-completion-report.html').write_text(page, encoding='utf-8', newline='\n')
     print('Built af-completion-report.html')
 
 
-if __name__=='__main__': main()
+if __name__ == '__main__':
+    main()

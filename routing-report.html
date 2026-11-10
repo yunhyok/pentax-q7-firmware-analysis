@@ -1,60 +1,505 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="PENTAX Q7: AF 간접 수신자, 렌즈 큐, ISP 행렬·감마 레지스터와 JPEG 저장 경계 분석"><title>Q7 — 렌즈 명령에서 픽셀 출력 경계까지</title><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head>
-<body><header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / FOLLOW-UP 02</p><h1>렌즈 명령에서<br><span>픽셀 출력 경계까지</span></h1><p class="lead">미확정이던 AF 콜백의 수신자를 확인하고 렌즈 통신과 ISP 레지스터까지 추적했습니다. 색 설정이 레지스터에 도달하는 경로와 JPEG 저장 버퍼를 각각 추적했습니다. 실제 픽셀이 하드웨어를 통과하는 순서와는 구분했습니다.</p><p class="links"><a href="deep-report.html">이전 함수·호출 분석</a><a href="index.html">초기 구조 분석</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub</a></p></div><aside class="milestone"><strong>0x8040a008</strong><span>AF 간접 수신자 확인</span><strong>10 / 10</strong><span>ISP 기록 함수 재실행 사례 통과</span><strong>조건부 연결</strong><span>실제 픽셀 출력은 미검증</span></aside></header>
-<nav aria-label="문서 목차"><a href="#delta">추가 확인</a><a href="#lens">렌즈 수신자</a><a href="#matrix">행렬 레지스터</a><a href="#gamma">감마·WB</a><a href="#output">출력 경계</a><a href="#comparison">K-3 대조</a><a href="#validation">검증·재현</a></nav><main><p class="update-banner"><strong>최신 후속 분석:</strong> <a href="hdr-task-report.html">FC1 비트의 출처와 HDR task 생성·제출·완료</a>를 추적했습니다. 입력 유형의 분류, C12 task, 큐·IRQ·콜백과 PathWait 조건을 원본 코드로 대조했습니다. 아래 내용은 작성 시점의 범위를 유지하며 실기 관측은 포함하지 않습니다.</p><p class="update-banner"><strong>후속 확인:</strong> <a href="pixel-report.html">HDR 버퍼 연결과 색 처리 패스 보고서</a>에서 IPU 출력 기준 주소와 JPEG 입력을 연결했습니다. 아래 EXIF CodeGo 설명은 일반 분기이며, 확인한 HDR 주 이미지의 압축은 EXIF 전에 DirectCompress에서 수행합니다. CM·FC1의 FIPLIB 덮어쓰기 범위도 새 보고서에서 구분했습니다.</p>
-<section id="delta"><p class="eyebrow">01 / WHAT CHANGED</p><h2>미확정 항목을 어디까지 좁혔는가</h2><div class="table-wrap"><table><caption>이전 보고서와 이번 분석의 차이</caption><thead><tr><th>항목</th><th>이전</th><th>이번</th></tr></thead><tbody><tr><th>렌즈 간접 수신자</th><td>전역 포인터의 목적지 미확정</td><td>초기화의 getter → store → AF 간접 점프를 연결. 수신자와 명령 0x6003c 분기 확인</td></tr><tr><th>렌즈 하위 요청</th><td>LensDriveControl까지</td><td>모드별 큐 6·7·8 및 VD 동기화 큐 2 → LensCommunication까지</td></tr><tr><th>색 행렬</th><td>행렬 생성 → I43 설정 호출</td><td>캐시·필터 객체·vtable → CM/FC1 레지스터의 조건부 경로</td></tr><tr><th>감마</th><td>테이블 계산 함수</td><td>통계용 LUT 두 고정 포트와 반복 쓰기 수 확인</td></tr><tr><th>최종 픽셀</th><td>버퍼·하드웨어 연결 미완료</td><td>설정·압축·파일 저장의 근거를 분리. ISP 내부 산술과 실기 출력은 미확정</td></tr></tbody></table></div><p class="note">주소는 Q7의 MIPS 가상주소(VA)입니다. 원본 파일 오프셋이나 K-3 Mark III 주소와 혼용하지 않습니다. <a href="analysis/lens-routing.json">[R1]</a> <a href="analysis/isp-routing.json">[R2]</a></p></section>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AF 명령의 수신자, 색 행렬 레지스터, JPEG 저장 경로 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Q7 펌웨어에서 AF 구동 요청이 렌즈 통신까지 가는 간접 호출, 색 행렬 설정이 ISP 레지스터에 기록되는 경로, 통계용 감마 표의 쓰기, JPEG 압축 결과가 파일로 저장되는 경로를 추적하고 ISP 기록 함수 10개 조건을 원본 명령으로 다시 실행한 기록입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html" aria-current="true">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-color.html">색 처리와 HDR</a></li><li aria-current="page">AF 수신자·색 행렬 레지스터·JPEG 저장</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">색 처리와 HDR · 설정이 하드웨어에 닿는 지점</p>
+<h1>AF 명령의 수신자, 색 행렬 레지스터, JPEG 저장 경로</h1>
+<p class="lead">카메라 소프트웨어가 렌즈와 영상 처리 회로에 “무엇을 하라”고 전달하는 마지막 지점을 찾았습니다. 렌즈 구동 요청, 색 행렬과 감마 설정, 압축된 JPEG의 파일 저장을 각각 따라갔습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 이 문서가 다루는 세 갈래</a></li><li><a href="#lens">AF 구동 요청이 렌즈 통신까지 가는 길</a></li><li><a href="#matrix">색 행렬 설정이 ISP 레지스터에 기록되는 경로</a></li><li><a href="#output">압축된 JPEG가 파일 쓰기 함수에 닿기까지</a></li><li><a href="#validation">원본 명령으로 다시 실행한 결과</a></li><li><a href="#comparison">K-3 Mark III와 비교</a></li><li><a href="#limits">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-<section id="lens"><p class="eyebrow">02 / RESOLVED INDIRECT RECIPIENT</p><h2>AF 초기화가 수신자를 정한다</h2><p>CAutoFocusService_Initialize는 GetOnNotifyCommand의 반환값 0x8040a008을 전역 포인터 0x80c17e00에 저장합니다. LensDriveControl은 이 포인터를 읽어 명령 0x6003c와 인자 0을 전달합니다. 초기화가 끝나고 포인터 값이 유지되면 간접 수신자는 CaptureProcessService_OnNotifyCommand입니다. <a href="analysis/lens-routing.json">[R1: binding]</a></p>
-<pre aria-label="관찰한 콜백 바인딩"><code>GetOnNotifyCommand  0x8040cc60 → return 0x8040a008
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li><strong>AF 구동 요청의 수신자</strong>를 확정했습니다. AF 초기화가 저장한 함수 포인터를 따라가면 촬영 처리 서비스의 명령 수신 함수에 닿고, 네 가지 구동 모드가 각각 렌즈 통신 요청으로 이어집니다.</li>
+<li><strong>색 행렬 설정</strong>은 설정 캐시, 필터 객체, 레지스터 기록 함수를 차례로 거쳐 ISP 레지스터에 기록됩니다. 다만 같은 필터를 뒤에서 다시 갱신하는 경로(FIPLIB)와 다른 제출 방식(CBC)이 있어, 이 경로가 모든 촬영의 최종값이라고 볼 수는 없습니다.</li>
+<li>감마 표 쓰기로 확인한 것은 <strong>통계용</strong> 표입니다. 최종 JPEG에 같은 표가 쓰인다는 근거는 없습니다.</li>
+<li>HDR 촬영의 JPEG가 파일 쓰기 함수에 전달되는 소프트웨어 경로를 연결했습니다. ISP 기록 함수는 원본 명령으로 10개 조건을 다시 실행해 164개 검사가 모두 통과했습니다. 실제 픽셀 출력과 저장된 파일은 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>AF 콜백 포인터의 저장과 네 모드의 분기·렌즈 요청 인자</li>
+<li>CM·FC1·FC2 레지스터 기록 함수와 감마 표 기록 함수 10개 조건</li>
+<li>근거로 인용한 원본 명령·데이터 워드 265건의 바이트 대조</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 확인</h3>
+<ul>
+<li>색 행렬 설정이 캐시와 필터 객체를 거치는 경로</li>
+<li>JPEG 압축 분기, 큐 전달, 파일 쓰기 함수까지의 연결</li>
+<li>감마 설정 함수의 호출 순서</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>레지스터(MMIO)는 일반 RAM으로, 클록 함수는 대체 함수로 처리</li>
+<li>렌즈 큐 수신과 모드 3의 VD 동기화 이벤트는 입력으로 공급</li>
+<li>행렬 계수·감마 값은 경계값을 담은 합성 입력</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>ISP 안의 픽셀 계산(행렬·감마·클리핑의 순서와 비트 폭)</li>
+<li>모든 촬영에서 남는 최종 계수, FIPLIB·CBC 경로의 실제 선택</li>
+<li>렌즈 모터의 실제 움직임과 통신 파형, 저장 매체의 파일</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 이 문서가 다루는 세 갈래</h2>
+<p>펌웨어의 함수는 결국 하드웨어 레지스터에 값을 쓰거나 다른 작업에 메시지를 보내는 것으로 끝납니다. 이 문서는 그 마지막 지점을 세 곳에서 찾았습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>세 갈래와 이 문서의 절</caption>
+<thead><tr><th>갈래</th><th>질문</th><th>절</th></tr></thead>
+<tbody>
+<tr><th scope="row">렌즈</th><td>AF가 “렌즈를 움직여라”라고 할 때 그 요청은 누가 받는가</td><td><a href="#lens">AF 구동 요청</a></td></tr>
+<tr><th scope="row">색</th><td>색 행렬·감마 설정은 어떤 레지스터에 기록되는가</td><td><a href="#matrix">색 행렬</a>, <a href="#gamma">감마</a></td></tr>
+<tr><th scope="row">출력</th><td>압축된 JPEG는 어떤 함수를 거쳐 파일이 되는가</td><td><a href="#output">JPEG 저장</a></td></tr>
+</tbody></table></div>
+<div class="callout"><strong class="label">렌즈 부분은 AF 주제에 속합니다</strong>
+<p>첫 번째 갈래(렌즈)는 내용상 <a href="guide-af.html">AF와 렌즈 제어</a> 주제에 속합니다. 이 문서에서는 따로 읽을 수 있도록 한 절에 모았습니다. 색과 출력 부분의 전체 지도는 <a href="guide-color.html">색 처리·HDR 안내</a>에 있습니다.</p></div>
+
+<h3>주소 읽는 법</h3>
+<p>이 문서의 주소는 모두 Q7의 <dfn title="CPU 프로그램이 보는 주소. 파일 안의 위치(오프셋)와 다릅니다">MIPS 가상주소</dfn>입니다. 원본 파일 오프셋이나 K-3 Mark III의 주소와 섞어 쓰지 않습니다.</p>
+<ul>
+<li><code>0x80…</code>으로 시작하는 주소는 코드와 RAM입니다.</li>
+<li><code>0xb…</code>로 시작하는 주소는 하드웨어 레지스터입니다. MIPS32에서 <code>0xa0000000</code>~<code>0xbfffffff</code>는 kseg1이라 부르는 구간으로, 캐시를 거치지 않고 물리 주소에 그대로 대응합니다(<a href="https://ftp.riken.jp/NetBSD/NetBSD-current/src/sys/arch/mips/include/cpuregs.h">NetBSD의 MIPS 주소 정의</a>). 그래서 장치 레지스터를 읽고 쓰는 <dfn title="Memory-Mapped I/O. 메모리 주소에 읽고 쓰는 방식으로 장치를 제어하는 방법">MMIO</dfn>에 이 구간을 씁니다.</li>
+<li>레지스터의 이름(CM, FC1 등)은 펌웨어의 클래스·함수 이름에서 왔습니다. 공개된 칩 문서에서 확인한 이름이 아닙니다.</li>
+</ul>
+
+<h3>설정 전달과 픽셀 처리는 다른 문제입니다</h3>
+<p>CPU가 레지스터에 계수를 쓰는 것과 ISP 회로가 그 계수로 픽셀을 계산하는 것은 별개입니다. 이 문서는 아래 네 단계 중 첫째와 셋째·넷째의 일부를 설명합니다.</p>
+<ol class="flow">
+<li class="static"><strong>계수·주소 설정</strong><span>캐시 → 필터 → 레지스터. 조건부 경로</span></li>
+<li class="open"><strong>ISP 픽셀 처리</strong><span>내부 계산과 실제 출력은 미확인</span></li>
+<li class="static"><strong>JPEG 버퍼</strong><span>압축 입력과 압축 결과의 전달</span></li>
+<li class="static"><strong>파일 저장</strong><span>저장 함수와 파일 쓰기 호출</span></li>
+</ol>
+<p>네 단계를 하나의 검증된 픽셀 흐름으로 이어 그리지 않았습니다. ISP 출력 버퍼와 JPEG 입력의 연결은 <a href="pixel-report.html#buffer">HDR 버퍼와 색 처리 패스</a>에서 다룹니다.</p>
+</section>
+
+<section id="lens">
+<h2>AF 구동 요청이 렌즈 통신까지 가는 길</h2>
+<p class="takeaway">AF 초기화가 전역 함수 포인터에 수신 함수를 저장하고, 구동 요청은 이 포인터를 거쳐 촬영 처리 서비스로 갑니다. 거기서 네 모드가 각각 렌즈 통신 요청으로 갈라집니다.</p>
+
+<figure class="diagram">
+<figcaption>AF 구동 요청에서 렌즈 통신까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 330" role="img" aria-labelledby="dg-lens-title dg-lens-desc">
+<title id="dg-lens-title">AF 콜백 바인딩과 네 구동 모드의 렌즈 요청 경로</title>
+<desc id="dg-lens-desc">첫 줄: AF 초기화가 수신 함수 주소를 전역 함수 포인터에 저장하고, AF 구동 요청 함수 LensDriveControl이 이 포인터를 읽어 명령 0x6003c로 수신 함수 OnNotifyCommand를 호출합니다. 수신 함수는 분기표를 거쳐 ExecuteFocusControl을 부르고, 여기서 네 모드로 갈라집니다. 둘째 줄: 모드 3은 검색 정보를 보류만 합니다. 모드 0 검색 시작은 큐 메시지 6, 모드 2 위치 이동은 7, 모드 1 정지는 8을 렌즈 통신 스레드에 보냅니다. 셋째 줄: 모드 3의 보류 정보는 별도로 발생하는 VD 동기화 메시지 2가 소비합니다. 렌즈 통신 스레드는 LensCommunication을 호출하고, 그 아래의 GPIO·직렬 통신과 실제 렌즈 동작은 확인하지 않았습니다.</desc>
+<defs>
+<marker id="dg-lens-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-lens-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-lens-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b ok" x="8" y="24" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="50">AF 초기화</text>
+<text class="s mono" x="20" y="71">Initialize</text>
+<rect class="b ok" x="218" y="24" width="170" height="64" rx="8"/>
+<text class="t" x="230" y="50">전역 함수 포인터</text>
+<text class="s mono" x="230" y="71">0x80c17e00</text>
+<rect class="b ok" x="428" y="24" width="170" height="64" rx="8"/>
+<text class="t" x="440" y="50">AF 구동 요청</text>
+<text class="s mono" x="440" y="71">LensDriveControl</text>
+<rect class="b ok" x="628" y="24" width="170" height="64" rx="8"/>
+<text class="t" x="640" y="50">명령 수신 함수</text>
+<text class="s mono" x="640" y="71">OnNotifyCommand</text>
+<path class="e" d="M178 56H216" marker-end="url(#dg-lens-ah)"/>
+<text class="n mid" x="198" y="18">저장</text>
+<path class="e" d="M388 56H426" marker-end="url(#dg-lens-ah)"/>
+<text class="n mid" x="408" y="18">읽기</text>
+<path class="e" d="M598 56H626" marker-end="url(#dg-lens-ah)"/>
+<text class="n mid" x="612" y="18">0x6003c</text>
+
+<path class="e" d="M713 88V116H93V136" marker-end="url(#dg-lens-ah)"/>
+<path class="e" d="M303 116V136" marker-end="url(#dg-lens-ah)"/>
+<path class="e" d="M513 116V136" marker-end="url(#dg-lens-ah)"/>
+<path class="e" d="M713 116V136" marker-end="url(#dg-lens-ah)"/>
+<text class="n" x="120" y="110">ExecuteFocusControl이 모드로 분기</text>
+
+<rect class="b ok" x="8" y="138" width="170" height="60" rx="8"/>
+<text class="t" x="20" y="163">mode 3 · 검색 보류</text>
+<text class="s" x="20" y="184">보류 플래그만 설정</text>
+<rect class="b ok" x="218" y="138" width="170" height="60" rx="8"/>
+<text class="t" x="230" y="163">mode 0 · 검색 시작</text>
+<text class="s" x="230" y="184">큐 메시지 6</text>
+<rect class="b ok" x="428" y="138" width="170" height="60" rx="8"/>
+<text class="t" x="440" y="163">mode 2 · 위치 이동</text>
+<text class="s" x="440" y="184">큐 메시지 7</text>
+<rect class="b ok" x="628" y="138" width="170" height="60" rx="8"/>
+<text class="t" x="640" y="163">mode 1 · 정지</text>
+<text class="s" x="640" y="184">큐 메시지 8</text>
+
+<path class="e model" d="M93 198V246" marker-end="url(#dg-lens-am)"/>
+<path class="e" d="M303 198V246" marker-end="url(#dg-lens-ah)"/>
+<path class="e" d="M513 198V222H303"/>
+<path class="e" d="M713 198V222H513"/>
+
+<rect class="b model" x="8" y="248" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="274">VD 동기화 메시지 2</text>
+<text class="s" x="20" y="295">보류 정보를 소비</text>
+<rect class="b ok" x="218" y="248" width="170" height="64" rx="8"/>
+<text class="t" x="230" y="274">렌즈 통신 스레드</text>
+<text class="s" x="230" y="295">큐 수신 → 명령별 처리</text>
+<rect class="b static" x="428" y="248" width="170" height="64" rx="8"/>
+<text class="t" x="440" y="274">렌즈 통신 요청</text>
+<text class="s mono" x="440" y="295">LensCommunication</text>
+<rect class="b open" x="628" y="248" width="170" height="64" rx="8"/>
+<text class="t" x="640" y="274">GPIO·직렬 통신</text>
+<text class="s" x="640" y="295">렌즈 모터 동작</text>
+<path class="e model" d="M178 280H216" marker-end="url(#dg-lens-am)"/>
+<path class="e" d="M388 280H426" marker-end="url(#dg-lens-ah)"/>
+<path class="e open" d="M598 280H626" marker-end="url(#dg-lens-ao)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="static"></i>코드를 읽어 확인(재실행은 이 함수 진입 전에 멈춤)</li><li><i class="model"></i>시험에서 입력으로 공급</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+
+<h3>수신자를 정하는 것은 AF 초기화입니다</h3>
+<p><code>CAutoFocusService_Initialize</code>는 <code>GetOnNotifyCommand</code>가 돌려준 수신 함수 주소를 전역 포인터에 저장합니다. <code>LensDriveControl</code>은 이 포인터를 읽어 명령 <code>0x6003c</code>와 인자 0으로 간접 점프합니다. 따라서 초기화가 끝나고 포인터 값이 유지되는 한, 수신자는 <code>CaptureProcessService_OnNotifyCommand</code>입니다. <a href="analysis/lens-routing.json">[근거: binding]</a></p>
+<p>수신 함수는 명령에서 <code>0x60001</code>을 뺀 값으로 분기표를 찾습니다. <code>0x6003c</code>의 항목은 <code>ExecuteFocusControl</code>을 호출합니다. 송신 쪽과 수신 쪽은 <code>tFocusControlInfo</code> 구조체를 함께 씁니다. <a href="analysis/lens-routing.json">[근거: dispatch, notification]</a></p>
+<div class="callout plain"><strong class="label">쉽게 말하면</strong>
+<p>AF 서비스는 렌즈 구동 요청을 “전화번호부에 적힌 번호”로 겁니다. 그 번호를 적어 넣는 쪽이 초기화 코드이고, 적힌 번호의 주인이 촬영 처리 서비스입니다.</p></div>
+
+<h3>네 구동 모드</h3>
+<p>구동 제한 상태가 1이면 모드 0·1·2는 요청을 보내지 않습니다. 허용되면 렌즈 통신 스레드의 큐에 메시지를 넣습니다. 모드 3은 검색 정보를 보류만 하고, 별도로 발생하는 VD 동기화 메시지 2가 처리될 때 그 정보가 쓰입니다. 모드 3이 VD 이벤트를 만드는 것은 아닙니다.</p>
+<div class="table-wrap"><table>
+<caption>모드별 요청과 렌즈 통신 인자 — 함수 이름의 “Serch” 표기는 원문 그대로</caption>
+<thead><tr><th>mode</th><th>요청</th><th class="n">큐 메시지</th><th>LensCommunication 앞 인자 4개</th><th>재실행에서 만든 송신 바이트</th></tr></thead>
+<tbody><tr><th scope="row">0</th><td>검색 시작 (SetFocusSerchStart)</td><td class="n">6</td><td>(0, 1, 2, 4, …)</td><td><code>123456</code></td></tr><tr><th scope="row">1</th><td>정지 (SetFocusMovementStop)</td><td class="n">8</td><td>(0, 1, 2, 6, …)</td><td><code>00</code></td></tr><tr><th scope="row">2</th><td>위치 이동 (SetFocusLocationDrive)</td><td class="n">7</td><td>(0, 1, 2, 3, …)</td><td><code>123456783456</code></td></tr><tr><th scope="row">3</th><td>검색 보류 → VD 동기화 처리</td><td class="n">2 (VD)</td><td>(0, 1, 2, 4, …)</td><td><code>123456</code></td></tr></tbody>
+</table></div>
+<p class="small muted">송신 바이트는 시험 입력(arg2 <code>0x12</code>, arg3 <code>0x3456</code>, arg4 <code>0x12345678</code>)으로 만든 값입니다. 모드 2는 arg4와 arg3을 빅엔디언으로 붙이고, 모드 0·3은 arg2 한 바이트 뒤에 arg3을 붙입니다. <a href="analysis/lens-routing.json">[근거: queue.modes, bounded_replay]</a></p>
+
+<details class="evidence"><summary>콜백 바인딩과 분기표의 원본 명령</summary>
+<pre><code>GetOnNotifyCommand  0x8040cc60 → return 0x8040a008
 Initialize          0x8037e14c → [0x80c17e00] = v0
 LensDriveControl    jr t9      → callback(0x6003c, 0)
 switch table        0x804a2bdc → 0x8040a458
 call                0x8040a458 → ExecuteFocusControl(0x8042e040)</code></pre>
-<p class="note">0x8037e14c의 저장은 다음 getter 호출의 지연 슬롯입니다. 두 번째 getter의 반환값으로 오해하지 않도록 원본 명령 실행으로 확인했습니다.</p><p>수신 함수는 명령에서 0x60001을 뺀 값으로 분기표를 조회합니다. 0x6003c의 항목은 0x8040a458이며 ExecuteFocusControl을 호출합니다. 송신자와 수신자는 tFocusControlInfo를 공유합니다. 모드 0·2·1은 각각 검색·위치 이동·정지 요청에 해당합니다. 구동 제한 상태가 1이면 요청을 내보내지 않습니다. 구동이 허용되면 큐 메시지 6·7·8을 사용합니다. 모드 3은 검색 정보를 보류하며 별도 VD 동기화 메시지 2를 처리할 때 이 정보를 소비합니다. <a href="analysis/lens-routing.json">[R1: dispatch, queue]</a></p><figure class="diagram"><figcaption>AF 콜백에서 렌즈 통신까지</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 320" role="img" aria-labelledby="lens-route-title lens-route-desc"><title id="lens-route-title">AF 콜백에서 렌즈 통신까지</title><desc id="lens-route-desc">첫 행 점선은 초기화로 수신자가 확인된 간접 점프입니다. 둘째 행 점선은 큐 전달 관계입니다. 셋째 행의 검색 보류 상태와 독립적으로 발생한 VD 메시지 2가 함께 있어야 검색 정보를 소비합니다. 모드 3이 VD 이벤트를 생성하는 것은 아닙니다.</desc><defs><marker id="lens-route-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e dash" d="M240 42H272" marker-end="url(#lens-route-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#lens-route-arrow)"/><path class="e dash" d="M240 154H272" marker-end="url(#lens-route-arrow)"/><path class="e" d="M504 154H552" marker-end="url(#lens-route-arrow)"/><path class="e" d="M504 266H552" marker-end="url(#lens-route-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">LensDriveControl</text><text class="s mono" x="20" y="57">0x8037eb78 / 0x6003c</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">OnNotifyCommand</text><text class="s mono" x="284" y="57">0x8040a008 / binding 확인</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">ExecuteFocusControl</text><text class="s mono" x="564" y="57">0x8042e040 / mode 분기</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">큐 메시지 6 · 7 · 8</text><text class="s mono" x="20" y="169">검색 / 위치 이동 / 정지</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">렌즈 큐 수신부</text><text class="s mono" x="284" y="169">명령별 ComSetFocus…</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">LensCommunication</text><text class="s mono" x="564" y="169">0x80111214 / 전송 요청</text><rect class="b" x="8" y="236" width="232" height="60" rx="8"/><text class="t" x="20" y="261">mode 3: 검색 보류</text><text class="s mono" x="20" y="281">pending flag = 1</text><rect class="b" x="272" y="236" width="232" height="60" rx="8"/><text class="t" x="284" y="261">VD 동기화 메시지 2</text><text class="s mono" x="284" y="281">VdSyncRegularCommunicationAf</text><rect class="b" x="552" y="236" width="232" height="60" rx="8"/><text class="t" x="564" y="261">검색 통신 요청</text><text class="s mono" x="564" y="281">보류한 검색 정보 소비</text></svg></div><p>첫 행 점선은 초기화로 수신자가 확인된 간접 점프입니다. 둘째 행 점선은 큐 전달 관계입니다. 셋째 행의 검색 보류 상태와 독립적으로 발생한 VD 메시지 2가 함께 있어야 검색 정보를 소비합니다. 모드 3이 VD 이벤트를 생성하는 것은 아닙니다. <a href="analysis/lens-routing.json">[근거]</a></p></figure>
-<div class="table-wrap"><table><caption>모드와 하위 렌즈 API — 함수 이름의 Serch 표기는 원문 유지</caption><thead><tr><th>mode</th><th>요청</th><th>큐 ID</th><th>LensCommunication 앞쪽 인자</th></tr></thead><tbody><tr><th>0</th><td>SetFocusSerchStart</td><td>6</td><td>(0, 1, 2, 4, …)</td></tr><tr><th>1</th><td>SetFocusMovementStop</td><td>8</td><td>(0, 1, 2, 6, …)</td></tr><tr><th>2</th><td>SetFocusLocationDrive</td><td>7</td><td>(0, 1, 2, 3, …)</td></tr><tr><th>3</th><td>검색 보류 → VD 동기화 처리</td><td>별도 이벤트 2</td><td>보류 플래그 소비 후 (0, 1, 2, 4, …)</td></tr></tbody></table></div><p>큐 수신부에서 LensService_LensCommunication까지의 명령과 페이로드를 확인했습니다. 그 아래에는 렌즈별 통신 길이 조회, GPIO 상태 확인, SIO 수신과 이벤트 대기가 있습니다. 이 분석은 모터의 실제 이동량이나 통신 파형을 측정한 결과가 아닙니다. 콜백 포인터의 다른 런타임 변경 가능성도 정적 검색만으로 배제하지 않았습니다. <a href="analysis/lens-routing.json">[R1: lens_boundary, limitations]</a></p></section>
+<p><code>0x8037e14c</code>의 저장은 다음 getter 호출의 지연 슬롯(분기 다음에 함께 실행되는 명령)에 있습니다. 두 번째 getter의 반환값으로 오해하지 않도록 원본 명령을 실행해 확인했습니다.</p>
+<dl class="kv">
+<dt>분기 계산</dt><dd><code>index = cmd − 0x60001</code> (32비트), <code>index &lt; 0x3f</code>. <code>0x6003c</code> → index <code>0x3b</code></dd>
+<dt>분기표</dt><dd>시작 <code>0x804a2af0</code>, 해당 슬롯 <code>0x804a2bdc</code></dd>
+<dt>tFocusControlInfo</dt><dd><code>0x80c6aad4</code> (mode·arg1·arg2 각 1바이트, arg3 2바이트, arg4 4바이트)</dd>
+<dt>주요 함수</dt><dd><code>CAutoFocusService_LensDriveControl</code> <code>0x8037eb78</code>, <code>CaptureProcessService_OnNotifyCommand</code> <code>0x8040a008</code>, <code>LensService_LensCommunication</code> <code>0x80111214</code>. 큐 수신부는 명령별로 <code>ComSetFocus…</code> 계열 함수를 부르고, 모드 3의 보류 정보는 <code>VdSyncRegularCommunicationAf</code> 처리에서 소비합니다.</dd>
+<dt>렌즈 큐</dt><dd>핸들 <code>0x80c2aa88</code>, 분기표 <code>0x8011f0a8</code>, VD 보류 플래그 <code>0x80c2aa48</code></dd>
+</dl>
+<div class="table-wrap"><table class="compact">
+<caption>모드별 원본 위치</caption>
+<thead><tr><th>mode</th><th>모드 진입</th><th>큐 송신 호출</th><th>큐 분기 슬롯</th><th>수신 처리</th><th>LensCommunication 호출</th></tr></thead>
+<tbody><tr><th scope="row">0</th><td><code>0x801134a4</code></td><td><code>0x801134e4</code></td><td><code>0x8011f0c0</code></td><td><code>0x80114698</code></td><td><code>0x801146dc</code></td></tr><tr><th scope="row">1</th><td><code>0x80113634</code></td><td><code>0x80113664</code></td><td><code>0x8011f0c8</code></td><td><code>0x80116280</code></td><td><code>0x801162a8</code></td></tr><tr><th scope="row">2</th><td><code>0x8011357c</code></td><td><code>0x801135bc</code></td><td><code>0x8011f0c4</code></td><td><code>0x801161a8</code></td><td><code>0x80116204</code></td></tr><tr><th scope="row">3</th><td><code>0x8011355c</code></td><td><code>0x80111e98</code></td><td><code>0x8011f0b0</code></td><td><code>0x80114700</code></td><td><code>0x801146dc</code></td></tr></tbody>
+</table></div>
+</details>
 
-<section id="matrix"><p class="eyebrow">03 / DESCRIPTORS TO MMIO</p><h2>색 행렬은 객체를 거쳐 기록된다</h2><p>SetupColorMatrix는 행렬을 만든 뒤 ID 0xe와 0xf의 설정 구조체를 전달합니다. StillOnSetImageProcessingEx는 이를 모드별 캐시에 보관하고 StillSetImageProcessing은 같은 캐시를 읽습니다. 경로 타입이 0이면 PathSetImageProcessing에서 IpuSetFilter로 이어집니다. 여기까지는 설정값을 RAM에 복사하는 단계입니다. <a href="analysis/isp-routing.json">[R2: matrix_route]</a></p>
-<pre aria-label="설정 캐시와 필터 객체"><code>upper flags 0x40 / 0xb0 / 0x50
-  → CoachModeToStillServerMode → numeric mode index
-cache = 0x815c6f30 + 4 × (mode × 0x4a + submode × 0x25 + id)
-payload: upper descriptor +0x18 → path descriptor +0x14
+<div class="callout warn"><strong class="label">한계</strong>
+<p>큐 수신부에서 <code>LensService_LensCommunication</code>까지의 명령과 인자를 확인했습니다. 그 아래에는 렌즈별 통신 길이 조회, GPIO 상태 확인, 직렬(SIO) 수신과 이벤트 대기가 있습니다. 모터의 실제 이동량이나 통신 파형을 잰 것이 아닙니다. 콜백 포인터가 실행 중 다른 값으로 바뀔 가능성도 정적 검색만으로 배제하지 않았습니다. <a href="analysis/lens-routing.json">[근거: lens_boundary, limitations]</a></p></div>
+<p>AF 명령의 완료 판정은 <a href="af-completion-report.html">AF 명령과 완료 판정</a>에서 이어집니다.</p>
+</section>
 
-path +0x880 → CImageProcessor
-processor +0x48 + 12 × id → pointer to separately allocated descriptor
-upper ID 0xe → low ID 10 → CCmFilter
-upper ID 0xf → low ID 13 → CFc1Filter</code></pre><p>CTranslatorC12의 분기와 객체 생성자를 대조하면 상위 ID 0xe는 저수준 필터 10인 CCmFilter로, ID 0xf는 필터 13인 CFc1Filter로 연결됩니다. CFc2Filter는 별도 필터 20입니다. CFc1과 CFc2는 이름이 비슷하지만 레지스터는 구분해 분석했습니다. 작업 함수 WriteAll은 필터의 UID를 비교해 필요한 경우 가상함수를 호출합니다. 각 기록 함수는 객체의 갱신 플래그를 확인합니다. <a href="analysis/isp-routing.json">[R2: factory, translator, virtual slots]</a></p><figure class="diagram"><figcaption>상위 설정과 저수준 객체의 연결</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 320" role="img" aria-labelledby="isp-route-title isp-route-desc"><title id="isp-route-title">상위 설정과 저수준 객체의 연결</title><desc id="isp-route-desc">첫 행은 설정 저장·소비, 둘째 행은 변환된 필터의 사용 관계입니다. 화살표는 데이터·객체 관계이며 픽셀의 통과 순서가 아닙니다. 점선은 조건부 대체·후속 경로입니다.</desc><defs><marker id="isp-route-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#isp-route-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#isp-route-arrow)"/><path class="e" d="M240 154H272" marker-end="url(#isp-route-arrow)"/><path class="e" d="M504 154H552" marker-end="url(#isp-route-arrow)"/><path class="e dash" d="M388 184V236" marker-end="url(#isp-route-arrow)"/><path class="e dash" d="M504 154H538V266H552" marker-end="url(#isp-route-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">SetupColorMatrix</text><text class="s mono" x="20" y="57">상위 ID 0xe · 0xf</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">Still 설정 캐시</text><text class="s mono" x="284" y="57">0x815c6f30 + index × 4</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">IpuSetFilter</text><text class="s mono" x="564" y="57">path type 0 / RAM 복사</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">CTranslatorC12</text><text class="s mono" x="20" y="169">low ID 10 / 13 선택</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">CCmFilter / CFc1Filter</text><text class="s mono" x="284" y="169">vtable+0x20: 설정 저장</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">WriteAll → writer</text><text class="s mono" x="564" y="169">vtable+8 / dirty 조건</text><rect class="b" x="272" y="236" width="232" height="60" rx="8"/><text class="t" x="284" y="261">FIPLIB 후속 갱신</text><text class="s mono" x="284" y="281">조건에 따라 값 덮어쓰기</text><rect class="b" x="552" y="236" width="232" height="60" rx="8"/><text class="t" x="564" y="261">CBC 대체 제출</text><text class="s mono" x="564" y="281">직접 쓰기와 별도 경로</text></svg></div><p>첫 행은 설정 저장·소비, 둘째 행은 변환된 필터의 사용 관계입니다. 화살표는 데이터·객체 관계이며 픽셀의 통과 순서가 아닙니다. 점선은 조건부 대체·후속 경로입니다. <a href="analysis/isp-routing.json">[근거]</a></p></figure>
-<p>CCmFilter의 vtable <code>0x804ff828</code>에서 <code>+0x20</code>은 설정 함수 <code>0x803531e4</code>, <code>+8</code>은 레지스터 기록 함수 <code>0x803537a4</code>입니다. CFc1Filter의 대응 슬롯은 <code>0x804ffa10 → 0x80321be8</code>, <code>0x804ff9f8 → 0x8031f750</code>입니다. <a href="analysis/isp-routing.json">[R2: evidence]</a></p>
-<div class="table-wrap"><table><caption>아홉 계수의 저장 위치 — 각 계수는 signed 16비트 입력에서 확장</caption><thead><tr><th>계수 index</th><th>path descriptor</th><th>CM register</th><th>FC1 register</th></tr></thead><tbody><tr><th>0</th><td><code>+0x14</code></td><td><code>0xb6000200</code></td><td><code>0xb60000c0</code></td></tr><tr><th>1</th><td><code>+0x16</code></td><td><code>0xb6000204</code></td><td><code>0xb60000c4</code></td></tr><tr><th>2</th><td><code>+0x18</code></td><td><code>0xb6000208</code></td><td><code>0xb60000c8</code></td></tr><tr><th>3</th><td><code>+0x1a</code></td><td><code>0xb600020c</code></td><td><code>0xb60000cc</code></td></tr><tr><th>4</th><td><code>+0x1c</code></td><td><code>0xb6000210</code></td><td><code>0xb60000d0</code></td></tr><tr><th>5</th><td><code>+0x1e</code></td><td><code>0xb6000214</code></td><td><code>0xb60000d4</code></td></tr><tr><th>6</th><td><code>+0x20</code></td><td><code>0xb6000218</code></td><td><code>0xb60000d8</code></td></tr><tr><th>7</th><td><code>+0x22</code></td><td><code>0xb600021c</code></td><td><code>0xb60000dc</code></td></tr><tr><th>8</th><td><code>+0x24</code></td><td><code>0xb6000220</code></td><td><code>0xb60000e0</code></td></tr></tbody></table></div>
-<p>CM은 32비트 객체 필드 <code>+0x88..+0xa8</code>를, FC1은 16비트 필드 <code>+0x30..+0x40</code>를 읽습니다. CM의 추가 필드는 <code>0xb6000224</code>와 <code>0xb60001a8..0xb60001bc</code>, FC1의 추가 필드는 <code>0xb60000e4 / 0xb60000e8 / 0xb60000fc</code>에 기록됩니다. 문서화되지 않은 필드의 이름이나 물리적 의미는 부여하지 않았습니다. <a href="analysis/isp-routing.json">[R2: registers]</a></p>
-<p class="note">WriteAll의 일반 필터 순회는 config가 존재하고 <code>task+0x1f8 == 0</code>일 때 수행합니다. UID 비교와 <code>object+0x29 != 0</code> 조건도 통과해야 실제 쓰기가 일어납니다.</p><p>설정 전달 경로는 확인했지만 모든 촬영에서 최종 계수가 그대로 유지된다고 단정할 수는 없습니다. FIPLIB 경로가 같은 필터를 다시 갱신할 수 있고 CBC를 통한 설정 제출도 존재합니다. 최종 패스의 선택 조건과 덮어쓰기 이후 값은 추가 추적 대상입니다. 레지스터 주소와 CPU의 쓰기 순서만으로 ISP 내부의 행렬·감마·클리핑 순서를 확정하지 않았습니다. <a href="analysis/isp-routing.json">[R2: limitations]</a></p></section>
+<section id="matrix">
+<h2>색 행렬 설정이 ISP 레지스터에 기록되는 경로</h2>
+<p class="takeaway">색 행렬은 바로 레지스터에 쓰이지 않습니다. 설정 캐시와 필터 객체를 거쳐, 갱신 표시가 있을 때만 레지스터 기록 함수가 값을 씁니다.</p>
 
-<section id="gamma"><p class="eyebrow">04 / STATISTICS LUTS</p><h2>감마 테이블의 고정 포트와 쓰기 수</h2><p>감마 설정은 AppImageProcessingSetIppGammaContext에서 SensorSetGammaWithId를 거쳐 SensorUpdateIppIpsGamma로 이어집니다. 후자는 상태 레지스터 0xb5002014의 하위 5비트를 확인한 뒤 조건에 따라 통계용 감마 LUT를 기록합니다. 일반 통계 LUT는 77개 워드를 고정 포트 0xb5002070에 반복해서 씁니다. DCI 경로는 개수 인자를 사용합니다. 개수가 0이어도 인덱스 초기화는 수행합니다. <a href="analysis/isp-routing.json">[R2: gamma_route, registers]</a></p><figure class="diagram"><figcaption>통계용 감마 LUT의 실제 쓰기</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 320" role="img" aria-labelledby="gamma-route-title gamma-route-desc"><title id="gamma-route-title">통계용 감마 LUT의 실제 쓰기</title><desc id="gamma-route-desc">아래 두 행은 UpdateIppIpsGamma의 조건부 호출 대상입니다. GC는 동기화 플래그, DCI는 버퍼+0x3f4 값 0x4d를 검사합니다. 최종 JPEG용 감마라고 단정하지 않았습니다.</desc><defs><marker id="gamma-route-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#gamma-route-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#gamma-route-arrow)"/><path class="e" d="M240 154H272" marker-end="url(#gamma-route-arrow)"/><path class="e" d="M240 266H272" marker-end="url(#gamma-route-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">App gamma context</text><text class="s mono" x="20" y="57">0x802559f0</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">SensorSetGammaWithId</text><text class="s mono" x="284" y="57">0x801f7390</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">UpdateIppIpsGamma</text><text class="s mono" x="564" y="57">0x801f7244 / busy polling</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">GC LUT writer</text><text class="s mono" x="20" y="169">0x801d585c / 77 words</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">0xb5002070</text><text class="s mono" x="284" y="169">고정 data port에 반복 쓰기</text><rect class="b" x="8" y="236" width="232" height="60" rx="8"/><text class="t" x="20" y="261">DCI LUT writer</text><text class="s mono" x="20" y="281">0x801d58c4 / count words</text><rect class="b" x="272" y="236" width="232" height="60" rx="8"/><text class="t" x="284" y="261">0xb5002434</text><text class="s mono" x="284" y="281">count = 0이면 data write 없음</text></svg></div><p>아래 두 행은 UpdateIppIpsGamma의 조건부 호출 대상입니다. GC는 동기화 플래그, DCI는 버퍼+0x3f4 값 0x4d를 검사합니다. 최종 JPEG용 감마라고 단정하지 않았습니다. <a href="analysis/isp-routing.json">[근거]</a></p></figure>
-<div class="table-wrap"><table><caption>관찰한 MMIO 동작</caption><thead><tr><th>주소</th><th>동작</th><th>원본 명령 근거</th></tr></thead><tbody><tr><th><code>0xb5002014</code></th><td>하위 5비트가 바쁘면 대기; abort 조건 있음</td><td>SensorUpdateIppIpsGamma · 0x801f7244</td></tr><tr><th><code>0xb500206c</code></th><td>0으로 초기화</td><td>store · 0x801d5884</td></tr><tr><th><code>0xb5002070</code></th><td>77회 u32 데이터 쓰기</td><td>store · 0x801d5898</td></tr><tr><th><code>0xb500204c</code></th><td>GC 기록 뒤 0 쓰기</td><td>store · 0x801d58b8</td></tr><tr><th><code>0xb5002430 / 0xb5002434</code></th><td>DCI 초기화 / count회 데이터 쓰기</td><td>PathStatisticsWriteIpsDciGcLut · 0x801d58c4</td></tr></tbody></table></div><p>이 주소들은 함수 이름과 호출 문맥상 통계 경로의 LUT입니다. 최종 JPEG 픽셀에 같은 LUT를 적용한다고 볼 근거는 아직 없습니다. SensorSetColorGain에서는 센서용 설정에 2비트 시프트, 통계용 설정에 4비트 시프트를 사용하는 것까지 확인했습니다. 기존 SetDevelopPreGain과 센서 gain 레지스터 사이의 연결은 아직 확인되지 않았습니다. <a href="analysis/isp-routing.json">[R2: white_balance, limitations]</a></p></section>
+<figure class="diagram">
+<figcaption>상위 설정에서 CM·FC1 레지스터까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 330" role="img" aria-labelledby="dg-isp-title dg-isp-desc">
+<title id="dg-isp-title">색 행렬 설정이 캐시와 필터 객체를 거쳐 레지스터에 기록되는 경로</title>
+<desc id="dg-isp-desc">첫 줄: SetupColorMatrix가 행렬을 만들어 설정 ID 0xe와 0xf로 내보내고, 모드별 설정 캐시에 저장됩니다. 경로 설정 함수 IpuSetFilter가 이를 처리기 객체의 설명자 슬롯으로 RAM 복사합니다. 둘째 줄: 필터 변환기 CTranslatorC12가 ID 0xe를 CM 필터로, 0xf를 FC1 필터로 바꾸고, 필터 객체에 값이 저장됩니다. 작업 함수 WriteAll이 UID와 갱신 표시를 확인한 뒤 레지스터 기록 함수를 불러 CM 0xb6000200 계열과 FC1 0xb60000c0 계열 레지스터에 씁니다. 셋째 줄: 같은 필터 객체를 FIPLIB가 다시 갱신할 수 있고, 레지스터 직접 쓰기 대신 CBC 배치로 제출하는 경로도 있습니다.</desc>
+<defs>
+<marker id="dg-isp-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-isp-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<text class="h" x="8" y="16">RAM 안의 설정 전달</text>
+<rect class="b static" x="8" y="26" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="52">색 행렬 생성</text>
+<text class="s mono" x="20" y="73">SetupColorMatrix</text>
+<rect class="b static" x="218" y="26" width="170" height="64" rx="8"/>
+<text class="t" x="230" y="52">모드별 설정 캐시</text>
+<text class="s" x="230" y="73">ID 0xe · 0xf 저장</text>
+<rect class="b static" x="428" y="26" width="170" height="64" rx="8"/>
+<text class="t" x="440" y="52">경로 설정</text>
+<text class="s mono" x="440" y="73">IpuSetFilter</text>
+<rect class="b static" x="628" y="26" width="170" height="64" rx="8"/>
+<text class="t" x="640" y="52">처리기 설명자 슬롯</text>
+<text class="s" x="640" y="73">별도 RAM에 복사</text>
+<path class="e" d="M178 58H216" marker-end="url(#dg-isp-ah)"/>
+<path class="e" d="M388 58H426" marker-end="url(#dg-isp-ah)"/>
+<path class="e" d="M598 58H626" marker-end="url(#dg-isp-ah)"/>
 
-<section id="output"><p class="eyebrow">05 / OUTPUT BOUNDARIES</p><h2>최종 픽셀과 파일을 구분해 추적하다</h2><p>최종 픽셀 출력은 세 경계로 나누어 판단했습니다. 첫째는 CPU가 계수와 버퍼 주소를 전달하는 경계, 둘째는 ISP·JPEG 하드웨어가 메모리를 읽고 쓰는 경계, 셋째는 압축 결과를 파일에 저장하는 경계입니다. 현재 근거는 첫째와 셋째의 일부를 설명합니다. 둘째의 내부 산술과 실기 출력은 확인하지 않았으므로 하나의 완성된 픽셀 파이프라인으로 그리지 않았습니다.</p>
-<figure><ol class="flow"><li><strong>계수·주소 설정</strong><span>캐시 / 필터 / MMIO<br>조건부 경로 확인</span></li><li class="pending"><strong>ISP 픽셀 처리</strong><span>내부 산술·패스 선택<br>실기 출력 미검증</span></li><li><strong>JPEG 버퍼</strong><span>압축 입력 / code 출력<br>개별 경로의 근거 대조</span></li><li><strong>파일 저장</strong><span>상위 저장 함수와<br>버퍼 소비 지점 추적</span></li></ol><figcaption>실선 테두리는 소프트웨어 분석 대상, 점선 테두리는 하드웨어 동작이 남은 경계입니다. 네 상자를 하나의 검증된 픽셀 흐름으로 연결하지 않았습니다.</figcaption></figure>
-<p>직접 호출을 찾은 촬영 경로는 HDR입니다. <code>StillCaptureHdrImageSave / StillCaptureHdrRunProcessing</code>에서 <code>StillCaptureSaveJpegImage(0x802d33d0)</code>를 호출하는 세 위치를 확인했습니다. 저장 함수는 <code>0x802d349c</code>에서 <code>ApsExifCreateJpeg(0x802c3454)</code>를 호출하고, 이후 <code>ApsPipePost(0, 0x1005, context, 1)</code>를 수행합니다. 일반 비 HDR 촬영 전체로 확대하지 않았습니다. <a href="analysis/output-routing.json">[R4: capture_entry]</a></p>
-<figure class="diagram"><figcaption>HDR 저장 요청과 JPEG 코드 버퍼</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 432" role="img" aria-labelledby="output-route-title output-route-desc"><title id="output-route-title">HDR 저장 요청과 JPEG 코드 버퍼</title><desc id="output-route-desc">HDR 압축·완료·저장 요청을 나누어 표시했습니다. 점선은 대기 또는 큐 전달 관계입니다. 셋째 행의 pipe 3 메시지를 마지막 행의 StillStoreMain이 받습니다. 마지막 행은 본문에 열거한 저장 함수들을 묶어 표시한 연결이며 실기 파일 쓰기의 관측 결과는 아닙니다.</desc><defs><marker id="output-route-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#output-route-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#output-route-arrow)"/><path class="e" d="M240 154H272" marker-end="url(#output-route-arrow)"/><path class="e dash" d="M504 154H552" marker-end="url(#output-route-arrow)"/><path class="e dash" d="M240 266H272" marker-end="url(#output-route-arrow)"/><path class="e" d="M504 266H552" marker-end="url(#output-route-arrow)"/><path class="e" d="M240 378H272" marker-end="url(#output-route-arrow)"/><path class="e" d="M504 378H552" marker-end="url(#output-route-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">HDR → SaveJpegImage</text><text class="s mono" x="20" y="57">0x802d33d0</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">ApsExifCreateJpeg</text><text class="s mono" x="284" y="57">0x802c3454 / descriptor 분기</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">CreateCodeGo</text><text class="s mono" x="564" y="57">0x802bb250 / 압축 작업</text><rect class="b" x="8" y="124" width="232" height="60" rx="8"/><text class="t" x="20" y="149">image / code buffer</text><text class="s mono" x="20" y="169" textLength="208" lengthAdjust="spacingAndGlyphs">descriptor · pointer · capacity</text><rect class="b" x="272" y="124" width="232" height="60" rx="8"/><text class="t" x="284" y="149">PathSubmit → PathGo</text><text class="s mono" x="284" y="169">설정 제출 후 실행 요청</text><rect class="b" x="552" y="124" width="232" height="60" rx="8"/><text class="t" x="564" y="149">PathWait → code size</text><text class="s mono" x="564" y="169">0x802bb1ec / 재확인 조건</text><rect class="b" x="8" y="236" width="232" height="60" rx="8"/><text class="t" x="20" y="261">partition → pipe 0</text><text class="s mono" x="20" y="281">ApsPipePost / 0x1005</text><rect class="b" x="272" y="236" width="232" height="60" rx="8"/><text class="t" x="284" y="261">StillServer</text><text class="s mono" x="284" y="281">pipe 0 / 0x1005 수신</text><rect class="b" x="552" y="236" width="232" height="60" rx="8"/><text class="t" x="564" y="261">StillOnFileReady</text><text class="s mono" x="564" y="281">pipe 3 / 0x1002 전달</text><rect class="b" x="8" y="348" width="232" height="60" rx="8"/><text class="t" x="20" y="373">StillStoreMain</text><text class="s mono" x="20" y="393">StoreOnSave → ApsSaveFile</text><rect class="b" x="272" y="348" width="232" height="60" rx="8"/><text class="t" x="284" y="373">ApsSaveWrite → callback</text><text class="s mono" x="284" y="393" textLength="208" lengthAdjust="spacingAndGlyphs">item+8: ptr / item+0xc: bytes</text><rect class="b" x="552" y="348" width="232" height="60" rx="8"/><text class="t" x="564" y="373">_fx_file_write</text><text class="s mono" x="564" y="393">0x80087034 / 오류 확인</text></svg></div><p>HDR 압축·완료·저장 요청을 나누어 표시했습니다. 점선은 대기 또는 큐 전달 관계입니다. 셋째 행의 pipe 3 메시지를 마지막 행의 StillStoreMain이 받습니다. 마지막 행은 본문에 열거한 저장 함수들을 묶어 표시한 연결이며 실기 파일 쓰기의 관측 결과는 아닙니다. <a href="analysis/output-routing.json">[근거]</a></p></figure>
-<p>ApsExifCreateJpeg의 descriptor가 새 압축을 요구하는 분기에서는 <code>ApsJpegCreateCodeGo</code>와 <code>ApsJpegCreateCodeWait</code>를 호출합니다. 이미 준비된 크기를 사용하는 분기도 있습니다. CodeGo는 기존 path가 있으면 입력·출력 버퍼를 갱신하고, 없으면 새 path를 구성합니다. 두 경우 모두 제출 뒤 <code>PathGo</code>로 실행을 요청합니다. <a href="analysis/output-routing.json">[R4: jpeg_code_path]</a></p>
-<div class="table-wrap"><table><caption>JPEG 경로에서 관찰한 버퍼와 크기 전달</caption><thead><tr><th>단계</th><th>필드 / 조건</th><th>확인한 의미</th></tr></thead><tbody><tr><th>ApsExif → CodeGo</th><td><code>*param3</code>, <code>param3[3]</code>, <code>param3[4]</code></td><td>입력 descriptor, code 버퍼, 가용 크기를 작업 구조체에 설정</td></tr><tr><th>PathJpegSetImageBuffer</th><td><code>path+0xb8 == 1</code>이면 <code>path+8</code>, 그 외 <code>path+0x28</code></td><td>입력 descriptor의 7개 워드 복사. dirty bit 1 설정</td></tr><tr><th>PathJpegSetCodeBuffer</th><td><code>path+0x28 = ptr</code>, <code>path+0x3ac = capacity</code></td><td>ptr가 0이 아니면 기록하고 dirty bit 0x08000000 설정</td></tr><tr><th>CreateCodeWait</th><td><code>PathWait</code> 후 <code>PathGetCodeSize(path,0)</code></td><td>code 바이트 수 반환. 대기 결과가 0이거나 가용 크기를 넘으면 Condense 후 다시 조회</td></tr><tr><th>partition 항목</th><td><code>item+8 = ptr</code>, <code>item+0xc = bytes</code></td><td>목록 <code>partition+0x28</code>에 추가. 압축 결과·마커 조각을 묶는 단계</td></tr></tbody></table></div>
-<p>EXIF 내부의 별도 선택 분기에도 <code>ApsJpegCreate</code> 호출이 있습니다. 이때 목적지는 <code>param7 + header_offset</code>, 가용 크기는 <code>0xffec − header_offset</code>입니다. 이 선택 버퍼를 본 이미지나 썸네일로 확정하지 않았습니다. 본 이미지 후보 descriptor의 CodeGo 경로와 구별했습니다. <a href="analysis/output-routing.json">[R4: optional_auxiliary_encoding]</a></p>
-<p id="file-boundary"><code>StillServer(0x8029ab5c)</code>는 pipe 0의 <code>0x1005</code>를 받으면 <code>StillOnFileReady(0x802956dc)</code>를 호출합니다. 이 함수는 컨텍스트와 플래그를 유지해 <code>ApsPipePost(3, 0x1002, context, flag)</code>를 수행합니다. pipe 3의 <code>StillStoreMain</code>에서 <code>StoreOnSave → ApsSaveFile → ApsSaveWrite</code>로 이어지고, 목록 콜백 <code>ApsSaveWritePartitionObjectCB(0x802e3e44)</code>가 <code>_fx_file_write(handle, item.ptr, item.bytes)</code>를 호출합니다. 쓰기 결과가 0이 아니면 오류 처리로 분기하며, 성공한 항목의 크기를 조건에 따라 누적합니다. <a href="analysis/output-routing.json">[R4: filesystem_boundary]</a></p>
-<p class="note">이 연결은 큐 전달과 자원 확보가 성공하는 소프트웨어 경로입니다. 저장 매체에 기록된 파일을 확인하거나 픽셀 값을 대조하지는 않았습니다. ISP 출력 버퍼가 위 JPEG 입력과 동일한 버퍼라는 연결, 최종 패스와 내부 산술도 남아 있습니다.</p>
-<p class="note">StillCaptureImageTuneJpegEnc는 Emulation 이름의 버퍼를 사용합니다. 이 함수의 ApsJpegCreate 호출을 일반 촬영 전체의 증거로 사용하지 않았습니다. <a href="deep-report.html#jpeg">이전 분석의 범위</a></p></section>
+<text class="h" x="112" y="124">필터 객체와 레지스터 기록</text>
+<rect class="b static" x="8" y="132" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="158">필터 변환</text>
+<text class="s" x="20" y="179">0xe→CM · 0xf→FC1</text>
+<rect class="b static" x="218" y="132" width="170" height="64" rx="8"/>
+<text class="t" x="230" y="158">필터 객체</text>
+<text class="s mono" x="230" y="179">CCmFilter·CFc1Filter</text>
+<rect class="b static" x="428" y="132" width="170" height="64" rx="8"/>
+<text class="t" x="440" y="158">기록 예약</text>
+<text class="s" x="440" y="179">WriteAll · UID 비교</text>
+<rect class="b key" x="628" y="132" width="170" height="64" rx="8"/>
+<text class="t" x="640" y="158">레지스터 기록 함수</text>
+<text class="s" x="640" y="179">CM·FC1 계수 → MMIO</text>
+<path class="e" d="M713 90V106H93V130" marker-end="url(#dg-isp-ah)"/>
+<path class="e" d="M178 164H216" marker-end="url(#dg-isp-ah)"/>
+<path class="e" d="M388 164H426" marker-end="url(#dg-isp-ah)"/>
+<path class="e" d="M598 164H626" marker-end="url(#dg-isp-ah)"/>
 
-<section id="comparison"><p class="eyebrow">06 / K-3 MARK III CROSS-CHECK</p><h2>같은 질문을 서로 다른 하드웨어에 적용하다</h2><p>K-3 Mark III 자료도 설정 전달, 레지스터 쓰기, 버퍼 연결과 실제 픽셀 산술을 구분합니다. 이번에는 현재 공개된 커밋의 AF 분기와 ISP·JPEG 분석을 다시 대조했습니다. 같은 질문과 검증 방법을 적용했지만 CPU 명령어, 함수 주소, 명령 ID와 MMIO 주소는 Q7 원본에서 별도로 확인했습니다.</p><p class="note">참조 커밋 <code>1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470</code>의 공개 존재를 확인했습니다. 이전 18항목 비교는 당시 커밋을 유지합니다. <a href="analysis/routing-comparison.json">참조 파일 해시</a></p>
-<div class="table-wrap"><table><caption>현재 K-3 자료와 Q7의 대응·차이</caption><thead><tr><th>질문</th><th>K-3 Mark III 근거</th><th>Q7 이번 결과</th></tr></thead><tbody><tr><th>간접 수신자는 누구인가</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470/analysis/dispatch-af.html">AF 컨트롤러 바인딩과 vtable 분기</a></td><td>AF 초기화의 전역 함수 포인터를 CaptureProcessService 수신자에 연결</td></tr><tr><th>행렬은 어떤 레지스터에 도달하는가</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470/analysis/pipeline-report.html">R2y 0x28418000 / 0x28518000 / 0x28618000, packed signed 12-bit</a></td><td>CM 0xb6000200 계열, FC1 0xb60000c0 계열. MIPS가 signed 16-bit 입력을 확장해 씀</td></tr><tr><th>WB가 실제 gain에 연결되는가</th><td>같은 K-3 보고서의 B2r +0x4c/+0x50, 11비트 필드</td><td>센서/통계 descriptor의 시프트까지 확인. SetDevelopPreGain → 최종 gain MMIO는 미완료</td></tr><tr><th>감마·클리핑은 어디서 적용되는가</th><td>R2y 제어 필드의 생산자까지 추적. 내부 픽셀 연산 순서는 미확정</td><td>통계 GC/DCI 포트 확인. 최종 JPEG의 감마·클리핑과 동일시하지 않음</td></tr><tr><th>압축과 출력 버퍼를 연결할 수 있는가</th><td>JPEG 0x298c0000: Y +0x430, CbCr +0x434, code +0x440</td><td>Q7 고유의 객체 필드·버퍼 경로를 분석. K-3 주소나 버퍼 구조를 전용하지 않음</td></tr><tr><th>픽셀을 재현했는가</th><td>설정·버퍼 재실행과 실제 픽셀 출력을 구분</td><td>렌즈 분기와 ISP 기록 함수 재실행. 센서→최종 픽셀의 실기 대조는 미수행</td></tr></tbody></table></div></section>
+<text class="h" x="8" y="232">같은 객체를 쓰는 다른 경로 (조건부)</text>
+<rect class="b open" x="218" y="244" width="170" height="64" rx="8"/>
+<text class="t" x="230" y="270">FIPLIB 재갱신</text>
+<text class="s" x="230" y="291">조건에 따라 값 교체</text>
+<rect class="b open" x="428" y="244" width="170" height="64" rx="8"/>
+<text class="t" x="440" y="270">CBC 배치 제출</text>
+<text class="s" x="440" y="291">직접 쓰기 대신 사용</text>
+<path class="e open" d="M303 242V198" marker-end="url(#dg-isp-ao)"/>
+<path class="e open" d="M303 226H513V242" marker-end="url(#dg-isp-ao)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="static"></i>코드를 읽어 확인한 전달 경로</li><li><i class="key"></i>원본 명령으로 재실행한 기록 함수</li><li><i class="open"></i>이 문서에서 조건을 다 확인하지 않은 경로</li></ul>
+</figure>
+<p>화살표는 설정 데이터와 객체의 관계입니다. 픽셀이 회로를 지나는 순서가 아닙니다.</p>
 
-<section id="validation"><p class="eyebrow">07 / EVIDENCE & REPRODUCTION</p><h2>명령·분기표와 실행 결과를 대조하다</h2><p>렌즈 분석과 출력 경로 분석을 나누어 진행하고 ISP 레지스터 재실행은 별도 검증 작업으로 수행했습니다. 코디네이터가 중요 명령·분기표·vtable을 원본과 대조했습니다. 레지스터 재실행 10개 조건에서 순서까지 대조한 MMIO 쓰기 126회와 클록 대체 함수 호출 8회를 포함해 164개 검사가 통과했습니다. MMIO는 일반 RAM으로, 클록 함수는 대체 함수로 모델링했습니다. 카메라나 ISP를 구동한 시험은 아닙니다. <a href="analysis/isp-register-checks.json">[R3: 실행 결과]</a> <a href="tools/check_isp_registers.py">[검증 코드]</a></p>
-<p>렌즈 재실행은 초기 바인딩과 모드 0·1·2·3의 분기를 검사합니다. 큐 대기 후 수신 지점에서 상태를 이어 붙이며 모드 3의 선행 주기 통신은 건너뜁니다. RTOS 전체나 렌즈 통신 자체를 실행한 것은 아닙니다. <a href="tools/check_lens_routing.py">[렌즈 검증 코드]</a> <a href="analysis/lens-routing.json">[R1: bounded_replay]</a></p>
-<p>ISP 조사에서 선별한 <strong>90개</strong> 함수의 C 출력을 얻었습니다. 이는 이전 보고서의 300개 함수와 일부 중복되는 조사 집합이며 합산하지 않습니다. C 출력에 다른 함수의 꼬리 점프가 펼쳐질 수 있어, 호출 관계와 쓰기 순서는 원본 명령으로 다시 확인했습니다.</p>
-<p>원본 파일을 다시 읽어 명령·데이터 워드 근거 265건을 대조했습니다. ISP 90개와 출력 경로 17개 함수 후보의 주소 범위·해시·분기 기록도 재현했습니다. 범위는 다음 sidecar 주소까지이며 정식 함수 크기 정보는 아닙니다. <a href="tools/verify_routing.py">[대조 코드]</a> <a href="analysis/output-routing.json">[R4: selected_functions]</a></p>
-<details><summary>ISP 조사 함수 주소 90개 보기</summary><div class="table-wrap"><table><thead><tr><th>sidecar 이름</th><th>VA</th><th>추정 bytes</th></tr></thead><tbody><tr><td>SensorSetEvent</td><td><code>0x80004290</code></td><td>192</td></tr><tr><td>PoolAllocEx</td><td><code>0x8000bf28</code></td><td>460</td></tr><tr><td>PoolFreeEx</td><td><code>0x8000c598</code></td><td>448</td></tr><tr><td>CguUnitSetEnabled</td><td><code>0x8000f6a4</code></td><td>732</td></tr><tr><td>TimingMarkF</td><td><code>0x8009d910</code></td><td>208</td></tr><tr><td>Printf_B</td><td><code>0x800a14f8</code></td><td>296</td></tr><tr><td>_tx_mutex_get</td><td><code>0x800cbee4</code></td><td>868</td></tr><tr><td>OsThreadCreateEx</td><td><code>0x800cd7e0</code></td><td>176</td></tr><tr><td>_tx_mutex_create</td><td><code>0x800cdb00</code></td><td>440</td></tr><tr><td>_tx_thread_sleep</td><td><code>0x800d0b40</code></td><td>228</td></tr><tr><td>_tx_mutex_put</td><td><code>0x800d193c</code></td><td>904</td></tr><tr><td>OsSysHaltEx</td><td><code>0x800d6aa4</code></td><td>812</td></tr><tr><td>_tx_thread_interrupt_control</td><td><code>0x800d9df0</code></td><td>40</td></tr><tr><td>memcpy</td><td><code>0x800fb578</code></td><td>360</td></tr><tr><td>CbcConfigWriteReg</td><td><code>0x80133b44</code></td><td>200</td></tr><tr><td>LscGetParamSize</td><td><code>0x8015d6f0</code></td><td>8</td></tr><tr><td>PathSetImageProcessing</td><td><code>0x801c21e8</code></td><td>1212</td></tr><tr><td>IpuSubmit</td><td><code>0x801d0a88</code></td><td>2156</td></tr><tr><td>IpuSetFilter</td><td><code>0x801d133c</code></td><td>12</td></tr><tr><td>PathStatisticsWriteIpsGcLut</td><td><code>0x801d585c</code></td><td>104</td></tr><tr><td>PathStatisticsWriteIpsDciGcLut</td><td><code>0x801d58c4</code></td><td>112</td></tr><tr><td>PathStatisticIsAborted</td><td><code>0x801d5964</code></td><td>12</td></tr><tr><td>StatisticsSetImageProcessing</td><td><code>0x801ef07c</code></td><td>1888</td></tr><tr><td>SensorGammaAllocate</td><td><code>0x801f6d98</code></td><td>160</td></tr><tr><td>SensorGammaFree</td><td><code>0x801f6e38</code></td><td>124</td></tr><tr><td>SensorGammaRunConvertTable</td><td><code>0x801f6eb4</code></td><td>292</td></tr><tr><td>SensorSetColorGain</td><td><code>0x801f6fd8</code></td><td>300</td></tr><tr><td>SensorUpdateIppIpsGamma</td><td><code>0x801f7244</code></td><td>332</td></tr><tr><td>SensorSetGammaWithId</td><td><code>0x801f7390</code></td><td>428</td></tr><tr><td>IppWriteVbMode</td><td><code>0x801ff340</code></td><td>64</td></tr><tr><td>SensorGetCurrentSubModeNumber</td><td><code>0x80200b04</code></td><td>32</td></tr><tr><td>SensorIppUpdateSubmit</td><td><code>0x80200f34</code></td><td>60</td></tr><tr><td>SensorIppUpdateRequest</td><td><code>0x80200f70</code></td><td>632</td></tr><tr><td>SensorIppUpdateInit</td><td><code>0x802014d8</code></td><td>272</td></tr><tr><td>SensorSetFilter</td><td><code>0x80202fb8</code></td><td>384</td></tr><tr><td>ApsPipeSend</td><td><code>0x8024cd48</code></td><td>236</td></tr><tr><td>AppSetImageProcessing</td><td><code>0x802548c4</code></td><td>176</td></tr><tr><td>AppImageProcessingStillModeToGammaTableIndex</td><td><code>0x80255960</code></td><td>108</td></tr><tr><td>AppImageProcessingGetGammaTable</td><td><code>0x802559cc</code></td><td>36</td></tr><tr><td>AppImageProcessingSetIppGammaContext</td><td><code>0x802559f0</code></td><td>884</td></tr><tr><td>AppGetImageProcessingFilterType</td><td><code>0x80255d9c</code></td><td>56</td></tr><tr><td>AppGetImageProcessingFilterIndex</td><td><code>0x80255dd4</code></td><td>60</td></tr><tr><td>StillSetImageProcessing</td><td><code>0x80256b5c</code></td><td>168</td></tr><tr><td>StillSetImageProcessingHq</td><td><code>0x80256c04</code></td><td>156</td></tr><tr><td>AppConvertIppGc2IpsGc</td><td><code>0x80277f28</code></td><td>520</td></tr><tr><td>I43_SetImageProcessing</td><td><code>0x8027f564</code></td><td>32</td></tr><tr><td>StillIpcode2PathIpCode</td><td><code>0x802903fc</code></td><td>132</td></tr><tr><td>ConvertImgProcStructToPathParamEx</td><td><code>0x80290630</code></td><td>3956</td></tr><tr><td>ConvertImgProcStructToAppParam</td><td><code>0x802915ac</code></td><td>1504</td></tr><tr><td>StillOnSetWbScalers</td><td><code>0x80295b18</code></td><td>192</td></tr><tr><td>StillOnSetImageProcessingEx</td><td><code>0x80297d6c</code></td><td>6464</td></tr><tr><td>_ZN10CFc1FilterC1EP11CUidFactory</td><td><code>0x8031f56c</code></td><td>108</td></tr><tr><td>_ZN10CFc1Filter14WriteRegistersEv</td><td><code>0x8031f750</code></td><td>236</td></tr><tr><td>_ZN9CFcFilterC2EP11CUidFactory</td><td><code>0x80321968</code></td><td>88</td></tr><tr><td>_ZN9CFcFilter15SetFilterData12EPv</td><td><code>0x80321afc</code></td><td>68</td></tr><tr><td>_ZN9CFcFilter13SetFilterDataEPv</td><td><code>0x80321be8</code></td><td>304</td></tr><tr><td>_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER</td><td><code>0x80330730</code></td><td>20</td></tr><tr><td>_ZN10CIpuConfig9AddFilterEP7CFilter</td><td><code>0x80330744</code></td><td>80</td></tr><tr><td>_ZN10CIpuDriver7RunTaskEP8CIpuTask</td><td><code>0x80333f6c</code></td><td>232</td></tr><tr><td>_ZN15CImageProcessor9SetFilterEPvm</td><td><code>0x80338108</code></td><td>492</td></tr><tr><td>_ZN15CImageProcessorC1Ev</td><td><code>0x803383f8</code></td><td>660</td></tr><tr><td>_ZN15CImageProcessor16TranslateFiltersEv</td><td><code>0x80339350</code></td><td>688</td></tr><tr><td>_ZN15CImageProcessor6UpdateEPvmS0_</td><td><code>0x80339f20</code></td><td>672</td></tr><tr><td>_ZN15CImageProcessor6CommitEv</td><td><code>0x8033a7b8</code></td><td>2800</td></tr><tr><td>_ZN18CFilterFactoryC12pC1EP11CUidFactory</td><td><code>0x803405e4</code></td><td>84</td></tr><tr><td>_ZN18CFilterFactoryC12p6CreateEl</td><td><code>0x803406d4</code></td><td>140</td></tr><tr><td>_ZN14CTranslatorC12C1Ev</td><td><code>0x803494b0</code></td><td>52</td></tr><tr><td>_ZN14CTranslatorC1227UpdateFilterFiplibInterfaceEPP7CFilterP14CFilterFactoryP27_FIPLIB_OUTPUT_PASS_WRAPPER27_LL_IMAGE_PROCESSING_FILTERhh</td><td><code>0x80349664</code></td><td>128</td></tr><tr><td>_ZN14CTranslatorC1221UpdateFilterInterfaceEPP7CFilterP14CFilterFactoryP14tagSFilterData27_LL_IMAGE_PROCESSING_FILTER29_IMAGE_PROCESSING_FILTER_ENUMh</td><td><code>0x803496e4</code></td><td>304</td></tr><tr><td>_ZN14CTranslatorC1212CreateFilterEP7CFilterP14tagSFilterData27_LL_IMAGE_PROCESSING_FILTERP27_FIPLIB_OUTPUT_PASS_WRAPPERhhh</td><td><code>0x8034a604</code></td><td>960</td></tr><tr><td>_ZN14CFilterFactoryC1Ev</td><td><code>0x8034aa94</code></td><td>160</td></tr><tr><td>_ZN14CFilterFactory10GetFactoryEv</td><td><code>0x8034abbc</code></td><td>112</td></tr><tr><td>_ZN14CFilterFactory4InitEv</td><td><code>0x8034ac34</code></td><td>12</td></tr><tr><td>_ZN18CFilterFactoryC12mC1EP11CUidFactory</td><td><code>0x8034baa0</code></td><td>72</td></tr><tr><td>_ZN18CFilterFactoryC12m6CreateEl</td><td><code>0x8034bb64</code></td><td>1596</td></tr><tr><td>_ZN9CCmFilterC1EP11CUidFactory</td><td><code>0x80352fcc</code></td><td>140</td></tr><tr><td>_ZN9CCmFilter15SetFilterData07EPv</td><td><code>0x803530cc</code></td><td>104</td></tr><tr><td>_ZN9CCmFilter15SetFilterData12EPv</td><td><code>0x80353134</code></td><td>136</td></tr><tr><td>_ZN9CCmFilter13SetFilterDataEPv</td><td><code>0x803531e4</code></td><td>164</td></tr><tr><td>_ZN9CCmFilter16AddToConfigChunkEP19tagCBC_CONFIG_CHUNKh</td><td><code>0x8035330c</code></td><td>668</td></tr><tr><td>_ZN9CCmFilter14WriteRegistersEv</td><td><code>0x803537a4</code></td><td>252</td></tr><tr><td>_ZN9CCmFilter7GetAddrEv</td><td><code>0x80353a0c</code></td><td>24</td></tr><tr><td>_ZN10CFc2FilterC1EP11CUidFactory</td><td><code>0x80354588</code></td><td>108</td></tr><tr><td>_ZN10CFc2Filter16AddToConfigChunkEP19tagCBC_CONFIG_CHUNKh</td><td><code>0x80354764</code></td><td>524</td></tr><tr><td>_ZN10CFc2Filter14WriteRegistersEv</td><td><code>0x80354970</code></td><td>236</td></tr><tr><td>_ZN11CIpuTaskC1216CollectCbcChunksEhP12tagCBC_BATCH</td><td><code>0x803561f0</code></td><td>3752</td></tr><tr><td>_ZN11CIpuTaskC128WriteAllEv</td><td><code>0x80357098</code></td><td>1920</td></tr><tr><td>ColorMatchingService_MakeColorMatrix</td><td><code>0x8041c180</code></td><td>1628</td></tr><tr><td>ImageQualityService_SetImageProcessingEnable</td><td><code>0x80427e18</code></td><td>172</td></tr><tr><td>ImageQualityService_SetupColorMatrix</td><td><code>0x80428654</code></td><td>392</td></tr></tbody></table></div></details>
+<h3>단계별로 하는 일</h3>
+<ol class="steps">
+<li><strong>행렬 만들기</strong> <code>ImageQualityService_SetupColorMatrix</code>가 <code>MakeColorMatrix</code>로 행렬을 만든 뒤 설정 ID <code>0xe</code>(version 2)와 <code>0xf</code>(version <code>0xc</code>)의 설정 구조체를 내보냅니다.</li>
+<li><strong>캐시에 보관</strong> <code>StillOnSetImageProcessingEx</code>가 촬영 모드별 캐시에 넣고, <code>StillSetImageProcessing</code>이 같은 캐시를 읽습니다. 경로 타입이 0이면 <code>PathSetImageProcessing</code>을 거쳐 <code>IpuSetFilter</code>로 갑니다.</li>
+<li><strong>처리기에 복사</strong> <code>CImageProcessor::SetFilter</code>가 설정을 따로 할당한 RAM에 복사합니다. 여기까지는 레지스터가 아니라 RAM에 쓰는 단계입니다.</li>
+<li><strong>필터로 변환</strong> <code>CTranslatorC12</code>가 상위 ID <code>0xe</code>를 저수준 필터 10(<code>CCmFilter</code>)으로, <code>0xf</code>를 필터 13(<code>CFc1Filter</code>)으로 바꿉니다. 이름이 비슷한 <code>CFc2Filter</code>는 별도의 필터 20입니다.</li>
+<li><strong>레지스터 기록</strong> <code>CIpuTaskC12::WriteAll</code>은 필터의 UID가 드라이버에 기록된 UID와 다를 때 기록 함수를 부릅니다. 기록 함수는 객체의 갱신 표시(<code>object+0x29</code>)가 0이 아닐 때만 씁니다.</li>
+</ol>
+<p><a href="analysis/isp-routing.json">[근거: matrix_route, evidence]</a></p>
+
+<h3>아홉 계수가 놓이는 자리</h3>
+<p>3×3 행렬의 계수 아홉 개는 설정 구조체에 부호 있는 16비트로 들어 있고, 레지스터에는 32비트로 확장되어 기록됩니다. CM은 객체의 32비트 필드 <code>+0x88</code>~<code>+0xa8</code>을, FC1은 16비트 필드 <code>+0x30</code>~<code>+0x40</code>을 읽습니다. FC1의 추가 필드 <code>+0x42</code>/<code>+0x44</code>/<code>+0x48</code>은 <code>0xb60000e4</code>/<code>0xb60000e8</code>/<code>0xb60000fc</code>에 기록됩니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>계수 index별 저장 위치</caption>
+<thead><tr><th>계수 index</th><th>설정 구조체</th><th>CM 레지스터</th><th>FC1 레지스터</th></tr></thead>
+<tbody><tr><th scope="row">0</th><td><code>+0x14</code></td><td><code>0xb6000200</code></td><td><code>0xb60000c0</code></td></tr><tr><th scope="row">1</th><td><code>+0x16</code></td><td><code>0xb6000204</code></td><td><code>0xb60000c4</code></td></tr><tr><th scope="row">2</th><td><code>+0x18</code></td><td><code>0xb6000208</code></td><td><code>0xb60000c8</code></td></tr><tr><th scope="row">3</th><td><code>+0x1a</code></td><td><code>0xb600020c</code></td><td><code>0xb60000cc</code></td></tr><tr><th scope="row">4</th><td><code>+0x1c</code></td><td><code>0xb6000210</code></td><td><code>0xb60000d0</code></td></tr><tr><th scope="row">5</th><td><code>+0x1e</code></td><td><code>0xb6000214</code></td><td><code>0xb60000d4</code></td></tr><tr><th scope="row">6</th><td><code>+0x20</code></td><td><code>0xb6000218</code></td><td><code>0xb60000d8</code></td></tr><tr><th scope="row">7</th><td><code>+0x22</code></td><td><code>0xb600021c</code></td><td><code>0xb60000dc</code></td></tr><tr><th scope="row">8</th><td><code>+0x24</code></td><td><code>0xb6000220</code></td><td><code>0xb60000e0</code></td></tr></tbody>
+</table></div>
+
+<details class="evidence"><summary>기록 함수별 레지스터 목록과 조건</summary>
+<div class="table-wrap"><table class="compact">
+<caption>레지스터 기록 함수가 쓰는 주소 — 원문 표기를 유지합니다</caption>
+<thead><tr><th>대상</th><th>기록 함수</th><th>주소</th><th>값의 출처</th><th>조건</th></tr></thead>
+<tbody><tr><th scope="row">CM coefficients</th><td><code>0x803537a4</code></td><td><code>0xb6000200</code> <code>0xb6000204</code> <code>0xb6000208</code> <code>0xb600020c</code> <code>0xb6000210</code> <code>0xb6000214</code> <code>0xb6000218</code> <code>0xb600021c</code> <code>0xb6000220</code></td><td>CCmFilter +0x88..+0xa8 (u32 fields loaded from signed descriptor halfwords)</td><td>object+0x29 != 0</td></tr><tr><th scope="row">CM companion fields</th><td><code>0x803537a4</code></td><td><code>0xb6000224</code> <code>0xb60001a8</code> <code>0xb60001ac</code> <code>0xb60001b0</code> <code>0xb60001b4</code> <code>0xb60001b8</code> <code>0xb60001bc</code></td><td>ushort object+0xac; words +0xb0..+0xc4</td><td>object+0x29 != 0</td></tr><tr><th scope="row">FC1 coefficients</th><td><code>0x8031f750</code></td><td><code>0xb60000c0</code> <code>0xb60000c4</code> <code>0xb60000c8</code> <code>0xb60000cc</code> <code>0xb60000d0</code> <code>0xb60000d4</code> <code>0xb60000d8</code> <code>0xb60000dc</code> <code>0xb60000e0</code></td><td>CFc1Filter signed halfwords +0x30..+0x40</td><td>object+0x29 != 0</td></tr><tr><th scope="row">FC2 alternative</th><td><code>0x80354970</code></td><td><code>0xb6000840</code> <code>0xb600084c</code> <code>0xb6000858</code> <code>0xb6000844</code> <code>0xb6000850</code> <code>0xb600085c</code> <code>0xb6000848</code> <code>0xb6000854</code> <code>0xb6000860</code></td><td>CFc2Filter signed halfwords +0x30..+0x40 in source index order</td><td>object+0x29 != 0</td></tr><tr><th scope="row">Statistics gamma LUT</th><td><code>0x801d585c</code></td><td><code>0xb500206c</code> <code>0xb5002070</code> <code>0xb500204c</code></td><td>index/reset 0, 77 successive source u32 values to one fixed data port, final 0</td><td>Called by SensorUpdateIppIpsGamma when _uiSyncIppStatisticsGamma != 0</td></tr><tr><th scope="row">DCI statistics gamma LUT</th><td><code>0x801d58c4</code></td><td><code>0xb5002430</code> <code>0xb5002434</code></td><td>reset 0 then count source u32 values to fixed data port</td><td>Caller tests gamma buffer+0x3f4 == 0x4d</td></tr><tr><th scope="row">Statistics busy bits</th><td><code>0x801f7244</code></td><td><code>0xb5002014</code></td><td>read &amp; 0x1f</td><td>Wait while nonzero unless PathStatisticIsAborted</td></tr></tbody>
+</table></div>
+<dl class="kv">
+<dt>설정 캐시 주소</dt><dd><code>0x815c6f30 + 4 × (mode × 0x4a + submode × 0x25 + id)</code>. 상위 플래그 <code>0x40 / 0xb0 / 0x50</code>을 <code>CoachModeToStillServerMode</code>가 숫자 mode로 바꿉니다. 모드 2·5는 슬롯이 비면 mode 0으로 대체될 수 있습니다.</dd>
+<dt>설정 구조체 변환</dt><dd>상위 구조체 <code>+0x18</code> → 경로 구조체 <code>+0x14</code> (앞의 4바이트 mode 필드 제거)</dd>
+<dt>처리기 슬롯</dt><dd><code>path+0x880</code> → <code>CImageProcessor</code>; <code>processor+0x48 + 12 × id</code>에 복사본 포인터</dd>
+<dt>CCmFilter vtable</dt><dd><code>0x804ff828</code>: <code>+0x20</code> 설정 함수 <code>0x803531e4</code>, <code>+8</code> 기록 함수 <code>0x803537a4</code></dd>
+<dt>CFc1Filter vtable</dt><dd><code>+0x20</code> 슬롯 <code>0x804ffa10</code> → <code>0x80321be8</code>, <code>+8</code> 슬롯 <code>0x804ff9f8</code> → <code>0x8031f750</code></dd>
+<dt>WriteAll 조건</dt><dd>config가 있고 <code>task+0x1f8 == 0</code>, UID 불일치, <code>object+0x29 != 0</code></dd>
+</dl>
+<p>문서화되지 않은 추가 필드에는 이름이나 물리적 뜻을 붙이지 않았습니다. <a href="analysis/isp-routing.json">[근거: registers]</a></p>
+</details>
+
+<div class="callout warn"><strong class="label">이 경로가 최종값을 보장하지 않는 이유</strong>
+<p>FIPLIB 경로가 같은 필터를 다시 갱신할 수 있고, CBC를 통한 제출도 있습니다. 레지스터 주소와 CPU의 쓰기 순서만으로 ISP 안의 행렬·감마·클리핑 순서를 정할 수도 없습니다. FIPLIB가 CM과 FC1을 어디까지 덮어쓰는지는 <a href="pixel-report.html#overwrite">HDR 버퍼와 색 처리 패스</a>에서, HDR에서 FC1에 남는 값은 <a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>에서 이어집니다. <a href="analysis/isp-routing.json">[근거: limitations]</a></p></div>
+
+<div id="gamma">
+<h3>감마 표는 통계용 고정 포트에 반복해서 씁니다</h3>
+<p>감마 설정은 <code>AppImageProcessingSetIppGammaContext</code> → <code>SensorSetGammaWithId</code> → <code>SensorUpdateIppIpsGamma</code> 순서로 이어집니다. 마지막 함수는 상태 레지스터의 하위 5비트가 0이 될 때까지 기다린 뒤, 조건에 따라 통계용 감마 표(<dfn title="Look-Up Table. 입력값마다 출력값을 적어 둔 표">LUT</dfn>)를 기록합니다.</p>
+<ol class="flow">
+<li class="static"><strong>감마 지정</strong><span>감마 문맥 → 센서 감마 함수</span></li>
+<li class="static"><strong>바쁨 대기</strong><span>상태 레지스터 하위 5비트 검사</span></li>
+<li class="ok"><strong>GC 표 기록</strong><span>값 77개를 한 포트에 연속 쓰기</span></li>
+<li class="ok"><strong>DCI 표 기록</strong><span>개수 인자만큼 쓰기 (0이면 쓰지 않음)</span></li>
+</ol>
+<p>일반 통계 표(GC)는 77개 값을 서로 다른 주소가 아니라 <strong>같은 데이터 포트</strong>에 차례로 씁니다. GC는 동기화 플래그가 0이 아닐 때, DCI는 감마 버퍼 <code>+0x3f4</code>가 <code>0x4d</code>일 때 기록합니다. DCI는 개수가 0이어도 색인 초기화와 클록 켜기·끄기는 합니다.</p>
+<div class="table-wrap"><table>
+<caption>관찰한 MMIO 동작</caption>
+<thead><tr><th>주소</th><th>동작</th><th>원본 명령 위치</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0xb5002014</code></th><td>하위 5비트가 0이 아니면 대기. 통계 중단 시 빠져나감</td><td>SensorUpdateIppIpsGamma · <code>0x801f7244</code></td></tr>
+<tr><th scope="row"><code>0xb500206c</code></th><td>0으로 초기화</td><td>store · <code>0x801d5884</code></td></tr>
+<tr><th scope="row"><code>0xb5002070</code></th><td>32비트 데이터 77회 쓰기</td><td>store · <code>0x801d5898</code></td></tr>
+<tr><th scope="row"><code>0xb500204c</code></th><td>GC 기록 뒤 0 쓰기</td><td>store · <code>0x801d58b8</code></td></tr>
+<tr><th scope="row"><code>0xb5002430</code> / <code>0xb5002434</code></th><td>DCI 초기화 / 개수만큼 데이터 쓰기</td><td>PathStatisticsWriteIpsDciGcLut · <code>0x801d58c4</code></td></tr>
+</tbody></table></div>
+<p class="small muted">GC 기록 함수 <code>0x801d585c</code>, 감마 문맥 함수 <code>0x802559f0</code>, 센서 감마 함수 <code>0x801f7390</code>. 기록 앞뒤로 <code>CguUnitSetEnabled(0xe, 1/0)</code>이 클록을 켜고 끕니다. <a href="analysis/isp-routing.json">[근거: gamma_route, registers]</a></p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 주소들은 함수 이름과 호출 문맥으로 보아 통계 경로의 표입니다. 최종 JPEG 픽셀에 같은 표가 적용된다는 근거는 아직 없습니다.</p>
+<p>화이트밸런스 쪽에서는 <code>SensorSetColorGain</code>(<code>0x801f6fd8</code>)이 입력 네 값을 센서용 설정에는 2비트, 통계용 설정(ID <code>0x40</code>)에는 4비트 오른쪽으로 밀어 넣는 것까지 확인했습니다. 채널 순서는 0·1·3·2입니다. 기존 <code>SetDevelopPreGain</code>에서 이 함수와 최종 gain 레지스터로 이어지는 연결은 확인하지 못했습니다. <a href="analysis/isp-routing.json">[근거: white_balance]</a></p></div>
+</div>
+</section>
+
+<section id="output">
+<h2>압축된 JPEG가 파일 쓰기 함수에 닿기까지</h2>
+<p class="takeaway">HDR 촬영의 저장 요청은 EXIF 조립, 큐 두 개, 저장 작업을 거쳐 FileX의 파일 쓰기 함수로 이어집니다. 이 경로는 소프트웨어 연결이며 저장된 파일을 확인한 것은 아닙니다.</p>
+
+<p>저장 함수를 직접 호출하는 위치를 찾은 촬영 경로는 HDR입니다. <code>StillCaptureHdrImageSave</code>·<code>StillCaptureHdrRunProcessing</code> 안에서 <code>StillCaptureSaveJpegImage</code>를 부르는 세 곳을 확인했습니다. 일반(HDR이 아닌) 촬영 전체로 넓혀 말하지 않습니다. <a href="analysis/output-routing.json">[근거: capture_entry]</a></p>
+
+<figure class="diagram">
+<figcaption>HDR 저장 요청과 EXIF 안의 압축 분기</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 236" role="img" aria-labelledby="dg-out-title dg-out-desc">
+<title id="dg-out-title">HDR 저장 요청에서 JPEG 압축 분기까지</title>
+<desc id="dg-out-desc">HDR 저장 함수가 StillCaptureSaveJpegImage를 부르고, 이 함수가 ApsExifCreateJpeg를 부릅니다. EXIF 함수는 주 이미지 설명자를 검사해 두 갈래로 나뉩니다. 새 압축이 필요하면 CodeGo가 경로를 제출하고 PathGo로 실행을 요청한 뒤 CodeWait가 PathWait 후 압축 크기를 읽습니다. 설명자가 0이면 새 압축을 건너뛰고 이미 만든 압축 결과의 크기를 씁니다. 확인한 HDR 주 이미지는 이 둘째 갈래이며, 실제 압축은 그 앞의 DirectCompress에서 이루어집니다. EXIF 함수는 압축 결과와 마커 조각을 partition 목록에 묶고, 저장 요청 함수는 pipe 0에 0x1005 메시지를 보냅니다.</desc>
+<defs><marker id="dg-out-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b static" x="8" y="20" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="46">HDR 저장 함수</text>
+<text class="s" x="20" y="67">호출 위치 3곳</text>
+<rect class="b static" x="218" y="20" width="170" height="64" rx="8"/>
+<text class="t" x="230" y="46">JPEG 저장 요청</text>
+<text class="s mono" x="230" y="67">SaveJpegImage</text>
+<rect class="b static" x="428" y="20" width="170" height="64" rx="8"/>
+<text class="t" x="440" y="46">EXIF 조립</text>
+<text class="s mono" x="440" y="67">ApsExifCreateJpeg</text>
+<rect class="b static" x="628" y="20" width="170" height="64" rx="8"/>
+<text class="t" x="640" y="46">주 이미지 검사</text>
+<text class="s" x="640" y="67">설명자 값으로 분기</text>
+<path class="e" d="M178 52H216" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M388 52H426" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M598 52H626" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M713 84V104H303V126" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M713 104V126" marker-end="url(#dg-out-ah)"/>
+<text class="n" x="320" y="98">새 압축 필요</text>
+<text class="n" x="560" y="98">설명자 = 0</text>
+<rect class="b static" x="218" y="128" width="380" height="64" rx="8"/>
+<text class="t" x="230" y="154">일반 분기: 새로 압축</text>
+<text class="s" x="230" y="175">CodeGo → PathSubmit·PathGo → CodeWait(PathWait)</text>
+<rect class="b key" x="628" y="128" width="170" height="64" rx="8"/>
+<a href="pixel-report.html#buffer"><text class="t" x="640" y="154">기존 결과 사용</text></a>
+<text class="s" x="640" y="175">HDR 주 이미지</text>
+<rect class="b static" x="8" y="128" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="154">partition 목록</text>
+<text class="s" x="20" y="175">→ pipe 0 · 0x1005</text>
+<path class="e" d="M218 160H180" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M713 192V212H93V194" marker-end="url(#dg-out-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="static"></i>코드를 읽어 확인</li><li><i class="key"></i>확인한 HDR 주 이미지의 갈래</li></ul>
+</figure>
+
+<div class="callout"><strong class="label">참고: HDR 주 이미지는 EXIF 전에 이미 압축됩니다</strong>
+<p>그림의 “새로 압축” 갈래는 EXIF 함수의 일반 분기입니다. 확인한 세 HDR 호출자는 주 이미지 설명자의 첫 워드가 0인 상태로 넘기므로 이 갈래를 건너뜁니다. 그중 두 경로에서는 그보다 앞의 <code>ApsJpegDirectCompress</code>가 실제 압축을 합니다. 자세한 버퍼 연결은 <a href="pixel-report.html#buffer">HDR 버퍼와 색 처리 패스</a>에 있습니다.</p></div>
+
+<dl class="kv">
+<dt>저장 요청</dt><dd><code>StillCaptureSaveJpegImage</code> <code>0x802d33d0</code>. <code>0x802d349c</code>에서 <code>ApsExifCreateJpeg</code>(<code>0x802c3454</code>)를 부른 뒤 <code>ApsPipePost(0, 0x1005, context, 1)</code></dd>
+<dt>압축 작업</dt><dd><code>ApsJpegCreateCodeGo</code> <code>0x802bb250</code>, <code>ApsJpegCreateCodeWait</code> <code>0x802bb1ec</code></dd>
+</dl>
+<p>새 압축 갈래에서 <code>ApsJpegCreateCodeGo</code>는 기존 경로가 있으면 입력·출력 버퍼만 갱신하고, 없으면 새 경로를 만듭니다. 두 경우 모두 제출 뒤 <code>PathGo</code>로 실행을 요청합니다. <a href="analysis/output-routing.json">[근거: jpeg_code_path]</a></p>
+<div class="table-wrap"><table>
+<caption>JPEG 경로에서 확인한 버퍼와 크기 전달</caption>
+<thead><tr><th>단계</th><th>필드·조건</th><th>확인한 의미</th></tr></thead>
+<tbody>
+<tr><th scope="row">ApsExif → CodeGo</th><td><code>*param3</code>, <code>param3[3]</code>, <code>param3[4]</code></td><td>입력 설명자, 압축 결과(code) 버퍼, 가용 크기를 작업 구조체에 설정</td></tr>
+<tr><th scope="row">PathJpegSetImageBuffer</th><td><code>path+0xb8 == 1</code>이면 <code>path+8</code>, 아니면 <code>path+0x28</code></td><td>입력 설명자 7워드 복사. 갱신 비트 1 설정</td></tr>
+<tr><th scope="row">PathJpegSetCodeBuffer</th><td><code>path+0x28 = ptr</code>, <code>path+0x3ac = capacity</code></td><td>ptr가 0이 아니면 기록하고 갱신 비트 <code>0x08000000</code> 설정</td></tr>
+<tr><th scope="row">CreateCodeWait</th><td><code>PathWait</code> 후 <code>PathGetCodeSize(path, 0)</code></td><td>압축 바이트 수 반환. 대기 결과가 0이거나 가용 크기를 넘으면 Condense 후 다시 조회</td></tr>
+<tr><th scope="row">partition 항목</th><td><code>item+8 = ptr</code>, <code>item+0xc = bytes</code></td><td>목록 <code>partition+0x28</code>에 추가. 압축 결과와 마커 조각을 묶음</td></tr>
+</tbody></table></div>
+<p>EXIF 안에는 <code>ApsJpegCreate</code>를 부르는 별도 선택 분기(<code>0x802c37d0</code>)도 있습니다. 목적지는 <code>param7 + header_offset</code>, 가용 크기는 <code>0xffec − header_offset</code>입니다. 이 버퍼를 주 이미지나 썸네일로 확정하지 않았습니다. <a href="analysis/output-routing.json">[근거: optional_auxiliary_encoding]</a></p>
+
+<h3 id="file-boundary">큐 두 개를 거쳐 파일 쓰기로</h3>
+<ol class="flow">
+<li class="static"><strong>pipe 0 · 0x1005</strong><span>SaveJpegImage → ApsPipePost</span></li>
+<li class="static"><strong>StillServer</strong><span>0x1005 수신 → StillOnFileReady</span></li>
+<li class="static"><strong>pipe 3 · 0x1002</strong><span>같은 컨텍스트와 플래그 전달</span></li>
+<li class="static"><strong>StillStoreMain</strong><span>StoreOnSave → ApsSaveFile → ApsSaveWrite</span></li>
+<li class="static"><strong>파일 쓰기</strong><span>항목마다 _fx_file_write(handle, ptr, bytes)</span></li>
+</ol>
+<p><code>StillServer</code>(<code>0x8029ab5c</code>)는 pipe 0의 <code>0x1005</code>를 받으면 <code>StillOnFileReady</code>(<code>0x802956dc</code>)를 부르고, 이 함수가 <code>ApsPipePost(3, 0x1002, context, flag)</code>를 보냅니다. 목록 콜백 <code>ApsSaveWritePartitionObjectCB</code>(<code>0x802e3e44</code>)가 FileX의 <code>_fx_file_write</code>(<code>0x80087034</code>)를 부릅니다. 쓰기 결과가 0이 아니면 오류 처리로 가고, 성공한 항목의 크기를 조건에 따라 더합니다. <a href="analysis/output-routing.json">[근거: filesystem_boundary]</a></p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 연결은 큐 전달과 자원 확보가 성공하는 소프트웨어 경로입니다. 저장 매체에 기록된 파일이나 픽셀 값을 대조하지 않았습니다. <code>StillCaptureImageTuneJpegEnc</code>는 Emulation이라는 이름의 버퍼를 쓰므로, 이 함수의 <code>ApsJpegCreate</code> 호출을 일반 촬영의 근거로 쓰지 않았습니다(<a href="deep-report.html#jpeg">압축 복원과 주요 함수 300개</a> 참고).</p></div>
+</section>
+
+<section id="validation">
+<h2>원본 명령으로 다시 실행한 결과</h2>
+<p class="takeaway">ISP 레지스터 기록 함수를 10개 조건으로 실행해 순서까지 맞춘 MMIO 쓰기 126회와 클록 대체 함수 호출 8회를 포함한 164개 검사가 모두 통과했습니다.</p>
+<p>원본 MIPS 명령을 PC에서 실행했습니다(angr/VEX). 레지스터는 일반 RAM으로, 클록 함수는 대체 함수로 처리했습니다. 카메라나 ISP를 구동한 시험이 아닙니다. 검사 항목은 실행 기록의 길이, 순서가 있는 각 이벤트, 정상 반환과 스택 복구입니다. 허용되지 않은 메모리 접근은 따로 잡아냅니다.</p>
+<div class="table-wrap"><table>
+<caption>ISP 기록 함수 재실행 10개 조건</caption>
+<thead><tr><th>대상 함수</th><th>조건</th><th class="n">MMIO 쓰기</th><th class="n">클록 대체 호출</th><th class="n">검사</th><th>결과</th></tr></thead>
+<tbody><tr><th scope="row">CM 기록 <code>0x803537a4</code></th><td>갱신 표시 0</td><td class="n">0</td><td class="n">0</td><td class="n">3</td><td>통과</td></tr><tr><th scope="row">CM 기록 <code>0x803537a4</code></th><td>갱신 표시 1</td><td class="n">16</td><td class="n">0</td><td class="n">19</td><td>통과</td></tr><tr><th scope="row">FC1 기록 <code>0x8031f750</code></th><td>갱신 표시 0</td><td class="n">0</td><td class="n">0</td><td class="n">3</td><td>통과</td></tr><tr><th scope="row">FC1 기록 <code>0x8031f750</code></th><td>갱신 표시 1</td><td class="n">12</td><td class="n">0</td><td class="n">15</td><td>통과</td></tr><tr><th scope="row">FC2 기록 <code>0x80354970</code></th><td>갱신 표시 0</td><td class="n">0</td><td class="n">0</td><td class="n">3</td><td>통과</td></tr><tr><th scope="row">FC2 기록 <code>0x80354970</code></th><td>갱신 표시 1</td><td class="n">12</td><td class="n">0</td><td class="n">15</td><td>통과</td></tr><tr><th scope="row">통계 GC 표 <code>0x801d585c</code></th><td>데이터 77개</td><td class="n">79</td><td class="n">2</td><td class="n">84</td><td>통과</td></tr><tr><th scope="row">통계 DCI 표 <code>0x801d58c4</code></th><td>데이터 0개</td><td class="n">1</td><td class="n">2</td><td class="n">6</td><td>통과</td></tr><tr><th scope="row">통계 DCI 표 <code>0x801d58c4</code></th><td>데이터 1개</td><td class="n">2</td><td class="n">2</td><td class="n">7</td><td>통과</td></tr><tr><th scope="row">통계 DCI 표 <code>0x801d58c4</code></th><td>데이터 3개</td><td class="n">4</td><td class="n">2</td><td class="n">9</td><td>통과</td></tr></tbody>
+<tfoot><tr><th scope="row" colspan="2">합계</th><td class="n">126</td><td class="n">8</td><td class="n">164</td><td></td></tr></tfoot>
+</table></div>
+<p class="small muted">갱신 표시가 0인 조건은 레지스터에 아무것도 쓰지 않아야 통과합니다. 계수 입력에는 −32768, 32767 같은 경계값을 넣었습니다. GC 77회 조건의 쓰기 79회는 초기화 1회, 데이터 77회, 마무리 1회입니다. <a href="analysis/isp-register-checks.json">[근거: cases]</a> <a href="tools/check_isp_registers.py">[재현 도구]</a></p>
+
+<h3>렌즈 분기 재실행</h3>
+<p>초기 바인딩과 모드 0·1·2·3의 분기를 실행했습니다. 큐 대기 뒤 수신 지점에서 상태를 이어 붙였고, 모드 3은 앞선 주기 통신 호출을 건너뛰고 VD 동기화 이벤트를 입력으로 넣었습니다. 실행은 <code>LensCommunication</code>에 들어가기 전에 멈춥니다. ThreadX 스케줄링, MMIO, 렌즈 동작은 실행하지 않았습니다. <a href="analysis/lens-routing.json">[근거: bounded_replay]</a> <a href="tools/check_lens_routing.py">[재현 도구]</a></p>
+
+<h3>원본 바이트 대조</h3>
+<p>근거로 인용한 명령·데이터 워드 265건(렌즈 149, ISP 58, 출력 58)을 원본 파일에서 다시 읽어 대조합니다. 함수 후보 범위(렌즈 24개, ISP 90개, 출력 17개)의 주소·해시·분기 기록도 다시 계산합니다. 범위는 다음 심볼 주소까지이며 정식 함수 크기가 아닙니다. <a href="tools/verify_routing.py">[대조 도구]</a></p>
+<p>ISP 조사에서 고른 90개 함수의 디컴파일 결과(Ghidra)도 얻었습니다. <a href="deep-report.html">주요 함수 300개</a>와 일부 겹치는 조사 집합이므로 합산하지 않습니다. 디컴파일 결과에는 다른 함수로의 꼬리 점프가 펼쳐져 보일 수 있어, 호출 관계와 쓰기 순서는 원본 명령으로 다시 확인했습니다.</p>
+<details class="evidence"><summary>ISP 조사 함수 90개</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>심볼 이름</th><th>주소</th><th class="n">추정 바이트</th></tr></thead>
+<tbody><tr><td>SensorSetEvent</td><td><code>0x80004290</code></td><td class="n">192</td></tr><tr><td>PoolAllocEx</td><td><code>0x8000bf28</code></td><td class="n">460</td></tr><tr><td>PoolFreeEx</td><td><code>0x8000c598</code></td><td class="n">448</td></tr><tr><td>CguUnitSetEnabled</td><td><code>0x8000f6a4</code></td><td class="n">732</td></tr><tr><td>TimingMarkF</td><td><code>0x8009d910</code></td><td class="n">208</td></tr><tr><td>Printf_B</td><td><code>0x800a14f8</code></td><td class="n">296</td></tr><tr><td>_tx_mutex_get</td><td><code>0x800cbee4</code></td><td class="n">868</td></tr><tr><td>OsThreadCreateEx</td><td><code>0x800cd7e0</code></td><td class="n">176</td></tr><tr><td>_tx_mutex_create</td><td><code>0x800cdb00</code></td><td class="n">440</td></tr><tr><td>_tx_thread_sleep</td><td><code>0x800d0b40</code></td><td class="n">228</td></tr><tr><td>_tx_mutex_put</td><td><code>0x800d193c</code></td><td class="n">904</td></tr><tr><td>OsSysHaltEx</td><td><code>0x800d6aa4</code></td><td class="n">812</td></tr><tr><td>_tx_thread_interrupt_control</td><td><code>0x800d9df0</code></td><td class="n">40</td></tr><tr><td>memcpy</td><td><code>0x800fb578</code></td><td class="n">360</td></tr><tr><td>CbcConfigWriteReg</td><td><code>0x80133b44</code></td><td class="n">200</td></tr><tr><td>LscGetParamSize</td><td><code>0x8015d6f0</code></td><td class="n">8</td></tr><tr><td>PathSetImageProcessing</td><td><code>0x801c21e8</code></td><td class="n">1,212</td></tr><tr><td>IpuSubmit</td><td><code>0x801d0a88</code></td><td class="n">2,156</td></tr><tr><td>IpuSetFilter</td><td><code>0x801d133c</code></td><td class="n">12</td></tr><tr><td>PathStatisticsWriteIpsGcLut</td><td><code>0x801d585c</code></td><td class="n">104</td></tr><tr><td>PathStatisticsWriteIpsDciGcLut</td><td><code>0x801d58c4</code></td><td class="n">112</td></tr><tr><td>PathStatisticIsAborted</td><td><code>0x801d5964</code></td><td class="n">12</td></tr><tr><td>StatisticsSetImageProcessing</td><td><code>0x801ef07c</code></td><td class="n">1,888</td></tr><tr><td>SensorGammaAllocate</td><td><code>0x801f6d98</code></td><td class="n">160</td></tr><tr><td>SensorGammaFree</td><td><code>0x801f6e38</code></td><td class="n">124</td></tr><tr><td>SensorGammaRunConvertTable</td><td><code>0x801f6eb4</code></td><td class="n">292</td></tr><tr><td>SensorSetColorGain</td><td><code>0x801f6fd8</code></td><td class="n">300</td></tr><tr><td>SensorUpdateIppIpsGamma</td><td><code>0x801f7244</code></td><td class="n">332</td></tr><tr><td>SensorSetGammaWithId</td><td><code>0x801f7390</code></td><td class="n">428</td></tr><tr><td>IppWriteVbMode</td><td><code>0x801ff340</code></td><td class="n">64</td></tr><tr><td>SensorGetCurrentSubModeNumber</td><td><code>0x80200b04</code></td><td class="n">32</td></tr><tr><td>SensorIppUpdateSubmit</td><td><code>0x80200f34</code></td><td class="n">60</td></tr><tr><td>SensorIppUpdateRequest</td><td><code>0x80200f70</code></td><td class="n">632</td></tr><tr><td>SensorIppUpdateInit</td><td><code>0x802014d8</code></td><td class="n">272</td></tr><tr><td>SensorSetFilter</td><td><code>0x80202fb8</code></td><td class="n">384</td></tr><tr><td>ApsPipeSend</td><td><code>0x8024cd48</code></td><td class="n">236</td></tr><tr><td>AppSetImageProcessing</td><td><code>0x802548c4</code></td><td class="n">176</td></tr><tr><td>AppImageProcessingStillModeToGammaTableIndex</td><td><code>0x80255960</code></td><td class="n">108</td></tr><tr><td>AppImageProcessingGetGammaTable</td><td><code>0x802559cc</code></td><td class="n">36</td></tr><tr><td>AppImageProcessingSetIppGammaContext</td><td><code>0x802559f0</code></td><td class="n">884</td></tr><tr><td>AppGetImageProcessingFilterType</td><td><code>0x80255d9c</code></td><td class="n">56</td></tr><tr><td>AppGetImageProcessingFilterIndex</td><td><code>0x80255dd4</code></td><td class="n">60</td></tr><tr><td>StillSetImageProcessing</td><td><code>0x80256b5c</code></td><td class="n">168</td></tr><tr><td>StillSetImageProcessingHq</td><td><code>0x80256c04</code></td><td class="n">156</td></tr><tr><td>AppConvertIppGc2IpsGc</td><td><code>0x80277f28</code></td><td class="n">520</td></tr><tr><td>I43_SetImageProcessing</td><td><code>0x8027f564</code></td><td class="n">32</td></tr><tr><td>StillIpcode2PathIpCode</td><td><code>0x802903fc</code></td><td class="n">132</td></tr><tr><td>ConvertImgProcStructToPathParamEx</td><td><code>0x80290630</code></td><td class="n">3,956</td></tr><tr><td>ConvertImgProcStructToAppParam</td><td><code>0x802915ac</code></td><td class="n">1,504</td></tr><tr><td>StillOnSetWbScalers</td><td><code>0x80295b18</code></td><td class="n">192</td></tr><tr><td>StillOnSetImageProcessingEx</td><td><code>0x80297d6c</code></td><td class="n">6,464</td></tr><tr><td>_ZN10CFc1FilterC1EP11CUidFactory</td><td><code>0x8031f56c</code></td><td class="n">108</td></tr><tr><td>_ZN10CFc1Filter14WriteRegistersEv</td><td><code>0x8031f750</code></td><td class="n">236</td></tr><tr><td>_ZN9CFcFilterC2EP11CUidFactory</td><td><code>0x80321968</code></td><td class="n">88</td></tr><tr><td>_ZN9CFcFilter15SetFilterData12EPv</td><td><code>0x80321afc</code></td><td class="n">68</td></tr><tr><td>_ZN9CFcFilter13SetFilterDataEPv</td><td><code>0x80321be8</code></td><td class="n">304</td></tr><tr><td>_ZN10CIpuConfig13GetFilterByIdE27_LL_IMAGE_PROCESSING_FILTER</td><td><code>0x80330730</code></td><td class="n">20</td></tr><tr><td>_ZN10CIpuConfig9AddFilterEP7CFilter</td><td><code>0x80330744</code></td><td class="n">80</td></tr><tr><td>_ZN10CIpuDriver7RunTaskEP8CIpuTask</td><td><code>0x80333f6c</code></td><td class="n">232</td></tr><tr><td>_ZN15CImageProcessor9SetFilterEPvm</td><td><code>0x80338108</code></td><td class="n">492</td></tr><tr><td>_ZN15CImageProcessorC1Ev</td><td><code>0x803383f8</code></td><td class="n">660</td></tr><tr><td>_ZN15CImageProcessor16TranslateFiltersEv</td><td><code>0x80339350</code></td><td class="n">688</td></tr><tr><td>_ZN15CImageProcessor6UpdateEPvmS0_</td><td><code>0x80339f20</code></td><td class="n">672</td></tr><tr><td>_ZN15CImageProcessor6CommitEv</td><td><code>0x8033a7b8</code></td><td class="n">2,800</td></tr><tr><td>_ZN18CFilterFactoryC12pC1EP11CUidFactory</td><td><code>0x803405e4</code></td><td class="n">84</td></tr><tr><td>_ZN18CFilterFactoryC12p6CreateEl</td><td><code>0x803406d4</code></td><td class="n">140</td></tr><tr><td>_ZN14CTranslatorC12C1Ev</td><td><code>0x803494b0</code></td><td class="n">52</td></tr><tr><td>_ZN14CTranslatorC1227UpdateFilterFiplibInterfaceEPP7CFilterP14CFilterFactoryP27_FIPLIB_OUTPUT_PASS_WRAPPER27_LL_IMAGE_PROCESSING_FILTERhh</td><td><code>0x80349664</code></td><td class="n">128</td></tr><tr><td>_ZN14CTranslatorC1221UpdateFilterInterfaceEPP7CFilterP14CFilterFactoryP14tagSFilterData27_LL_IMAGE_PROCESSING_FILTER29_IMAGE_PROCESSING_FILTER_ENUMh</td><td><code>0x803496e4</code></td><td class="n">304</td></tr><tr><td>_ZN14CTranslatorC1212CreateFilterEP7CFilterP14tagSFilterData27_LL_IMAGE_PROCESSING_FILTERP27_FIPLIB_OUTPUT_PASS_WRAPPERhhh</td><td><code>0x8034a604</code></td><td class="n">960</td></tr><tr><td>_ZN14CFilterFactoryC1Ev</td><td><code>0x8034aa94</code></td><td class="n">160</td></tr><tr><td>_ZN14CFilterFactory10GetFactoryEv</td><td><code>0x8034abbc</code></td><td class="n">112</td></tr><tr><td>_ZN14CFilterFactory4InitEv</td><td><code>0x8034ac34</code></td><td class="n">12</td></tr><tr><td>_ZN18CFilterFactoryC12mC1EP11CUidFactory</td><td><code>0x8034baa0</code></td><td class="n">72</td></tr><tr><td>_ZN18CFilterFactoryC12m6CreateEl</td><td><code>0x8034bb64</code></td><td class="n">1,596</td></tr><tr><td>_ZN9CCmFilterC1EP11CUidFactory</td><td><code>0x80352fcc</code></td><td class="n">140</td></tr><tr><td>_ZN9CCmFilter15SetFilterData07EPv</td><td><code>0x803530cc</code></td><td class="n">104</td></tr><tr><td>_ZN9CCmFilter15SetFilterData12EPv</td><td><code>0x80353134</code></td><td class="n">136</td></tr><tr><td>_ZN9CCmFilter13SetFilterDataEPv</td><td><code>0x803531e4</code></td><td class="n">164</td></tr><tr><td>_ZN9CCmFilter16AddToConfigChunkEP19tagCBC_CONFIG_CHUNKh</td><td><code>0x8035330c</code></td><td class="n">668</td></tr><tr><td>_ZN9CCmFilter14WriteRegistersEv</td><td><code>0x803537a4</code></td><td class="n">252</td></tr><tr><td>_ZN9CCmFilter7GetAddrEv</td><td><code>0x80353a0c</code></td><td class="n">24</td></tr><tr><td>_ZN10CFc2FilterC1EP11CUidFactory</td><td><code>0x80354588</code></td><td class="n">108</td></tr><tr><td>_ZN10CFc2Filter16AddToConfigChunkEP19tagCBC_CONFIG_CHUNKh</td><td><code>0x80354764</code></td><td class="n">524</td></tr><tr><td>_ZN10CFc2Filter14WriteRegistersEv</td><td><code>0x80354970</code></td><td class="n">236</td></tr><tr><td>_ZN11CIpuTaskC1216CollectCbcChunksEhP12tagCBC_BATCH</td><td><code>0x803561f0</code></td><td class="n">3,752</td></tr><tr><td>_ZN11CIpuTaskC128WriteAllEv</td><td><code>0x80357098</code></td><td class="n">1,920</td></tr><tr><td>ColorMatchingService_MakeColorMatrix</td><td><code>0x8041c180</code></td><td class="n">1,628</td></tr><tr><td>ImageQualityService_SetImageProcessingEnable</td><td><code>0x80427e18</code></td><td class="n">172</td></tr><tr><td>ImageQualityService_SetupColorMatrix</td><td><code>0x80428654</code></td><td class="n">392</td></tr></tbody>
+</table></div>
+</details>
+</section>
+
+<section id="comparison">
+<h2>K-3 Mark III와 비교</h2>
+<p>K-3 Mark III 연구도 설정 전달, 레지스터 쓰기, 버퍼 연결, 실제 픽셀 계산을 구분합니다. 공개 커밋 <code>1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470</code>에 고정한 K-3 자료와 같은 질문을 대조했습니다. CPU 명령, 함수 주소, 명령 ID, MMIO 주소는 Q7 원본에서 따로 확인했습니다. <a href="analysis/routing-comparison.json">[근거: 참조 파일 해시]</a></p>
+<div class="table-wrap"><table>
+<caption>같은 질문에 대한 두 기종의 근거</caption>
+<thead><tr><th>질문</th><th>K-3 Mark III</th><th>Q7</th></tr></thead>
+<tbody>
+<tr><th scope="row">간접 수신자는 누구인가</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470/analysis/dispatch-af.html">AF 컨트롤러 바인딩과 vtable 분기</a></td><td>AF 초기화의 전역 함수 포인터를 촬영 처리 서비스 수신자에 연결</td></tr>
+<tr><th scope="row">행렬은 어떤 레지스터에 닿는가</th><td><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/1d2c4fd26b9a0fd17710b7dcd8c8c25bbf8bd470/analysis/pipeline-report.html">R2y <code>0x28418000</code> / <code>0x28518000</code> / <code>0x28618000</code>, 12비트 부호 있는 값을 묶어 기록</a></td><td>CM <code>0xb6000200</code> 계열, FC1 <code>0xb60000c0</code> 계열. 16비트 부호 있는 입력을 확장해 기록</td></tr>
+<tr><th scope="row">WB가 실제 gain에 연결되는가</th><td>같은 K-3 문서의 B2r <code>+0x4c</code>/<code>+0x50</code>, 11비트 필드</td><td>센서·통계 설정의 비트 이동까지 확인. 최종 gain 레지스터 연결은 미확인</td></tr>
+<tr><th scope="row">감마·클리핑은 어디서 적용되는가</th><td>R2y 제어 필드의 생산자까지 추적. 내부 픽셀 연산 순서는 미확인</td><td>통계 GC/DCI 포트 확인. 최종 JPEG의 감마·클리핑과 같다고 보지 않음</td></tr>
+<tr><th scope="row">압축과 출력 버퍼를 연결할 수 있는가</th><td>JPEG <code>0x298c0000</code>: Y <code>+0x430</code>, CbCr <code>+0x434</code>, code <code>+0x440</code></td><td>Q7 고유의 객체 필드와 버퍼 경로. K-3 주소나 구조를 옮겨 쓰지 않음</td></tr>
+<tr><th scope="row">픽셀을 재현했는가</th><td>설정·버퍼 재실행과 실제 픽셀 출력을 구분</td><td>렌즈 분기와 ISP 기록 함수만 재실행. 센서에서 최종 픽셀까지의 대조는 하지 않음</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="limits">
+<h2>한계와 재현 방법</h2>
+<ul>
+<li>렌즈: 모터 이동량, 통신 파형, 렌즈 응답은 재지 않았습니다. 콜백 포인터가 실행 중 바뀔 가능성을 배제하지 않았습니다.</li>
+<li>색: 설정 전달 경로는 조건부입니다. 촬영마다 남는 최종 계수, FIPLIB와 CBC의 실제 선택, ISP 내부의 누산 폭·클리핑 순서·디모자이크는 확인하지 않았습니다.</li>
+<li>감마: 확인한 표는 통계 경로의 것입니다. 최종 JPEG에 쓰이는 감마는 이 문서의 범위가 아닙니다.</li>
+<li>출력: HDR 저장의 소프트웨어 경로입니다. 저장 매체에 쓰인 파일, DMA 완료, 일반 촬영 경로는 확인하지 않았습니다.</li>
+</ul>
+<p>공개 CI는 펌웨어 없이 메타데이터, 시험 기준값, HTML 재생성, 링크를 검사합니다. 원본 바이트 대조와 VEX 재실행은 원본 펌웨어가 있는 로컬에서 합니다. 원본 BIN, 복원한 전체 ELF, 디컴파일 원문은 공개 저장소에 넣지 않습니다. 분석용 ELF를 만드는 절차는 <a href="deep-report.html#reproduce">압축 복원과 주요 함수 300개</a>의 재현 절에 있습니다.</p>
 <pre><code>python -m unittest discover -s tests -v
-python tools/verify_report.py --firmware path/to/fwdc603p.bin
-# 합성 ELF를 만드는 절차는 이전 보고서의 재현 절 참조
+python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;
 python tools/check_lens_routing.py .private/analysis.elf --output .private/lens-recheck.json
 python tools/check_isp_registers.py .private/analysis.elf --output .private/isp-recheck.json</code></pre>
-<p>공개 CI는 펌웨어 없이 메타데이터·시험 기준값·HTML 재생성과 링크를 검사합니다. 원본 바이트 대조와 VEX 재실행은 로컬에서 수행했습니다. 원본 BIN, 전체 복원 ELF와 디컴파일 원문은 공개 저장소에 포함하지 않습니다.</p>
-<ul class="sources"><li><a href="analysis/lens-routing.json">R1 · 콜백 바인딩·렌즈 큐·분기·명령어 증거</a></li><li><a href="analysis/isp-routing.json">R2 · ISP 설정 경로·vtable·레지스터·90개 함수 근거</a></li><li><a href="analysis/isp-register-checks.json">R3 · ISP 기록 함수 10조건 재실행</a></li><li><a href="analysis/output-routing.json">R4 · 촬영 출력과 파일 저장 경계</a></li><li><a href="analysis/provenance.json">입력 해시와 공식 배포본 대조</a></li><li><a href="deep-report.html#reproduce">압축 복원·합성 ELF·Ghidra 재현 절차</a></li></ul></section>
-</main><footer>독립적인 정적 분석 기록 · PENTAX Q7 v1.01 · 주소와 조건을 보존하고 확인되지 않은 하드웨어 동작을 구분했습니다.</footer></body></html>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/lens-routing.json">analysis/lens-routing.json</a> — 콜백 바인딩, 렌즈 큐, 모드별 분기, 원본 명령 근거, 렌즈 재실행</li>
+<li><a href="analysis/isp-routing.json">analysis/isp-routing.json</a> — 색 행렬 전달 경로, vtable, 레지스터 목록, 감마·WB, 조사 함수 90개</li>
+<li><a href="analysis/isp-register-checks.json">analysis/isp-register-checks.json</a> — ISP 기록 함수 10개 조건 재실행 결과</li>
+<li><a href="analysis/output-routing.json">analysis/output-routing.json</a> — HDR 저장, JPEG 압축 분기, 파일 쓰기 경로</li>
+<li><a href="analysis/routing-comparison.json">analysis/routing-comparison.json</a> — K-3 Mark III 고정 커밋과 파일 해시</li>
+<li><a href="analysis/provenance.json">analysis/provenance.json</a> — 입력 펌웨어 해시와 공식 배포본 대조</li>
+<li><a href="tools/check_lens_routing.py">tools/check_lens_routing.py</a>, <a href="tools/check_isp_registers.py">tools/check_isp_registers.py</a>, <a href="tools/verify_routing.py">tools/verify_routing.py</a> — 재실행과 원본 대조 도구</li>
+<li><a href="https://ftp.riken.jp/NetBSD/NetBSD-current/src/sys/arch/mips/include/cpuregs.h">NetBSD <code>mips/include/cpuregs.h</code></a> — MIPS kseg0(캐시 사용)·kseg1(캐시 미사용) 주소 구간 정의</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html" aria-current="page">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="guide-color.html"><small>← 이전</small>색 처리·HDR 안내</a><a class="next" href="pixel-report.html"><small>다음 →</small>HDR 버퍼의 JPEG 경로와 색 필터</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
