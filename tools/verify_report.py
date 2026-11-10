@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.parse import urlparse, unquote
 
 from inspect_q7 import inspect
-from build_report import main as build
+from build_report import main as build, build_structure
 from build_deep_report import main as build_deep
 from check_color_math import reference
 from build_routing_report import main as build_routing
@@ -29,10 +29,12 @@ from build_numeric_report import main as build_numeric
 from build_lifecycle_report import main as build_lifecycle
 from verify_lifecycle import verify as verify_lifecycle
 from verify_recompiled_followup import verify as verify_numeric
-from build_io_followup import build_loader as build_hash, build_render
+from build_io_followup import build_loader as build_hash
+from build_render_report import main as build_render
 from verify_io_followup import verify as verify_io
 from build_af_report import main as build_af
-from build_continuation_report import build_burn, build_raster
+from build_continuation_report import build_burn
+from build_raster_report import main as build_raster
 from verify_continuation import verify as verify_continuation
 from build_glyph_report import main as build_glyph
 from verify_glyph import verify as verify_glyph, verify_attributes
@@ -65,10 +67,16 @@ class Links(HTMLParser):
 
 
 def verify_html(page, builder):
+    """A generated report must equal what its builder writes, and its links must resolve."""
     before = page.read_bytes()
     builder()
     assert page.read_bytes() == before, f"committed {page.name} differs from generated report"
-    html = before.decode("utf-8")
+    check_page(page)
+
+
+def check_page(page):
+    """Unique ids, https-only external links, working local links and fragment anchors."""
+    html = page.read_text(encoding="utf-8")
     links = Links()
     links.feed(html)
     assert len(links.ids) == len(set(links.ids)), "duplicate HTML ID"
@@ -89,6 +97,21 @@ def verify_html(page, builder):
         elif url.fragment:
             assert url.fragment in links.ids, f"broken anchor: {link}"
     assert "{{" not in html and "C:\\Users" not in html
+    assert "STUB-PLACEHOLDER" not in html, f"{page.name} is still a placeholder"
+
+
+def verify_static_pages():
+    """Hand-written pages (topic guides, glossary) and the shared navigation of every page."""
+    from site_chrome import Site
+    site = Site()
+    for page in site.index:
+        if page not in site.sources:
+            check_page(ROOT / page)
+    for page in site.index:
+        source = site.source_path(page)
+        text = source.read_text(encoding="utf-8")
+        assert site.render(page, text) == text, f"{source.name}: navigation is stale; run python tools/build_all.py"
+        assert 'href="assets/site.css"' in text, f"{source.name}: must use the shared stylesheet"
 
 
 def read(name):
@@ -220,6 +243,8 @@ def main():
     assert sum(w["size"] for w in evidence["entropy_windows"]) == evidence["input_size"]
     assert all(0 <= w["entropy"] <= 8 for w in evidence["entropy_windows"])
     verify_html(ROOT / "index.html", build)
+    verify_html(ROOT / "structure-report.html", build_structure)
+    verify_static_pages()
     firmware = args.firmware.read_bytes() if args.firmware else None
     verify_deep(firmware)
     if args.firmware:

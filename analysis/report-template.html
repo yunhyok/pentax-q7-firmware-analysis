@@ -1,81 +1,228 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="PENTAX Q7 v1.01 펌웨어의 파일 식별, MIPS ELF 구조, ThreadX·FileX 근거와 재현 도구">
-<title>PENTAX Q7 — 펌웨어 분석 노트</title>
-<link rel="stylesheet" href="assets/report.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PENTAX Q7 펌웨어 연구 — 개요</title>
+<meta name="description" content="PENTAX Q7 펌웨어 1.01을 분석한 연구 기록의 입구입니다. 펌웨어 파일의 구조, 네 가지 연구 목표가 어디까지 왔는지, 각 결과를 얼마나 믿을 수 있는지 안내합니다.">
+<link rel="stylesheet" href="assets/site.css">
 </head>
-<body>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html" aria-current="true">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li></ol></nav>
+<!-- /chrome:top -->
 <header class="hero">
-<div><p class="eyebrow">FIRMWARE RESEARCH · 2026.11.07 · INITIAL PASS</p>
-<h1>PENTAX Q7<br><span>펌웨어 분석 노트</span></h1>
-<p class="lead">{{copy_lead}}</p>
-<p class="links"><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소 ↗</a> <a href="#evidence">측정 근거 보기 ↓</a></p></div>
-<figure class="camera"><img src="https://www.ricoh-imaging.co.jp/english/products/q7/top/img/bod_line_01.jpg" alt="리코 공식 PENTAX Q7 제품 사진" width="312" height="236" referrerpolicy="no-referrer"><figcaption><a href="https://www.ricoh-imaging.co.jp/english/products/q7/">제품 사진: RICOH IMAGING</a> · 외부 이미지</figcaption></figure>
+<div>
+<p class="eyebrow">PENTAX Q7 · 펌웨어 1.01</p>
+<h1>Q7 펌웨어를 풀어 본 기록</h1>
+<p class="lead">리코가 배포한 펌웨어 파일에서 프로그램을 꺼내 압축을 풀고, 카메라가 업데이트를 설치하고 색을 처리하고 초점을 맞추고 메뉴 글자를 그리는 코드를 추적했습니다. 무엇을 알아냈고 무엇은 아직 모르는지 근거와 함께 적었습니다.</p>
+<div class="notice">
+<p><strong>먼저 알아 둘 점</strong></p>
+<p>모든 분석은 PC에서 했습니다. 수정한 펌웨어를 카메라에 설치하거나 실행한 적이 없습니다. 이 저장소에는 카메라에 넣을 수 있는 펌웨어가 없으며, 원본 펌웨어와 거기서 꺼낸 프로그램·심볼 목록·디컴파일 원문도 들어 있지 않습니다.</p>
+</div>
+</div>
+<figure class="photo">
+<img src="assets/photos/pentax-q7.jpg" alt="렌즈를 장착한 검은색 PENTAX Q7을 위쪽에서 비스듬히 본 모습" width="500" height="403">
+<figcaption><span class="credit">사진: Tomidaooooooo, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Pentax_Q7_jp475.png">Wikimedia Commons</a> (형식 변환·크기 축소)</span></figcaption>
+</figure>
 </header>
-<nav aria-label="문서 목차"><a href="#identity">파일 식별</a><a href="#method">분석 방법</a><a href="#layout">ELF 지도</a><a href="#rtos">RTOS·심볼</a><a href="#entropy">엔트로피</a><a href="#reproduce">재현</a><a href="#next">다음 단계</a></nav>
-<main>
-<p class="update-banner"><strong>최신 연구:</strong> <a href="colorspace-attributes-report.html#binding">조건부 컨텍스트 선택</a>에서 합성 등록의 원본 교체·조회 3조건과 누락 슬롯의 대체를 확인했습니다. <a href="main-burn-prefix-report.html">메인 Burn 초기 경로</a>에서 별도 두 상태의 NAND 요청과 첫 카드 읽기 진입을 확인했습니다. <a href="colorspace-attributes-report.html">48×48 요청·별도 축소 실행</a>에서 캡처한 속성과 합성 ID 연결 조건의 전체 프레임을 대조했습니다. <a href="update-service-report.html">메인 업데이트 진입·반환</a> 23사례에서 E01과 다른 콜백 구조와 상위 상태 변환을 확인했습니다. <a href="colorspace-glyph-report.html">기본 배율 글리프 시험</a> 2사례에서 동일 텍스트를 새 컨텍스트에 별도로 입력했습니다. 실제 UI 배율과의 연속 실행은 아닙니다. <a href="burn-continuation-report.html">NAND 후속 기록·최종 반환</a> 7+4사례와 <a href="colorspace-raster-report.html">선택 강조 픽셀</a> 7사례를 추가했습니다. <a href="af-completion-report.html">AF 요청·작업자·완료 판정</a> 20사례를 재현했습니다. <a href="loader-hash-report.html">기록 헤더·MD5</a>, <a href="colorspace-render-report.html">Color Space 그리기</a>, <a href="hdr-task-report.html">FC1·HDR task</a>도 참조하십시오. 실제 렌즈 동작·기록·부팅·LCD 출력은 미검증입니다.</p>
-<aside class="hash"><strong>2026-11-08 후속 분석</strong><a href="deep-report.html">압축 448블록 복원 · ThreadX · AF·셔터·JPEG·색 처리 · 300개 함수와 K-3 대조 →</a></aside>
-<p class="note">이 페이지는 초기 구조 조사 기록입니다. 호출 관계와 압축 복원의 최신 결과는 후속 분석을 참조하십시오.</p>
-<section id="identity"><p class="eyebrow">01 / IDENTITY</p><h2>공식 v1.01 파일과 바이트 단위 일치</h2>
-<p>{{copy_identity}} <a href="analysis/provenance.json">[P1]</a> <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[S1]</a></p>
-<dl class="metrics"><div><dt>원본 크기</dt><dd>18,743,520 <small>bytes</small></dd></div><div><dt>검사 통과 ELF</dt><dd>12 <small>/ 서명 13곳</small></dd></div><div><dt>공식 배포</dt><dd>1.01 <small>2013-12-05</small></dd></div></dl>
-<div class="hash"><span>SHA-256</span><code>{{sha256}}</code></div>
-<p class="note">v1.01의 공식 변경 사항: PENTAX-08 WIDE ZOOM 지원, 렌즈 펌웨어 버전 표시, M 모드 그린 버튼 동작과 전반적인 안정성 개선. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[S1]</a></p></section>
 
-<section id="method"><p class="eyebrow">02 / METHOD</p><h2>검증 순서는 이어가고, 형식은 다시 확인</h2>
-<p>{{copy_method}} <a href="analysis/evidence.json">[E1: k3_lz_probe]</a> <a href="analysis/baseline.json">[B1]</a></p>
-<figure><ol class="flow"><li><strong>01 · 원본 식별</strong><span>SHA-256<br>공식 ZIP 대조</span></li><li><strong>02 · 파일 구조</strong><span>ELF 헤더<br>구간·경계 검사</span></li><li><strong>03 · 분석 지점</strong><span>진입점·심볼<br>문자열 오프셋</span></li><li class="pending"><strong>04 · 다음 분석</strong><span>호출 관계<br>함수 동작 검증</span></li></ol><figcaption>실선 단계는 이번에 수행했습니다. 마지막 단계는 후속 작업입니다.</figcaption></figure>
-<div class="table-wrap"><table><caption>기존 K-3 Mark III와 이번 Q7의 분석 시작점</caption><thead><tr><th>항목</th><th>K-3 Mark III v2.20</th><th>Q7 v1.01</th></tr></thead><tbody>
-<tr><th scope="row">원본 크기</th><td>35,106,716 bytes</td><td>18,743,520 bytes</td></tr>
-<tr><th scope="row">첫 구조</th><td>0x80에서 LZ 스트림 해제</td><td>0x200에서 첫 MIPS ELF 확인</td></tr>
-<tr><th scope="row">주소 기준</th><td>압축 해제 결과·RTOS 적재 주소</td><td>원본 파일 오프셋·ELF별 가상주소</td></tr>
-<tr><th scope="row">공통 절차</th><td colspan="2">해시 고정 → 구조·경계 확인 → 함수 분석 → 근거와 재현 검사</td></tr>
-</tbody></table></div><p class="note">K-3 기준은 기존 저장소의 고정 커밋을 참조합니다. <a href="analysis/baseline.json">[B1]</a></p></section>
+<main class="home" id="main">
 
-<section id="layout"><p class="eyebrow">03 / FILE LAYOUT</p><h2>12개 ELF가 가리키는 파일 구간</h2>
-<p>{{copy_map}} <a href="analysis/evidence.json">[E1: elfs, rejected_candidates]</a></p>
-<figure class="file-map"><div class="map-axis"><span>0 bytes</span><span>18,743,520 bytes</span></div>{{elf_map}}<figcaption>가로 위치와 길이는 원본 파일에 비례합니다. 작은 ELF도 최소 너비를 부풀리지 않았습니다. EXEC = 실행 파일, REL = 재배치 가능 파일. 빈 구간은 미분류 상태입니다.</figcaption></figure>
-<p>{{copy_architecture}} <a href="analysis/evidence.json">[E1: warnings]</a> <a href="https://gabi.xinuos.com/elf/02-eheader.html">[S2]</a></p>
-<div class="table-wrap"><table><caption>ELF 헤더·참조 범위·심볼 집계 — 종료 오프셋 제외</caption><thead><tr><th>ID</th><th>원본 시작</th><th>최대 참조 끝</th><th>타입</th><th>e_entry</th><th>심볼</th><th>정의 FUNC</th></tr></thead><tbody>{{elf_rows}}</tbody></table></div>
-<p class="note">e_entry는 ELF가 기록한 값 그대로입니다. 파일 오프셋이나 실제 부팅 순서가 아닙니다. E02의 홀수 값도 임의로 보정하지 않았습니다.</p></section>
+<section class="band wrap" id="goals">
+<h2>이 연구가 답하려는 네 가지 질문</h2>
+<p class="sub">세 기종(K-3 Mark III, K-3 II, Q7)을 같은 질문으로 조사하고 있습니다. 아래는 Q7에서 지금까지 온 지점입니다. 세 기종을 나란히 비교한 표는 <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a>에 있습니다.</p>
+<ul class="cards wide">
+<li class="card goal">
+<span class="tag">목표 1</span>
+<h3><a href="guide-update.html">펌웨어를 고쳐서 다시 만들 수 있는가</a></h3>
+<p class="state">파일을 다시 만드는 단계까지 확인</p>
+<dl>
+<dt>알아낸 것</dt><dd>압축 블록 {{block_total}}개를 풀었다가 다시 압축하면 배포본과 바이트까지 같습니다. 색 행렬 함수 하나를 C로 다시 짜서 원래 자리에 넣은 파일도 만들었습니다. 업데이트를 설치하는 코드의 앞부분을 따라갔습니다.</dd>
+<dt>아직 모르는 것</dt><dd>카메라가 수정한 파일을 받아들이는지, 부팅하는지. 내부 저장장치(NAND)에 실제로 기록되는 과정.</dd>
+</dl>
+</li>
+<li class="card goal">
+<span class="tag">목표 2</span>
+<h3><a href="guide-color.html">카메라의 색은 어떻게 만들어지는가</a></h3>
+<p class="state">색 설정이 하드웨어로 가는 경로를 추적</p>
+<dl>
+<dt>알아낸 것</dt><dd>색 행렬이 영상 처리 회로의 레지스터로 전달되는 조건과, HDR 촬영에서 마지막 처리 단계가 정해지는 과정을 추적했습니다.</dd>
+<dt>아직 모르는 것</dt><dd>실제 픽셀이 처리된 결과. 일반 촬영과 HDR의 색 처리 차이. Lightroom 프로파일이 카메라 색에 얼마나 가까운지.</dd>
+</dl>
+</li>
+<li class="card goal">
+<span class="tag">목표 3</span>
+<h3><a href="guide-af.html">AF 동작을 바꿀 수 있는가</a></h3>
+<p class="state">제어 코드를 읽는 기초 단계</p>
+<dl>
+<dt>알아낸 것</dt><dd>렌즈에 명령을 보내고 응답을 받는 흐름을 확인했습니다. “명령이 성공했다”와 “렌즈가 움직임을 마쳤다”를 펌웨어가 따로 판정한다는 점을 구분했습니다.</dd>
+<dt>아직 모르는 것</dt><dd>실제 렌즈와의 통신, 모터 이동, 초점 정확도. 코드를 바꿔 본 적은 없습니다.</dd>
+</dl>
+</li>
+<li class="card goal">
+<span class="tag">목표 4</span>
+<h3><a href="guide-ui.html">K-3 Mark III의 화면을 이 기종에 옮길 수 있는가</a></h3>
+<p class="state">이 기종이 화면을 그리는 방식을 분석한 단계</p>
+<dl>
+<dt>알아낸 것</dt><dd>색공간 메뉴 화면 하나를 골라 선택·확정·취소부터 글꼴 파일을 읽어 글자 픽셀을 찍는 단계까지 따라갔습니다.</dd>
+<dt>아직 모르는 것</dt><dd>실제 버튼 입력에서 LCD 출력까지의 연결과 실제 색. 화면을 옮기는 작업은 시작하지 않았습니다.</dd>
+</dl>
+</li>
+</ul>
+</section>
 
-<section id="rtos"><p class="eyebrow">04 / RTOS & SYMBOLS</p><h2>ThreadX·FileX를 조사할 지점 확보</h2>
-<p>{{copy_rtos}} <a href="analysis/evidence.json">[E1: markers, selected_symbols]</a></p>
-<div class="table-wrap"><table><caption>원본 파일에서 직접 확인한 식별 문자열</caption><thead><tr><th>문자열</th><th>원본 오프셋</th><th>해석 범위</th></tr></thead><tbody>
-<tr><th scope="row">ThreadX LX4180/Green Hills</th><td><code>0x0009843D</code></td><td>RTOS 식별 문자열</td></tr><tr><th scope="row">FileX LX4180/Green Hills</th><td><code>0x000A7031</code></td><td>파일시스템 라이브러리 식별 문자열</td></tr><tr><th scope="row">PENTAX Q7</th><td><code>0x01196AC7</code></td><td>제품명 문자열</td></tr><tr><th scope="row">ORION / KB538 / 77690</th><td><code>0x011E00C0 / C8 / D0</code></td><td>말미 식별자. 필드 의미 미확정</td></tr></tbody></table></div>
-<p>{{copy_symbols}} <a href="analysis/evidence.json">[E1: symbol_count]</a> <a href="https://gabi.xinuos.com/elf/05-symtab.html">[S3]</a></p>
-<div class="table-wrap"><table><caption>E01의 선택 심볼 — 주소는 이 ELF의 st_value</caption><thead><tr><th>심볼</th><th>값</th><th>st_size (bytes)</th></tr></thead><tbody>{{symbols}}</tbody></table></div>
-<p class="note">st_size가 0인 심볼은 길이가 알려지지 않았을 수 있습니다. 전체 심볼과 추출 ELF는 로컬 분석용으로만 보관했습니다.</p></section>
+<section class="band wrap" id="inside">
+<h2>펌웨어 파일 안에 든 것</h2>
+<p class="sub">배포 파일 <code>fwdc603p.bin</code>에는 실행 파일 형식(<dfn title="Executable and Linkable Format. 유닉스 계열에서 쓰는 실행 파일 형식">ELF</dfn>)으로 된 프로그램 {{elf_count}}개가 들어 있습니다. 모두 32비트 MIPS용입니다. 아래 막대는 파일 안에서 각 프로그램이 차지하는 위치입니다.</p>
+<ul class="facts">
+<li><b>{{input_size}}바이트</b><span>배포 파일 크기</span></li>
+<li><b>{{elf_count}}개</b><span>내장 ELF (32비트 MIPS)</span></li>
+<li><b>{{block_total}}블록</b><span>본 프로그램의 압축 블록</span></li>
+<li><b>ThreadX · FileX</b><span>식별 문자열로 남은 RTOS와 파일시스템</span></li>
+<li><b>{{release_date}}</b><span>펌웨어 1.01 공식 배포일</span></li>
+</ul>
 
-<section id="entropy"><p class="eyebrow">05 / BYTE DISTRIBUTION</p><h2>파일 전체의 엔트로피 분포</h2><p>{{copy_entropy}} <a href="analysis/evidence.json">[E1: entropy_windows]</a></p>
-<figure><div class="chart-heading"><span>Shannon entropy · bits/byte</span><span>세로 범위 0–8</span></div>{{entropy}}<div class="chart-axis"><span>0 MiB</span><span>8.94 MiB</span><span>17.88 MiB</span></div><figcaption>원본 파일 오프셋에 따른 분포. 64 KiB 창, 마지막 창 {{last_window_size}} bytes. 가운데 수평선은 4 bits/byte입니다.</figcaption></figure></section>
+<figure class="diagram">
+<figcaption>파일 안의 프로그램 배치 (크기 비례)</figcaption>
+<div class="dg-scroll">
+{{file_bar}}
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이 연구가 가장 많이 다룬 부분</li><li><i></i>그 밖의 ELF</li></ul>
+<p>막대는 각 ELF가 가리키는 파일 구간입니다. ELF 밖 영역에서는 글꼴 분석 때 FAT16 디렉터리와 글꼴 파일을 확인했습니다. 그 영역 전체의 구성과 업데이트 파일의 실제 구획 경계는 확정하지 않았습니다.</p>
+</figure>
 
-<section id="reproduce"><p class="eyebrow">06 / REPRODUCIBILITY</p><h2>같은 파일로 다시 검사하기</h2>
-<p>Python 3.10 이상에서 표준 라이브러리만 사용합니다. 원본 파일은 읽기 전용으로 다루며 결과는 새 경로에 씁니다.</p>
+<div class="two">
+<div class="panel">
+<h3>어떤 프로그램들인가</h3>
+<ul>
+<li><strong>카메라 본 프로그램 (E03–E06)</strong> — 촬영, AF, 영상 처리, 메뉴. E04–E06은 압축되어 있어 {{block_total}}블록을 풀어 {{decoded_total}}바이트를 복원한 뒤 분석했습니다.</li>
+<li><strong>업데이트 로더 (E01)</strong> — 펌웨어 업데이트를 맡는 별도 프로그램. <dfn title="정해진 시간 안에 반응해야 하는 기기를 위한 작은 운영체제">RTOS</dfn>인 ThreadX와 파일시스템 FileX의 심볼 이름이 남아 있습니다.</li>
+<li><strong>그 밖의 작은 ELF</strong> — 용도를 따로 조사하지 않았습니다.</li>
+</ul>
+</div>
+<div class="panel">
+<h3>다른 두 기종과 무엇이 다른가</h3>
+<p>K-3 계열은 ARM 프로세서를 쓰지만 Q7의 프로그램은 MIPS용입니다. 파일 형식도 달라서 K-3 Mark III의 압축 해제 도구는 Q7에 그대로 통하지 않습니다. 그래서 주소와 함수의 의미를 다른 기종에서 가져오지 않고 이 파일에서 따로 확인했습니다.</p>
+<p class="small muted">식별 문자열과 심볼만으로 실제 칩의 모델을 확정할 수는 없습니다. 칩 모델은 확인하지 못했습니다.</p>
+<p><a href="structure-report.html">펌웨어 파일 구조 자세히 보기 →</a></p>
+</div>
+</div>
+</section>
+
+<section class="band wrap" id="levels">
+<h2>검증 수준 읽는 법</h2>
+<p class="sub">모든 문서는 결과마다 “얼마나 확실한가”를 같은 네 가지 표시로 구분합니다. 표시가 다르면 믿을 수 있는 정도가 다릅니다.</p>
+<ul class="legend">
+<li><span class="badge ok">확인</span>
+<p>원본 펌웨어의 기계어를 PC의 CPU 에뮬레이터에서 실제로 실행해 관측했거나, 파일의 바이트를 직접 읽어 구조와 해시를 대조한 결과입니다.</p></li>
+<li><span class="badge static">정적 분석</span>
+<p>코드를 실행하지 않고, 기계어를 사람이 읽을 수 있게 바꾼 결과를 읽어서 판단한 내용입니다.</p></li>
+<li><span class="badge model">모델</span>
+<p>하드웨어의 응답이나 입력 데이터처럼, 실물 대신 연구자가 정해서 넣은 값입니다. 그 조건에서만 성립합니다.</p></li>
+<li><span class="badge open">미확인</span>
+<p>아직 확인하지 못했거나, 실물 카메라가 있어야 확인할 수 있는 내용입니다.</p></li>
+</ul>
+
+<figure class="diagram">
+<figcaption>이 연구에서 “확인했다”는 말의 뜻</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 188" role="img" aria-labelledby="dg-levels-title dg-levels-desc">
+<title id="dg-levels-title">원본 코드를 에뮬레이터에서 실행해 확인하는 절차</title>
+<desc id="dg-levels-desc">펌웨어에서 꺼낸 원본 기계어를 PC의 CPU 에뮬레이터에 올리고, 카메라의 하드웨어 대신 연구자가 만든 입력과 응답을 넣어 실행합니다. 그 결과로 메모리와 레지스터에 쓰인 값을 관측해 기록합니다. 실물 카메라에서의 동작은 이 절차 밖에 있어 확인되지 않은 채로 남습니다.</desc>
+<defs>
+<marker id="dg-levels-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-levels-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b" x="8" y="20" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="46">원본 기계어</text>
+<text class="s" x="20" y="67">펌웨어에서 꺼낸 그대로</text>
+<rect class="b model" x="8" y="112" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="138">만든 입력과 응답</text>
+<text class="s" x="20" y="159">센서·저장장치를 대신함</text>
+<rect class="b key" x="232" y="56" width="176" height="84" rx="8"/>
+<text class="t" x="244" y="86">PC의 CPU 에뮬레이터</text>
+<text class="s" x="244" y="107">원본 명령을 한 줄씩 실행</text>
+<text class="s" x="244" y="125">(angr)</text>
+<rect class="b ok" x="462" y="56" width="150" height="84" rx="8"/>
+<text class="t" x="474" y="86">관측한 결과</text>
+<text class="s" x="474" y="107">메모리·레지스터에</text>
+<text class="s" x="474" y="125">쓰인 값</text>
+<rect class="b open" x="666" y="56" width="126" height="84" rx="8"/>
+<text class="t" x="678" y="86">실물 카메라</text>
+<text class="s" x="678" y="107">여기서는</text>
+<text class="s" x="678" y="125">실행하지 않음</text>
+<path class="e" d="M178 52H204V84H230" marker-end="url(#dg-levels-ah)"/>
+<path class="e model" d="M178 144H204V112H230" marker-end="url(#dg-levels-am)"/>
+<path class="e" d="M408 98H460" marker-end="url(#dg-levels-ah)"/>
+<path class="e open" d="M612 98H664"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>확인</li><li><i class="model"></i>모델</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+<p class="wrap-note small muted">이 기종의 RAW로 한 Lightroom 색 프로파일 실험은 성격이 다릅니다. 실제 RAW 파일을 실제 Adobe Lightroom Classic에 넣어 얻은 측정값이며, <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/lightroom-bridge.html">K-3 Mark III 저장소의 Lightroom 색 프로파일 문서</a>에 세 기종을 함께 정리했습니다.</p>
+</section>
+
+<section class="band wrap" id="map">
+<h2>문서 지도</h2>
+<p class="sub">주제마다 “안내” 문서가 먼저 있습니다. 안내 문서에서 전체 그림을 본 뒤 세부 문서로 들어가면 읽기 쉽습니다. 낯선 용어는 <a href="glossary.html">용어집</a>에서 찾을 수 있습니다.</p>
+<!-- chrome:map -->
+<div class="sitemap"><section><h3 id="map-start">시작하기</h3><ol><li><a href="structure-report.html">펌웨어 파일 구조</a><span>ELF 12개, 심볼, 엔트로피, 재현 절차</span></li><li><a href="deep-report.html">압축 복원과 주요 함수 300개</a><span>ThreadX, AF·셔터·JPEG·색 처리 개관</span></li><li><a href="glossary.html">용어집</a></li></ol></section><section><h3 id="map-update">업데이트와 재패킹</h3><ol><li><a href="guide-update.html">업데이트·재패킹 안내</a></li><li><a href="implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="update-service-report.html">메인 업데이트 진입과 반환값</a></li><li><a href="loader-lens-report.html">Loader 입력 검증과 렌즈 정책</a></li><li><a href="main-burn-prefix-report.html">메인 Burn의 매체 열기</a></li><li><a href="loader-hash-report.html">기록 헤더와 MD5 경로</a></li><li><a href="burn-continuation-report.html">NAND 재시도와 최종 반환</a></li><li><a href="storage-readiness-report.html">저장 경계와 렌즈 준비 상태</a></li><li><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></section><section><h3 id="map-color">색 처리와 HDR</h3><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">렌즈 명령·ISP 레지스터·출력 경계</a></li><li><a href="pixel-report.html">HDR 버퍼와 색 처리 패스</a></li><li><a href="final-color-report.html">HDR 제출 분기와 FC 계수</a></li><li><a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a></li><li><a href="hdr-task-report.html">FC1 비트와 HDR task 완료</a></li></ol></section><section><h3 id="map-af">AF와 렌즈 제어</h3><ol><li><a href="guide-af.html">AF·렌즈 안내</a></li><li><a href="af-completion-report.html">AF 명령과 완료 판정</a></li></ol></section><section><h3 id="map-ui">화면과 글꼴</h3><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li></ol></section></div>
+<!-- /chrome:map -->
+</section>
+
+<section class="band wrap" id="reproduce">
+<h2>직접 확인해 보려면</h2>
+<div class="two">
+<div class="panel">
+<h3>펌웨어 없이</h3>
+<p>공개된 문서·근거 파일·도구가 서로 맞는지 검사합니다. Python 3.10 이상과 표준 라이브러리만 있으면 됩니다.</p>
 <pre><code>python -m unittest discover -s tests -v
 python tools/pentax_lz.py --self-test
-python tools/inspect_q7.py "path/to/fwdc603p.bin" --output .private/recheck.json --private-dir .private/recheck-elf
-python tools/verify_report.py --firmware "path/to/fwdc603p.bin"
-python tools/build_report.py</code></pre>
-<p>검증 도구는 파서의 합성 입력 테스트, 공개 근거의 일관성, 보고서 생성 결과와 로컬 링크를 확인합니다. 원본을 지정하면 공개 측정값 전체를 다시 계산해 비교합니다. <a href="tools/inspect_q7.py">분석기</a> · <a href="tests/test_inspect_q7.py">테스트</a> · <a href="tools/verify_report.py">보고서 검사</a></p>
-<p>{{copy_limits}} <a href="analysis/tool-status.json">[T1]</a></p></section>
+python tools/verify_report.py</code></pre>
+</div>
+<div class="panel">
+<h3>펌웨어 파일을 가지고</h3>
+<p>리코 공식 사이트에서 받은 <code>fwdc603p.bin</code>(SHA-256이 아래와 같은 파일)이 있으면 공개한 측정값 전체를 다시 계산해 비교할 수 있습니다.</p>
+<pre><code>python tools/inspect_q7.py fwdc603p.bin --output .private/recheck.json --private-dir .private/recheck-elf
+python tools/verify_report.py --firmware fwdc603p.bin</code></pre>
+<p class="small"><code class="wrap">{{sha256}}</code></p>
+<p class="small muted">문서마다 “재현 방법” 절에 그 문서의 검증 명령이 있습니다. 디컴파일까지 다시 하려면 Ghidra와 JDK가, 원본 명령 재실행에는 angr가 필요합니다.</p>
+</div>
+</div>
+</section>
 
-<section id="next"><p class="eyebrow">07 / NEXT QUESTIONS</p><h2>다음은 코드 참조와 로더 구조</h2><p>{{copy_next}}</p>
-<ol class="next-list"><li>ThreadX 초기화의 직접 호출과 간접 호출 구분</li><li>ELF 밖 데이터의 컨테이너 레코드·자원 경계 확인</li><li>ET_REL 재배치·심볼 해석 및 런타임 적재 주소 확인</li><li>AF·셔터·JPEG·색 처리 후보를 함수 호출과 연결</li></ol>
-<p>{{copy_publication}}</p></section>
+<section class="band wrap" id="scope">
+<h2>공개 범위</h2>
+<div class="two">
+<div class="panel">
+<h3>이 저장소에 있는 것</h3>
+<ul>
+<li>분석 문서(HTML)와 측정 결과(JSON)</li>
+<li>직접 작성한 분석·검증 도구(Python)와 테스트</li>
+<li>직접 작성한 재구성 C 코드 (<code>source/reconstructed/</code>)</li>
+<li>사진 한 장 (<a href="assets/photos/CREDITS.md">출처와 라이선스</a>)</li>
+</ul>
+</div>
+<div class="panel">
+<h3>이 저장소에 없는 것</h3>
+<ul>
+<li>원본 펌웨어 파일, 꺼낸 ELF, 압축을 푼 바이너리</li>
+<li>전체 심볼 목록과 디컴파일 원문, 글꼴 파일과 생성한 픽셀</li>
+<li>카메라에 설치할 수 있는 수정 펌웨어</li>
+</ul>
+<p class="small muted">리코의 공식 프로젝트가 아닌 독립 분석 기록입니다.</p>
+</div>
+</div>
+</section>
 
-<section id="evidence"><p class="eyebrow">08 / SOURCES</p><h2>근거와 출처</h2><ul class="sources">
-<li><a href="analysis/evidence.json">E1 · 원본에서 계산한 ELF·심볼·문자열·엔트로피</a></li>
-<li><a href="analysis/provenance.json">P1 · 공식 ZIP과 제공 파일의 동일성 기록</a></li>
-<li><a href="analysis/baseline.json">B1 · K-3 분석 기준과 재사용 도구의 고정 커밋</a></li>
-<li><a href="analysis/tool-status.json">T1 · REA 공급자 가용성 및 실제 사용 도구</a></li>
-<li><a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">S1 · Ricoh Q7 v1.01 배포 페이지·변경 사항</a></li>
-<li><a href="https://gabi.xinuos.com/elf/02-eheader.html">S2 · System V ABI: ELF 헤더</a> · <a href="https://gabi.xinuos.com/elf/a-emachine.html">e_machine 값</a></li>
-<li><a href="https://gabi.xinuos.com/elf/05-symtab.html">S3 · System V ABI: 심볼 테이블</a></li>
-<li><a href="https://www.ricoh-imaging.co.jp/english/products/q7/">S4 · Ricoh Q7 제품 소개·사진</a></li>
-</ul></section>
-</main><footer>2026-11-07 · PENTAX Q7 firmware analysis · 독립 분석 기록 · Ricoh 공식 프로젝트가 아닙니다.</footer>
-</body></html>
+</main>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">시작하기 — 이 주제의 문서</h2><ol><li><a href="index.html" aria-current="page">개요</a></li><li><a href="structure-report.html">펌웨어 파일 구조<span>ELF 12개, 심볼, 엔트로피, 재현 절차</span></a></li><li><a href="deep-report.html">압축 복원과 주요 함수 300개<span>ThreadX, AF·셔터·JPEG·색 처리 개관</span></a></li><li><a href="glossary.html">용어집</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="next" href="structure-report.html"><small>다음 →</small>펌웨어 파일 구조</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

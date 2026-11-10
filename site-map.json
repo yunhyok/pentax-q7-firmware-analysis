@@ -1,0 +1,71 @@
+{
+  "camera": "q7",
+  "name": "PENTAX Q7",
+  "firmware": "펌웨어 1.01",
+  "home": "index.html",
+  "glossary": "glossary.html",
+  "footer": "PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.",
+  "sources": {
+    "index.html": "analysis/report-template.html",
+    "structure-report.html": "analysis/structure-template.html",
+    "deep-report.html": "analysis/deep-template.html",
+    "implementation-report.html": "analysis/implementation-template.html",
+    "update-service-report.html": "analysis/update-service-template.html",
+    "loader-lens-report.html": "analysis/foundation-template.html",
+    "main-burn-prefix-report.html": "analysis/main-burn-template.html",
+    "loader-hash-report.html": "analysis/loader-hash-template.html",
+    "burn-continuation-report.html": "analysis/continuation-template.html",
+    "storage-readiness-report.html": "analysis/lifecycle-template.html",
+    "recompiled-numeric-report.html": "analysis/numeric-template.html",
+    "routing-report.html": "analysis/routing-template.html",
+    "pixel-report.html": "analysis/pixel-template.html",
+    "final-color-report.html": "analysis/final-template.html",
+    "hdr-control-report.html": "analysis/control-template.html",
+    "hdr-task-report.html": "analysis/task-template.html",
+    "af-completion-report.html": "analysis/af-template.html",
+    "colorspace-ui-report.html": "analysis/colorspace-template.html",
+    "colorspace-render-report.html": "analysis/render-template.html",
+    "colorspace-raster-report.html": "analysis/raster-template.html",
+    "colorspace-glyph-report.html": "analysis/glyph-template.html",
+    "colorspace-attributes-report.html": "analysis/attributes-template.html"
+  },
+  "sections": [
+    {"id": "start", "title": "시작하기", "nav": "개요", "hub": "index.html", "pages": [
+      {"file": "index.html", "label": "개요"},
+      {"file": "structure-report.html", "label": "펌웨어 파일 구조", "note": "ELF 12개, 심볼, 엔트로피, 재현 절차"},
+      {"file": "deep-report.html", "label": "압축 복원과 주요 함수 300개", "note": "ThreadX, AF·셔터·JPEG·색 처리 개관"},
+      {"file": "glossary.html", "label": "용어집"}
+    ]},
+    {"id": "update", "title": "업데이트와 재패킹", "nav": "업데이트", "hub": "guide-update.html", "pages": [
+      {"file": "guide-update.html", "label": "업데이트·재패킹 안내"},
+      {"file": "implementation-report.html", "label": "재패킹 검증과 업데이트 검사"},
+      {"file": "update-service-report.html", "label": "메인 업데이트 진입과 반환값"},
+      {"file": "loader-lens-report.html", "label": "Loader 입력 검증과 렌즈 정책"},
+      {"file": "main-burn-prefix-report.html", "label": "메인 Burn의 매체 열기"},
+      {"file": "loader-hash-report.html", "label": "기록 헤더와 MD5 경로"},
+      {"file": "burn-continuation-report.html", "label": "NAND 재시도와 최종 반환"},
+      {"file": "storage-readiness-report.html", "label": "저장 경계와 렌즈 준비 상태"},
+      {"file": "recompiled-numeric-report.html", "label": "색 행렬 함수 C 재컴파일"}
+    ]},
+    {"id": "color", "title": "색 처리와 HDR", "nav": "색·HDR", "hub": "guide-color.html", "pages": [
+      {"file": "guide-color.html", "label": "색 처리·HDR 안내"},
+      {"file": "routing-report.html", "label": "렌즈 명령·ISP 레지스터·출력 경계"},
+      {"file": "pixel-report.html", "label": "HDR 버퍼와 색 처리 패스"},
+      {"file": "final-color-report.html", "label": "HDR 제출 분기와 FC 계수"},
+      {"file": "hdr-control-report.html", "label": "HDR FC1 활성화와 제출 패스"},
+      {"file": "hdr-task-report.html", "label": "FC1 비트와 HDR task 완료"}
+    ]},
+    {"id": "af", "title": "AF와 렌즈 제어", "nav": "AF", "hub": "guide-af.html", "pages": [
+      {"file": "guide-af.html", "label": "AF·렌즈 안내"},
+      {"file": "af-completion-report.html", "label": "AF 명령과 완료 판정"}
+    ]},
+    {"id": "ui", "title": "화면과 글꼴", "nav": "UI", "hub": "guide-ui.html", "pages": [
+      {"file": "guide-ui.html", "label": "화면·글꼴 안내"},
+      {"file": "colorspace-ui-report.html", "label": "색공간 화면: 선택·확정·취소"},
+      {"file": "colorspace-render-report.html", "label": "색공간 화면: 그리기 경로"},
+      {"file": "colorspace-raster-report.html", "label": "선택 강조의 픽셀"},
+      {"file": "colorspace-glyph-report.html", "label": "글꼴 로딩과 글리프 픽셀"},
+      {"file": "colorspace-attributes-report.html", "label": "48×48 요청과 컨텍스트 선택"}
+    ]}
+  ]
+}

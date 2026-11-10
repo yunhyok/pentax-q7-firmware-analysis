@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>펌웨어 파일 구조: 공식 파일 확인과 ELF 12개 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="분석 대상 파일이 리코 공식 Q7 펌웨어 1.01과 같은 파일인지 확인하고, 파일 안의 MIPS ELF 12개와 ThreadX·FileX 식별 문자열, 바이트 분포를 조사한 기록입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html" aria-current="true">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="index.html">시작하기</a></li><li aria-current="page">펌웨어 파일 구조</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">시작하기 · 분석의 출발점</p>
+<h1>펌웨어 파일 구조: 공식 파일 확인과 ELF 12개</h1>
+<p class="lead">코드를 읽기 전에 두 가지를 먼저 확인했습니다. 분석하는 파일이 정말 공식 배포본인지, 그리고 그 안에 무엇이 어떤 형식으로 들어 있는지입니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#identity">분석 대상이 공식 배포본인지 확인</a></li><li><a href="#method">조사 순서와 K-3 Mark III와의 차이</a></li><li><a href="#layout">ELF 12개가 가리키는 파일 구간</a></li><li><a href="#rtos">ThreadX와 FileX의 흔적</a></li><li><a href="#entropy">파일 전체의 바이트 분포</a></li><li><a href="#next">이 조사 뒤에 이어진 분석</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#evidence">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>분석한 <code>fwdc603p.bin</code>은 리코 공식 배포 ZIP 안의 파일과 <strong>크기·SHA-256·모든 바이트가 같습니다</strong>.</li>
+<li>파일 안에서 <strong>32비트 리틀엔디언 MIPS ELF 12개</strong>를 찾았습니다. 실행형이 10개, 재배치형이 2개입니다.</li>
+<li>RTOS인 <strong>ThreadX</strong>와 파일시스템 <strong>FileX</strong>의 식별 문자열과 심볼 이름이 남아 있습니다. 코드를 읽을 출발점이 됩니다.</li>
+<li>이 문서는 파일의 구조만 다룹니다. 함수가 실제로 무슨 일을 하는지는 <a href="deep-report.html">압축 복원과 주요 함수 300개</a>부터 이어지는 문서들이 다룹니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 파일 바이트로 확인</h3>
+<ul>
+<li>공식 배포본과 전체 바이트 일치</li>
+<li>ELF 12개의 헤더와 파일 참조 범위</li>
+<li>식별 문자열의 위치, 심볼 표의 항목 수</li>
+<li>64 KiB 단위 엔트로피</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 이 문서에서 다루지 않은 것</h3>
+<ul>
+<li>업데이트 파일의 실제 구획 경계와 플래시 배치</li>
+<li>ELF 밖 영역 전체의 구성</li>
+<li>실제 칩의 모델</li>
+<li>카메라가 하는 서명·체크섬 검증</li>
+</ul></div>
+</div>
+
+<section id="identity">
+<h2>분석 대상이 공식 배포본인지 확인</h2>
+<p class="takeaway">제공받은 파일은 리코 공식 <code>q7_101.zip</code>에 든 <code>fwdc603p.bin</code>과 완전히 같습니다.</p>
+<p>두 파일의 크기와 SHA-256을 비교하고 모든 바이트를 대조했습니다. 따라서 이 연구의 대상은 공식 배포 v1.01입니다. 이 확인은 “같은 파일인가”를 본 것입니다. 카메라가 업데이트할 때 하는 서명 검증을 대신하지는 않습니다.</p>
+<dl class="kv">
+<dt>파일</dt><dd><code>fwdc603p.bin</code> · 18,743,520바이트</dd>
+<dt>SHA-256</dt><dd><code class="wrap">8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b</code></dd>
+<dt>공식 배포</dt><dd>버전 1.01 · 2013-12-05</dd>
+<dt>ELF 서명</dt><dd>13곳에서 발견, 그중 12개가 검사를 통과</dd>
+</dl>
+<p>리코가 밝힌 v1.01의 변경 사항은 PENTAX-08 WIDE ZOOM 렌즈 지원, 렌즈 펌웨어 버전 표시, M 모드에서 그린 버튼 동작, 전반적인 안정성 개선입니다. <a href="analysis/provenance.json">[근거: 공식 ZIP과의 동일성 기록]</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[리코 Q7 펌웨어 배포 페이지]</a></p>
+</section>
+
+<section id="method">
+<h2>조사 순서와 K-3 Mark III와의 차이</h2>
+<p>K-3 Mark III를 조사할 때 쓴 순서를 그대로 따랐습니다.</p>
+<ol class="flow">
+<li class="ok"><strong>원본 식별</strong><span>SHA-256, 공식 ZIP과 대조</span></li>
+<li class="ok"><strong>파일 구조</strong><span>ELF 헤더, 구간과 경계 검사</span></li>
+<li class="ok"><strong>분석 지점 확보</strong><span>진입점, 심볼, 문자열 위치</span></li>
+<li><strong>코드 분석</strong><span>호출 관계와 함수 동작 — 이후 문서</span></li>
+</ol>
+<p>순서는 같지만 파일 형식은 다릅니다. K-3 Mark III용 LZ 압축 해제기를 고치지 않고 Q7 파일의 <code>0x80</code> 위치에 적용하면 실패합니다. 그 위치와 형식이 맞지 않는다는 뜻이며, Q7에 압축 데이터가 없다는 뜻은 아닙니다. 실제로 Q7의 본 프로그램은 다른 위치에 압축되어 있고, 그 복원은 <a href="deep-report.html">압축 복원과 주요 함수 300개</a>에서 다룹니다. <a href="analysis/evidence.json">[근거: k3_lz_probe]</a></p>
+<div class="table-wrap"><table>
+<caption>두 기종의 분석 출발점</caption>
+<thead><tr><th>항목</th><th>K-3 Mark III v2.20</th><th>Q7 v1.01</th></tr></thead>
+<tbody>
+<tr><th scope="row">원본 크기</th><td>35,106,716바이트</td><td>18,743,520바이트</td></tr>
+<tr><th scope="row">처음 만나는 구조</th><td><code>0x80</code>에서 LZ 스트림 해제</td><td><code>0x200</code>에서 첫 MIPS ELF</td></tr>
+<tr><th scope="row">주소의 기준</th><td>압축 해제 결과와 RTOS 적재 주소</td><td>원본 파일 오프셋과 ELF별 가상 주소</td></tr>
+<tr><th scope="row">공통 절차</th><td colspan="2">해시 고정 → 구조·경계 확인 → 함수 분석 → 근거와 재현 검사</td></tr>
+</tbody></table></div>
+<p class="small muted">K-3 Mark III 쪽 수치는 그 저장소의 고정 커밋을 기준으로 합니다. <a href="analysis/baseline.json">[근거: K-3 분석 기준 커밋]</a></p>
+</section>
+
+<section id="layout">
+<h2>ELF 12개가 가리키는 파일 구간</h2>
+<p class="takeaway">ELF 서명은 13곳에서 나왔고, 헤더와 참조 범위 검사를 통과한 것은 12개입니다.</p>
+<p>통과하지 못한 한 곳(<code>0x1DC2C4</code>)은 ELF 식별 바이트 뒤에 <code>DllMutex</code>라는 문자열이 이어져 있어 제외했습니다. 아래 그림은 각 ELF가 참조하는 마지막 바이트까지의 범위입니다.</p>
+
+<figure class="diagram">
+<figcaption>ELF별 파일 구간 (파일 전체 길이에 비례)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 344" role="img" aria-labelledby="dg-elfmap-title dg-elfmap-desc"><title id="dg-elfmap-title">ELF 12개가 가리키는 파일 구간</title><desc id="dg-elfmap-desc">ELF마다 한 줄씩, 파일 전체 길이에 비례한 위치와 길이로 구간을 그렸습니다. 정확한 시작과 끝은 아래 표에 있습니다.</desc><text class="n" x="118" y="18">0</text><text class="n end" x="792" y="18">18,743,520바이트</text><text class="s" x="8" y="45">E01 · EXEC</text><rect class="b mute" x="118" y="34" width="674" height="14"/><rect class="b key" x="118.02" y="34" width="32.53" height="14"/><text class="s" x="8" y="69">E02 · EXEC</text><rect class="b mute" x="118" y="58" width="674" height="14"/><rect class="b key" x="155.77" y="58" width="1.50" height="14"/><text class="s" x="8" y="93">E03 · EXEC</text><rect class="b mute" x="118" y="82" width="674" height="14"/><rect class="b key" x="156.06" y="82" width="44.51" height="14"/><text class="s" x="8" y="117">E04 · EXEC</text><rect class="b mute" x="118" y="106" width="674" height="14"/><rect class="b key" x="202.86" y="106" width="77.17" height="14"/><text class="s" x="8" y="141">E05 · EXEC</text><rect class="b mute" x="118" y="130" width="674" height="14"/><rect class="b key" x="280.04" y="130" width="56.89" height="14"/><text class="s" x="8" y="165">E06 · EXEC</text><rect class="b mute" x="118" y="154" width="674" height="14"/><rect class="b key" x="336.93" y="154" width="63.27" height="14"/><text class="s" x="8" y="189">E07 · EXEC</text><rect class="b mute" x="118" y="178" width="674" height="14"/><rect class="b key" x="403.76" y="178" width="1.50" height="14"/><text class="s" x="8" y="213">E08 · EXEC</text><rect class="b mute" x="118" y="202" width="674" height="14"/><rect class="b key" x="404.02" y="202" width="1.50" height="14"/><text class="s" x="8" y="237">E09 · EXEC</text><rect class="b mute" x="118" y="226" width="674" height="14"/><rect class="b key" x="404.32" y="226" width="1.50" height="14"/><text class="s" x="8" y="261">E10 · EXEC</text><rect class="b mute" x="118" y="250" width="674" height="14"/><rect class="b key" x="404.57" y="250" width="1.50" height="14"/><text class="s" x="8" y="285">E11 · REL</text><rect class="b mute" x="118" y="274" width="674" height="14"/><rect class="b static" x="405.20" y="274" width="1.50" height="14"/><text class="s" x="8" y="309">E12 · REL</text><rect class="b mute" x="118" y="298" width="674" height="14"/><rect class="b static" x="694.59" y="298" width="86.34" height="14"/></svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>EXEC — 실행형</li><li><i class="static"></i>REL — 재배치형</li></ul>
+<p>아주 작은 ELF는 보이도록 최소 굵기로 그렸습니다. 막대가 없는 구간은 아직 분류하지 않은 영역입니다. 이 그림은 ELF가 가리키는 범위일 뿐, 업데이트 파일의 실제 구획 경계나 플래시 배치를 확정한 것이 아닙니다.</p>
+</figure>
+
+<p>검사를 통과한 ELF는 모두 32비트(<code>ELFCLASS32</code>), 리틀엔디언(<code>ELFDATA2LSB</code>), MIPS(<code>EM_MIPS</code>)입니다. 종류는 두 가지입니다.</p>
+<ul>
+<li><strong>실행형(<code>ET_EXEC</code>) 10개</strong> — 주소가 정해진 프로그램입니다.</li>
+<li><strong>재배치형(<code>ET_REL</code>) 2개</strong> — 심볼 값이 섹션 기준입니다. 실제 메모리 주소로 옮기려면 로더와 재배치 처리를 확인해야 합니다.</li>
+</ul>
+<p>일부 ELF는 섹션 표가 없는데도 <code>e_shstrndx</code> 값이 13으로 남아 있어 경고로 기록했습니다. <a href="analysis/evidence.json">[근거: elfs, rejected_candidates, warnings]</a></p>
+
+<div class="table-wrap"><table>
+<caption>ELF 헤더, 참조 범위, 심볼 수 (끝 오프셋은 범위에 포함되지 않음)</caption>
+<thead><tr><th>ID</th><th>원본 시작</th><th>최대 참조 끝</th><th>종류</th><th><code>e_entry</code></th><th class="n">심볼</th><th class="n">정의된 함수 심볼</th></tr></thead>
+<tbody>
+<tr><th scope="row">E01</th><td><code>0x00000200</code></td><td><code>0x000DCF74</code></td><td>EXEC</td><td><code>0x80010000</code></td><td class="n">2,121</td><td class="n">1,437</td></tr>
+<tr><th scope="row">E02</th><td><code>0x001006C0</code></td><td><code>0x00101850</code></td><td>EXEC</td><td><code>0x81000401</code></td><td class="n">0</td><td class="n">0</td></tr>
+<tr><th scope="row">E03</th><td><code>0x001026C0</code></td><td><code>0x00230A64</code></td><td>EXEC</td><td><code>0x80000600</code></td><td class="n">0</td><td class="n">0</td></tr>
+<tr><th scope="row">E04</th><td><code>0x002402C0</code></td><td><code>0x0044C204</code></td><td>EXEC</td><td><code>0x80000600</code></td><td class="n">0</td><td class="n">0</td></tr>
+<tr><th scope="row">E05</th><td><code>0x0044C204</code></td><td><code>0x005CE660</code></td><td>EXEC</td><td><code>0x80000600</code></td><td class="n">0</td><td class="n">0</td></tr>
+<tr><th scope="row">E06</th><td><code>0x005CE660</code></td><td><code>0x0077BFCC</code></td><td>EXEC</td><td><code>0x80000600</code></td><td class="n">0</td><td class="n">0</td></tr>
+<tr><th scope="row">E07</th><td><code>0x007942C0</code></td><td><code>0x00795E6A</code></td><td>EXEC</td><td><code>0xBFC08000</code></td><td class="n">92</td><td class="n">17</td></tr>
+<tr><th scope="row">E08</th><td><code>0x00795EC0</code></td><td><code>0x00797BB5</code></td><td>EXEC</td><td><code>0xBFC08000</code></td><td class="n">96</td><td class="n">21</td></tr>
+<tr><th scope="row">E09</th><td><code>0x00797EC0</code></td><td><code>0x00799745</code></td><td>EXEC</td><td><code>0xBFC08000</code></td><td class="n">90</td><td class="n">15</td></tr>
+<tr><th scope="row">E10</th><td><code>0x00799AC0</code></td><td><code>0x0079AF62</code></td><td>EXEC</td><td><code>0xBFC08000</code></td><td class="n">82</td><td class="n">8</td></tr>
+<tr><th scope="row">E11</th><td><code>0x0079DEC0</code></td><td><code>0x0079FF29</code></td><td>REL</td><td><code>0x00000000</code></td><td class="n">61</td><td class="n">4</td></tr>
+<tr><th scope="row">E12</th><td><code>0x00F4AAC0</code></td><td><code>0x01194D73</code></td><td>REL</td><td><code>0x00000000</code></td><td class="n">27</td><td class="n">2</td></tr>
+</tbody></table></div>
+<p class="small muted"><code>e_entry</code>는 ELF에 적힌 값 그대로입니다. 파일 오프셋도 아니고 실제 부팅 순서도 아닙니다. E02의 홀수 값도 고치지 않고 그대로 적었습니다.</p>
+</section>
+
+<section id="rtos">
+<h2>ThreadX와 FileX의 흔적</h2>
+<p class="takeaway">RTOS와 파일시스템 라이브러리의 이름이 문자열과 심볼로 남아 있어, 코드를 읽기 시작할 지점을 얻었습니다.</p>
+<p>원본 파일에 <code>ThreadX LX4180/Green Hills</code>와 <code>FileX LX4180/Green Hills</code> 문자열이 있습니다. 첫 번째 ELF(E01)에는 ThreadX와 FileX 함수 이름으로 보이는 심볼도 있습니다. <dfn title="Express Logic이 만든 실시간 운영체제. 현재는 Eclipse ThreadX로 공개되어 있습니다.">ThreadX</dfn> 계열 코드가 들어 있다는 근거입니다.</p>
+<div class="callout warn"><strong class="label">이 근거로 말할 수 없는 것</strong>
+<p>문자열과 심볼만으로는 실제 칩의 모델이나, 카메라에서 실행되는 구성 요소 전체를 확정할 수 없습니다.</p></div>
+
+<div class="table-wrap"><table>
+<caption>원본 파일에서 직접 확인한 식별 문자열</caption>
+<thead><tr><th>문자열</th><th>원본 오프셋</th><th>해석</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>ThreadX LX4180/Green Hills</code></th><td><code>0x0009843D</code></td><td>RTOS 식별 문자열</td></tr>
+<tr><th scope="row"><code>FileX LX4180/Green Hills</code></th><td><code>0x000A7031</code></td><td>파일시스템 라이브러리 식별 문자열</td></tr>
+<tr><th scope="row"><code>PENTAX Q7</code></th><td><code>0x01196AC7</code></td><td>제품명 문자열</td></tr>
+<tr><th scope="row"><code>ORION</code> / <code>KB538</code> / <code>77690</code></th><td><code>0x011E00C0</code> / <code>C8</code> / <code>D0</code></td><td>파일 끝의 식별자. 각 필드의 뜻은 확정하지 못함</td></tr>
+</tbody></table></div>
+
+<h3>심볼의 수와 한계</h3>
+<p>E01의 심볼 표에는 2,121개 항목이 있고, 그중 정의된 함수 심볼(<code>STT_FUNC</code>)은 1,437개입니다. ELF 전체를 합치면 심볼 2,569개, 정의된 함수 심볼 1,504개입니다. 같은 함수가 여러 번 나올 수 있으므로 이 수를 “함수의 개수”로 읽으면 안 됩니다.</p>
+<p>심볼 이름은 어디를 조사할지 알려 줄 뿐입니다. 그 함수가 실제로 이름대로 동작한다는 증거는 아닙니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>E01에서 고른 심볼 (주소는 이 ELF의 <code>st_value</code>)</caption>
+<thead><tr><th>심볼</th><th>값</th><th class="n"><code>st_size</code> (바이트)</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>_tx_initialize_kernel_enter</code></th><td><code>0x80024BD4</code></td><td class="n">108</td></tr><tr><th scope="row"><code>_tx_thread_create</code></th><td><code>0x8002AC10</code></td><td class="n">564</td></tr><tr><th scope="row"><code>_fx_media_open</code></th><td><code>0x8005E80C</code></td><td class="n">56</td></tr><tr><th scope="row"><code>_tx_thread_schedule</code></th><td><code>0x8002B524</code></td><td class="n">0</td></tr>
+</tbody></table></div>
+<p class="small muted"><code>st_size</code>가 0인 심볼은 길이가 기록되지 않은 것일 수 있습니다. 전체 심볼 목록과 꺼낸 ELF는 공개하지 않습니다. <a href="analysis/evidence.json">[근거: markers, selected_symbols, symbol_count]</a></p>
+</section>
+
+<section id="entropy">
+<h2>파일 전체의 바이트 분포</h2>
+<p>파일을 65,536바이트(64 KiB)씩 나눠 구간마다 <dfn title="바이트 값이 얼마나 고르게 섞여 있는지를 0~8비트로 나타낸 값. 압축되거나 암호화된 데이터는 8에 가깝습니다.">Shannon 엔트로피</dfn>를 계산했습니다. 값이 높은 구간은 압축 데이터나 영상 자원일 가능성이 있어 조사할 후보가 됩니다. 엔트로피만으로 암호화 여부를 판정하지는 않았습니다.</p>
+<figure class="diagram">
+<figcaption>파일 오프셋에 따른 엔트로피 (비트/바이트)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 204" role="img" aria-labelledby="dg-entropy-title dg-entropy-desc"><title id="dg-entropy-title">원본 파일의 엔트로피 분포</title><desc id="dg-entropy-desc">가로축은 파일 오프셋 0부터 18,743,520바이트, 세로축은 0부터 8비트/바이트입니다. 정확한 값은 evidence.json의 entropy_windows에 있습니다.</desc><path class="g" d="M44 14H792M44 94.0H792M44 174H792"/><text class="n end" x="38" y="18">8</text><text class="n end" x="38" y="98.0">4</text><text class="n end" x="38" y="178">0</text><polyline class="e key" points="44.00,51.52 46.62,53.69 49.23,51.76 51.85,53.43 54.46,52.76 57.08,52.19 59.69,50.50 62.31,55.86 64.92,51.17 67.54,75.00 70.15,65.93 72.77,132.89 75.38,80.12 78.00,75.46 80.61,174.00 83.23,174.00 85.85,55.52 88.46,50.20 91.08,90.33 93.69,87.23 96.31,65.16 98.92,52.97 101.54,40.35 104.15,51.84 106.77,49.98 109.38,43.10 112.00,53.56 114.61,57.26 117.23,54.61 119.85,52.56 122.46,85.39 125.08,50.64 127.69,50.75 130.31,52.05 132.92,87.76 135.54,172.02 138.15,20.19 140.77,18.97 143.38,20.22 146.00,18.83 148.61,20.82 151.23,20.57 153.84,19.38 156.46,19.24 159.08,19.48 161.69,18.92 164.31,18.48 166.92,19.90 169.54,18.74 172.15,18.76 174.77,18.61 177.38,18.83 180.00,19.45 182.61,18.59 185.23,18.79 187.84,19.23 190.46,19.17 193.08,19.23 195.69,19.22 198.31,18.28 200.92,20.05 203.54,19.07 206.15,19.27 208.77,18.43 211.38,18.39 214.00,19.63 216.61,20.80 219.23,18.76 221.84,20.07 224.46,18.57 227.07,18.50 229.69,18.75 232.31,20.02 234.92,18.72 237.54,19.32 240.15,19.03 242.77,18.41 245.38,18.80 248.00,18.54 250.61,18.71 253.23,18.80 255.84,20.13 258.46,18.28 261.07,18.54 263.69,19.72 266.31,19.40 268.92,18.89 271.54,18.81 274.15,18.45 276.77,18.57 279.38,18.39 282.00,19.82 284.61,19.30 287.23,21.10 289.84,19.52 292.46,19.74 295.07,19.55 297.69,16.47 300.30,18.56 302.92,18.04 305.54,17.77 308.15,19.24 310.77,18.06 313.38,19.13 316.00,18.56 318.61,18.61 321.23,18.83 323.84,18.95 326.46,18.82 329.07,18.34 331.69,18.54 334.30,18.33 336.92,19.96 339.53,18.85 342.15,18.66 344.77,19.87 347.38,18.94 350.00,21.21 352.61,20.25 355.23,20.42 357.84,143.50 360.46,105.32 363.07,137.30 365.69,118.00 368.30,115.89 370.92,116.95 373.53,115.88 376.15,116.70 378.77,115.59 381.38,115.90 384.00,118.87 386.61,134.26 389.23,116.22 391.84,116.39 394.46,116.52 397.07,117.07 399.69,116.96 402.30,115.42 404.92,115.98 407.53,128.15 410.15,141.18 412.76,144.13 415.38,141.68 418.00,139.54 420.61,138.68 423.23,123.41 425.84,118.97 428.46,118.78 431.07,118.66 433.69,119.06 436.30,121.64 438.92,135.80 441.53,119.89 444.15,123.37 446.76,117.53 449.38,116.74 452.00,116.53 454.61,135.94 457.23,138.92 459.84,90.53 462.46,71.83 465.07,84.81 467.69,101.48 470.30,90.80 472.92,70.85 475.53,33.16 478.15,14.84 480.76,14.62 483.38,14.57 485.99,38.61 488.61,51.69 491.23,20.18 493.84,35.29 496.46,15.45 499.07,14.61 501.69,22.80 504.30,48.24 506.92,48.99 509.53,53.83 512.15,58.36 514.76,58.90 517.38,54.26 519.99,62.42 522.61,55.33 525.23,52.36 527.84,54.77 530.46,49.71 533.07,50.35 535.69,51.74 538.30,50.25 540.92,49.56 543.53,67.55 546.15,69.44 548.76,69.20 551.38,67.41 553.99,67.38 556.61,70.79 559.22,78.32 561.84,75.74 564.46,71.01 567.07,68.44 569.69,68.67 572.30,68.85 574.92,68.99 577.53,75.37 580.15,74.70 582.76,77.40 585.38,77.28 587.99,77.24 590.61,77.09 593.22,76.66 595.84,79.33 598.45,77.02 601.07,75.76 603.69,73.49 606.30,76.98 608.92,74.67 611.53,76.74 614.15,75.14 616.76,77.77 619.38,77.50 621.99,80.00 624.61,79.32 627.22,77.70 629.84,76.32 632.45,76.38 635.07,75.10 637.69,78.91 640.30,78.05 642.92,76.03 645.53,70.95 648.15,76.08 650.76,70.05 653.38,78.86 655.99,79.80 658.61,79.84 661.22,77.69 663.84,79.51 666.45,81.17 669.07,80.97 671.68,80.26 674.30,80.70 676.92,70.20 679.53,95.05 682.15,79.94 684.76,74.58 687.38,74.00 689.99,76.56 692.61,78.50 695.22,78.32 697.84,76.84 700.45,77.52 703.07,78.15 705.68,80.00 708.30,79.97 710.92,76.73 713.53,77.87 716.15,81.33 718.76,81.64 721.38,79.15 723.99,75.37 726.61,63.61 729.22,51.85 731.84,51.08 734.45,56.45 737.07,55.77 739.68,53.91 742.30,55.10 744.91,54.60 747.53,53.43 750.15,52.80 752.76,65.59 755.38,103.40 757.99,101.65 760.61,102.63 763.22,98.09 765.84,98.13 768.45,97.73 771.07,97.73 773.68,97.73 776.30,97.73 778.91,58.24 781.53,30.98 784.15,38.05 786.76,142.92 789.38,174.00 791.99,155.70"/><text class="n" x="44" y="196">0</text><text class="n mid" x="418.0" y="196">파일 오프셋</text><text class="n end" x="792" y="196">18,743,520바이트</text></svg>
+</div>
+<p>구간 크기는 64 KiB이고, 마지막 구간은 남은 224바이트만 계산했습니다. 가운데 점선은 4비트/바이트입니다. <a href="analysis/evidence.json">[근거: entropy_windows]</a></p>
+</figure>
+</section>
+
+<section id="next">
+<h2>이 조사 뒤에 이어진 분석</h2>
+<p>이 문서를 쓸 때 남겨 둔 질문과, 그 질문을 이어받은 문서입니다.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>남겨 둔 질문</th><th>이어받은 문서</th></tr></thead>
+<tbody>
+<tr><th scope="row">ThreadX 초기화의 호출 관계</th><td><a href="deep-report.html">압축 복원과 주요 함수 300개</a></td></tr>
+<tr><th scope="row">섹션 정보가 없는 ELF의 적재 구간과 압축</th><td><a href="deep-report.html">압축 복원과 주요 함수 300개</a> — 압축 448블록 복원</td></tr>
+<tr><th scope="row">업데이트 체크섬과 기록 절차</th><td><a href="guide-update.html">업데이트·재패킹 안내</a></td></tr>
+<tr><th scope="row">AF·셔터·JPEG·색 처리 함수</th><td><a href="guide-af.html">AF·렌즈 안내</a>, <a href="guide-color.html">색 처리·HDR 안내</a></td></tr>
+<tr><th scope="row">재배치형 ELF(E11, E12)의 재배치와 실행 주소</th><td>아직 조사하지 않았습니다</td></tr>
+<tr><th scope="row">ELF 밖 데이터의 구획과 자원 경계</th><td>글꼴 파일 하나의 위치만 <a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>에서 확인했습니다</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>Python 3.10 이상의 표준 라이브러리만 씁니다. 원본 파일은 읽기만 하고 결과는 새 경로에 씁니다.</p>
+<pre><code>python -m unittest discover -s tests -v
+python tools/pentax_lz.py --self-test
+python tools/inspect_q7.py path/to/fwdc603p.bin --output .private/recheck.json --private-dir .private/recheck-elf
+python tools/verify_report.py --firmware path/to/fwdc603p.bin
+python tools/build_report.py</code></pre>
+<p>검증 도구는 파서를 합성 입력으로 시험하고, 공개 근거가 서로 맞는지, 보고서가 근거에서 다시 생성되는지, 문서 안 링크가 살아 있는지 확인합니다. 원본 파일을 지정하면 공개한 측정값 전체를 다시 계산해 비교합니다.</p>
+<div class="callout"><strong class="label">이 단계에서 쓴 도구</strong>
+<p>이 문서의 결과는 Python으로 파일 바이트와 ELF 헤더를 직접 읽어 얻었습니다. Binwalk·Unblob 같은 펌웨어 스캐너나 디컴파일러는 이 단계에서 쓰지 않았습니다. <a href="analysis/tool-status.json">[근거: 도구 가용성 기록]</a></p></div>
+</section>
+
+<section id="evidence">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/evidence.json">analysis/evidence.json</a> — 원본에서 계산한 ELF, 심볼, 문자열, 엔트로피</li>
+<li><a href="analysis/provenance.json">analysis/provenance.json</a> — 공식 ZIP과 제공 파일의 동일성 기록</li>
+<li><a href="analysis/baseline.json">analysis/baseline.json</a> — K-3 Mark III 분석 기준과 재사용한 도구의 고정 커밋</li>
+<li><a href="analysis/tool-status.json">analysis/tool-status.json</a> — 도구 가용성과 실제 사용한 도구</li>
+<li><a href="tools/inspect_q7.py">tools/inspect_q7.py</a> · <a href="tests/test_inspect_q7.py">tests/test_inspect_q7.py</a> · <a href="tools/verify_report.py">tools/verify_report.py</a> — 분석기, 테스트, 보고서 검사</li>
+<li>외부 자료: <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">리코 Q7 v1.01 배포 페이지와 변경 사항</a> · <a href="https://gabi.xinuos.com/elf/02-eheader.html">System V ABI의 ELF 헤더</a> · <a href="https://gabi.xinuos.com/elf/a-emachine.html">e_machine 값</a> · <a href="https://gabi.xinuos.com/elf/05-symtab.html">심볼 표</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">시작하기 — 이 주제의 문서</h2><ol><li><a href="index.html">개요</a></li><li><a href="structure-report.html" aria-current="page">펌웨어 파일 구조<span>ELF 12개, 심볼, 엔트로피, 재현 절차</span></a></li><li><a href="deep-report.html">압축 복원과 주요 함수 300개<span>ThreadX, AF·셔터·JPEG·색 처리 개관</span></a></li><li><a href="glossary.html">용어집</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="index.html"><small>← 이전</small>개요</a><a class="next" href="deep-report.html"><small>다음 →</small>압축 복원과 주요 함수 300개</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
