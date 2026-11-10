@@ -1,51 +1,102 @@
-"""Build the HDR submit-selector and FC coefficient follow-up."""
+"""Build the HDR output-selection and FC1 coefficient report (final-color-report.html)."""
 from build_deep_report import ROOT, read, esc
-from build_routing_report import graph
 from verify_routing import witnesses
+
+# ITU-R BT.601-7 section 2.5: E'Y = 0.299R + 0.587G + 0.114B, E'CB = (B-Y)/1.772, E'CR = (R-Y)/1.402.
+# Used only as an external reference row next to the firmware values; nothing below depends on it.
+_KR, _KG, _KB = 0.299, 0.587, 0.114
+BT601 = [
+    [_KR, _KG, _KB],
+    [-_KR / 1.772, -_KG / 1.772, (1 - _KB) / 1.772],
+    [(1 - _KR) / 1.402, -_KG / 1.402, -_KB / 1.402],
+]
+
+CASE_LABELS = {
+    'hdr-custom-flag0': 'HDR 계수 · 제어 비트 0',
+    'hdr-custom-flag1': 'HDR 계수 · 제어 비트 1',
+    'signed-boundary-custom': '부호 경계값(임의 계수)',
+    'mode1-null-601': 'mode 1 · 포인터 없음 → 내장 601',
+    'mode1-null-709': 'mode 1 · 포인터 없음, 선택값 1 → 내장 709',
+    'mode3-null-unity': 'mode 3 · 포인터 없음 → 단위 행렬',
+}
+SUBMIT_LABELS = {
+    'fresh_hdr_type0': '새 HDR 경로 (분석 대상)',
+    'explicit_descriptor_id9_counterfactual': '비교: ID 9 대체 디스크립터를 넣은 경우',
+}
+
+
+def signed(v):
+    return f'−{-v:,}' if v < 0 else f'{v:,}'
 
 
 def main():
-    values={k:esc(v) for k,v in read('final-copy.json').items()}
-    values['selector_graph']=graph('submit-choice','새 HDR 경로의 출력 디스크립터 선택',{
-        'new':(20,10,'PathCreate(type 0)','0xb40 bytes clear / +0x964 = 0'),
-        'hdr':(350,10,'HDR 설정 함수','format 0x0f01 / output +0x28'),
-        'test':(700,10,'IpuSubmit: +0x964 검사','0 → block / nonzero → alternate'),
-        'block':(20,150,'일반 출력 블록','path+0x28 → type 8 descriptor'),
-        'image':(350,150,'SetImage 진입','surface[0] = output / kind 2'),
-        'alt':(700,150,'대체 출력 디스크립터','path+0x8fc / 명시 설정 시 선택')},
-        [('new','hdr',False),('hdr','test',False),('block','image',False)],250,
-        '첫 행은 새 HDR 경로에서 조건이 정해지는 과정입니다. 둘째 행 왼쪽은 이 조건으로 선택되는 출력이고, 오른쪽은 비교용 대체 분기입니다. +0x964는 대체 디스크립터의 타입 필드(+0x68)입니다.','submit-followup.json')
-    values['producer_graph']=graph('fc-producer','HDR 계수에서 FIPLIB 패스 출력까지',{
-        'desc':(20,10,'HDR ID 0xf / version 0xc','9 coefficients + 2 companions'),
-        'input':(350,10,'PrepareCalculations','input+0x1074 / input[1] = 0'),
-        'pass':(700,10,'패스별 입력 포인터','pass+0x8f4 = local+0x68'),
-        'fc':(20,150,'FC block: pass+0x118','mode 1 / 11 halfwords copy'),
-        'export':(350,150,'FC Export','sign extend → payload+0x100'),
-        'wrapper':(700,150,'패스별 wrapper','+0x1c → 해당 payload')},
-        [('desc','input',False),('input','pass',False),('fc','export',False),('export','wrapper',False)],250,
-        '첫 행은 입력의 출처, 둘째 행은 같은 패스의 FC 설정·내보내기입니다. 새 HDR processor에는 ID 0x1d가 없으므로 input[1]은 0입니다. 패스별 top-control과 필터 활성화는 별도 조건입니다.','fiplib-followup.json')
-    values['numeric_graph']=graph('fc-numeric','실제로 재실행한 다섯 함수',{
-        'ctor':(20,10,'FC constructor','0x8017a974 / mode 1 or 3'),
-        'config':(350,10,'ConfigIntRegs','0x8017ab94 / copy or preset'),
-        'export':(700,10,'FC Export','0x8017ad04 / signed u32'),
-        'setter':(20,150,'FC1 setter','0x8031f64c / low 16 bits'),
-        'writer':(350,150,'FC1 writer','0x8031f750 / signed stores'),
-        'mmio':(700,150,'RAM MMIO 기록','11 values + 1 flags / case')},
-        [('ctor','config',False),('config','export',False),('setter','writer',False),('writer','mmio',False)],250,
-        '한 사례마다 위 세 함수 다음 아래 두 함수를 연속 실행했습니다. 이 다섯 함수에는 대체 함수를 넣지 않았습니다. 패스 입력·wrapper·dirty 상태는 합성했으며 전체 FIPLIB 또는 ISP 하드웨어 실행은 아닙니다.','fiplib-coefficient-checks.json')
-    docs=[read(n) for n in ('submit-followup.json','fiplib-followup.json')]
-    values['function_count']=str(len({f['address'] for d in docs for f in d['selected_functions']}))
-    values['word_count']=str(sum(len(list(witnesses(d))) for d in docs))
-    checks=read('fiplib-coefficient-checks.json')
-    values['numeric_rows']=''.join('<tr><th>'+esc(c['case'])+'</th><td>'+esc(str(c['expected_halfwords']))+'</td><td>'+str(c['expected_flags'])+'</td><td>12 / PASS</td></tr>' for c in checks['cases'])
-    c=read('final-comparison.json')
-    values['k3_commit']=esc(c['latest_main_commit_verified_via_gh_api'])
-    values['k3_base']=c['k3_public_remote']+'/blob/'+values['k3_commit']+'/analysis/'
-    page=(ROOT/'analysis/final-template.html').read_text(encoding='utf-8')
-    for key,value in values.items(): page=page.replace('{{'+key+'}}',value)
+    v = {}
+    submit = read('submit-followup.json')
+    fiplib = read('fiplib-followup.json')
+    checks = read('fiplib-coefficient-checks.json')
+
+    # Output selection: the two bounded replay cases.
+    v['submit_rows'] = ''.join(
+        f'<tr><th scope="row">{SUBMIT_LABELS.get(c["name"], esc(c["name"]))}</th>'
+        f'<td><code>{c["path_output"]}</code></td><td class="n">{c["selector"]}</td>'
+        f'<td><code>{c["selector_destination"]}</code></td><td><code>{c["submitted_surface"]}</code></td>'
+        f'<td class="n">{c["image_type"]}</td><td class="n">{c["image_kind"]}</td></tr>'
+        for c in submit['replay']['cases'])
+    v['submit_stubs'] = ''.join(
+        f'<tr><th scope="row"><code>{pc}</code></th><td>{esc(name)}</td></tr>'
+        for pc, name in submit['replay']['stubs'].items())
+    v['submit_stub_count'] = str(len(submit['replay']['stubs']))
+
+    # The eleven HDR values and where each one travels.
+    src = fiplib['hdr_case']['source']
+    values = src['signed_halfwords']
+    hdr_case = next(c for c in checks['cases'] if c['case'] == 'hdr-custom-flag0')
+    mmio = hdr_case['expected_mmio']
+    names = [f'계수 {i + 1}' for i in range(9)] + ['보조값 1', '보조값 2']
+    v['value_rows'] = ''.join(
+        f'<tr><th scope="row">{names[i]}</th><td><code>+{src["halfword_offsets"][i]}</code></td>'
+        f'<td><code>+{src["fiplib_input_offsets"][i]}</code></td><td><code>+{0x100 + 4 * i:#x}</code></td>'
+        f'<td><code>{mmio[i][0]:#x}</code></td><td class="n">{signed(values[i])}</td></tr>'
+        for i in range(11))
+    v['fc_word_addr'] = f'{mmio[11][0]:#x}'
+    v['coef_first_addr'] = f'{mmio[0][0]:#x}'
+    v['coef_last_addr'] = f'{mmio[10][0]:#x}'
+    v['matrix'] = '\n'.join(' '.join(f'{signed(x):>7}' for x in values[r * 3:r * 3 + 3]) for r in range(3))
+    v['companions'] = ', '.join(f'{x:,}' for x in values[9:])
+    rows = ['Y (밝기)', 'Cb (청색 차)', 'Cr (적색 차)']
+    v['bt601_rows'] = ''.join(
+        f'<tr><th scope="row">{rows[r]}</th>'
+        + ''.join(f'<td class="n">{signed(values[r * 3 + k])}</td>' for k in range(3))
+        + ''.join(f'<td class="n">{values[r * 3 + k] / 2048:+.4f}</td>' for k in range(3))
+        + ''.join(f'<td class="n">{BT601[r][k]:+.4f}</td>' for k in range(3)) + '</tr>'
+        for r in range(3))
+    v['bt601_maxdiff'] = f'{max(abs(values[r * 3 + k] - BT601[r][k] * 2048) for r in range(3) for k in range(3)):.2f}'
+
+    # Six executed cases, ordered MMIO writes.
+    v['numeric_rows'] = ''.join(
+        f'<tr><th scope="row">{CASE_LABELS.get(c["case"], esc(c["case"]))}</th><td class="n">{c["mode"]}</td>'
+        f'<td>{", ".join(signed(x) for x in c["expected_halfwords"])}</td>'
+        f'<td class="n">{c["expected_mmio"][-1][2]}</td><td class="n">{len(c["expected_mmio"])}</td></tr>'
+        for c in checks['cases'])
+    v['case_count'] = str(len(checks['cases']))
+    v['mmio_total'] = str(sum(len(c['expected_mmio']) for c in checks['cases']))
+    v['writes_per_case'] = str(len(hdr_case['expected_mmio']))
+    v['replayed_functions'] = ', '.join(f'<code>{a}</code>' for a in checks['functions'])
+
+    docs = [submit, fiplib]
+    v['function_count'] = str(len({f['address'] for d in docs for f in d['selected_functions']}))
+    v['word_count'] = f"{sum(len(list(witnesses(d))) for d in docs):,}"
+    c = read('final-comparison.json')
+    v['k3_commit'] = esc(c['latest_main_commit_verified_via_gh_api'])
+    v['k3_base'] = c['k3_public_remote'] + '/blob/' + v['k3_commit'] + '/analysis/'
+
+    page = (ROOT / 'analysis/final-template.html').read_text(encoding='utf-8')
+    for key, value in v.items():
+        page = page.replace('{{' + key + '}}', value)
     assert '{{' not in page
-    (ROOT/'final-color-report.html').write_text(page,encoding='utf-8',newline='\n')
+    (ROOT / 'final-color-report.html').write_text(page, encoding='utf-8', newline='\n')
     print('Built final-color-report.html')
 
 
-if __name__=='__main__': main()
+if __name__ == '__main__':
+    main()

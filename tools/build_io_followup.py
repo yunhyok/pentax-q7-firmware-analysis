@@ -1,89 +1,218 @@
-"""Render loader/hash and Color Space drawing evidence."""
+"""Render the first-block buffer and MD5 path report (loader-hash-report.html).
+
+The prose and the diagrams live in analysis/loader-hash-template.html. This builder supplies the
+tables and counts from analysis/header-hash.json and analysis/hash-card.json, and checks that the
+values quoted in the static prose and diagrams still match that evidence.
+"""
 from build_deep_report import ROOT, read, esc
-from build_routing_report import graph
+from verify_routing import witnesses
+
+MODELS = {
+    'allocate zeroed synthetic heap': '메모리 할당: 0으로 채운 합성 메모리를 내줌',
+    'cache maintenance no-op': '캐시 정리 요청: 아무 일도 하지 않음',
+    'free no-op': '메모리 해제: 아무 일도 하지 않음',
+    'diagnostic log no-op': '진단 로그: 아무 일도 하지 않음',
+    'header diagnostic no-op': '헤더 진단 출력: 아무 일도 하지 않음',
+    'card callback supplies original package bytes': '카드 읽기 함수: 원본 패키지의 바이트를 그대로 건넴',
+    'existing-media header returns synthetic installed header': '설치된 헤더 읽기: 합성 설치 헤더를 돌려줌',
+    'synthetic zone geometry': '저장장치 형상 조회: 합성 값을 돌려줌',
+    'operation 6 fills 16 spare bytes with FF and returns 0; operation 8 returns 0':
+        '저장장치 요청: 연산 6에는 예비 영역 16바이트를 FF로 채워 0을 반환, 연산 8에는 0을 반환',
+    'capture three-word queue message and return fixture status': '큐 보내기: 세 워드 메시지를 받아 두고 시험용 상태값을 반환',
+    'supply next three-word queue message and return fixture status': '큐 받기: 다음 세 워드 메시지를 건네고 시험용 상태값을 반환',
+    "Deliver the fixture's full 80-byte data/digest record or read status 1 with actual count zero.":
+        '파일 읽기: 80바이트 레코드(데이터 64 + 다이제스트 16) 전체를 건네거나, 상태 1과 읽은 길이 0을 반환',
+    'Record original file, distance, high word and mode and return fixture status. No FileX media I/O.':
+        '파일 되감기: 파일·거리·상위 워드·모드 인수를 기록하고 시험용 상태값을 반환. FileX 입출력은 없음',
+    "Supply synthetic comparison RAM for the callback's allocation, including in flag-1 mode.":
+        '메모리 할당: 비교용 합성 메모리를 내줌 (해시 플래그 1에서도 호출됨)',
+    'Observe comparison RAM invalidation request without modifying cache.': '캐시 무효화 요청: 기록만 함',
+    'Record the release of the synthetic comparison RAM.': '메모리 해제: 기록만 함',
+    'Capture original three-word records; do not run RTOS queue send.':
+        '큐 보내기: 원본 코드가 만든 세 워드 메시지를 받아 둠. RTOS의 큐는 실행하지 않음',
+    "Deliver captured records, controlled worker stop, or the worker's native reply. No RTOS scheduling.":
+        '큐 받기: 받아 둔 메시지, 작업자 종료용 메시지, 작업자가 실제로 낸 응답을 건넴. RTOS 스케줄링은 없음',
+    'Accept diagnostic output without I/O.': '진단 출력: 받기만 함',
+}
+STAGES = {'header': '헤더 추적', 'mbr': '파티션 7사례', 'hash': '해시 작업자·래퍼', 'card': '카드 읽기 7사례'}
+# What each observed store instruction writes, keyed by the first and last instruction address of a run.
+WRITE_ROLES = (
+    (0x80012FCC, 0x80012FD0, '저장장치 영역 정보 두 값 (<code>+0x3a8</code>, <code>+0x3ac</code>)', True),
+    (0x80013E88, 0x80013EA4, '맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)', False),
+    (0x8001A3EC, 0x8001A3EC, '파티션 항목 0의 <code>+0</code> 바이트', True),
+    (0x8001A410, 0x8001A414, '파티션 항목의 <code>+8</code> 시작값 (항목 4개)', True),
+    (0x8001A420, 0x8001A424, '파티션 항목의 <code>+12</code> 길이 (항목 4개)', True),
+    (0x8001A428, 0x8001A428, '파티션 항목의 <code>+4</code> 바이트 (항목 4개)', True),
+    (0x8001A95C, 0x8001A95C, '크기 값 <code>+0x214</code>', True),
+    (0x8001AC48, 0x8001AC68, '섹션 0 정보 36바이트를 <code>+0x3b0</code>에 복사', True),
+    (0x8001AC8C, 0x8001ACB4, '섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사', True),
+    (0x8001AF50, 0x8001AF54, '설치된 헤더의 두 값을 <code>+0x310</code>, <code>+0x314</code>에 복사', True),
+    (0x8001AF58, 0x8001AF58, '<code>+0x230</code>에 복사 (이 입력에서는 같은 값)', False),
+    (0x8001AF78, 0x8001AF84, '설치된 헤더 <code>0x318</code>~<code>0x398</code>의 128바이트 복사 (이 입력에서는 같은 값)', False),
+)
+CARD_CASES = {
+    'match': '다이제스트가 일치',
+    'first-digest-byte-retry-match': '다이제스트 첫 바이트가 달랐고, 다시 읽어 일치',
+    'last-digest-byte-retry-new-payload': '다이제스트 끝 바이트가 달랐고, 다시 읽은 새 데이터로 일치',
+    'first-and-last-digest-byte-fail': '두 번 모두 불일치 (첫 바이트, 끝 바이트)',
+    'digest-mismatch-seek-error': '불일치 뒤 되감기에서 오류',
+    'file-read-error': '첫 읽기에서 오류',
+    'digest-mismatch-retry-read-error': '불일치 뒤 다시 읽기에서 오류',
+}
+WORKER_CASES = {
+    'empty': '빈 입력',
+    'abc': '“abc” 3바이트',
+    'split': '129바이트를 나눠 넣음',
+    'mismatch-first': '기대값의 첫 바이트가 다름',
+    'mismatch-last': '기대값의 끝 바이트가 다름 (나눠 넣음)',
+    'clear-bit29': '주소의 <code>0x20000000</code> 비트가 켜진 입력',
+    'set-bit31': '주소의 <code>0x40000000</code> 비트가 켜진 입력',
+    'unknown-command': '모르는 명령 <code>0x99</code>가 끼어 있음',
+}
+WRAPPERS = {'0x8001ba40': 'BurnHashInit', '0x8001ba74': 'BurnHashUpdate', '0x8001baac': 'BurnHashFanalize'}
+EXTENTS = {'ELF32 STT_FUNC st_size': 'ELF 심볼 크기'}
+FUNCTIONS = {'MD5 compression helper': 'MD5 압축 함수 (이름 없음)', 'sCardFunc.read callback (unnamed)': '카드 읽기 함수 (이름 없음)'}
+WORD_ROLES = {
+    'Native program-buffer writes, one witness per observed instruction': '기록 버퍼에 쓴 명령 (관측한 명령마다 하나)',
+    'Section map size arithmetic and header destinations': '섹션 맵의 크기 계산과 헤더 안 목적지',
+    'Partition gate and field mapping': '파티션 쓰기의 조건과 필드 대응',
+    'Hash queues, dispatcher and native digest calls': '해시 큐, 명령 분기, MD5 호출',
+    'Hash wrapper message words and ignored queue status': '해시 래퍼의 메시지와 무시되는 큐 상태값',
+    'MD5 primitive entries and count/padding path': 'MD5 함수의 진입점과 길이·패딩 처리',
+    'Original callback table, flag check, and FileX full-read branch': '카드 함수 표, 플래그 검사, 전체 읽기 분기',
+    'Original callback hashes actual length minus trailer, then retries or frees': '읽은 길이에서 16을 뺀 만큼 해시, 그 뒤 재시도·해제',
+    'Native queue wrappers stage codes 0, 1, 2 and accept reply 3': '래퍼가 보내는 명령 0·1·2와 응답 3의 처리',
+    'Native worker dispatch, MD5 append/finish and equality/mismatch replies': '작업자의 분기, MD5 추가·마무리, 일치·불일치 응답',
+}
+
+
+def n(value):
+    return f'{value:,}'
+
+
+def code(value):
+    return f'<code>{esc(value)}</code>'
 
 
 def build_loader():
     data, card = read('header-hash.json'), read('hash-card.json')
-    v = {k:esc(t) for k,t in read('loader-hash-copy.json').items()}
-    v['header_graph'] = graph('header-writes','입력 청크에서 첫 기록 버퍼까지',{
-        'in':(20,10,'원본 카드 청크','131,072바이트 / 고정 SHA'),
-        'fields':(350,10,'170개 필드 쓰기 이벤트','헤더 · 섹션 표 · 파티션'),
-        'changed':(700,10,'최종 281바이트 차이','모두 첫 1,536바이트 안'),
-        'copy':(20,150,'마지막 1,536바이트 복사','3,072개 VEX 쓰기 이벤트'),
-        'sha':(350,150,'원본 실행 결과 해시 일치','a13f08d3…72720e29'),
-        'op5':(700,150,'첫 op 5 / FCU 진입','호출됨 · op 5 처리 전 중단')},
-        [('in','fields',False),('fields','changed',False),('copy','sha',False),('sha','op5',False)],250,
-        'VEX 이벤트 수와 MIPS 명령 수는 다른 단위입니다. 마지막 복사 없이도 같은 최종 버퍼를 재구성했습니다.','header-hash.json')
-    v['hash_graph'] = graph('hash-queue','원본 콜백과 직렬화한 해시 작업자',{
-        'card':(20,10,'카드 콜백 / 0x80019014','실험: 전체 64 + 16바이트'),
-        'wrappers':(350,10,'원본 해시 래퍼','세 워드 메시지 0 → 1 → 2'),
-        'queue':(700,10,'입력 큐 +0x127c','실제 메시지를 모델이 전달'),
-        'reply':(20,150,'결과 큐 +0x12b4','일치 3 / 불일치 4'),
-        'md5':(350,150,'원본 MD5 + memcmp(16)','계산 결과를 대체하지 않음'),
-        'manager':(700,150,'BurnHashManager','복사한 RAM에서 원본 실행')},
-        [('card','wrappers',False),('wrappers','queue',False),('queue','manager',True),('manager','md5',False),('md5','reply',False)],250,
-        '점선은 합성 스케줄링입니다. 실제 3/4 응답만 콜백으로 되돌리고, 작업자 종료용 5 응답은 시험 도구가 소비합니다.','hash-card.json')
-    v['boundary_graph'] = graph('hash-boundary','서로 다른 검증 경계',{
-        'primitive':(20,10,'MD5 단독 26사례','원본 산술·패딩·분할 입력'),
-        'worker':(350,10,'작업자 8 + 래퍼 9사례','명령·포인터 변환·완료 값'),
-        'callback':(700,10,'콜백 7사례 / 작업 9건','실제 결과로 재시도 분기'),
-        'storage':(20,150,'헤더 281바이트 재구성','합성 설치 헤더·NAND 형상'),
-        'remaining':(350,150,'전체 기록·복구 루프','정상·오류 종료 연속 실행 필요'),
-        'hardware':(700,150,'실제 카메라 수용·부팅','오프라인 검사로 확정 불가')},
-        [('primitive','worker',False),('worker','callback',False),('storage','remaining',True),('remaining','hardware',True)],250,
-        '위 행은 계산에서 콜백 판정으로 넓힌 범위, 아래 행은 저장 경로의 남은 범위입니다. 전체 업데이트를 한 번에 실행했다는 뜻은 아닙니다.','header-hash.json')
-    v['partition_rows']=''.join(f'<tr><th>{r["id"]}</th><td>0x{r["raw_byte0"]:02x}</td><td>{r["raw_byte4"]}</td><td>{r["raw_u32_at8"]:,}</td><td>{r["raw_u32_at12"]:,}</td></tr>' for r in data['header_replay']['trace']['partition_fields'])
-    v['card_rows']=''.join(f'<tr><th>{esc(r["name"])}</th><td>{len(r["workers"])}</td><td>{" → ".join(str(w["delivered_reply"][0]) for w in r["workers"]) or "—"}</td><td>{r["result"]}</td></tr>' for r in card['replay']['cases'])
-    v['k3_commit']=data['comparison']['k3_commit']
-    page=(ROOT/'analysis/loader-hash-template.html').read_text(encoding='utf-8')
-    for k,value in v.items():page=page.replace('{{'+k+'}}',value)
+    trace = data['header_replay']['trace']
+    replay, cards = data['hash_replay'], card['replay']['cases']
+    functions = data['boot_selected_functions']
+
+    # Values that the template quotes as fixed text in prose and diagrams.
+    ranges = trace['changed_ranges_end_exclusive']
+    size = lambda lo, hi: sum(b - a for a, b in ranges if lo <= a and b <= hi)
+    assert trace['source']['changed_byte_count'] == sum(b - a for a, b in ranges) == 281
+    assert (size(0x214, 0x215), size(0x238, 0x318), size(0x3A8, 0x3D4), size(0x5BE, 0x5FE)) == (1, 224, 44, 12)
+    assert max(b for _, b in ranges) <= 1536 and trace['mbr_offset'] == 0x400
+    assert (trace['event_count'], trace['before_copy_events'], trace['final_copy_events']) == (3242, 170, 3072)
+    assert trace['final_copy_byte_preserving'] is True
+    assert trace['fields'] == {'0x214': 0x13600, '0x310': 640, '0x314': 384, '0x3a8': 1, '0x3ac': 0}
+    assert 0x1367B + 0x982 - 0xA00 + 3 == 0x13600 == 79360
+    request = trace['first_program_request']
+    assert request['arguments'][1:4] == ['0x5', '0x0', '0x100'] and request['arguments'][6] == '0x10'
+    assert [p['raw_byte0'] for p in trace['partition_fields']] == [0x80] * 4
+    assert [p['raw_byte4'] for p in trace['partition_fields']] == [1] * 4
+    lengths = sorted({c['length'] for c in replay['primitive_cases']})
+    assert lengths == [0, 1, 3, 55, 56, 63, 64, 65, 119, 120, 127, 128, 129]
+    assert (len(replay['primitive_cases']), len(replay['worker_cases']), len(replay['wrapper_cases'])) == (26, 8, 9)
+    assert len(data['header_replay']['mbr_cases']) == 7 and len(cards) == 7
+    assert sum(len(c['workers']) for c in cards) == 9
+    assert (card['callback']['synthetic_input_bytes'], card['callback']['synthetic_trailing_digest_bytes']) == (64, 16)
+    assert (card['callback']['entry'], card['callback']['pointer_table'], card['callback']['hash_flag_offset']) == ('0x80019014', '0x800a74dc', '0x1278')
+    assert all(c['hash_flag'] == 1 for c in cards)
+    assert all(e[1:] == [268460032, 80, 0, 3, e[5]] for c in cards for e in c['callback_events'] if e[0] == 'seek')
+    words_header, words_card = len(list(witnesses(data))), len(list(witnesses(card)))
+    assert (words_header, words_card) == (101, 71)
+    assert (len(functions), len(data['boot_anonymous_ranges']), len(card['selected_functions'])) == (13, 1, 10)
+
+    def owner(address):
+        return next((f['name'] for f in functions if f['address'] <= address < f['candidate_end']), '')
+
+    def role(address):
+        return next((text, changes) for lo, hi, text, changes in WRITE_ROLES if lo <= address <= hi)
+
+    v = {}
+    v['range_rows'] = ''.join(
+        f'<tr><td><code>{lo:#05x}</code>{"" if hi - lo == 1 else f"~<code>{hi - 1:#05x}</code>"}</td><td class="n">{hi - lo}</td>'
+        f'<td>{"MBR 파티션 표" if lo >= 0x400 else "헤더"}</td></tr>' for lo, hi in ranges)
+    groups = []
+    for g in trace['groups']:
+        address = int(g['pc'], 16)
+        text, changes = role(address)
+        groups.append(
+            f'<tr><td>{code(g["pc"])}</td><td>{code(owner(address))}</td><td class="n">{n(g["events"])}</td>'
+            f'<td><code>{g["min_offset"]:#05x}</code>~<code>{g["end_exclusive"] - 1:#05x}</code></td>'
+            f'<td>{text}</td><td>{"바뀜" if changes else "그대로"}</td></tr>')
+    v['group_rows'] = ''.join(groups)
+    v['group_count'] = str(len(trace['groups']))
+    v['partition_rows'] = ''.join(
+        f'<tr><th scope="row">{r["id"]}</th><td><code>0x{r["raw_byte0"]:02x}</code></td><td class="n">{r["raw_byte4"]}</td>'
+        f'<td class="n">{n(r["raw_u32_at8"])}</td><td class="n">{n(r["raw_u32_at12"])}</td></tr>'
+        for r in trace['partition_fields'])
+    v['mbr_case_rows'] = ''.join(
+        f'<tr><td class="n">{r["partition_id"]}</td><td class="n">{r["span"]}</td><td>{"씀" if r["writes"] else "쓰지 않음"}</td>'
+        f'<td><code>0x{r["boot_byte"]:02x}</code>{" (원래 값)" if r["boot_byte"] == 0xA5 else ""}</td>'
+        f'<td>{code(hex(r["start"])) if r["writes"] else "—"}</td><td>{code(hex(r["length"])) if r["writes"] else "—"}</td></tr>'
+        for r in data['header_replay']['mbr_cases'])
+    v['primitive_rows'] = ''.join(
+        f'<tr><td class="n">{c["length"]}</td><td>{" + ".join(str(x) for x in c["chunks"])}</td><td>{code(c["digest"])}</td></tr>'
+        for c in replay['primitive_cases'])
+    digest = {c['length']: c['digest'] for c in replay['primitive_cases']}
+    v['md5_empty'], v['md5_abc'] = digest[0], digest[3]
+    v['worker_rows'] = ''.join(
+        f'<tr><th scope="row">{WORKER_CASES[c["name"]]} {code(c["name"])}</th><td class="n">{c["length"]}</td>'
+        f'<td>{" → ".join(str(r[0]) if r[0] < 10 else hex(r[0]) for r in c["requests"])}</td>'
+        f'<td>{code(c["normalized_pointer"])}</td><td class="n">{c["replies"][0][0]}</td></tr>'
+        for c in replay['worker_cases'])
+    dash = lambda value: '—' if value is None else str(value)
+    v['wrapper_rows'] = ''.join(
+        f'<tr><th scope="row">{code(WRAPPERS[c["function"]])} {code(c["name"])}</th><td class="n">{dash(c["send_status"])}</td>'
+        f'<td class="n">{dash(c["receive_status"])}</td><td class="n">{dash(c["reply"])}</td><td class="n">{c["result"]}</td></tr>'
+        for c in replay['wrapper_cases'])
+    v['card_rows'] = ''.join(
+        f'<tr><th scope="row">{CARD_CASES[c["name"]]} {code(c["name"])}</th>'
+        f'<td class="n">{sum(e[0] == "read" for e in c["callback_events"])}</td>'
+        f'<td class="n">{sum(e[0] == "seek" for e in c["callback_events"])}</td>'
+        f'<td class="n">{len(c["workers"])}</td>'
+        f'<td>{" → ".join(str(w["delivered_reply"][0]) for w in c["workers"]) or "—"}</td><td class="n">{c["result"]}</td></tr>'
+        for c in cards)
+    seen, rows = set(), []
+    for f in functions + data['boot_anonymous_ranges'] + card['selected_functions']:
+        if f['address'] in seen:
+            continue
+        seen.add(f['address'])
+        basis = EXTENTS.get(f['extent_basis'], '분석자가 정한 경계')
+        rows.append(
+            f'<tr><th scope="row">{FUNCTIONS.get(f["name"]) or code(f["name"])}</th><td><code>{f["address"]:#x}</code>~<code>{f["candidate_end"]:#x}</code></td>'
+            f'<td class="n">{n(f["size"])}</td><td>{code(f["original_file_offset"])}</td><td>{basis}</td>'
+            f'<td>{code(f["sha256"][:16] + "…")}</td></tr>')
+    v['function_rows'] = ''.join(rows)
+    v['function_count'] = str(len(rows))
+    v['word_rows'] = ''.join(
+        f'<tr><th scope="row">{WORD_ROLES.get(e["role"], esc(e["role"]))}</th><td>{name}</td><td class="n">{len(e["words"])}</td></tr>'
+        for name, doc in (('header-hash.json', data), ('hash-card.json', card)) for e in doc['evidence'])
+    models = (('header', data['header_replay']['modeled_prefix']), ('mbr', data['header_replay']['modeled_mbr']),
+              ('hash', replay['modeled_worker_wrappers']), ('card', card['replay']['modeled_boundaries']))
+    v['model_rows'] = ''.join(
+        f'<tr><th scope="row">{STAGES[stage]}</th><td>{code(pc)}</td><td>{MODELS.get(text, esc(text))}</td></tr>'
+        for stage, apis in models for pc, text in apis.items())
+    v['incoming_sha256'] = trace['source']['incoming_sha256']
+    v['program_sha256'] = trace['source']['program_source_sha256']
+    v['request_return'] = request['return_address']
+    v['request_arguments'] = ', '.join(request['arguments'])
+    v['words_header'], v['words_card'] = str(words_header), str(words_card)
+    v['engine'] = esc(data['header_replay']['engine'])
+    v['k3_commit'] = data['comparison']['k3_commit']
+    v['k3_numeric_commit'] = data['comparison']['numeric_reference']['commit']
+    page = (ROOT/'analysis/loader-hash-template.html').read_text(encoding='utf-8')
+    for key, value in v.items():
+        page = page.replace('{{'+key+'}}', value)
     assert '{{' not in page
-    (ROOT/'loader-hash-report.html').write_text(page,encoding='utf-8',newline='\n')
+    (ROOT/'loader-hash-report.html').write_text(page, encoding='utf-8', newline='\n')
     print('Built loader-hash-report.html')
 
 
-def build_render():
-    data=read('colorspace-render.json')
-    v={k:esc(t) for k,t in read('render-copy.json').items()}
-    v['refresh_graph']=graph('render-refresh','큐 요청에서 두 쓰기 패스까지',{
-        'request':(20,10,'UiService_Refresh(1)','0x80ae00f0'),
-        'send':(350,10,'원본 SendRequest','[0x80, 1, 0, 0]'),
-        'receive':(700,10,'원본 Perform 소비자','큐 전달·동기화는 모델'),
-        'write':(20,150,'GuiComponent_Write','쓰기 패스 0, 이어서 1'),
-        'update':(350,150,'위젯 갱신·전체 그리기','현재 선택의 active list'),
-        'refresh':(700,150,'UiService_DoRefresh(3)','0x80adf978의 호출')},
-        [('request','send',False),('send','receive',True),('receive','refresh',False),('refresh','update',False),('update','write',False)],250,
-        '한 메시지를 한 번 소비하고 중단합니다. 모델 경계 전체는 R1 replay.modeled_boundaries에 열거했습니다.','colorspace-render.json')
-    v['pixel_graph']=graph('render-pixels','텍스트와 선택 아이콘의 서로 다른 도달점',{
-        'locale':(20,10,'원본 언어·줄 descriptor','단위당 2바이트 / 25줄'),
-        'text':(350,10,'텍스트 API','좌표·길이·해시 관측'),
-        'glyph':(700,10,'GDI / 간접 글꼴 렌더러','글리프 픽셀 미실행'),
-        'rle':(20,150,'선택 아이콘 RLE 원본','296 → 1,008바이트'),
-        'indices':(350,150,'인덱스 픽셀 직접 쓰기','0이 아닌 330바이트 / 사례'),
-        'ram':(700,150,'합성 버퍼 전체 대조','2위치 / 보호 바이트 유지')},
-        [('locale','text',False),('text','glyph',True),('rle','indices',False),('indices','ram',False)],250,
-        '윗줄은 텍스트 요청, 아랫줄은 별도로 실행한 아이콘 그리기입니다. 아이콘 검증을 전체 화면 검증으로 확대하지 않았습니다.','colorspace-render.json')
-    v['buffer_graph']=graph('render-buffer','표시 버퍼 요청과 물리 출력 경계',{
-        'update':(20,10,'ScreenControl_Update','원본 코드 실행'),
-        'roll':(350,10,'ScreenOsdLayer_Roll','캐시 요청 · draw/show 교대'),
-        'request':(700,10,'표시 버퍼 지정 요청','합성 ID 17 ↔ 18'),
-        'context':(20,150,'표시 컨텍스트 선택','정적 연결만 확인'),
-        'layer':(350,150,'LayerSetFrameBuffer / Move','0x800442f8 / 0x80044370'),
-        'lcd':(700,150,'DMA / LCD','실제 픽셀 출력 미검증')},
-        [('update','roll',False),('roll','request',False),('context','layer',True),('layer','lcd',True)],250,
-        '첫 행은 실행에서 관측한 요청, 둘째 행은 그 이후의 정적 연결과 미검증 장치 경계입니다.','colorspace-render.json')
-    v['geometry']=('''<figure><div class="diagram-wrap"><svg class="diagram" viewBox="0 0 1000 235" role="img" aria-labelledby="focus-title focus-desc"><title id="focus-title">다섯 부분으로 만든 선택 강조 영역</title><desc id="focus-desc">논리 폭720 높이48. 위와 왼쪽 인덱스4d, 아래와 오른쪽4f, 안쪽4e. 설명용 세로 확대이며 실제 팔레트 RGB가 아니다.</desc><rect class="node" x="20" y="24" width="720" height="120"/><rect x="20" y="24" width="720" height="15" fill="#798ea8"/><rect x="20" y="24" width="10" height="110" fill="#798ea8"/><rect x="20" y="134" width="720" height="10" fill="#d5a775"/><rect x="730" y="34" width="10" height="110" fill="#d5a775"/><rect x="30" y="34" width="700" height="100" fill="#294757"/><text class="label" x="45" y="70">내부: [4, y+4, 712, 40, 0x4e]</text><text class="label" x="45" y="101">옵션 문구: (96, y) · y = 64 또는 112</text><text class="label" x="760" y="55">위·왼쪽 0x4d</text><text class="label" x="760" y="87">아래·오른쪽 0x4f</text><text class="sub" x="20" y="177">실제 요청: 위 720×6 / 왼쪽 4×44 / 아래 720×4 / 오른쪽 4×44 / 내부 712×40</text><text class="sub" x="20" y="205">설명용 배색·세로 확대. 팔레트의 실제 RGB와 최종 도형 픽셀은 미검증.</text></svg></div><figcaption>좌표·팔레트 인덱스의 재구성 도식. <a href="analysis/colorspace-render.json">[R1: frame_commands]</a></figcaption></figure>''')
-    v['rows']=''.join(f'<tr><th>{i+1}</th><td>{"영어" if r["locale"]==0 else "프랑스어"}</td><td>{"sRGB" if r["setting"]==0 else "AdobeRGB"}</td><td>{len(r["text"])}</td><td>{r["draw_before"]} → {r["draw_after"]}</td><td>{r["show_before"]} → {r["show_after"]}</td></tr>' for i,r in enumerate(data['replay']['refresh_cases']))
-    v['k3_commit']=data['references'][1]['commit']
-    page=(ROOT/'analysis/render-template.html').read_text(encoding='utf-8')
-    for k,value in v.items():page=page.replace('{{'+k+'}}',value)
-    assert '{{' not in page
-    (ROOT/'colorspace-render-report.html').write_text(page,encoding='utf-8',newline='\n')
-    print('Built colorspace-render-report.html')
-
-
-if __name__=='__main__':
+if __name__ == '__main__':
     build_loader()
-    build_render()
-

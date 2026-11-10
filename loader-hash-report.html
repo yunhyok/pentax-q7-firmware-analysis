@@ -1,18 +1,453 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — 기록 헤더와 MD5 작업 경로</title><meta name="description" content="281바이트 헤더 변환과 원본 MD5·큐 작업자·카드 재시도 경로"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head><body>
-<header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / HEADER AND HASH</p><h1>기록 헤더와<br><span>MD5 작업 경로</span></h1><p class="lead">첫 기록 요청의 버퍼에서 달라진 281바이트를 원본 쓰기로 재구성했습니다. 별도로 MD5와 해시 작업자, 카드 읽기 콜백을 이어 실행해 계산 결과가 완료 판정과 재시도에 쓰이는 경로를 확인했습니다. 저장 장치와 큐의 동작은 합성 조건입니다.</p><p class="links"><a href="storage-readiness-report.html">저장 경계·렌즈 상태</a><a href="recompiled-numeric-report.html">재컴파일·패키지</a><a href="index.html">전체 분석</a></p></div><aside class="milestone"><strong>281 bytes</strong><span>원본 쓰기로 설명한 차이</span><strong>26 + 8 + 9</strong><span>MD5 / 작업자 / 래퍼 사례</span><strong>7 / 9</strong><span>콜백 사례 / 해시 작업</span></aside></header>
-<nav aria-label="문서 목차"><a href="#header">헤더 변환</a><a href="#partition">파티션 필드</a><a href="#md5">MD5·메시지</a><a href="#callback">카드 재시도</a><a href="#comparison">K-3 대조</a><a href="#limits">검증·한계</a></nav><main><p class="update-banner"><strong>후속 근거:</strong> 기록 실패 뒤 재시도, 135청크 이후 최종 반환과 원본 버퍼 재구성은 <a href="burn-continuation-report.html">NAND 후속 기록 보고서</a>에 있습니다.</p>
-<section id="header"><p class="eyebrow">01 / PROGRAM-SOURCE ATTRIBUTION</p><h2>차이를 만든 쓰기를 원본 코드에 연결한다</h2><p>앞선 합성 NAND 조건에서 관측한 3,242회는 VEX 메모리 쓰기 이벤트 수입니다. SWL/SWR가 바이트 쓰기로 나뉘므로 MIPS 저장 명령 실행 횟수와는 집계 단위가 다릅니다. 헤더·섹션 표·파티션 필드를 바꾸는 170개 이벤트만 적용해도 최종 버퍼와 같은 해시가 나왔습니다. 뒤의 3,072개 이벤트는 첫 1,536바이트를 복사하며 이 사례에서는 값을 바꾸지 않았습니다. <a href="analysis/header-hash.json">[H1: header_replay.trace]</a></p><figure><div class="diagram-wrap"><svg class="diagram" viewBox="0 0 1000 250" role="img" aria-labelledby="header-writes-title header-writes-desc"><title id="header-writes-title">입력 청크에서 첫 기록 버퍼까지</title><desc id="header-writes-desc">VEX 이벤트 수와 MIPS 명령 수는 다른 단위입니다. 마지막 복사 없이도 같은 최종 버퍼를 재구성했습니다.</desc><defs><marker id="header-writes-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8Z"/></marker></defs><path class="edge " d="M290 46 L350 46" marker-end="url(#header-writes-arrow)"/><path class="edge " d="M620 46 L700 46" marker-end="url(#header-writes-arrow)"/><path class="edge " d="M290 186 L350 186" marker-end="url(#header-writes-arrow)"/><path class="edge " d="M620 186 L700 186" marker-end="url(#header-writes-arrow)"/><rect class="node" x="20" y="10" width="270" height="72" rx="5"/><text class="label" x="32" y="39">원본 카드 청크</text><text class="sub" x="32" y="63">131,072바이트 / 고정 SHA</text><rect class="node" x="350" y="10" width="270" height="72" rx="5"/><text class="label" x="362" y="39">170개 필드 쓰기 이벤트</text><text class="sub" x="362" y="63">헤더 · 섹션 표 · 파티션</text><rect class="node" x="700" y="10" width="270" height="72" rx="5"/><text class="label" x="712" y="39">최종 281바이트 차이</text><text class="sub" x="712" y="63">모두 첫 1,536바이트 안</text><rect class="node" x="20" y="150" width="270" height="72" rx="5"/><text class="label" x="32" y="179">마지막 1,536바이트 복사</text><text class="sub" x="32" y="203">3,072개 VEX 쓰기 이벤트</text><rect class="node" x="350" y="150" width="270" height="72" rx="5"/><text class="label" x="362" y="179">원본 실행 결과 해시 일치</text><text class="sub" x="362" y="203">a13f08d3…72720e29</text><rect class="node" x="700" y="150" width="270" height="72" rx="5"/><text class="label" x="712" y="179">첫 op 5 / FCU 진입</text><text class="sub" x="712" y="203">호출됨 · op 5 처리 전 중단</text></svg></div><figcaption>VEX 이벤트 수와 MIPS 명령 수는 다른 단위입니다. 마지막 복사 없이도 같은 최종 버퍼를 재구성했습니다. <a href="analysis/header-hash.json">[근거]</a></figcaption></figure><p>헤더 +0x214는 0x1367b에서 0x13600으로 바뀌고 +0x310과 +0x314에는 설치 헤더에서 받은 640·384가 복사됩니다. +0x3a8과 +0x3ac에는 합성 영역 정보 1·0이 기록됩니다. 섹션 0의 36바이트와 섹션 1~6의 216바이트도 출력 헤더로 복사됩니다. 모든 차이는 첫 1,536바이트 안에 있습니다. <a href="tools/check_burn_header.py">[H2: trace]</a></p><pre><code>+0x214 = 0x1367b + 0x982 − 0xa00 + 3 = 0x13600
-+0x310 / +0x314 ← installed header: 640 / 384
-+0x3a8 / +0x3ac ← synthetic zone fields: 1 / 0
-program source SHA256:
-a13f08d36e17dc3bfb9deb769d3e1eab95acfb48bfa437ac734d069c72720e29</code></pre><p>+0x230과 설치 헤더 [0x318, 0x398)의 128바이트도 복사되지만 이번 입력에서는 기존 값과 같습니다. 변경 범위와 쓰기 명령별 이벤트 수·해시는 H1에 기록했습니다. 첫 op 5의 호출 명령과 delay slot을 실행한 뒤 FCU 진입점 0x8008249c에서 멈췄으며 op 5 처리는 실행하지 않았습니다.</p></section>
-<section id="partition"><p class="eyebrow">02 / PARTITION FIELD WRITES</p><h2>조건과 숫자 필드를 먼저 확인한다</h2><p>UpdatePartitionInMBRTable은 섹션 +0xc가 999이거나 +4의 span이 0이면 쓰기를 생략합니다. 나머지 시험 사례에서는 ID당 16바이트 간격으로 +8에 시작값, +12에 길이, +4에 1을 씁니다. ID 0일 때만 +0에 0x80을 직접 씁니다. 실제 합성 헤더의 네 항목 모두 +0이 0x80인 것은 나머지 항목의 기존 값도 같았기 때문입니다. 이 필드만으로 파일시스템 종류나 실제 NAND 배치를 확정하지 않았습니다. <a href="analysis/header-hash.json">[H1: findings.partition·mbr_cases]</a></p><div class="table-wrap"><table><caption>MBR 기준점: 헤더 +0x200의 값 2 × 512 = 0x400. 합성 설치 조건의 결과</caption><thead><tr><th>ID</th><th>+0 바이트</th><th>+4 바이트</th><th>+8 시작값</th><th>+12 길이</th></tr></thead><tbody><tr><th>0</th><td>0x80</td><td>1</td><td>81,920</td><td>24,576</td></tr><tr><th>1</th><td>0x80</td><td>1</td><td>13,280</td><td>68,640</td></tr><tr><th>2</th><td>0x80</td><td>1</td><td>106,496</td><td>4,096</td></tr><tr><th>3</th><td>0x80</td><td>1</td><td>110,592</td><td>53,248</td></tr></tbody></table></div><p>7개 별도 사례에서 skip 조건, ID 0~3의 필드 쓰기, 주변 512바이트와 보호 영역을 비교했습니다. 원본 함수 주소는 <code>0x8001a3a8</code>입니다. <a href="tools/check_burn_header.py">[H2: replay_mbr]</a></p></section>
-<section id="md5"><p class="eyebrow">03 / NATIVE DIGEST AND WORKER</p><h2>계산 결과를 실제 완료 메시지로 넘긴다</h2><p>원본 md5_init·md5_append·md5_finish와 내부 압축 함수를 대체하지 않고 실행했습니다. 길이 0·1·3·55·56·63·64·65·119·120·127·128·129바이트를 한 번에 넣거나 나누어 넣은 26개 사례에서 기준값과 일치했습니다. 입력·컨텍스트·출력 주변의 보호 바이트와 종료 전 비트 수도 확인했습니다. <a href="analysis/header-hash.json">[H1: hash_replay.primitive_cases]</a></p><pre><code>MD5("")    = d41d8cd98f00b204e9800998ecf8427e
-MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre><p>알고리즘과 두 벡터는 <a href="https://www.rfc-editor.org/rfc/rfc1321#appendix-A.5">RFC 1321</a>과 대조했습니다. 펌웨어의 정책은 원본 명령과 실행 결과로 판단했습니다.</p><p>BurnHashManager는 입력 큐에서 명령 0으로 초기화하고 1로 데이터를 추가하며 2로 최종 다이제스트를 비교합니다. 같으면 결과 큐에 3, 다르면 4를 보냅니다. 명령 5는 결과 큐로 전달한 뒤 종료합니다. 추가할 포인터의 0x40000000 비트가 있으면 0x80000000을 OR하고 없으면 0xdfffffff로 AND합니다. 두 포인터 분기도 합성 주소에서 실행했으며 실제 캐시 효과를 검증한 것은 아닙니다. <a href="analysis/header-hash.json">[H1: worker_cases]</a></p><figure><div class="diagram-wrap"><svg class="diagram" viewBox="0 0 1000 250" role="img" aria-labelledby="hash-queue-title hash-queue-desc"><title id="hash-queue-title">원본 콜백과 직렬화한 해시 작업자</title><desc id="hash-queue-desc">점선은 합성 스케줄링입니다. 실제 3/4 응답만 콜백으로 되돌리고, 작업자 종료용 5 응답은 시험 도구가 소비합니다.</desc><defs><marker id="hash-queue-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8Z"/></marker></defs><path class="edge " d="M290 46 L350 46" marker-end="url(#hash-queue-arrow)"/><path class="edge " d="M620 46 L700 46" marker-end="url(#hash-queue-arrow)"/><path class="edge uncertain" d="M835 82 L835 150" marker-end="url(#hash-queue-arrow)"/><path class="edge " d="M700 186 L620 186" marker-end="url(#hash-queue-arrow)"/><path class="edge " d="M350 186 L290 186" marker-end="url(#hash-queue-arrow)"/><rect class="node" x="20" y="10" width="270" height="72" rx="5"/><text class="label" x="32" y="39">카드 콜백 / 0x80019014</text><text class="sub" x="32" y="63">실험: 전체 64 + 16바이트</text><rect class="node" x="350" y="10" width="270" height="72" rx="5"/><text class="label" x="362" y="39">원본 해시 래퍼</text><text class="sub" x="362" y="63">세 워드 메시지 0 → 1 → 2</text><rect class="node" x="700" y="10" width="270" height="72" rx="5"/><text class="label" x="712" y="39">입력 큐 +0x127c</text><text class="sub" x="712" y="63">실제 메시지를 모델이 전달</text><rect class="node" x="20" y="150" width="270" height="72" rx="5"/><text class="label" x="32" y="179">결과 큐 +0x12b4</text><text class="sub" x="32" y="203">일치 3 / 불일치 4</text><rect class="node" x="350" y="150" width="270" height="72" rx="5"/><text class="label" x="362" y="179">원본 MD5 + memcmp(16)</text><text class="sub" x="362" y="203">계산 결과를 대체하지 않음</text><rect class="node" x="700" y="150" width="270" height="72" rx="5"/><text class="label" x="712" y="179">BurnHashManager</text><text class="sub" x="712" y="203">복사한 RAM에서 원본 실행</text></svg></div><figcaption>점선은 합성 스케줄링입니다. 실제 3/4 응답만 콜백으로 되돌리고, 작업자 종료용 5 응답은 시험 도구가 소비합니다. <a href="analysis/hash-card.json">[근거]</a></figcaption></figure><p>초기화·추가 래퍼는 큐 API의 반환 상태와 무관하게 1을 반환합니다. 완료 래퍼는 전달받은 첫 워드가 3인지 검사합니다. 상태값을 달리 준 9개 합성 사례에서 이 계약을 확인했습니다. 큐가 정상 전달된다는 조건과 해시 계산의 성공을 구분해야 하며 이 결과만으로 실제 큐 오류의 영향이나 발생 가능성을 판단하지 않았습니다. <a href="tools/check_burn_hash.py">[H3: wrappers]</a></p></section>
-<section id="callback"><p class="eyebrow">04 / CARD RETRY WITH NATIVE HASH RESULTS</p><h2>성공 값 주입을 실제 해시 비교로 대체한다</h2><p>해시 사용 플래그를 1로 둔 카드 콜백 7개 사례에서 원본 래퍼와 작업자까지 연결했습니다. 80바이트 전체를 읽는 조건에서 앞 64바이트를 해시하고 뒤 16바이트와 비교합니다. 작업자가 보낸 3은 성공으로 이어지고 4는 되감기와 재시도로 이어집니다. 재시도 성공, 두 번 불일치, 읽기 오류와 되감기 오류를 포함해 원본 코드의 해시 작업 9건을 관측했습니다. 작업자에는 콜백 메모리 복사본과 실제 메시지를 넘기고 순서대로 실행했습니다. <a href="analysis/hash-card.json">[H4: replay]</a></p><div class="table-wrap"><table><caption>원본 콜백 완료 값. 성공 읽기는 80바이트 전체를 공급</caption><thead><tr><th>사례</th><th>해시 작업 수</th><th>작업자 결과</th><th>콜백 반환</th></tr></thead><tbody><tr><th>match</th><td>1</td><td>3</td><td>1</td></tr><tr><th>first-digest-byte-retry-match</th><td>2</td><td>4 → 3</td><td>1</td></tr><tr><th>last-digest-byte-retry-new-payload</th><td>2</td><td>4 → 3</td><td>1</td></tr><tr><th>first-and-last-digest-byte-fail</th><td>2</td><td>4 → 4</td><td>0</td></tr><tr><th>digest-mismatch-seek-error</th><td>1</td><td>4</td><td>0</td></tr><tr><th>file-read-error</th><td>0</td><td>—</td><td>0</td></tr><tr><th>digest-mismatch-retry-read-error</th><td>1</td><td>4</td><td>0</td></tr></tbody></table></div><p>원본은 성공한 읽기의 실제 바이트 수에서 16을 빼 해시 길이와 뒤쪽 다이제스트 주소를 정합니다. 64+16은 시험 입력이지 모든 패키지의 고정 청크 크기가 아닙니다. 되감기 호출은 원본 actual count, high=0, option=3을 사용합니다. <a href="analysis/hash-card.json">[H4: findings.request·retry]</a></p></section>
-<section id="comparison"><p class="eyebrow">05 / K-3 MARK III COMPARISON</p><h2>같은 항목을 기종별 근거로 판단한다</h2><p>K-3 Mark III의 고정된 분석 자료에서도 쓰기·재읽기 경계와 내부·외부 검사를 분리합니다. Q7에서는 작은 헤더 필드 변환과 선택적 MD5 큐 경로를 원본 MIPS로 재현했습니다. 두 기종의 프로세서·패키지·업데이트 절차가 다르므로 한쪽의 통과 결과를 다른 쪽에 적용하지 않았습니다.</p><div class="table-wrap"><table><thead><tr><th>항목</th><th>Q7</th><th>K-3 Mark III의 고정 자료</th></tr></thead><tbody><tr><th>저장 전 처리</th><td>합성 NAND 헤더 변환 281바이트</td><td>descriptor·bank·write/read 경계</td></tr><tr><th>계산·판정</th><td>선택적 MD5와 큐·재시도 연결</td><td>내부·외부 checksum과 버퍼 검사</td></tr><tr><th>재구성</th><td>448개 고정 압축 슬롯</td><td>stored-block 재인코딩과 재추출</td></tr><tr><th>실기 수용</th><td colspan="2">이번 근거로 확정할 수 없음</td></tr></tbody></table></div><p><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/a736ff253a1c528e31c08afa23ad4ebe37d1fbbb/analysis/update-resource-evidence.json">[K1: 저장 경계]</a> · <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/cc954e41720a7098b0b6d53ece8c7471c7652082/analysis/recompiled-integration.json">[K2: 원본 호출·패키지 검사]</a>. 새 Q7 결과로 K-3 상태를 추정하지 않았습니다.</p></section>
-<section id="limits"><p class="eyebrow">06 / REPRODUCTION AND LIMITS</p><h2>검증한 경계와 남은 경계를 함께 기록한다</h2><p>설치 헤더와 NAND 형상은 합성값이며 첫 기록 요청은 FCU 진입에서 op 5 처리 전에 멈췄습니다. 해시 콜백 검사는 전체 길이의 읽기만 다뤘고 짧은 읽기나 실제 RTOS 스케줄링은 검증하지 않았습니다. 전체 BurnNand 기록·복구 루프, 하드웨어 캐시, 카메라의 패키지 수용·기록·부팅도 미검증입니다.</p><figure><div class="diagram-wrap"><svg class="diagram" viewBox="0 0 1000 250" role="img" aria-labelledby="hash-boundary-title hash-boundary-desc"><title id="hash-boundary-title">서로 다른 검증 경계</title><desc id="hash-boundary-desc">위 행은 계산에서 콜백 판정으로 넓힌 범위, 아래 행은 저장 경로의 남은 범위입니다. 전체 업데이트를 한 번에 실행했다는 뜻은 아닙니다.</desc><defs><marker id="hash-boundary-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8Z"/></marker></defs><path class="edge " d="M290 46 L350 46" marker-end="url(#hash-boundary-arrow)"/><path class="edge " d="M620 46 L700 46" marker-end="url(#hash-boundary-arrow)"/><path class="edge uncertain" d="M290 186 L350 186" marker-end="url(#hash-boundary-arrow)"/><path class="edge uncertain" d="M620 186 L700 186" marker-end="url(#hash-boundary-arrow)"/><rect class="node" x="20" y="10" width="270" height="72" rx="5"/><text class="label" x="32" y="39">MD5 단독 26사례</text><text class="sub" x="32" y="63">원본 산술·패딩·분할 입력</text><rect class="node" x="350" y="10" width="270" height="72" rx="5"/><text class="label" x="362" y="39">작업자 8 + 래퍼 9사례</text><text class="sub" x="362" y="63">명령·포인터 변환·완료 값</text><rect class="node" x="700" y="10" width="270" height="72" rx="5"/><text class="label" x="712" y="39">콜백 7사례 / 작업 9건</text><text class="sub" x="712" y="63">실제 결과로 재시도 분기</text><rect class="node" x="20" y="150" width="270" height="72" rx="5"/><text class="label" x="32" y="179">헤더 281바이트 재구성</text><text class="sub" x="32" y="203">합성 설치 헤더·NAND 형상</text><rect class="node" x="350" y="150" width="270" height="72" rx="5"/><text class="label" x="362" y="179">전체 기록·복구 루프</text><text class="sub" x="362" y="203">정상·오류 종료 연속 실행 필요</text><rect class="node" x="700" y="150" width="270" height="72" rx="5"/><text class="label" x="712" y="179">실제 카메라 수용·부팅</text><text class="sub" x="712" y="203">오프라인 검사로 확정 불가</text></svg></div><figcaption>위 행은 계산에서 콜백 판정으로 넓힌 범위, 아래 행은 저장 경로의 남은 범위입니다. 전체 업데이트를 한 번에 실행했다는 뜻은 아닙니다. <a href="analysis/header-hash.json">[근거]</a></figcaption></figure><p>헤더·해시 word 101개와 함수 범위 14개, 카드 연결 word 71개와 함수 범위 10개를 원본과 대조했습니다. MD5 26+8+9와 카드 7사례는 작업자·조정자의 별도 실행 결과가 일치했습니다. MBR 7사례도 독립 재실행했고 전체 헤더 추적은 조정자가 수행했습니다. <a href="analysis/header-hash.json">[H1]</a> · <a href="analysis/hash-card.json">[H4]</a></p><pre><code>python tools/check_burn_header.py &lt;original.bin&gt; --output &lt;new-header.json&gt;
-python tools/check_burn_hash.py &lt;original.bin&gt; --output &lt;new-hash.json&gt;
-python tools/check_hash_card.py &lt;original.bin&gt; --output &lt;new-card.json&gt;
-python tools/verify_report.py --firmware &lt;original.bin&gt;</code></pre><p><a href="analysis/io-editorial.json">한국어 검토 기록</a> · <a href="analysis/hq-status.json">연구 상태</a></p></section></main><footer>오프라인 원본 코드 분석입니다. 설치용 펌웨어를 제공하지 않습니다.</footer></body></html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>첫 블록 버퍼의 281바이트와 MD5 검사 경로 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Q7 업데이트 로더가 첫 블록을 기록하기 직전에 바꾸는 281바이트를 원본 쓰기 명령에 연결하고, 로더 안의 MD5 코드·해시 작업자·카드 읽기 재시도를 원본 코드로 이어 실행한 기록입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-update.html">업데이트와 재패킹</a></li><li aria-current="page">첫 블록 281바이트와 MD5 경로</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">업데이트와 재패킹 · 로더가 첫 블록을 쓰기 직전</p>
+<h1>첫 블록 버퍼의 281바이트와 MD5 검사 경로</h1>
+<p class="lead">업데이트 로더는 카드에서 읽은 첫 블록을 그대로 기록하지 않고 일부를 고쳐 씁니다. 어디를 무엇으로 고치는지, 그리고 읽은 데이터를 MD5로 확인하는 선택 경로가 어떻게 동작하는지 원본 코드를 실행해 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 로더가 카드의 데이터를 저장장치에 쓰기까지</a></li><li><a href="#header">첫 블록 버퍼에서 바뀌는 281바이트</a></li><li><a href="#partition">MBR 파티션 표에 쓰는 네 항목</a></li><li><a href="#md5">MD5 계산 코드와 해시 작업자</a></li><li><a href="#callback">MD5 결과에 따라 카드 읽기를 다시 시도하는 규칙</a></li><li><a href="#comparison">K-3 Mark III와 비교</a></li><li><a href="#limits">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>로더는 첫 블록(131,072바이트)을 저장장치에 쓰기 직전에 <strong>281바이트</strong>를 바꿉니다. 바뀌는 곳은 모두 맨 앞 1,536바이트 안의 헤더와 파티션 표입니다.</li>
+<li>281바이트를 전부 원본 코드의 쓰기 명령에 연결했습니다. 그 쓰기만 원본 데이터에 적용해도 로더가 준비한 버퍼와 SHA-256이 같았습니다.</li>
+<li>로더에 들어 있는 MD5 코드는 26개 입력에서 표준 MD5와 같은 값을 냈습니다. 이 코드를 부르는 <strong>해시 작업자</strong>와 카드 읽기 함수까지 이어 실행했습니다. 값이 맞으면 성공하고, 다르면 되감아 한 번만 더 읽습니다.</li>
+<li>실제 업데이트 파일은 이 MD5 경로를 켜지 않습니다. MD5 시험은 설정값을 바꾼 합성 조건입니다. 설치된 헤더, 저장장치 크기, 큐 전달도 시험용 값이며 카메라의 저장장치에는 아무것도 쓰지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>첫 블록 버퍼의 변경 281바이트와, 그것을 만든 쓰기 이벤트 170개</li>
+<li>파티션 쓰기 함수 7사례</li>
+<li>MD5 계산 26사례, 해시 작업자 8사례, 해시 래퍼 9사례</li>
+<li>카드 읽기 함수 7사례 (해시 작업 9건)</li>
+<li>원본 워드 101개와 71개, 함수 구간 15개를 주소·해시로 대조</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>카메라에 이미 설치된 헤더와 저장장치 크기 (1,024블록)</li>
+<li>저장장치의 응답 (예비 영역은 모두 FF, 상태는 성공)</li>
+<li>해시 플래그 1, 80바이트 시험 레코드, 파일 읽기·되감기의 결과</li>
+<li>큐 전달 순서 (RTOS 대신 시험 도구가 차례로 전달)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 카메라의 설치 헤더와 NAND 배치</li>
+<li>짧게 읽힌 경우, 실제 RTOS 스케줄링, 캐시의 영향</li>
+<li>해시 플래그가 실제로 켜지는 조건</li>
+<li>실제 NAND 기록과 카메라의 수용·부팅</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 로더가 카드의 데이터를 저장장치에 쓰기까지</h2>
+<p>Q7의 업데이트 파일 맨 앞에는 <dfn title="업데이트 파일에 든 별도 실행 파일. 저장장치에 펌웨어를 기록하는 코드를 담고 있으며, 내장 ELF 번호로 E01이라고 부릅니다">로더(E01)</dfn>가 들어 있습니다. 로더의 <code>BurnNand</code> 함수는 카드에 있는 펌웨어 본문을 131,072바이트씩 읽어 카메라 안의 <dfn title="Q7이 펌웨어를 보관하는 내장 저장장치. 블록 단위로 지운 뒤에 써야 합니다">NAND 플래시</dfn>에 씁니다. 이 문서는 그 과정의 두 지점을 다룹니다.</p>
+<ol class="flow">
+<li class="ok"><strong>카드에서 읽기</strong><span>두 번 읽어 비교하거나 MD5로 검사 — <a href="loader-lens-report.html">Loader 입력 검증</a>, 이 문서의 <a href="#md5">MD5</a></span></li>
+<li class="ok"><strong>배치표와 사전 검사</strong><span>어디에 쓸지 정하고 블록을 살핌 — <a href="storage-readiness-report.html">저장 경계</a></span></li>
+<li class="key"><strong>첫 블록 버퍼 고치기</strong><span>이 문서의 <a href="#header">281바이트</a></span></li>
+<li class="model"><strong>기록·재시도·마무리</strong><span>저장장치 응답은 모델 — <a href="burn-continuation-report.html">NAND 재시도와 최종 반환</a></span></li>
+<li class="open"><strong>실제 NAND와 부팅</strong><span>확인하지 않음</span></li>
+</ol>
+<h3>읽는 데 필요한 말</h3>
+<ul>
+<li><strong>블록과 섹터</strong>: 섹터는 512바이트입니다. 시험 조건에서는 256섹터, 곧 131,072바이트를 블록 하나로 두었습니다. 로더가 카드에서 한 번에 읽는 크기(청크)와 같습니다.</li>
+<li><strong>설치된 헤더</strong>: 카메라의 저장장치에 이미 기록돼 있는 배치 정보입니다. 업데이트 파일에 든 헤더와 구분합니다. 이 문서에서는 시험용으로 만든 값을 넣었습니다.</li>
+<li><strong>섹션</strong>: 저장장치를 용도별로 나눈 구역입니다. 로더는 번호 0~6으로 다루고, 섹션마다 36바이트짜리 정보를 헤더에 둡니다.</li>
+<li><strong>해시 플래그</strong>: 업데이트 헤더의 값 하나입니다. 0이면 카드를 두 번 읽어 비교하고, 1이면 MD5 검사를 씁니다. <a href="loader-lens-report.html">실제 파일의 값은 0</a>입니다.</li>
+<li><strong>다이제스트</strong>: MD5가 입력에서 계산해 내는 16바이트 값입니다. 데이터가 도중에 바뀌었는지 확인하는 데 씁니다.</li>
+<li><strong>연산 번호</strong>: 로더가 저장 계층에 보내는 요청의 내부 번호입니다. 이 문서에는 연산 5(기록)가 나옵니다. 번호별 역할은 <a href="storage-readiness-report.html#program">저장 경계 문서의 표</a>에 있습니다.</li>
+</ul>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>실제 카메라의 저장장치 내용은 알지 못합니다. 그래서 512바이트 섹터 256개가 한 블록인 1,024블록짜리 저장장치와, 사용자 영역이 640번 블록에서 시작해 384블록인 설치 헤더를 만들어 넣었습니다. 아래 결과는 이 조건에서 원본 코드가 한 일입니다.</p></div>
+</section>
+
+<section id="header">
+<h2>첫 블록 버퍼에서 바뀌는 281바이트</h2>
+<p class="takeaway">바뀐 281바이트는 모두 맨 앞 1,536바이트 안에 있고 네 묶음으로 나뉩니다. 전부 원본 코드의 쓰기 명령에서 나온 값입니다.</p>
+
+<figure class="diagram">
+<figcaption>첫 블록 버퍼에서 값이 바뀐 곳</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 240" role="img" aria-labelledby="dg-buf-title dg-buf-desc">
+<title id="dg-buf-title">첫 블록 버퍼의 배치와 바뀐 281바이트의 위치</title>
+<desc id="dg-buf-desc">위쪽 막대는 카드에서 읽은 첫 청크 131,072바이트 전체입니다. 맨 앞 1,536바이트만 바뀌고 나머지 129,536바이트는 그대로입니다. 아래쪽 막대는 맨 앞 1,536바이트를 확대한 것입니다. 바뀐 곳은 네 묶음입니다. 첫째는 오프셋 0x214의 크기 값 1바이트, 둘째는 0x238부터의 섹션 1~6 정보와 설치 값 둘을 합친 224바이트, 셋째는 0x3a8부터의 영역 정보와 섹션 0 정보 44바이트, 넷째는 0x400에서 시작하는 MBR 안 파티션 표의 12바이트입니다. 0x318부터 0x397까지는 다시 썼지만 값이 같았습니다.</desc>
+<defs><marker id="dg-buf-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="h" x="8" y="18">카드에서 읽은 첫 청크 131,072바이트</text>
+<rect class="b mute" x="8" y="28" width="784" height="24" rx="4"/>
+<rect class="b key" x="8" y="28" width="10" height="24" rx="2"/>
+<text class="s" x="30" y="45">맨 앞 1,536바이트 (아래에 확대)</text>
+<text class="s end" x="780" y="45">나머지 129,536바이트는 바뀌지 않음</text>
+<path class="e" d="M13 52V114" marker-end="url(#dg-buf-ah)"/>
+
+<text class="t end" x="278" y="84">① 크기 값</text>
+<text class="s end" x="278" y="102">+0x214 · 1바이트</text>
+<path class="e" d="M272 106V116"/>
+<text class="t" x="468" y="84">③ 영역 정보와 섹션 0</text>
+<text class="s" x="468" y="102">+0x3a8~ · 44바이트</text>
+<path class="e" d="M482 106V116"/>
+<text class="t end" x="768" y="84">④ 파티션 표</text>
+<text class="s end" x="768" y="102">+0x5be~ · 12바이트</text>
+<path class="e" d="M751 106V116"/>
+
+<rect class="b" x="8" y="116" width="760" height="50" rx="4"/>
+<rect class="g" x="517" y="120" width="216" height="42" rx="4"/>
+<text class="s mid" x="135" y="146">업데이트 헤더</text>
+<text class="s mid" x="625" y="146">MBR 512바이트</text>
+<rect class="b key" x="270" y="116" width="4" height="50"/>
+<rect class="b key" x="289" y="116" width="111" height="50"/>
+<rect class="b mute" x="400" y="116" width="63" height="50"/>
+<rect class="b key" x="471" y="116" width="22" height="50"/>
+<rect class="b key" x="735" y="116" width="32" height="50"/>
+
+<text class="n mono" x="8" y="184">0x000</text>
+<text class="n mono mid" x="261" y="184">0x200</text>
+<text class="n mono mid" x="515" y="184">0x400</text>
+<text class="n mono end" x="768" y="184">0x600</text>
+<path class="e" d="M344 166V194"/>
+<text class="t mid" x="344" y="212">② 섹션 1~6 정보와 설치 값 둘</text>
+<text class="s mid" x="344" y="230">+0x238~ · 224바이트</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>값이 바뀐 곳 (합계 281바이트)</li><li><i></i>다시 썼지만 값이 같았던 곳</li></ul>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>바뀐 네 묶음. 위치는 버퍼 맨 앞에서 잰 오프셋입니다</caption>
+<thead><tr><th>묶음</th><th>위치</th><th class="n">바뀐 바이트</th><th>무엇을 쓰는가</th><th>쓰는 함수</th></tr></thead>
+<tbody>
+<tr><th scope="row">① 크기 값</th><td><code>+0x214</code></td><td class="n">1</td><td><code>0x1367b</code>를 <code>0x13600</code>으로 바꿉니다. 네 바이트 가운데 하나만 달라집니다.</td><td><code>BurnGetSectionsMap</code></td></tr>
+<tr><th scope="row">② 섹션 표와 설치 값</th><td><code>+0x238</code>~<code>+0x317</code></td><td class="n">224</td><td>섹션 1~6의 정보 216바이트를 복사합니다. 이어서 <code>+0x310</code>과 <code>+0x314</code>에 설치된 헤더의 값 640과 384를 복사합니다.</td><td><code>BurnGetSectionsMap</code></td></tr>
+<tr><th scope="row">③ 영역 정보와 섹션 0</th><td><code>+0x3a8</code>~<code>+0x3d3</code></td><td class="n">44</td><td><code>+0x3a8</code>과 <code>+0x3ac</code>에 저장장치 영역 정보 1과 0을 씁니다(합성 값). 이어서 <code>+0x3b0</code>에 섹션 0의 정보 36바이트를 복사합니다.</td><td><code>BurnNand</code>, <code>BurnGetSectionsMap</code></td></tr>
+<tr><th scope="row">④ 파티션 표</th><td><code>+0x5be</code>~<code>+0x5f7</code> 사이</td><td class="n">12</td><td>MBR 안 파티션 항목 네 개에 시작값·길이·고정 값을 씁니다. <a href="#partition">다음 절</a>에서 다룹니다.</td><td><code>UpdatePartitionInMBRTable</code></td></tr>
+</tbody>
+<tfoot><tr><th scope="row">합계</th><td></td><td class="n">281</td><td colspan="2">1 + 224 + 44 + 12</td></tr></tfoot>
+</table></div>
+
+<h3>크기 값의 계산</h3>
+<p>①의 새 값은 원본 코드가 다음 식으로 계산합니다.</p>
+<pre><code>+0x214 = 0x1367b + 0x982 − 0xa00 + 3 = 0x13600</code></pre>
+<p><code>0x1367b</code>는 업데이트 헤더 <code>+0x214</code>의 원래 값이고 <code>0x982</code>는 <code>+0x224</code>의 값입니다. <code>0xa00</code>은 코드 영역 크기를 올림한 값입니다. 마지막의 3은 원본 명령에 들어 있는 상수이며, 섹터 규칙을 추정해 넣은 값이 아닙니다. <a href="analysis/header-hash.json">[근거: findings.map_size]</a></p>
+
+<h3>쓰기 이벤트 3,242개 가운데 170개가 차이를 만듭니다</h3>
+<p>첫 기록 요청 직전까지 에뮬레이터는 이 버퍼에 쓰는 이벤트를 3,242개 기록했습니다. 이 수는 에뮬레이터(VEX)가 센 메모리 쓰기 횟수입니다. <code>SWL</code>·<code>SWR</code> 명령은 에뮬레이터 안에서 바이트 단위 쓰기 여러 개로 나뉘므로, MIPS 저장 명령이 실행된 횟수와는 단위가 다릅니다.</p>
+<ul>
+<li><strong>앞의 170개</strong>가 헤더·섹션 표·파티션 표를 바꿉니다. 이 170개만 원본 청크에 적용해도 최종 버퍼와 같은 SHA-256이 나왔습니다.</li>
+<li><strong>뒤의 3,072개</strong>는 명령 8개가 맨 앞 1,536바이트를 통째로 다시 복사하는 구간입니다. 이 사례에서는 값이 하나도 바뀌지 않았습니다.</li>
+</ul>
+<p>그림의 회색 칸(<code>0x318</code>~<code>0x397</code>, 128바이트)과 <code>+0x230</code>의 4바이트는 설치된 헤더에서 복사하는 곳입니다. 이 입력에서는 원래 값과 같아서 차이에 들지 않았습니다. <a href="analysis/header-hash.json">[근거: header_replay.trace, findings.copied_fields]</a></p>
+<div class="callout warn"><strong class="label">어디까지 실행했나</strong>
+<p>첫 기록 요청은 연산 5, 섹터 0, 256섹터, 예비 영역 16바이트였습니다. 이 요청을 부르는 명령과 그 지연 슬롯까지 실행하고, 저장 계층의 진입점 <code>0x8008249c</code>에서 멈췄습니다. 기록 자체는 실행하지 않았습니다. 기록이 실패했을 때의 재시도와, 135개 청크를 다 쓴 뒤의 마무리를 모델로 이어 본 결과는 <a href="burn-continuation-report.html">NAND 재시도와 최종 반환</a>에 있습니다.</p></div>
+
+<details class="evidence"><summary>바뀐 범위 14개와 버퍼 해시</summary>
+<div class="table-wrap"><table class="fit compact">
+<caption>값이 바뀐 연속 범위 (끝 포함)와 그 크기</caption>
+<thead><tr><th>오프셋</th><th class="n">바이트</th><th>속한 곳</th></tr></thead>
+<tbody><tr><td><code>0x214</code></td><td class="n">1</td><td>헤더</td></tr><tr><td><code>0x238</code>~<code>0x317</code></td><td class="n">224</td><td>헤더</td></tr><tr><td><code>0x3a8</code>~<code>0x3d3</code></td><td class="n">44</td><td>헤더</td></tr><tr><td><code>0x5be</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5c2</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5c7</code>~<code>0x5c8</code></td><td class="n">2</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5cb</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5d2</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5d6</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5da</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5e2</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5e7</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5f2</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr><tr><td><code>0x5f7</code></td><td class="n">1</td><td>MBR 파티션 표</td></tr></tbody>
+</table></div>
+<dl class="kv">
+<dt>카드에서 읽은 청크의 SHA-256</dt><dd><code class="wrap">7e8bacdadfd57f7f2d6044d433f9a0ade5fa920a57c779a0cbdc6393366b15df</code></dd>
+<dt>기록 직전 버퍼의 SHA-256</dt><dd><code class="wrap">a13f08d36e17dc3bfb9deb769d3e1eab95acfb48bfa437ac734d069c72720e29</code></dd>
+<dt>첫 기록 요청의 인수</dt><dd><code class="wrap">0x10000000, 0x5, 0x0, 0x100, 0x10010000, 0x70007a98, 0x10</code> (복귀 주소 <code>0x80011e10</code>)</dd>
+</dl>
+</details>
+<details class="evidence"><summary>버퍼에 쓴 명령 35개</summary>
+<div class="table-wrap"><table class="compact">
+<caption>명령 주소별 쓰기 이벤트 수와 쓴 범위. 이벤트 수의 합은 3,242입니다</caption>
+<thead><tr><th>명령 주소</th><th>속한 함수</th><th class="n">이벤트</th><th>쓴 범위</th><th>하는 일</th><th>최종 값</th></tr></thead>
+<tbody><tr><td><code>0x80012fcc</code></td><td><code>BurnNand</code></td><td class="n">1</td><td><code>0x3a8</code>~<code>0x3ab</code></td><td>저장장치 영역 정보 두 값 (<code>+0x3a8</code>, <code>+0x3ac</code>)</td><td>바뀜</td></tr><tr><td><code>0x80012fd0</code></td><td><code>BurnNand</code></td><td class="n">1</td><td><code>0x3ac</code>~<code>0x3af</code></td><td>저장장치 영역 정보 두 값 (<code>+0x3a8</code>, <code>+0x3ac</code>)</td><td>바뀜</td></tr><tr><td><code>0x80013e88</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x000</code>~<code>0x5f3</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x80013e8c</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x000</code>~<code>0x5f3</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x80013e90</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x004</code>~<code>0x5f7</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x80013e94</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x004</code>~<code>0x5f7</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x80013e98</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x008</code>~<code>0x5fb</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x80013e9c</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x008</code>~<code>0x5fb</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x80013ea0</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x00c</code>~<code>0x5ff</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x80013ea4</code></td><td><code>BurnNand</code></td><td class="n">384</td><td><code>0x00c</code>~<code>0x5ff</code></td><td>맨 앞 1,536바이트를 통째로 다시 복사 (값은 그대로)</td><td>그대로</td></tr><tr><td><code>0x8001a3ec</code></td><td><code>UpdatePartitionInMBRTable</code></td><td class="n">1</td><td><code>0x5be</code>~<code>0x5be</code></td><td>파티션 항목 0의 <code>+0</code> 바이트</td><td>바뀜</td></tr><tr><td><code>0x8001a410</code></td><td><code>UpdatePartitionInMBRTable</code></td><td class="n">16</td><td><code>0x5c8</code>~<code>0x5f9</code></td><td>파티션 항목의 <code>+8</code> 시작값 (항목 4개)</td><td>바뀜</td></tr><tr><td><code>0x8001a414</code></td><td><code>UpdatePartitionInMBRTable</code></td><td class="n">16</td><td><code>0x5c6</code>~<code>0x5f7</code></td><td>파티션 항목의 <code>+8</code> 시작값 (항목 4개)</td><td>바뀜</td></tr><tr><td><code>0x8001a420</code></td><td><code>UpdatePartitionInMBRTable</code></td><td class="n">16</td><td><code>0x5cc</code>~<code>0x5fd</code></td><td>파티션 항목의 <code>+12</code> 길이 (항목 4개)</td><td>바뀜</td></tr><tr><td><code>0x8001a424</code></td><td><code>UpdatePartitionInMBRTable</code></td><td class="n">16</td><td><code>0x5ca</code>~<code>0x5fb</code></td><td>파티션 항목의 <code>+12</code> 길이 (항목 4개)</td><td>바뀜</td></tr><tr><td><code>0x8001a428</code></td><td><code>UpdatePartitionInMBRTable</code></td><td class="n">4</td><td><code>0x5c2</code>~<code>0x5f2</code></td><td>파티션 항목의 <code>+4</code> 바이트 (항목 4개)</td><td>바뀜</td></tr><tr><td><code>0x8001a95c</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">1</td><td><code>0x214</code>~<code>0x217</code></td><td>크기 값 <code>+0x214</code></td><td>바뀜</td></tr><tr><td><code>0x8001ac48</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">2</td><td><code>0x3b0</code>~<code>0x3c3</code></td><td>섹션 0 정보 36바이트를 <code>+0x3b0</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac4c</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">2</td><td><code>0x3b4</code>~<code>0x3c7</code></td><td>섹션 0 정보 36바이트를 <code>+0x3b0</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac50</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">2</td><td><code>0x3b8</code>~<code>0x3cb</code></td><td>섹션 0 정보 36바이트를 <code>+0x3b0</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac54</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">2</td><td><code>0x3bc</code>~<code>0x3cf</code></td><td>섹션 0 정보 36바이트를 <code>+0x3b0</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac68</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">1</td><td><code>0x3d0</code>~<code>0x3d3</code></td><td>섹션 0 정보 36바이트를 <code>+0x3b0</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac8c</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">13</td><td><code>0x238</code>~<code>0x2fb</code></td><td>섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac90</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">13</td><td><code>0x23c</code>~<code>0x2ff</code></td><td>섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac94</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">13</td><td><code>0x240</code>~<code>0x303</code></td><td>섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001ac98</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">13</td><td><code>0x244</code>~<code>0x307</code></td><td>섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001acb0</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">1</td><td><code>0x30c</code>~<code>0x30f</code></td><td>섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001acb4</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">1</td><td><code>0x308</code>~<code>0x30b</code></td><td>섹션 1~6 정보 216바이트를 <code>+0x238</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001af50</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">1</td><td><code>0x310</code>~<code>0x313</code></td><td>설치된 헤더의 두 값을 <code>+0x310</code>, <code>+0x314</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001af54</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">1</td><td><code>0x314</code>~<code>0x317</code></td><td>설치된 헤더의 두 값을 <code>+0x310</code>, <code>+0x314</code>에 복사</td><td>바뀜</td></tr><tr><td><code>0x8001af58</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">1</td><td><code>0x230</code>~<code>0x233</code></td><td><code>+0x230</code>에 복사 (이 입력에서는 같은 값)</td><td>그대로</td></tr><tr><td><code>0x8001af78</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">8</td><td><code>0x318</code>~<code>0x38b</code></td><td>설치된 헤더 <code>0x318</code>~<code>0x398</code>의 128바이트 복사 (이 입력에서는 같은 값)</td><td>그대로</td></tr><tr><td><code>0x8001af7c</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">8</td><td><code>0x31c</code>~<code>0x38f</code></td><td>설치된 헤더 <code>0x318</code>~<code>0x398</code>의 128바이트 복사 (이 입력에서는 같은 값)</td><td>그대로</td></tr><tr><td><code>0x8001af80</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">8</td><td><code>0x320</code>~<code>0x393</code></td><td>설치된 헤더 <code>0x318</code>~<code>0x398</code>의 128바이트 복사 (이 입력에서는 같은 값)</td><td>그대로</td></tr><tr><td><code>0x8001af84</code></td><td><code>BurnGetSectionsMap</code></td><td class="n">8</td><td><code>0x324</code>~<code>0x397</code></td><td>설치된 헤더 <code>0x318</code>~<code>0x398</code>의 128바이트 복사 (이 입력에서는 같은 값)</td><td>그대로</td></tr></tbody>
+</table></div>
+<p class="small muted">명령마다 (오프셋, 길이, 데이터)를 묶은 SHA-256은 근거 파일의 <code>groups</code>에 있습니다. <a href="tools/check_burn_header.py">[재현 도구: trace]</a></p>
+</details>
+</section>
+
+<section id="partition">
+<h2>MBR 파티션 표에 쓰는 네 항목</h2>
+<p class="takeaway">파티션 쓰기 함수는 섹션마다 16바이트 항목 하나에 시작값과 길이, 고정 값 1을 씁니다. 0번 항목에만 <code>0x80</code>을 직접 씁니다.</p>
+<p>버퍼 안 MBR의 위치는 업데이트 헤더가 정합니다. 헤더 <code>+0x200</code>의 값 2에 512를 곱한 <code>0x400</code>입니다. 파티션 항목은 그 안 <code>+0x1be</code>부터 16바이트 간격으로 네 개가 놓입니다. 원본 함수 <code>UpdatePartitionInMBRTable</code>(<code>0x8001a3a8</code>)이 섹션 정보에서 값을 꺼내 항목을 채웁니다.</p>
+<div class="table-wrap"><table>
+<caption>파티션 항목 하나(16바이트)에 로더가 쓰는 것</caption>
+<thead><tr><th>항목 안 위치</th><th>로더가 쓰는 값</th><th>값이 오는 곳</th><th>일반 MBR 규격에서 이 자리의 이름</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>+0</code></th><td><code>0x80</code> (ID 0일 때만)</td><td>상수</td><td>BootIndicator — <code>0x80</code>이면 부팅 파티션</td></tr>
+<tr><th scope="row"><code>+4</code></th><td>1</td><td>상수</td><td>OSType — 파티션 종류</td></tr>
+<tr><th scope="row"><code>+8</code></th><td>시작값 (32비트)</td><td>섹션 정보 <code>+0x14</code></td><td>StartingLBA — 시작 위치</td></tr>
+<tr><th scope="row"><code>+12</code></th><td>길이 (32비트)</td><td>섹션 정보 <code>+0x10</code></td><td>SizeInLBA — 크기</td></tr>
+</tbody>
+</table></div>
+<div class="callout"><strong class="label">참고</strong>
+<p>표의 맨 오른쪽 열은 <a href="https://uefi.org/specs/UEFI/2.10/05_GUID_Partition_Table_Format.html">UEFI 규격 5.2절의 Legacy MBR 표</a>에서 가져온 이름입니다. 일반 MBR도 파티션 표를 <code>+0x1be</code>(446)에 16바이트 항목 네 개로 두므로 위치와 간격이 같습니다. 다만 Q7이 값 1을 어떤 파일시스템으로 다루는지, 실제 NAND가 어떻게 나뉘어 있는지는 이 필드만으로 확정하지 않았습니다.</p></div>
+
+<div class="table-wrap"><table class="fit">
+<caption>합성 설치 조건에서 기록 버퍼에 들어간 네 항목</caption>
+<thead><tr><th>ID</th><th><code>+0</code> 바이트</th><th class="n"><code>+4</code> 바이트</th><th class="n"><code>+8</code> 시작값</th><th class="n"><code>+12</code> 길이</th></tr></thead>
+<tbody><tr><th scope="row">0</th><td><code>0x80</code></td><td class="n">1</td><td class="n">81,920</td><td class="n">24,576</td></tr><tr><th scope="row">1</th><td><code>0x80</code></td><td class="n">1</td><td class="n">13,280</td><td class="n">68,640</td></tr><tr><th scope="row">2</th><td><code>0x80</code></td><td class="n">1</td><td class="n">106,496</td><td class="n">4,096</td></tr><tr><th scope="row">3</th><td><code>0x80</code></td><td class="n">1</td><td class="n">110,592</td><td class="n">53,248</td></tr></tbody>
+</table></div>
+<p>네 항목 모두 <code>+0</code>이 <code>0x80</code>입니다. 로더가 직접 쓴 것은 ID 0뿐이고, 나머지 세 항목은 원래 값이 이미 <code>0x80</code>이었습니다. 그래서 바뀐 12바이트는 ID 0의 <code>+0</code> 한 바이트와, 네 항목의 <code>+4</code>·<code>+8</code>·<code>+12</code>에서 달라진 바이트들입니다. <a href="analysis/header-hash.json">[근거: findings.partition, trace.partition_fields]</a></p>
+
+<h3>쓰기를 건너뛰는 조건</h3>
+<p>섹션 정보 <code>+0xc</code>의 ID가 999이거나 <code>+4</code>의 값(span)이 0이면 함수는 아무것도 쓰지 않습니다. 이 조건과 ID 0~3의 쓰기를 따로 만든 7사례로 실행했습니다. 사례마다 항목 주변 512바이트와 앞뒤 보호 바이트를 예상값과 비교했습니다.</p>
+<details class="evidence"><summary>파티션 쓰기 함수 7사례</summary>
+<div class="table-wrap"><table class="compact">
+<caption>512바이트를 <code>0xa5</code>로 채운 합성 MBR에 원본 함수를 실행한 결과</caption>
+<thead><tr><th class="n">섹션의 ID</th><th class="n">span</th><th>쓰기</th><th>그 항목의 <code>+0</code></th><th><code>+8</code>에 쓴 값</th><th><code>+12</code>에 쓴 값</th></tr></thead>
+<tbody><tr><td class="n">999</td><td class="n">1</td><td>쓰지 않음</td><td><code>0xa5</code> (원래 값)</td><td>—</td><td>—</td></tr><tr><td class="n">999</td><td class="n">0</td><td>쓰지 않음</td><td><code>0xa5</code> (원래 값)</td><td>—</td><td>—</td></tr><tr><td class="n">0</td><td class="n">1</td><td>씀</td><td><code>0x80</code></td><td><code>0x12345678</code></td><td><code>0x9abcdef0</code></td></tr><tr><td class="n">1</td><td class="n">1</td><td>씀</td><td><code>0xa5</code> (원래 값)</td><td><code>0x12345678</code></td><td><code>0x9abcdef0</code></td></tr><tr><td class="n">2</td><td class="n">1</td><td>씀</td><td><code>0xa5</code> (원래 값)</td><td><code>0x12345678</code></td><td><code>0x9abcdef0</code></td></tr><tr><td class="n">3</td><td class="n">1</td><td>씀</td><td><code>0xa5</code> (원래 값)</td><td><code>0x12345678</code></td><td><code>0x9abcdef0</code></td></tr><tr><td class="n">2</td><td class="n">0</td><td>쓰지 않음</td><td><code>0xa5</code> (원래 값)</td><td>—</td><td>—</td></tr></tbody>
+</table></div>
+<p class="small muted">시작값과 길이는 구분하기 쉬운 시험용 값입니다. <a href="analysis/header-hash.json">[근거: header_replay.mbr_cases]</a> · <a href="tools/check_burn_header.py">[재현 도구: replay_mbr]</a></p>
+</details>
+</section>
+
+<section id="md5">
+<h2>MD5 계산 코드와 해시 작업자</h2>
+<p class="takeaway">로더 안의 MD5 코드는 표준 MD5와 같은 값을 냅니다. 해시 작업자는 큐로 받은 세 가지 명령으로 이 코드를 부르고, 계산한 값이 기대값과 같은지 응답합니다.</p>
+
+<h3>MD5 계산 코드</h3>
+<p><dfn title="입력에서 128비트 값을 계산하는 해시 함수. RFC 1321에 정의돼 있습니다">MD5</dfn>는 길이가 얼마든 입력을 받아 128비트, 곧 16바이트의 다이제스트를 냅니다. 입력을 64바이트 블록으로 나눠 처리하고, 마지막에 패딩과 64비트 길이 값을 붙입니다. 그래서 55바이트까지는 패딩과 길이가 한 블록에 들어가고, 56바이트부터는 블록이 하나 더 필요합니다. <a href="https://www.rfc-editor.org/rfc/rfc1321">[RFC 1321, 3.1~3.4절]</a></p>
+<p>원본 <code>md5_init</code>·<code>md5_append</code>·<code>md5_finish</code>와 내부 압축 함수를 아무것도 대체하지 않고 실행했습니다. 입력 길이는 블록 경계 앞뒤인 0·1·3·55·56·63·64·65·119·120·127·128·129바이트입니다. 길이마다 한 번에 넣은 경우와 나눠 넣은 경우를 실행해 모두 26사례입니다. 결과는 Python 표준 라이브러리의 MD5와 전부 같았습니다.</p>
+<pre><code>MD5("")    = d41d8cd98f00b204e9800998ecf8427e
+MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
+<p>이 두 값은 <a href="https://www.rfc-editor.org/rfc/rfc1321#appendix-A.5">RFC 1321 부록 A.5</a>의 시험값과 같습니다. 입력·작업 영역·출력 주변의 보호 바이트가 그대로인지, 마무리 직전의 비트 수가 맞는지도 확인했습니다. <a href="analysis/header-hash.json">[근거: hash_replay.primitive_cases]</a></p>
+<details class="evidence"><summary>MD5 26사례의 입력 길이와 결과</summary>
+<div class="table-wrap"><table class="compact">
+<caption>입력은 길이로 정해지는 시험용 바이트열입니다 (길이 3은 “abc”)</caption>
+<thead><tr><th class="n">길이</th><th>넣은 조각의 크기</th><th>원본 코드가 낸 MD5</th></tr></thead>
+<tbody><tr><td class="n">0</td><td>0</td><td><code>d41d8cd98f00b204e9800998ecf8427e</code></td></tr><tr><td class="n">0</td><td>0 + 0 + 0 + 0</td><td><code>d41d8cd98f00b204e9800998ecf8427e</code></td></tr><tr><td class="n">1</td><td>1</td><td><code>8666683506aacd900bbd5a74ac4edf68</code></td></tr><tr><td class="n">1</td><td>0 + 0 + 1 + 0</td><td><code>8666683506aacd900bbd5a74ac4edf68</code></td></tr><tr><td class="n">3</td><td>3</td><td><code>900150983cd24fb0d6963f7d28e17f72</code></td></tr><tr><td class="n">3</td><td>0 + 1 + 2 + 0</td><td><code>900150983cd24fb0d6963f7d28e17f72</code></td></tr><tr><td class="n">55</td><td>55</td><td><code>8394913b3d23a641aa7023c80c66aeaf</code></td></tr><tr><td class="n">55</td><td>0 + 18 + 37 + 0</td><td><code>8394913b3d23a641aa7023c80c66aeaf</code></td></tr><tr><td class="n">56</td><td>56</td><td><code>7efe2afe10a824ceaa3496b25fce4f9d</code></td></tr><tr><td class="n">56</td><td>0 + 18 + 38 + 0</td><td><code>7efe2afe10a824ceaa3496b25fce4f9d</code></td></tr><tr><td class="n">63</td><td>63</td><td><code>32c88182c6e5d7accb121cef65f871b1</code></td></tr><tr><td class="n">63</td><td>0 + 21 + 42 + 0</td><td><code>32c88182c6e5d7accb121cef65f871b1</code></td></tr><tr><td class="n">64</td><td>64</td><td><code>28aa88a813bd746d8a82a4d4e93f4709</code></td></tr><tr><td class="n">64</td><td>0 + 21 + 43 + 0</td><td><code>28aa88a813bd746d8a82a4d4e93f4709</code></td></tr><tr><td class="n">65</td><td>65</td><td><code>7c8aad2427050a5a041a45fdd9245935</code></td></tr><tr><td class="n">65</td><td>0 + 21 + 44 + 0</td><td><code>7c8aad2427050a5a041a45fdd9245935</code></td></tr><tr><td class="n">119</td><td>119</td><td><code>63c4288289dbf2167bec2bcd0d71c13a</code></td></tr><tr><td class="n">119</td><td>0 + 39 + 80 + 0</td><td><code>63c4288289dbf2167bec2bcd0d71c13a</code></td></tr><tr><td class="n">120</td><td>120</td><td><code>24b4fbb6a2060673c53baf8f6e6621dd</code></td></tr><tr><td class="n">120</td><td>0 + 40 + 80 + 0</td><td><code>24b4fbb6a2060673c53baf8f6e6621dd</code></td></tr><tr><td class="n">127</td><td>127</td><td><code>2d39050f32309346d096424433979284</code></td></tr><tr><td class="n">127</td><td>0 + 42 + 85 + 0</td><td><code>2d39050f32309346d096424433979284</code></td></tr><tr><td class="n">128</td><td>128</td><td><code>49ce277f27b45ac6a1d908af8b9936e1</code></td></tr><tr><td class="n">128</td><td>0 + 42 + 86 + 0</td><td><code>49ce277f27b45ac6a1d908af8b9936e1</code></td></tr><tr><td class="n">129</td><td>129</td><td><code>7052d538809756266ab868aab3105596</code></td></tr><tr><td class="n">129</td><td>0 + 43 + 86 + 0</td><td><code>7052d538809756266ab868aab3105596</code></td></tr></tbody>
+</table></div>
+</details>
+
+<h3>해시 작업자가 명령을 받는 순서</h3>
+<p>MD5 계산은 카드 읽기 함수가 직접 하지 않습니다. 따로 도는 <dfn title="큐에서 명령을 받아 MD5를 계산하고 결과를 돌려주는 원본 함수 BurnHashManager">해시 작업자</dfn>(<code>BurnHashManager</code>)에게 큐로 요청합니다. 요청과 응답은 세 워드짜리 메시지이고, 첫 워드가 명령 번호입니다.</p>
+
+<figure class="diagram">
+<figcaption>MD5 검사 한 번의 호출 순서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 318" role="img" aria-labelledby="dg-hash-title dg-hash-desc">
+<title id="dg-hash-title">카드 읽기 함수, 해시 래퍼, 큐, 해시 작업자 사이의 메시지 순서</title>
+<desc id="dg-hash-desc">카드 읽기 함수가 해시 래퍼를 세 번 부릅니다. 첫 번째는 초기화 요청으로 래퍼가 메시지 0, 0, 0을 입력 큐에 넣고 작업자가 md5_init을 실행합니다. 두 번째는 데이터 추가 요청으로 메시지 1, 주소, 길이를 보내고 작업자가 md5_append를 실행합니다. 세 번째는 마무리 요청으로 메시지 2, 기대값 주소, 0을 보내고 작업자가 md5_finish와 16바이트 memcmp를 실행합니다. 작업자는 일치하면 3, 불일치하면 4를 결과 큐에 넣고, 래퍼는 3을 받았을 때만 1을 반환합니다. 큐로 메시지를 전달하는 일은 RTOS 대신 시험 도구가 했습니다.</desc>
+<defs>
+<marker id="dg-hash-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-hash-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<path class="e" d="M90 58V304"/><path class="e" d="M290 58V304"/><path class="e model" d="M490 58V304"/><path class="e" d="M690 58V304"/>
+<rect class="b ok" x="8" y="8" width="164" height="50" rx="8"/>
+<text class="t" x="20" y="29">카드 읽기 함수</text><text class="s mono" x="20" y="47">0x80019014</text>
+<rect class="b ok" x="208" y="8" width="164" height="50" rx="8"/>
+<text class="t" x="220" y="29">해시 래퍼 세 개</text><text class="s mono" x="220" y="47">BurnHashInit 등</text>
+<rect class="b model" x="408" y="8" width="164" height="50" rx="8"/>
+<text class="t" x="420" y="29">입력 큐 · 결과 큐</text><text class="s" x="420" y="47">전달은 시험 도구</text>
+<rect class="b ok" x="608" y="8" width="164" height="50" rx="8"/>
+<text class="t" x="620" y="29">해시 작업자</text><text class="s mono" x="620" y="47">BurnHashManager</text>
+
+<text class="n mid" x="190" y="88">초기화</text><path class="e" d="M90 96H288" marker-end="url(#dg-hash-ah)"/>
+<text class="n mono mid" x="390" y="88">[0, 0, 0]</text><path class="e" d="M290 96H488" marker-end="url(#dg-hash-ah)"/>
+<path class="e model" d="M490 96H688" marker-end="url(#dg-hash-am)"/>
+<rect class="b ok" x="612" y="104" width="156" height="26" rx="6"/><text class="s mono mid" x="690" y="122">md5_init</text>
+
+<text class="n mid" x="190" y="150">데이터 추가</text><path class="e" d="M90 158H288" marker-end="url(#dg-hash-ah)"/>
+<text class="n mono mid" x="390" y="150">[1, 주소, 길이]</text><path class="e" d="M290 158H488" marker-end="url(#dg-hash-ah)"/>
+<path class="e model" d="M490 158H688" marker-end="url(#dg-hash-am)"/>
+<rect class="b ok" x="612" y="166" width="156" height="26" rx="6"/><text class="s mono mid" x="690" y="184">md5_append</text>
+
+<text class="n mid" x="190" y="212">마무리</text><path class="e" d="M90 220H288" marker-end="url(#dg-hash-ah)"/>
+<text class="n mono mid" x="390" y="212">[2, 기대값 주소, 0]</text><path class="e" d="M290 220H488" marker-end="url(#dg-hash-ah)"/>
+<path class="e model" d="M490 220H688" marker-end="url(#dg-hash-am)"/>
+<rect class="b ok" x="612" y="228" width="156" height="26" rx="6"/><text class="s mono mid" x="690" y="246">md5_finish, memcmp</text>
+
+<text class="n mid" x="590" y="276">3 일치 · 4 불일치</text><path class="e" d="M690 284H492" marker-end="url(#dg-hash-ah)"/>
+<path class="e model" d="M490 284H292" marker-end="url(#dg-hash-am)"/>
+<text class="n mid" x="190" y="276">3이면 1, 아니면 0</text><path class="e" d="M290 284H92" marker-end="url(#dg-hash-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="model"></i>시험 도구가 대신한 큐 전달</li></ul>
+<p>작업자를 끝내는 명령 5는 시험 도구가 보냈고, 그 응답도 시험 도구가 거뒀습니다. 래퍼에는 작업자가 실제로 낸 3 또는 4만 돌려보냈습니다.</p>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>메시지 첫 워드의 뜻. 큐는 핸들의 <code>+0x127c</code>(입력)와 <code>+0x12b4</code>(결과)에 있습니다</caption>
+<thead><tr><th>번호</th><th>방향</th><th>뜻</th><th>작업자가 하는 일</th></tr></thead>
+<tbody>
+<tr><th scope="row">0</th><td>요청</td><td>초기화</td><td><code>md5_init</code></td></tr>
+<tr><th scope="row">1</th><td>요청</td><td>데이터 추가 (주소, 길이)</td><td>주소를 변환한 뒤 <code>md5_append</code></td></tr>
+<tr><th scope="row">2</th><td>요청</td><td>마무리와 비교 (기대값 주소)</td><td><code>md5_finish</code> 뒤 16바이트를 <code>memcmp</code>로 비교</td></tr>
+<tr><th scope="row">3</th><td>응답</td><td>일치</td><td>결과 큐에 넣음. 둘째 워드에 기대값 주소를 그대로 둠</td></tr>
+<tr><th scope="row">4</th><td>응답</td><td>불일치</td><td>위와 같음</td></tr>
+<tr><th scope="row">5</th><td>요청</td><td>종료</td><td>결과 큐에 그대로 돌려주고 끝냄</td></tr>
+<tr><th scope="row">그 밖</th><td>요청</td><td>정해진 뜻 없음</td><td>아무것도 하지 않고 다음 메시지를 기다림</td></tr>
+</tbody>
+</table></div>
+<p>명령 1에서 작업자는 받은 주소를 그대로 쓰지 않습니다. 주소의 <code>0x40000000</code> 비트가 켜져 있으면 <code>0x80000000</code>을 더해 켜고, 꺼져 있으면 <code>0xdfffffff</code>로 걸러 <code>0x20000000</code> 비트를 끕니다. 두 갈래 모두 따로 준비한 합성 주소에서 실행했습니다. 이 변환이 실제 캐시에 어떤 영향을 주는지는 확인하지 않았습니다. <a href="analysis/header-hash.json">[근거: findings.pointer, worker_cases]</a></p>
+
+<h3>래퍼는 큐의 상태값을 보지 않습니다</h3>
+<p>카드 읽기 함수는 큐를 직접 다루지 않고 래퍼 세 개를 부릅니다. 초기화 래퍼와 추가 래퍼는 큐 보내기가 어떤 상태값을 돌려주든 1을 반환합니다. 마무리 래퍼(<code>BurnHashFanalize</code>, 원본의 철자)는 보내기·받기의 상태값을 보지 않고, 받은 메시지의 첫 워드가 3인지만 검사합니다.</p>
+<div class="table-wrap"><table>
+<caption>해시 래퍼 9사례. 상태값은 시험용으로 넣었습니다</caption>
+<thead><tr><th>래퍼와 사례</th><th class="n">보내기 상태</th><th class="n">받기 상태</th><th class="n">받은 첫 워드</th><th class="n">반환값</th></tr></thead>
+<tbody><tr><th scope="row"><code>BurnHashInit</code> <code>init</code></th><td class="n">0</td><td class="n">—</td><td class="n">—</td><td class="n">1</td></tr><tr><th scope="row"><code>BurnHashInit</code> <code>init-send-status</code></th><td class="n">7</td><td class="n">—</td><td class="n">—</td><td class="n">1</td></tr><tr><th scope="row"><code>BurnHashUpdate</code> <code>append</code></th><td class="n">0</td><td class="n">—</td><td class="n">—</td><td class="n">1</td></tr><tr><th scope="row"><code>BurnHashUpdate</code> <code>append-send-status</code></th><td class="n">7</td><td class="n">—</td><td class="n">—</td><td class="n">1</td></tr><tr><th scope="row"><code>BurnHashFanalize</code> <code>finish-match</code></th><td class="n">0</td><td class="n">0</td><td class="n">3</td><td class="n">1</td></tr><tr><th scope="row"><code>BurnHashFanalize</code> <code>finish-mismatch</code></th><td class="n">0</td><td class="n">0</td><td class="n">4</td><td class="n">0</td></tr><tr><th scope="row"><code>BurnHashFanalize</code> <code>finish-stop</code></th><td class="n">0</td><td class="n">0</td><td class="n">5</td><td class="n">0</td></tr><tr><th scope="row"><code>BurnHashFanalize</code> <code>finish-zero</code></th><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr><tr><th scope="row"><code>BurnHashFanalize</code> <code>finish-statuses-ignored</code></th><td class="n">7</td><td class="n">9</td><td class="n">3</td><td class="n">1</td></tr></tbody>
+</table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>큐가 정상으로 전달된다는 것과 해시가 맞았다는 것은 다른 일입니다. 이 결과만으로 실제 큐 오류가 어떤 영향을 주는지, 그런 오류가 일어날 수 있는지는 판단하지 않았습니다. <a href="tools/check_burn_hash.py">[재현 도구: wrappers]</a></p></div>
+<details class="evidence"><summary>해시 작업자 8사례</summary>
+<div class="table-wrap"><table class="compact">
+<caption>작업자에 보낸 명령 순서와 첫 응답. 마지막의 5는 작업자를 끝내려고 시험 도구가 보낸 명령입니다</caption>
+<thead><tr><th>사례</th><th class="n">입력 길이</th><th>보낸 명령 순서</th><th>변환된 주소</th><th class="n">응답</th></tr></thead>
+<tbody><tr><th scope="row">빈 입력 <code>empty</code></th><td class="n">0</td><td>0 → 1 → 2 → 5</td><td><code>0x10005000</code></td><td class="n">3</td></tr><tr><th scope="row">“abc” 3바이트 <code>abc</code></th><td class="n">3</td><td>0 → 1 → 2 → 5</td><td><code>0x10005000</code></td><td class="n">3</td></tr><tr><th scope="row">129바이트를 나눠 넣음 <code>split</code></th><td class="n">129</td><td>0 → 1 → 1 → 1 → 1 → 2 → 5</td><td><code>0x10005000</code></td><td class="n">3</td></tr><tr><th scope="row">기대값의 첫 바이트가 다름 <code>mismatch-first</code></th><td class="n">65</td><td>0 → 1 → 2 → 5</td><td><code>0x10005000</code></td><td class="n">4</td></tr><tr><th scope="row">기대값의 끝 바이트가 다름 (나눠 넣음) <code>mismatch-last</code></th><td class="n">65</td><td>0 → 1 → 1 → 1 → 1 → 2 → 5</td><td><code>0x10005000</code></td><td class="n">4</td></tr><tr><th scope="row">주소의 <code>0x20000000</code> 비트가 켜진 입력 <code>clear-bit29</code></th><td class="n">65</td><td>0 → 1 → 2 → 5</td><td><code>0x10005000</code></td><td class="n">3</td></tr><tr><th scope="row">주소의 <code>0x40000000</code> 비트가 켜진 입력 <code>set-bit31</code></th><td class="n">65</td><td>0 → 1 → 1 → 1 → 1 → 2 → 5</td><td><code>0xd0005000</code></td><td class="n">3</td></tr><tr><th scope="row">모르는 명령 <code>0x99</code>가 끼어 있음 <code>unknown-command</code></th><td class="n">56</td><td>0 → 0x99 → 1 → 1 → 1 → 1 → 2 → 5</td><td><code>0x10005000</code></td><td class="n">3</td></tr></tbody>
+</table></div>
+</details>
+</section>
+
+<section id="callback">
+<h2>MD5 결과에 따라 카드 읽기를 다시 시도하는 규칙</h2>
+<p class="takeaway">해시 플래그가 1이면 카드 읽기 함수는 요청받은 길이보다 16바이트를 더 읽어 뒤 16바이트를 기대값으로 씁니다. 값이 다르면 읽은 만큼 되감고, 한 번만 더 시도합니다.</p>
+
+<figure class="diagram">
+<figcaption>해시 플래그가 1일 때 카드 읽기 함수의 분기</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 282" role="img" aria-labelledby="dg-retry-title dg-retry-desc">
+<title id="dg-retry-title">MD5 일치 여부에 따른 카드 읽기의 재시도 흐름</title>
+<desc id="dg-retry-desc">첫 단계는 요청 길이에 16바이트를 더해 파일을 읽는 것입니다. 읽기에 오류가 나면 0을 반환합니다. 읽기에 성공하면 앞부분의 MD5를 계산해 뒤 16바이트와 비교합니다. 작업자가 3을 응답하면 일치이고 1을 반환합니다. 4를 응답하면 불일치이고, 읽은 만큼 파일을 되감습니다. 첫 시도였으면 처음으로 돌아가 다시 읽고, 둘째 시도였거나 되감기에 오류가 나면 0을 반환합니다.</desc>
+<defs><marker id="dg-retry-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b model" x="8" y="30" width="200" height="64" rx="8"/>
+<text class="t" x="20" y="56">① 길이+16바이트 읽기</text>
+<text class="s" x="20" y="77">읽기 결과는 모델이 응답</text>
+<rect class="b ok" x="280" y="30" width="220" height="64" rx="8"/>
+<text class="t" x="292" y="56">② 앞부분 MD5를 계산해 비교</text>
+<text class="s" x="292" y="77">원본 래퍼 · 작업자 · MD5</text>
+<rect class="b key" x="632" y="30" width="160" height="64" rx="8"/>
+<text class="t" x="644" y="56">반환 1</text>
+<text class="s" x="644" y="77">읽기 성공으로 처리</text>
+<rect class="b model" x="280" y="176" width="220" height="64" rx="8"/>
+<text class="t" x="292" y="202">③ 읽은 만큼 되감기</text>
+<text class="s" x="292" y="223">되감기 결과는 모델이 응답</text>
+<rect class="b" x="632" y="176" width="160" height="64" rx="8"/>
+<text class="t" x="644" y="202">반환 0</text>
+<text class="s" x="644" y="223">읽기 실패로 처리</text>
+
+<path class="e" d="M208 62H278" marker-end="url(#dg-retry-ah)"/>
+<path class="e" d="M500 62H630" marker-end="url(#dg-retry-ah)"/>
+<text class="n mid" x="565" y="54">일치 (응답 3)</text>
+<path class="e" d="M390 94V174" marker-end="url(#dg-retry-ah)"/>
+<text class="n" x="400" y="139">불일치 (응답 4)</text>
+<path class="e" d="M280 208H128V96" marker-end="url(#dg-retry-ah)"/>
+<text class="n" x="138" y="136">첫 시도였으면</text>
+<text class="n" x="138" y="153">다시 읽기</text>
+<path class="e" d="M500 208H630" marker-end="url(#dg-retry-ah)"/>
+<text class="n mid" x="565" y="200">둘째 시도였거나</text>
+<text class="n mid" x="565" y="226">되감기 오류</text>
+<path class="e" d="M58 94V264H712V242" marker-end="url(#dg-retry-ah)"/>
+<text class="n" x="68" y="258">읽기 오류</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="model"></i>원본이 요청하고 모델이 응답한 파일 동작</li><li><i class="key"></i>성공 반환</li></ul>
+</figure>
+
+<p>이 분기를 7사례로 실행했습니다. 이 시험에서는 MD5의 판정을 값으로 넣어 주지 않았습니다. 카드 읽기 함수가 만든 메시지를 원본 해시 작업자에게 그대로 넘기고, 작업자가 실제로 계산해 낸 응답을 돌려받았습니다. 해시 작업은 모두 9건이었습니다.</p>
+<div class="table-wrap"><table>
+<caption>카드 읽기 함수 7사례. 성공한 읽기는 80바이트(데이터 64 + 다이제스트 16) 전체를 건넸습니다</caption>
+<thead><tr><th>사례</th><th class="n">읽기</th><th class="n">되감기</th><th class="n">해시 작업</th><th>작업자의 응답</th><th class="n">반환값</th></tr></thead>
+<tbody><tr><th scope="row">다이제스트가 일치 <code>match</code></th><td class="n">1</td><td class="n">0</td><td class="n">1</td><td>3</td><td class="n">1</td></tr><tr><th scope="row">다이제스트 첫 바이트가 달랐고, 다시 읽어 일치 <code>first-digest-byte-retry-match</code></th><td class="n">2</td><td class="n">1</td><td class="n">2</td><td>4 → 3</td><td class="n">1</td></tr><tr><th scope="row">다이제스트 끝 바이트가 달랐고, 다시 읽은 새 데이터로 일치 <code>last-digest-byte-retry-new-payload</code></th><td class="n">2</td><td class="n">1</td><td class="n">2</td><td>4 → 3</td><td class="n">1</td></tr><tr><th scope="row">두 번 모두 불일치 (첫 바이트, 끝 바이트) <code>first-and-last-digest-byte-fail</code></th><td class="n">2</td><td class="n">2</td><td class="n">2</td><td>4 → 4</td><td class="n">0</td></tr><tr><th scope="row">불일치 뒤 되감기에서 오류 <code>digest-mismatch-seek-error</code></th><td class="n">1</td><td class="n">1</td><td class="n">1</td><td>4</td><td class="n">0</td></tr><tr><th scope="row">첫 읽기에서 오류 <code>file-read-error</code></th><td class="n">1</td><td class="n">0</td><td class="n">0</td><td>—</td><td class="n">0</td></tr><tr><th scope="row">불일치 뒤 다시 읽기에서 오류 <code>digest-mismatch-retry-read-error</code></th><td class="n">2</td><td class="n">1</td><td class="n">1</td><td>4</td><td class="n">0</td></tr></tbody>
+</table></div>
+<ul>
+<li><strong>길이 계산</strong>: 원본은 읽기가 성공했을 때 실제로 읽힌 길이에서 16을 뺀 값을 해시할 길이로 씁니다. 기대값의 주소는 읽은 데이터의 끝에서 16바이트 앞입니다. 64+16은 시험 입력이며, 모든 패키지의 고정 크기가 아닙니다.</li>
+<li><strong>되감기</strong>: 불일치하면 실제로 읽힌 길이(여기서는 80)만큼 되감기를 요청합니다. 상위 워드는 0, 옵션은 3입니다. 두 번 불일치한 사례에서는 되감기를 두 번 요청한 뒤 0을 반환했습니다.</li>
+<li><strong>실행 방식</strong>: 래퍼가 결과를 기다릴 때마다 시험 도구가 작업자를 따로 실행했습니다. 작업자에는 카드 읽기 함수의 메모리 복사본과 실제 메시지를 넘겼습니다. 두 코드가 동시에 도는 상황은 만들지 않았습니다.</li>
+</ul>
+<p>판정 결과를 모델로 넣어 분기만 본 시험은 <a href="loader-lens-report.html">Loader 입력 검증과 렌즈 정책</a>에 있습니다. 이 절은 그 판정 자리를 원본 MD5 계산으로 채운 것입니다. <a href="analysis/hash-card.json">[근거: findings.request, findings.retry, replay.cases]</a></p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 시험은 해시 플래그를 1로 넣었습니다. 실제 업데이트에서 이 값이 언제 0이 아니게 되는지, 어떤 패키지가 읽기마다 다이제스트를 담고 있는지는 알아내지 못했습니다. 이 자리에서 MD5가 맞았다는 사실이 패키지의 인증이나 로더의 수용을 뜻하지도 않습니다.</p></div>
+</section>
+
+<section id="comparison">
+<h2>K-3 Mark III와 비교</h2>
+<p>K-3 Mark III 자료도 기록·재읽기와 내부·외부 검사를 나눠서 다룹니다. Q7에서는 작은 헤더 필드의 변환과 선택적인 MD5 큐 경로를 원본 MIPS 코드로 실행했습니다. 두 기종은 프로세서, 패키지 형식, 업데이트 절차가 다릅니다. 한쪽에서 통과한 결과를 다른 쪽에 적용하지 않았습니다.</p>
+<div class="table-wrap"><table>
+<caption>같은 항목을 기종별 근거로 본 것</caption>
+<thead><tr><th>항목</th><th>Q7</th><th>K-3 Mark III (고정 커밋의 자료)</th></tr></thead>
+<tbody>
+<tr><th scope="row">저장 전 처리</th><td>합성 NAND 조건에서 헤더 281바이트 변환</td><td>descriptor·bank에 따른 기록·읽기의 범위</td></tr>
+<tr><th scope="row">계산과 판정</th><td>선택적 MD5와 큐·재시도의 연결</td><td>내부·외부 체크섬과 버퍼 검사</td></tr>
+<tr><th scope="row">다시 만들기</th><td>크기가 정해진 압축 블록 자리 448개</td><td>stored 블록으로 다시 인코딩한 뒤 재추출</td></tr>
+<tr><th scope="row">카메라의 수용</th><td colspan="2">이 근거로는 확정할 수 없음</td></tr>
+</tbody>
+</table></div>
+<p><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/a736ff253a1c528e31c08afa23ad4ebe37d1fbbb/analysis/update-resource-evidence.json">[고정 커밋의 K-3 Mark III 저장 근거]</a> · <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/cc954e41720a7098b0b6d53ece8c7471c7652082/analysis/recompiled-integration.json">[고정 커밋의 원본 호출·패키지 검사]</a></p>
+</section>
+
+<section id="limits">
+<h2>한계와 재현 방법</h2>
+<ul>
+<li>설치된 헤더와 저장장치 형상은 합성 값입니다. 첫 기록 요청은 저장 계층 진입점에서 멈췄고, 연산 5의 처리는 실행하지 않았습니다.</li>
+<li>카드 읽기 시험은 80바이트가 전부 읽힌 경우만 다뤘습니다. 짧게 읽힌 경우, 읽힌 길이가 16보다 작은 경우, 큰 청크, 실제 RTOS의 스케줄링은 확인하지 않았습니다.</li>
+<li><code>BurnNand</code>의 기록·복구 반복 전체, 하드웨어 캐시, 카메라의 패키지 수용·기록·부팅은 확인하지 않았습니다.</li>
+<li>파티션 필드에 쓰는 값만으로 파일시스템 종류를 판단하지 않았습니다.</li>
+<li>전체 펌웨어, 자원 데이터, 디컴파일 결과, 수정한 업데이트 파일은 공개하지 않습니다.</li>
+</ul>
+<p>헤더·해시 쪽에서 원본 워드 101개, 카드 연결 쪽에서 71개를 원본 파일과 대조했습니다. MD5 계산·해시 작업자·래퍼 43사례, 카드 읽기 7사례, 파티션 7사례는 서로 독립된 두 번의 실행 결과가 같았습니다. 버퍼 쓰기 전체를 따라간 추적은 한 번 실행했습니다. 실행 엔진은 angr 10.0.5 / VEX입니다.</p>
+<details class="evidence"><summary>모델로 대체한 함수 목록</summary>
+<div class="table-wrap"><table class="compact">
+<caption>시험별로 모델이 대신한 호출</caption>
+<thead><tr><th>시험</th><th>주소</th><th>모델이 하는 일</th></tr></thead>
+<tbody><tr><th scope="row">헤더 추적</th><td><code>0x80034720</code></td><td>메모리 할당: 0으로 채운 합성 메모리를 내줌</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x80048cf8</code></td><td>캐시 정리 요청: 아무 일도 하지 않음</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x80034d98</code></td><td>메모리 해제: 아무 일도 하지 않음</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x8004717c</code></td><td>진단 로그: 아무 일도 하지 않음</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x8001a444</code></td><td>헤더 진단 출력: 아무 일도 하지 않음</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x80019014</code></td><td>카드 읽기 함수: 원본 패키지의 바이트를 그대로 건넴</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x8008495c</code></td><td>설치된 헤더 읽기: 합성 설치 헤더를 돌려줌</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x80083744</code></td><td>저장장치 형상 조회: 합성 값을 돌려줌</td></tr><tr><th scope="row">헤더 추적</th><td><code>0x8008249c</code></td><td>저장장치 요청: 연산 6에는 예비 영역 16바이트를 FF로 채워 0을 반환, 연산 8에는 0을 반환</td></tr><tr><th scope="row">파티션 7사례</th><td><code>0x8004717c</code></td><td>진단 로그: 아무 일도 하지 않음</td></tr><tr><th scope="row">해시 작업자·래퍼</th><td><code>0x80029fdc</code></td><td>큐 보내기: 세 워드 메시지를 받아 두고 시험용 상태값을 반환</td></tr><tr><th scope="row">해시 작업자·래퍼</th><td><code>0x80023524</code></td><td>큐 받기: 다음 세 워드 메시지를 건네고 시험용 상태값을 반환</td></tr><tr><th scope="row">해시 작업자·래퍼</th><td><code>0x8004717c</code></td><td>진단 로그: 아무 일도 하지 않음</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x800632f4</code></td><td>파일 읽기: 80바이트 레코드(데이터 64 + 다이제스트 16) 전체를 건네거나, 상태 1과 읽은 길이 0을 반환</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x800622e0</code></td><td>파일 되감기: 파일·거리·상위 워드·모드 인수를 기록하고 시험용 상태값을 반환. FileX 입출력은 없음</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x80034720</code></td><td>메모리 할당: 비교용 합성 메모리를 내줌 (해시 플래그 1에서도 호출됨)</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x80048cf8</code></td><td>캐시 무효화 요청: 기록만 함</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x80034d98</code></td><td>메모리 해제: 기록만 함</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x80029fdc</code></td><td>큐 보내기: 원본 코드가 만든 세 워드 메시지를 받아 둠. RTOS의 큐는 실행하지 않음</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x80023524</code></td><td>큐 받기: 받아 둔 메시지, 작업자 종료용 메시지, 작업자가 실제로 낸 응답을 건넴. RTOS 스케줄링은 없음</td></tr><tr><th scope="row">카드 읽기 7사례</th><td><code>0x8004717c</code></td><td>진단 출력: 받기만 함</td></tr></tbody>
+</table></div>
+</details>
+<details class="evidence"><summary>대조한 함수 구간 15개와 원본 워드</summary>
+<div class="table-wrap"><table class="compact">
+<caption>로더(E01)의 함수 구간. 끝 주소는 구간에 포함되지 않습니다</caption>
+<thead><tr><th>이름</th><th>구간</th><th class="n">크기</th><th>파일 오프셋</th><th>구간의 근거</th><th>SHA-256 (앞 16자리)</th></tr></thead>
+<tbody><tr><th scope="row"><code>BurnNand</code></th><td><code>0x80012654</code>~<code>0x80015174</code></td><td class="n">11,040</td><td><code>0x2acc</code></td><td>ELF 심볼 크기</td><td><code>d0db0044b5ba3d93…</code></td></tr><tr><th scope="row"><code>BurnGetSectionsMap</code></th><td><code>0x8001a710</code>~<code>0x8001b134</code></td><td class="n">2,596</td><td><code>0xab88</code></td><td>ELF 심볼 크기</td><td><code>bdbc77bc97c78f7b…</code></td></tr><tr><th scope="row"><code>UpdatePartitionInMBRTable</code></th><td><code>0x8001a3a8</code>~<code>0x8001a444</code></td><td class="n">156</td><td><code>0xa820</code></td><td>ELF 심볼 크기</td><td><code>d61e65378bc4aff0…</code></td></tr><tr><th scope="row"><code>GetSectionFromBootHeader</code></th><td><code>0x8001a6ec</code>~<code>0x8001a710</code></td><td class="n">36</td><td><code>0xab64</code></td><td>ELF 심볼 크기</td><td><code>21030cc2229ff4e6…</code></td></tr><tr><th scope="row"><code>BurnHashManager</code></th><td><code>0x8001b834</code>~<code>0x8001ba40</code></td><td class="n">524</td><td><code>0xbcac</code></td><td>ELF 심볼 크기</td><td><code>ead2d06567b7cf3d…</code></td></tr><tr><th scope="row"><code>BurnHashInit</code></th><td><code>0x8001ba40</code>~<code>0x8001ba74</code></td><td class="n">52</td><td><code>0xbeb8</code></td><td>ELF 심볼 크기</td><td><code>eeb0e54b2e336b6f…</code></td></tr><tr><th scope="row"><code>BurnHashUpdate</code></th><td><code>0x8001ba74</code>~<code>0x8001baac</code></td><td class="n">56</td><td><code>0xbeec</code></td><td>ELF 심볼 크기</td><td><code>e8fed156d0c850f0…</code></td></tr><tr><th scope="row"><code>BurnHashFanalize</code></th><td><code>0x8001baac</code>~<code>0x8001bb08</code></td><td class="n">92</td><td><code>0xbf24</code></td><td>ELF 심볼 크기</td><td><code>3ebb9eaf7dce2c87…</code></td></tr><tr><th scope="row"><code>md5_init</code></th><td><code>0x80043cdc</code>~<code>0x80043d18</code></td><td class="n">60</td><td><code>0x34154</code></td><td>ELF 심볼 크기</td><td><code>6b480da74cbee187…</code></td></tr><tr><th scope="row"><code>md5_append</code></th><td><code>0x80043d18</code>~<code>0x80043e5c</code></td><td class="n">324</td><td><code>0x34190</code></td><td>ELF 심볼 크기</td><td><code>302646591395d3b2…</code></td></tr><tr><th scope="row"><code>md5_finish</code></th><td><code>0x80043e5c</code>~<code>0x80043f30</code></td><td class="n">212</td><td><code>0x342d4</code></td><td>ELF 심볼 크기</td><td><code>b138889654e63ab1…</code></td></tr><tr><th scope="row"><code>memcmp</code></th><td><code>0x8008bb34</code>~<code>0x8008bbcc</code></td><td class="n">152</td><td><code>0x7bfac</code></td><td>ELF 심볼 크기</td><td><code>59bcdcc638e17037…</code></td></tr><tr><th scope="row"><code>memcpy</code></th><td><code>0x8008bbcc</code>~<code>0x8008bd34</code></td><td class="n">360</td><td><code>0x7c044</code></td><td>ELF 심볼 크기</td><td><code>a722e12836b024e8…</code></td></tr><tr><th scope="row">MD5 압축 함수 (이름 없음)</th><td><code>0x800430dc</code>~<code>0x80043cdc</code></td><td class="n">3,072</td><td><code>0x33554</code></td><td>분석자가 정한 경계</td><td><code>368dcae066b97584…</code></td></tr><tr><th scope="row">카드 읽기 함수 (이름 없음)</th><td><code>0x80019014</code>~<code>0x80019390</code></td><td class="n">892</td><td><code>0x948c</code></td><td>분석자가 정한 경계</td><td><code>3bc0cd15045377c4…</code></td></tr></tbody>
+</table></div>
+<div class="table-wrap"><table class="compact">
+<caption>원본 워드 묶음</caption>
+<thead><tr><th>묶음</th><th>근거 파일</th><th class="n">워드</th></tr></thead>
+<tbody><tr><th scope="row">기록 버퍼에 쓴 명령 (관측한 명령마다 하나)</th><td>header-hash.json</td><td class="n">35</td></tr><tr><th scope="row">섹션 맵의 크기 계산과 헤더 안 목적지</th><td>header-hash.json</td><td class="n">9</td></tr><tr><th scope="row">파티션 쓰기의 조건과 필드 대응</th><td>header-hash.json</td><td class="n">9</td></tr><tr><th scope="row">해시 큐, 명령 분기, MD5 호출</th><td>header-hash.json</td><td class="n">24</td></tr><tr><th scope="row">해시 래퍼의 메시지와 무시되는 큐 상태값</th><td>header-hash.json</td><td class="n">15</td></tr><tr><th scope="row">MD5 함수의 진입점과 길이·패딩 처리</th><td>header-hash.json</td><td class="n">9</td></tr><tr><th scope="row">카드 함수 표, 플래그 검사, 전체 읽기 분기</th><td>hash-card.json</td><td class="n">12</td></tr><tr><th scope="row">읽은 길이에서 16을 뺀 만큼 해시, 그 뒤 재시도·해제</th><td>hash-card.json</td><td class="n">23</td></tr><tr><th scope="row">래퍼가 보내는 명령 0·1·2와 응답 3의 처리</th><td>hash-card.json</td><td class="n">15</td></tr><tr><th scope="row">작업자의 분기, MD5 추가·마무리, 일치·불일치 응답</th><td>hash-card.json</td><td class="n">21</td></tr></tbody>
+</table></div>
+</details>
+<p>아래 명령은 리코 공식 펌웨어 파일이 있어야 실행됩니다. 출력 경로는 새 경로여야 합니다.</p>
+<pre><code>python tools/check_burn_header.py &lt;원본 fwdc603p.bin&gt; --output .private/header-new.json
+python tools/check_burn_hash.py &lt;원본 fwdc603p.bin&gt; --output .private/hash-new.json
+python tools/check_hash_card.py &lt;원본 fwdc603p.bin&gt; --output .private/card-new.json
+python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/header-hash.json">analysis/header-hash.json</a> — 버퍼 쓰기 추적, 파티션 7사례, MD5·작업자·래퍼 사례, 함수 구간</li>
+<li><a href="analysis/hash-card.json">analysis/hash-card.json</a> — 카드 읽기 함수 7사례와 모델 목록</li>
+<li><a href="tools/check_burn_header.py">tools/check_burn_header.py</a> · <a href="tools/check_burn_hash.py">tools/check_burn_hash.py</a> · <a href="tools/check_hash_card.py">tools/check_hash_card.py</a> — 원본 펌웨어로 다시 실행하는 도구</li>
+<li><a href="tools/verify_io_followup.py">tools/verify_io_followup.py</a> — 공개한 근거의 워드와 함수 구간을 다시 계산하는 검사</li>
+<li><a href="analysis/loader-storage.json">analysis/loader-storage.json</a> — 이 문서가 이어받은 첫 기록 요청 직전 상태의 근거</li>
+<li><a href="analysis/hq-status.json">analysis/hq-status.json</a> — 연구 목표별 상태 기록</li>
+<li>외부 자료: <a href="https://www.rfc-editor.org/rfc/rfc1321">RFC 1321, The MD5 Message-Digest Algorithm</a> — 출력 크기, 블록과 패딩, 부록 A.5의 시험값</li>
+<li>외부 자료: <a href="https://uefi.org/specs/UEFI/2.10/05_GUID_Partition_Table_Format.html">UEFI 규격 2.10, 5.2절 Legacy MBR</a> — 파티션 표의 위치와 항목의 필드 이름</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">업데이트와 재패킹 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트·재패킹 안내</a></li><li><a href="implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="loader-hash-report.html" aria-current="page">첫 블록 281바이트와 MD5 경로</a></li><li><a href="burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="main-burn-prefix-report.html"><small>← 이전</small>MAIN Burn의 매체 열기와 헤더 요청</a><a class="next" href="burn-continuation-report.html"><small>다음 →</small>NAND 기록의 재시도와 마무리</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

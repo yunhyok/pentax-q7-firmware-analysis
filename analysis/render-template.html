@@ -1,11 +1,305 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — Color Space 화면의 그리기 경로</title><meta name="description" content="원본 MIPS 큐 갱신, 텍스트·도형 요청, 선택 아이콘의 픽셀 쓰기와 표시 버퍼 경계"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head><body>
-<header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / UI RENDERING</p><h1>Color Space 화면의<br><span>그리기 경로</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="colorspace-ui-report.html">선택·확인·취소 동작</a><a href="implementation-report.html">UI 이식 기초</a><a href="index.html">전체 분석</a></p></div><aside class="milestone"><strong>4 refresh</strong><span>원본 요청 생산·소비·갱신</span><strong>25 / 20</strong><span>텍스트 줄 / 강조 도형 요청</span><strong>330 × 2</strong><span>아이콘 인덱스 쓰기 / 두 위치</span></aside></header>
-<nav aria-label="문서 목차"><a href="#queue">갱신 큐</a><a href="#focus">선택 강조</a><a href="#text">문자·아이콘</a><a href="#buffer">표시 버퍼</a><a href="#comparison">K-3 대조</a><a href="#limits">검증·한계</a></nav><main><p class="update-banner"><strong>후속 근거:</strong> <a href="colorspace-attributes-report.html#binding">조건부 컨텍스트 선택</a>에서 합성 등록 슬롯과 기본 텍스트 포인터의 원본 연결을 확인했습니다. ID17·18은 시험 입력이며 실제 초기 할당값이 아닙니다. 다섯 도형의 원본 래스터와 전체 인덱스 RAM 대조는 <a href="colorspace-raster-report.html">선택 강조 픽셀 보고서</a>에 있습니다. 동일 텍스트를 새 기본 배율 컨텍스트에 별도로 재입력한 시험은 <a href="colorspace-glyph-report.html">글꼴·픽셀 보고서</a>에서 다룹니다. 실제 UI 배율과의 연속 실행은 아닙니다.</p>
-<section id="queue"><p class="eyebrow">01 / NATIVE REQUEST AND CONSUMER</p><h2>생산한 메시지를 소비자에 그대로 전달한다</h2><p>{{queue}} <a href="analysis/colorspace-render.json">[R1: findings.refresh·replay]</a></p>{{refresh_graph}}<div class="table-wrap"><table><caption>원본 키 이동 뒤 네 갱신. 표시 버퍼는 합성 ID</caption><thead><tr><th>갱신</th><th>언어</th><th>선택</th><th>텍스트 줄</th><th>draw</th><th>show</th></tr></thead><tbody>{{rows}}</tbody></table></div></section>
-<section id="focus"><p class="eyebrow">02 / ACTIVE WIDGETS AND PALETTE INDICES</p><h2>선택된 옵션에서만 강조·안내문을 그린다</h2><p>{{options}} <a href="analysis/colorspace-render.json">[R1: draw_order·highlight]</a></p>{{geometry}}<p>선택 강조 위젯은 <code>0x0191d00c / 0x0191d011</code>, 타입은 <code>0x11</code>입니다. 요청은 <code>GuiSolidLine_WriteSolidLineInfo 0x80ad9104</code>에서 관측했습니다. 다섯 요청의 겹침과 순서를 보존했으며 도형의 최종 래스터는 실행하지 않았습니다. <a href="tools/check_colorspace_render.py">[R2: frame_commands·refresh_cases]</a></p></section>
-<section id="text"><p class="eyebrow">03 / TEXT STAGING AND INDEXED PIXELS</p><h2>텍스트 요청과 아이콘 픽셀을 구분한다</h2><p>{{text}} <a href="analysis/colorspace-render.json">[R1: labels·text·locale]</a></p>{{pixel_graph}}<p>{{marker}} <a href="tools/check_colorspace_render.py">[R2: pixel_cases]</a></p><p>원본 텍스트·아이콘 데이터는 로컬에 두고 주소·길이·해시를 게시했습니다. 픽셀 검사는 원본 리소스를 읽는 도구로 재현할 수 있습니다.</p></section>
-<section id="buffer"><p class="eyebrow">04 / DRAW, SHOW AND DISPLAY CONTEXT</p><h2>버퍼 교체 요청 뒤에 장치 경계가 남는다</h2><p>{{buffer}} <a href="analysis/colorspace-render.json">[R1: findings.buffer·evidence]</a></p>{{buffer_graph}}<p>캐시 요청은 합성 draw 주소와 <code>960 × 480</code>바이트 범위로 기록했습니다. 이는 시험용 GetBuffer 메타데이터이며 실제 패널 크기나 장치 stride를 입증하지 않습니다. 아이콘 단독 검사의 96바이트 stride와도 다른 조건입니다.</p></section>
-<section id="comparison"><p class="eyebrow">05 / K-3 MARK III UI PORT</p><h2>표현을 옮기기 전에 선택 확정 방식을 정한다</h2><p>{{comparison}}</p><div class="table-wrap"><table><thead><tr><th>항목</th><th>Q7</th><th>K-3 Mark III의 고정 자료</th></tr></thead><tbody><tr><th>옵션 표현</th><td>0x0191d001/2 위젯·언어 표</td><td>0x1f6/7 텍스트 ID·스타일별 아이콘</td></tr><tr><th>선택 이동</th><td>즉시 메뉴 RAM 쓰기</td><td>pending index 경로</td></tr><tr><th>확인·취소</th><td>유지·백업 복원</td><td>기종별 입력·확인 경로</td></tr><tr><th>렌더링 경계</th><td>원본 요청·아이콘 RAM 쓰기</td><td>별도 ARM 표현 콜백·무효화 경로</td></tr></tbody></table></div><p><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/colorspace-ui-evidence.json">[K1: Color Space 행]</a> · <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/colorspace-ui-input-evidence.json">[K2: 방향·초점 입력]</a> · <a href="colorspace-ui-report.html">[Q7: 즉시 반영·취소 복원]</a>. R1 references에 커밋과 원문 해시를 기록했습니다.</p></section>
-<section id="limits"><p><strong>모델 설명 정정:</strong> <code>0x800ec08c</code>는 진단 함수가 아니라 <code>I43_SetParam</code>입니다. 이 시험은 해당 호출에서 0을 반환하므로 매개변수 <code>0x1bc</code>의 활성 그리기 컨텍스트 선택을 실행하지 않습니다. 기존 요청·픽셀 결과는 그대로이며, 그 결과로 실제 ID 연결을 입증할 수는 없습니다. <a href="analysis/colorspace-render.json">[R1: ScreenOsdLayer_SetOsd 전달 관계·모델 경계]</a></p><p class="eyebrow">06 / REPRODUCTION AND LIMITS</p><h2>호출·요청·픽셀의 검증 수준을 나눈다</h2><p>{{limits}}</p><p>작업자와 조정자의 별도 실행에서 네 갱신과 두 픽셀 사례의 결과 전체가 일치했습니다. 원본 word 139개, 함수 범위 47개, 리소스 범위 38개의 좌표와 해시를 다시 계산했습니다. <a href="analysis/colorspace-render.json">[R1: 전체 근거]</a></p><pre><code>python tools/check_colorspace_render.py &lt;pinned-analysis.elf&gt; --output &lt;new-result.json&gt;
-python tools/verify_report.py --firmware &lt;original.bin&gt;</code></pre><p><a href="tools/check_colorspace_render.py">재현 도구</a> · <a href="analysis/io-editorial.json">한국어 검토 기록</a> · <a href="analysis/hq-status.json">연구 상태</a></p></section></main><footer>논리 좌표와 코드 경로를 재구성한 문서입니다. 실제 카메라 화면 사진이 아닙니다.</footer></body></html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>색공간 화면을 다시 그리라는 요청이 만들어지는 과정 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Q7 Color Space 화면의 갱신 요청이 원본 큐 생산자와 소비자를 거쳐 글자 줄 25개, 선택 강조 도형 요청 20개, 선택 아이콘 픽셀 쓰기로 나뉘는 과정을 원본 MIPS 코드 실행으로 확인한 기록입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-ui.html">화면과 글꼴</a></li><li aria-current="page">색공간 화면: 그리기 경로</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">화면과 글꼴 · ② 그리기 요청: 무엇을 어디에 그릴지</p>
+<h1>색공간 화면을 다시 그리라는 요청이 만들어지는 과정</h1>
+<p class="lead">선택지를 옮기면 화면이 다시 그려집니다. 이때 펌웨어가 어떤 글자·도형·아이콘을 어느 좌표에 그리라고 요청하는지 원본 코드로 따라갔습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 화면은 요청을 모아 한 번에 다시 그립니다</a></li><li><a href="#queue">갱신 요청 하나가 위젯 전체를 다시 쓰기까지</a></li><li><a href="#focus">선택된 선택지만 강조·아이콘·안내문을 그립니다</a></li><li><a href="#text">글자 줄 요청과 선택 아이콘 픽셀</a></li><li><a href="#buffer">그리기 버퍼와 표시 버퍼를 맞바꾸는 요청</a></li><li><a href="#comparison">K-3 Mark III와 비교</a></li><li><a href="#limits">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>화면 갱신 요청을 원본 큐 생산자와 소비자에 통과시켜 <strong>갱신 {{refresh_count}}회</strong>를 실행했습니다. 갱신마다 위젯 갱신과 쓰기 패스 두 번이 이어졌습니다.</li>
+<li>네 갱신에서 <strong>글자 줄 {{text_lines}}개</strong>와 <strong>선택 강조 도형 요청 {{shape_count}}개</strong>(갱신마다 5개)의 좌표·길이·팔레트 번호를 기록했습니다. 강조·선택 아이콘·안내문은 선택된 선택지에서만 나옵니다.</li>
+<li>선택 아이콘은 별도로 원본 코드로 그려 보았습니다. 두 위치 모두 <strong>0이 아닌 팔레트 번호 {{marker_bytes}}개</strong>가 합성 버퍼에 쓰였고, 버퍼 전체가 독립 계산과 같았습니다.</li>
+<li>이 문서가 다루는 것은 <strong>요청과 아이콘</strong>까지입니다. 강조 도형의 픽셀은 <a href="colorspace-raster-report.html">선택 강조의 픽셀</a>, 글자 픽셀은 <a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>에서 다루며, 팔레트 색·LCD 출력은 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>갱신 요청 생산·소비, 위젯 갱신, 쓰기 패스 0과 1</li>
+<li>글자 줄 준비와 강조 도형 요청의 인수, 그리기·표시 버퍼 교대 요청</li>
+<li>선택 아이콘의 RLE 풀기와 픽셀 쓰기(두 위치)</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단한 것</h3>
+<ul>
+<li>표시 컨텍스트 선택과 <code>LayerSetFrameBuffer</code>·<code>LayerMove</code> 호출</li>
+<li>글자 요청 뒤의 GDI·글꼴 렌더러 연결</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>RTOS 큐 전달·대기·세마포어 (메시지 하나를 한 번 전달)</li>
+<li>합성 버퍼 ID 17·18과 버퍼 정보, 로케일 값</li>
+<li>요청을 기록하고 돌아오는 경계 (전체 {{hook_count}}곳)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>물리 키 입력, 동시에 쌓인 큐 처리</li>
+<li>팔레트의 실제 RGB, DMA, LCD 출력</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 화면은 요청을 모아 한 번에 다시 그립니다</h2>
+<p>Q7의 메뉴 화면은 상태가 바뀌면 곧바로 픽셀을 칠하지 않습니다. 먼저 UI 서비스의 큐에 “다시 그려라”라는 메시지를 넣고, 소비자 쪽이 메시지를 꺼내 화면 위젯 전체를 차례로 다시 씁니다. 각 위젯은 직접 픽셀을 다루지 않고 글자 출력, 도형 그리기, 아이콘 그리기 함수에 요청을 넘깁니다. 이 문서는 그 요청을 붙잡아 기록했습니다.</p>
+<p>색공간 화면 하나를 다섯 문서로 따라갔고, 이 문서는 두 번째 단계입니다. 앞 단계인 <a href="colorspace-ui-report.html">선택·확정·취소</a>에서 선택을 바꾸면 설정 RAM이 바로 바뀐다는 것을 확인했습니다. 그 바뀐 값을 화면에 반영하는 과정이 여기서 시작합니다.</p>
+<ol class="flow">
+<li class="ok"><strong>① 선택·확정·취소</strong><span><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></span></li>
+<li class="key"><strong>② 그리기 요청</strong><span>이 문서</span></li>
+<li class="ok"><strong>③ 강조 픽셀</strong><span><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></span></li>
+<li class="ok"><strong>④ 글자 픽셀</strong><span><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></span></li>
+<li class="ok"><strong>⑤ 글자 크기·컨텍스트</strong><span><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></span></li>
+<li class="open"><strong>팔레트·LCD</strong><span>미확인</span></li>
+</ol>
+<p>좌표는 모두 그리기 함수에 넘어간 <dfn title="그리기 함수가 받는 좌표. 실제 LCD의 화소 위치와 같다는 근거는 없습니다">논리 좌표</dfn>이고, 색은 RGB가 아니라 <dfn title="픽셀마다 색 대신 팔레트(색표)의 번호를 저장하는 방식">팔레트 번호</dfn>입니다. 화면 전체의 배치를 한 장으로 그린 개념도는 <a href="guide-ui.html#layout">화면·글꼴 안내</a>에 있습니다.</p>
+</section>
+
+<section id="queue">
+<h2>갱신 요청 하나가 위젯 전체를 다시 쓰기까지</h2>
+<p class="takeaway">갱신 함수가 만든 네 워드 메시지를 그대로 소비자에 건네면, 원본 코드가 화면 전체를 다시 쓰고 그 과정에서 네 종류의 요청을 내보냅니다.</p>
+
+<figure class="diagram">
+<figcaption>갱신 요청에서 그리기 요청까지, 그리고 각 요청을 실행한 문서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 420" role="img" aria-labelledby="dg-render-flow-title dg-render-flow-desc">
+<title id="dg-render-flow-title">갱신 요청의 생산·소비와 네 종류의 그리기 요청</title>
+<desc id="dg-render-flow-desc">윗줄: UiService_Refresh(1)이 메시지 [0x80, 1, 0, 0]을 원본 SendRequest로 보냅니다. RTOS 큐 전달은 모델이 메시지를 한 번 그대로 넘깁니다. 원본 UiService_Perform이 명령 0x80을 받아 UiService_DoRefresh(3)을 부르고, 위젯 갱신 뒤 쓰기 패스 0과 1을 실행합니다. 쓰기 패스는 네 종류의 요청을 냅니다. 글자 크기 속성 요청은 48×48 요청 문서가, 글자 줄 요청은 글꼴 문서가, 선택 강조 도형 요청은 선택 강조 픽셀 문서가 픽셀까지 실행했습니다. 선택 아이콘은 이 문서가 직접 픽셀까지 그렸습니다. 마지막으로 ScreenControl_Update가 그리기 버퍼와 표시 버퍼를 교대하라고 요청하며, 그 뒤 표시 장치 경로는 미확인입니다.</desc>
+<defs>
+<marker id="dg-render-flow-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-render-flow-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-render-flow-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<text class="h" x="8" y="20">요청 생산과 소비</text>
+<rect class="b ok" x="8" y="32" width="176" height="64" rx="8"/>
+<text class="t" x="20" y="58">갱신 요청 만들기</text>
+<text class="s mono" x="20" y="79">UiService_Refresh(1)</text>
+<rect class="b model" x="212" y="32" width="176" height="64" rx="8"/>
+<text class="t" x="224" y="58">큐 전달 (모델)</text>
+<text class="s mono" x="224" y="79">[0x80, 1, 0, 0] 1회</text>
+<rect class="b ok" x="416" y="32" width="176" height="64" rx="8"/>
+<text class="t" x="428" y="58">소비자</text>
+<text class="s mono" x="428" y="79">DoRefresh(3)</text>
+<rect class="b ok" x="620" y="32" width="172" height="64" rx="8"/>
+<text class="t" x="632" y="58">위젯 갱신·쓰기</text>
+<text class="s" x="632" y="79">쓰기 패스 0, 이어서 1</text>
+
+<a href="colorspace-attributes-report.html"><rect class="b ok" x="8" y="160" width="176" height="76" rx="8"/>
+<text class="t" x="20" y="186">글자 크기 속성</text>
+<text class="s" x="20" y="207">sRGB: 48×48, 색 2</text>
+<text class="s" x="20" y="226">→ ⑤ 48×48 요청</text></a>
+<a href="colorspace-glyph-report.html"><rect class="b ok" x="212" y="160" width="176" height="76" rx="8"/>
+<text class="t" x="224" y="186">글자 줄 {{text_lines}}개</text>
+<text class="s" x="224" y="207">좌표·길이·해시</text>
+<text class="s" x="224" y="226">→ ④ 글자 픽셀</text></a>
+<a href="colorspace-raster-report.html"><rect class="b ok" x="416" y="160" width="176" height="76" rx="8"/>
+<text class="t" x="428" y="186">강조 도형 {{shape_count}}개</text>
+<text class="s" x="428" y="207">갱신마다 사각형 5개</text>
+<text class="s" x="428" y="226">→ ③ 강조 픽셀</text></a>
+<rect class="b key" x="620" y="160" width="172" height="76" rx="8"/>
+<text class="t" x="632" y="186">선택 아이콘</text>
+<text class="s" x="632" y="207">이 문서에서</text>
+<text class="s" x="632" y="226">픽셀까지 실행</text>
+
+<text class="h" x="8" y="288">화면 버퍼 교대</text>
+<rect class="b ok" x="8" y="300" width="176" height="64" rx="8"/>
+<text class="t" x="20" y="326">버퍼 교대 요청</text>
+<text class="s mono" x="20" y="347">ScreenOsdLayer_Roll</text>
+<rect class="b model" x="212" y="300" width="176" height="64" rx="8"/>
+<text class="t" x="224" y="326">표시 요청 기록</text>
+<text class="s" x="224" y="347">합성 ID 17 ↔ 18</text>
+<rect class="b static" x="416" y="300" width="176" height="64" rx="8"/>
+<text class="t" x="428" y="326">프레임 버퍼 지정</text>
+<text class="s mono" x="428" y="347">LayerSetFrameBuffer</text>
+<rect class="b open" x="620" y="300" width="172" height="64" rx="8"/>
+<text class="t" x="632" y="326">DMA·LCD</text>
+<text class="s" x="632" y="347">미확인</text>
+<text class="n" x="8" y="398">글자·도형·속성 요청은 기록 지점에서 붙잡았고, 픽셀은 다른 문서의 별도 시험이 원본 코드로 그렸습니다.</text>
+
+<path class="e" d="M184 64H210" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e model" d="M388 64H414" marker-end="url(#dg-render-flow-am)"/>
+<path class="e" d="M592 64H618" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e" d="M706 96V120H96V158" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e" d="M300 120V158" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e" d="M504 120V158" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e" d="M706 120V158" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e" d="M184 332H210" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e" d="M388 332H414" marker-end="url(#dg-render-flow-ah)"/>
+<path class="e open" d="M592 332H618" marker-end="url(#dg-render-flow-ao)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="model"></i>모델이 대신한 부분</li><li><i class="static"></i>코드를 읽어 연결만 확인</li><li><i class="open"></i>미확인</li><li><i class="key"></i>이 문서가 픽셀까지 실행</li></ul>
+</figure>
+
+<p><code>UiService_Refresh(1)</code>이 만든 메시지 <code>[0x80, 1, 0, 0]</code>은 원본 <code>UiService_SendRequest</code>를 지납니다. 소비자 <code>UiService_Perform</code>은 명령 <code>0x80</code>을 받아 <code>UiService_DoRefresh(3)</code>을 부릅니다. DoRefresh는 화면 전체를 갱신한 뒤 전체 다시 그리기 분기로 가서 <code>GuiComponent_Write</code>를 쓰기 패스 0과 1로 두 번 부릅니다.</p>
+<p>RTOS의 대기·전달·수신·세마포어는 모델이 대신했고, 명령 하나를 처리한 직후 실행을 멈췄습니다. 네 갱신은 아래 표의 조건으로 따로 실행했습니다. <a href="analysis/colorspace-render.json">[근거: findings.refresh, replay.refresh_cases]</a></p>
+<div class="table-wrap"><table>
+<caption>원본 키 이동 뒤의 네 갱신. 그리기(draw)·표시(show) 버퍼 번호는 합성 ID입니다</caption>
+<thead><tr><th>갱신</th><th>언어</th><th>입력 키</th><th>선택</th><th class="n">글자 줄</th><th>draw 버퍼</th><th>show 버퍼</th></tr></thead>
+<tbody>{{rows}}</tbody>
+</table></div>
+<details class="evidence"><summary>갱신 경로의 주소</summary>
+<dl class="kv">
+<dt>요청 생산</dt><dd><code>UiService_Refresh</code> <code>0x80ae00f0</code> → <code>UiService_SendRequest</code> <code>0x80adfeb8</code></dd>
+<dt>소비</dt><dd><code>UiService_Perform</code> <code>0x80adf734</code> → 명령 분기 <code>0x80adf968</code> → <code>DoRefresh(3)</code> 호출 지점 <code>0x80adf978</code></dd>
+<dt>그리기 순서</dt><dd><code>GuiCanvas_Write</code> <code>0x80aca164</code> — 캔버스가 활성 상태이고 쓰기 패스 조건이 맞으면 활성 그리기 목록을 일반 자식보다 먼저 씁니다.</dd>
+</dl>
+</details>
+</section>
+
+<section id="focus">
+<h2>선택된 선택지만 강조·아이콘·안내문을 그립니다</h2>
+<p class="takeaway">두 선택지의 글자는 매번 그리지만, 강조 사각형·선택 아이콘·안내문은 지금 선택된 쪽의 활성 그리기 목록에서만 나옵니다. 강조는 사각형 다섯 개를 겹쳐 그린 것입니다.</p>
+<p>원본 키 이동이 활성 목록을 바꾸면 그리는 대상도 바뀝니다. 일반 선택지 아이콘은 <code>0x586</code>·<code>0x588</code>이고, 선택 아이콘은 두 선택지 모두 자원 번호 <code>0x25</code>입니다. 강조 위젯은 sRGB 쪽 <code>0x0191d00c</code>, AdobeRGB 쪽 <code>0x0191d011</code>이며 위젯 표의 종류는 <code>0x11</code>입니다.</p>
+
+<figure class="diagram">
+<figcaption>선택 강조를 이루는 사각형 다섯 개 (sRGB 선택, y = 64)</figcaption>
+<div class="dg-scroll">
+{{highlight_svg}}
+</div>
+<ul class="dg-legend"><li><i class="key"></i>팔레트 번호 <code>0x4d</code> (위·왼쪽)</li><li><i class="static"></i>팔레트 번호 <code>0x4f</code> (아래·오른쪽)</li><li>회색: 안쪽 <code>0x4e</code></li></ul>
+</figure>
+<p>그림은 가로를 논리 좌표 그대로, 세로를 {{y_scale}}배로 늘려 요청 순서대로 겹쳐 그렸습니다. 칸의 색은 세 번호를 구분하려는 것이며 실제 팔레트 색이 아닙니다. 강조 영역은 x = 0, 폭 720, 높이 48이고, y = 64(sRGB) 또는 112(AdobeRGB)에 놓입니다. 선택지 글자는 그 안의 (96, y)에서 시작합니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>sRGB 선택 때의 도형 요청 다섯 개 (원본 요청 순서)</caption>
+<thead><tr><th>순서</th><th>부분</th><th class="n">x</th><th class="n">y</th><th class="n">폭</th><th class="n">높이</th><th>팔레트 번호</th></tr></thead>
+<tbody>{{shape_rows}}</tbody>
+</table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>위젯 표에 적힌 인수는 <code>0x0f</code>이지만, 원본 <code>GuiSolidLine_WriteSolidLineInfo</code> <code>0x80ad9104</code>는 이 분기에서 팔레트 번호 <code>0x4d·0x4d·0x4f·0x4f·0x4e</code>를 요청합니다. 표의 인수를 그대로 색 번호로 읽으면 맞지 않습니다. 이 문서는 요청의 인수와 순서만 기록했고, 사각형을 픽셀로 칠하는 단계는 <a href="colorspace-raster-report.html">선택 강조의 픽셀</a>에서 원본 코드로 실행했습니다. <a href="analysis/colorspace-render.json">[근거: findings.draw_order · highlight]</a></p></div>
+</section>
+
+<section id="text">
+<h2>글자 줄 요청과 선택 아이콘 픽셀</h2>
+<p class="takeaway">글자는 줄마다 좌표와 글자 단위 수를 담은 요청으로 넘어가며, 이 문서는 그 요청까지만 기록했습니다. 선택 아이콘은 원본 코드로 실제 픽셀을 써서 버퍼 전체를 대조했습니다.</p>
+<h3>글자 줄 요청</h3>
+<p>종류 9 라벨은 현재 설명자를 갱신하고, <code>GuiStringLabel_WriteStringInfo</code>가 <code>ResourceString_DrawString</code>/<code>DrawStringChangeColor</code>로 보냅니다. 이 함수는 로케일 값(<code>0x80b7b32c</code>)으로 원본 언어 표를 고르고, 설명자의 줄 수와 줄마다의 길이(1바이트)를 따라 돕니다. 글자 단위마다 2바이트를 한 줄짜리 스택 버퍼에 복사한 뒤 <code>I43_DBTextOut</code>과 <code>AppDBTextOutByBufferID</code>로 넘깁니다.</p>
+<p>언어 표의 슬롯 0은 영어, 슬롯 1은 프랑스어입니다. 두 선택지 글자의 해시는 언어가 바뀌어도 같았습니다. 프랑스어 AdobeRGB 안내문은 y = 280과 328의 두 줄이고 영어는 y = 280의 한 줄입니다. 시험은 로케일 값을 직접 넣었고, 언어 선택이나 글꼴 등록은 실행하지 않았습니다. <a href="analysis/colorspace-render.json">[근거: findings.text · locale, labels]</a></p>
+<details class="evidence"><summary>글자 줄 {{text_lines}}개의 좌표·글자 단위 수·해시</summary>
+<div class="table-wrap"><table class="compact">
+<caption>네 갱신에서 기록한 글자 줄. 해시는 준비된 글자 단위 바이트의 SHA-256 앞 16자리</caption>
+<thead><tr><th>갱신</th><th>위젯</th><th>좌표 (x, y)</th><th class="n">글자 단위</th><th>SHA-256 앞부분</th></tr></thead>
+<tbody>{{text_rows}}</tbody>
+</table></div>
+</details>
+<div class="callout"><strong class="label">글자 모양은 여기서 정해지지 않습니다</strong>
+<p>요청에 담긴 것은 글자 번호의 나열입니다. 다음 단계는 <code>GdiTextOutDB</code>와 간접 글꼴 렌더러이며, 이 문서에서는 실행하지 않았습니다. 같은 “sRGB” 요청을 원본 글꼴 코드에 넣어 픽셀을 만든 시험은 <a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>, 이 줄에 함께 걸린 48×48 크기 요청은 <a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a>에 있습니다.</p></div>
+
+<h3>선택 아이콘의 픽셀</h3>
+<ol class="flow">
+<li class="ok"><strong>RLE 원본</strong><span>{{icon_compressed}}바이트 · 아이콘 <code>0x25</code></span></li>
+<li class="ok"><strong>원본 코드로 풀기</strong><span>{{icon_decoded}}바이트 = {{icon_bitmap}}</span></li>
+<li class="ok"><strong>0이 아닌 번호만 쓰기</strong><span>{{marker_bytes}}바이트, 0은 투명</span></li>
+<li class="model"><strong>합성 버퍼</strong><span>줄 간격 {{icon_stride}}바이트 · 높이 {{icon_height}}</span></li>
+</ol>
+<p>선택 아이콘의 논리 크기는 {{icon_logical}}이지만 비트맵은 {{icon_bitmap}}입니다. <code>ResourceIcon_DrawIcon</code>이 원본 <dfn title="같은 값이 이어지는 구간을 (개수, 값) 쌍으로 줄여 저장하는 압축 방식">RLE</dfn> 쌍을 풀어 정확히 {{icon_decoded}}바이트를 만들고, 그중 0이 아닌 팔레트 번호 {{marker_bytes}}개를 각 선택 위치에 씁니다. 0은 투명이어서 기존 값(초기값 {{icon_fill}})이 남습니다. 버퍼 정보를 돌려주는 <code>GetBuffer</code> 경계만 시험값으로 바꿨습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>선택 아이콘 두 위치의 결과. 합성 버퍼 전체와 보호 영역을 독립 계산과 비교했습니다</caption>
+<thead><tr><th>위치 (x, y)</th><th class="n">바뀐 바이트</th><th>전체 버퍼 SHA-256</th></tr></thead>
+<tbody>{{pixel_rows}}</tbody>
+</table></div>
+<p class="small muted">줄 간격 {{icon_stride}}바이트는 아이콘 시험용 합성 값입니다. 실제 화면 버퍼의 줄 간격이나 크기로 일반화하지 않습니다. 원본 글자·아이콘 데이터는 공개하지 않고 주소·길이·해시만 게시했습니다. <a href="tools/check_colorspace_render.py">[재현 도구: pixel_cases]</a></p>
+<details class="evidence"><summary>아이콘 자원의 위치와 표</summary>
+<dl class="kv">
+<dt>압축 데이터</dt><dd><code>{{icon_va}}</code> · {{icon_compressed}}바이트 · SHA-256 <code class="wrap">{{icon_sha}}</code></dd>
+<dt>풀어 쓴 데이터</dt><dd>SHA-256 <code class="wrap">{{icon_decoded_sha}}</code></dd>
+<dt>크기 표</dt><dd>논리 폭 <code>{{t_lw}}</code> · 높이 <code>{{t_h}}</code> · 비트맵 폭 <code>{{t_bw}}</code> · RLE 오프셋 <code>{{t_rle}}</code></dd>
+</dl>
+</details>
+</section>
+
+<section id="buffer">
+<h2>그리기 버퍼와 표시 버퍼를 맞바꾸는 요청</h2>
+<p class="takeaway">갱신이 끝나면 원본 코드는 방금 그린 버퍼를 표시 버퍼로 넘기고 다른 버퍼를 다음 그리기에 씁니다. 그 뒤 표시 장치로 가는 경로는 코드를 읽어 연결만 확인했습니다.</p>
+<ol class="flow">
+<li class="ok"><strong>갱신 마무리</strong><span><code>ScreenControl_Update</code> 원본 실행</span></li>
+<li class="ok"><strong>버퍼 교대</strong><span><code>ScreenOsdLayer_Roll</code> · 캐시 정리 요청 · draw/show 교대</span></li>
+<li class="model"><strong>표시 요청 기록</strong><span><code>0x8029ef58</code>에서 기록하고 복귀</span></li>
+<li class="static"><strong>표시 컨텍스트 선택</strong><span>정적 연결</span></li>
+<li class="static"><strong>프레임 버퍼 지정</strong><span><code>LayerSetFrameBuffer</code> <code>0x800442f8</code> · <code>LayerMove</code> <code>0x80044370</code></span></li>
+<li class="open"><strong>DMA · LCD</strong><span>미확인</span></li>
+</ol>
+<p><code>ScreenOsdLayer_Roll</code> <code>0x8043ca4c</code>는 그리기 버퍼에 캐시 쓰기·무효화를 요청하고, <code>ScreenOsdLayer_SetOsd</code>와 <code>I43_OSDSetShowBufferEx</code>로 이전 draw 버퍼를 새 show 버퍼로 지정합니다. 합성 버퍼 ID 17과 18은 네 갱신마다 역할을 바꿨습니다. 원본 코드는 <code>0x8043ca34</code>에서 다시 이어져 갱신을 마치고 소비자로 돌아오며, <code>0x80adf980</code>에서 멈춥니다.</p>
+<p>정적 코드에서는 <code>AppOsdSetShowBufferByLayerID</code>가 표시 컨텍스트를 고르고 <code>AppOsdSelectDisplayContextByLayerID</code>가 컨텍스트의 메모리 포인터와 버퍼 속성을 읽은 뒤 <code>LayerSetFrameBuffer</code>와 <code>LayerMove</code>를 부릅니다. <a href="analysis/colorspace-render.json">[근거: findings.buffer]</a></p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>캐시 요청은 합성 draw 주소와 {{cache_bytes}}바이트(960 × 480) 범위로 기록됐습니다. 이것은 시험용 <code>GetBuffer</code> 정보이며 실제 패널 크기나 장치 줄 간격을 뜻하지 않습니다. 아이콘 시험의 96바이트 줄 간격, 픽셀 시험의 736×176 버퍼와도 다른 조건입니다.</p></div>
+<div class="callout fix"><strong class="label">정정</strong>
+<p>모델 목록의 <code>0x800ec08c</code>는 진단 함수가 아니라 <code>I43_SetParam</code>입니다. 이 시험은 그 호출에서 0을 돌려주므로 매개변수 <code>0x1bc</code>의 활성 그리기 컨텍스트 선택을 실행하지 않습니다. 요청·픽셀 결과는 그대로이지만, 이 시험만으로 실제 버퍼 ID와 컨텍스트의 연결을 입증할 수는 없습니다. 등록된 컨텍스트를 원본 선택기가 고르는 과정은 <a href="colorspace-attributes-report.html#binding">조건부 컨텍스트 선택</a>에서 따로 확인했습니다. 17·18은 시험 입력이며 실제 초기 할당값이 아닙니다.</p></div>
+</section>
+
+<section id="comparison">
+<h2>K-3 Mark III와 비교</h2>
+<p class="takeaway">동작의 이름은 대응시킬 수 있지만 숫자 ID·자원 구조·팔레트·이벤트를 그대로 옮길 근거는 없습니다. 화면을 다시 만들 때는 선택을 언제 확정할지부터 정해야 합니다.</p>
+<p>K-3 Mark III 자료에서 색공간 행은 텍스트 ID <code>0x1f6</code>·<code>0x1f7</code>과 스타일별 아이콘을 쓰고, 고르는 동안 보류값을 거칩니다. Q7은 포커스 이동 때 설정을 바로 쓰고 확정 때 유지하며 취소 때 되돌립니다.</p>
+<div class="table-wrap"><table>
+<caption>비교 기준: K-3 Mark III 고정 커밋 <code class="wrap">{{k3_commit}}</code></caption>
+<thead><tr><th>항목</th><th>Q7</th><th>K-3 Mark III 고정 자료</th></tr></thead>
+<tbody>
+<tr><th scope="row">선택지 표현</th><td>위젯 <code>0x0191d001</code>/<code>2</code>와 언어 표</td><td>텍스트 ID <code>0x1f6</code>/<code>7</code>, 스타일별 아이콘</td></tr>
+<tr><th scope="row">선택 이동</th><td>즉시 메뉴 RAM 쓰기</td><td>보류 인덱스 경로</td></tr>
+<tr><th scope="row">확정·취소</th><td>유지 · 백업 복원</td><td>기종별 입력·확정 경로</td></tr>
+<tr><th scope="row">그리기 경계</th><td>원본 요청 · 아이콘 RAM 쓰기</td><td>별도 ARM 표현 콜백 · 무효화 경로</td></tr>
+</tbody></table></div>
+<p><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/colorspace-ui-evidence.json">[K-3 Mark III 색공간 행]</a> · <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/colorspace-ui-input-evidence.json">[방향·포커스 입력]</a> · <a href="colorspace-ui-report.html#state">[Q7: 즉시 기록·취소 복원]</a>. 커밋과 원문 해시는 근거 JSON의 references에 기록했습니다. 세 기종 비교는 <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/ui-port-contract.html">K-3 Mark III 저장소의 UI 이식 설계</a>에 있습니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 재현 방법</h2>
+<ul>
+<li>바깥 스레드 대기와 큐는 모델입니다. 요청 생산, 명령 분기, 갱신 한 번은 원본 코드로 실행했지만, 갱신마다 명령 하나만 전달하므로 비동기 타이밍·경합·큐 넘침은 시험하지 않았습니다.</li>
+<li>글자 줄과 도형은 지정한 함수 경계에서 요청으로 붙잡았습니다. 이 문서는 글자 픽셀이나 완성된 강조 픽셀을 주장하지 않습니다. 로케일 값과 0인 화면 배율은 좌표를 재기 위한 시험 조건입니다.</li>
+<li>픽셀까지 그린 것은 자원 <code>0x25</code> 하나입니다. 그 버퍼 대조는 인덱스 RAM이며 실제 패널 크기·색·DMA·화면 전송 시점을 뜻하지 않습니다.</li>
+<li>모드 <code>0x53</code> 구성·열기는 앞 문서의 검사 도구와 같은 모델로 실행했습니다. 물리 입력, DCF·매체 효과, 확정·취소 동작은 이 시험에 포함하지 않았습니다.</li>
+</ul>
+<p>작업자와 조정자의 별도 실행에서 네 갱신과 두 픽셀 사례의 결과 전체가 일치했습니다. 원본 워드 {{words}}개, 함수 구간 {{functions}}개, 자원 범위 {{resource_ranges}}개의 위치와 해시를 다시 계산합니다.</p>
+<details class="evidence"><summary>모델로 대체한 경계 {{hook_count}}곳</summary>
+<div class="table-wrap"><table class="compact">
+<caption>이 경계를 통과했다고 해서 실제 장치에서 실행된 것은 아닙니다</caption>
+<thead><tr><th>주소</th><th>모델이 하는 일 (원문)</th></tr></thead>
+<tbody>{{hooks}}</tbody>
+</table></div>
+</details>
+<pre><code>python tools/check_colorspace_render.py .private/main-expanded.elf --output .private/colorspace-render/recheck.json
+python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/colorspace-render.json">analysis/colorspace-render.json</a> — 네 갱신의 요청, 글자 줄, 도형 인수, 아이콘 픽셀 사례, 라벨 설명자, 모델 경계</li>
+<li><a href="tools/check_colorspace_render.py">tools/check_colorspace_render.py</a> — 원본 코드로 갱신과 아이콘 그리기를 다시 실행하는 도구</li>
+<li><a href="analysis/colorspace-ui.json">analysis/colorspace-ui.json</a> — 앞 단계(선택·확정·취소)의 근거</li>
+<li><a href="analysis/hq-status.json">analysis/hq-status.json</a> — 연구 목표별 상태 기록</li>
+<li><a href="https://en.wikipedia.org/wiki/Indexed_color">Wikipedia: Indexed color</a> — 팔레트 번호로 픽셀을 저장하는 방식의 일반 설명</li>
+<li><a href="https://en.wikipedia.org/wiki/Run-length_encoding">Wikipedia: Run-length encoding</a> — RLE 압축의 일반 설명</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html" aria-current="page">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-ui-report.html"><small>← 이전</small>색공간 화면: 선택·확정·취소</a><a class="next" href="colorspace-raster-report.html"><small>다음 →</small>선택 강조의 픽셀</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

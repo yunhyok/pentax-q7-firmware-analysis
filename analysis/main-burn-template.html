@@ -1,11 +1,286 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — 메인 Burn의 매체 열기·설치 헤더 요청</title><meta name="description" content="별도 초기 상태에서 재현한 MAIN FileX 열기와 NAND 요청, E01 구조 비교와 모델 경계"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head><body>
-<header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / MAIN BURN PREFIX</p><h1>메인 Burn의<br><span>매체 열기·헤더 요청</span></h1><p class="lead">{{intro}}</p><p class="links"><a href="update-service-report.html">상위 업데이트 서비스</a><a href="burn-continuation-report.html">별도 E01 종료 근거</a><a href="index.html">전체 분석</a></p></div><aside class="milestone"><strong>2 FIXTURES</strong><span>원본 열기 · 합성 설치 헤더</span><strong>281 / 134→156</strong><span>Burn부터 VEX 블록 이벤트</span><strong>98 + 11 WORDS</strong><span>MAIN · E01 원본 근거</span></aside></header>
-<nav aria-label="문서 목차"><a href="#entry">진입 조건</a><a href="#open">원본 열기</a><a href="#header">설치 헤더</a><a href="#comparison">구현 비교</a><a href="#limits">한계·재현</a></nav><main>
-<section id="entry"><p class="eyebrow">01 / OBSERVED CALL CONTRACT, NEW STATE</p><h2>MAIN 호출 인수로 새 실행을 시작했다</h2><p>{{entry}} <a href="analysis/main-burn-prefix.json">[M1: call_contract·handle_fields]</a> · <a href="analysis/update-service.json">[U1: 앞선 DownloadCard]</a></p><p>MAIN Burn의 <code>FcuMediaInfoInit</code> 플래그 2는 초기화 함수 내부의 cold ID 경로를 건너뜁니다. 그 뒤 FileX 열기에서 나오는 장치 요청까지 없어진다는 의미는 아닙니다. <a href="analysis/main-burn-prefix.json">[M1: source.main_words]</a></p></section>
-<section id="open"><p class="eyebrow">02 / ORIGINAL FILEX OPEN</p><h2>BurnNand보다 먼저 장치 요청에 도달한다</h2><p>{{opening}} <a href="analysis/main-burn-prefix.json">[M1: native_open]</a></p>{{open_graph}}</section>
-<section id="header"><p class="eyebrow">03 / SEPARATELY MODELED INSTALLED MEDIA</p><h2>설치 헤더 요청 뒤 카드 읽기 진입을 확인했다</h2><p>{{headers}} <a href="analysis/main-burn-prefix.json">[M1: installed_header]</a></p>{{header_graph}}<p>{{card}} <a href="analysis/main-burn-prefix.json">[M1: fixture·first_card_filex]</a></p><p><code>intended_payload_offset</code>은 시험의 의도와 이전 헤더 읽기 위치를 기록한 값입니다. 이번 FILE 구조의 실제 커서 관측값이 아닙니다. 카드 읽기 함수는 실행 결과를 받기 전에 멈춥니다. <a href="tools/check_main_burn.py">[M2: replay_mode]</a></p></section>
-<section id="comparison"><p class="eyebrow">04 / DISTINCT IMPLEMENTATIONS</p><h2>E01의 구조 비교와 K-3의 분석 항목을 구분한다</h2><p>{{namespace}} <a href="analysis/main-burn-prefix.json">[M1: source.comparison]</a></p><div class="table-wrap"><table><thead><tr><th>필드</th><th>MAIN</th><th>E01</th></tr></thead><tbody><tr><th>BurnNand</th><td>0x805dd7b8</td><td>0x80012654</td></tr><tr><th>콜백</th><td>+0xca4</td><td>+0x1254</td></tr><tr><th>해시 플래그</th><td>+0xcc8</td><td>+0x1278</td></tr><tr><th>청크·기본·보조 버퍼</th><td>+0xc98 / +0xc9c / +0xca0</td><td>+0x1248 / +0x124c / +0x1250</td></tr></tbody></table></div><p>opcode 비교는 레지스터·주소·오프셋·funct 필드를 제외합니다. 같은 opcode 배열은 동작 동등성 검증이 아닙니다.</p><p>{{comparison}} <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/update-finalization-evidence.json">[K1: 종료·반환의 고정 근거]</a></p></section>
-<section id="limits"><p class="eyebrow">05 / BOUNDARIES AND REPRODUCTION</p><h2>두 초기 구간에서 실제로 대체한 API</h2><p>{{limits}} <a href="analysis/main-burn-prefix.json">[M1: limits·next_actions]</a></p><details><summary>시험별 모델 경계 목록</summary><div class="table-wrap"><table><thead><tr><th>시험</th><th>주소</th><th>공급한 동작</th></tr></thead><tbody>{{boundaries}}</tbody></table></div></details><p>함수 후보 범위는 다음 고유 심볼 주소까지, E01 범위는 ELF 함수 크기로 지정했습니다. 원본·분석 ELF 해시를 고정하고 주소 공간을 나누어 명령어와 범위를 검사합니다. <a href="tools/verify_main_burn.py">[M3: 원본 검사]</a> · <a href="tests/test_update_service.py">[M4: 구현·모델 경계 변조 검사]</a></p><pre><code>python tools/check_main_burn.py &lt;original fwdc603p.bin&gt; .private/main-expanded.elf --output .private/main-prefix-new.json
-python tools/verify_report.py --firmware &lt;original fwdc603p.bin&gt;</code></pre><p><a href="analysis/main-burn-prefix.json">M1 근거 JSON</a> · <a href="tools/check_main_burn.py">M2 재현 도구</a> · <a href="analysis/main-burn-editorial.json">한국어 검토</a> · <a href="analysis/hq-status.json">연구 상태</a></p></section>
-</main><footer>원본 코드의 제한 실행과 합성 매체 조건 분석. 실제 NAND 응답·기록·업데이트 인식·부팅은 미검증입니다.</footer></body></html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAIN Burn의 첫 구간: 매체 열기와 설치 헤더 요청 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Q7 본 프로그램의 기록 함수 Burn이 실제 기록에 앞서 하는 일을 두 가지 조건으로 따라간 기록입니다. 원본 매체 열기는 NAND 식별 요청 직전까지, 열기 결과를 넣어 준 시험은 설치 헤더 요청을 지나 카드의 첫 읽기 진입까지 갔습니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-update.html">업데이트와 재패킹</a></li><li aria-current="page">MAIN Burn의 매체 열기와 헤더 요청</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">업데이트와 재패킹 · 본 프로그램 쪽 기록 함수의 앞부분</p>
+<h1>MAIN Burn의 첫 구간: 매체 열기와 설치 헤더 요청</h1>
+<p class="lead">본 프로그램의 기록 함수 <code>Burn</code>은 NAND에 쓰기 전에 먼저 저장 매체를 열고, 이미 설치된 헤더를 읽고, 카드에서 첫 덩어리를 읽습니다. 이 앞부분을 서로 다른 두 조건에서 원본 코드로 따라갔습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 기록 함수가 쓰기 전에 하는 준비</a></li><li><a href="#entry">두 시험의 출발점은 앞 문서에서 관측한 호출 인수입니다</a></li><li><a href="#open">시험 1: 원본 매체 열기는 BurnNand보다 먼저 NAND에 요청을 보냅니다</a></li><li><a href="#header">시험 2: 열기 결과를 넣어 주면 설치 헤더를 읽고 카드 읽기에 들어갑니다</a></li><li><a href="#comparison">MAIN과 E01의 BurnNand는 닮았지만 같은 코드가 아닙니다</a></li><li><a href="#limits">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li><strong>시험 1</strong> — 저장 매체를 여는 원본 코드를 그대로 실행하면, NAND 기록 함수가 불리기도 전에 NAND에 식별 정보를 묻는 요청이 먼저 나옵니다. 실행은 그 요청 직전에서 멈췄습니다. 장치의 응답은 넣지 않았습니다.</li>
+<li><strong>시험 2</strong> — 열기 결과와 저장장치 크기를 모델로 넣어 주면, 원본 <code>BurnNand</code>가 설치된 헤더를 읽으려고 요청 두 개를 차례로 보냅니다. 모델이 답하자 카드에서 첫 128KiB를 읽는 함수에 진입했고, 거기서 멈췄습니다.</li>
+<li>두 시험은 이어진 실행이 아닙니다. 각각 새로 만든 합성 상태에서 시작했습니다.</li>
+<li>본 프로그램(MAIN)과 로더(E01)의 <code>BurnNand</code>는 크기가 같고 명령 워드의 약 78%가 완전히 같습니다. 그래도 호출 주소와 핸들의 칸 위치가 달라, E01에서 확인한 결과를 MAIN의 동작 증거로 옮길 수 없습니다.</li>
+<li>NAND의 실제 응답, 카드에서 읽힌 데이터, 그 뒤의 섹션 맵과 기록은 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>두 시험 모두 원본 <code>BurnGetHandle</code>과 MAIN <code>Burn</code>을 실행</li>
+<li>시험 1: 매체 열기에서 NAND 요청 직전까지(블록 이벤트 281개)</li>
+<li>시험 2: <code>HostAck</code>, <code>BurnNand</code>, 설치 헤더 요청, 카드 읽기 진입(134개, 누적 156개)</li>
+<li>MAIN 워드 98개와 함수 후보 범위 24개, E01 워드 11개를 대조</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>MAIN과 E01 <code>BurnNand</code>의 워드 비교(2,760개 중 2,166개 일치)</li>
+<li>매체 정보 초기화의 플래그 2가 건너뛰는 분기</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>메모리 할당, 뮤텍스, 진단 출력(두 시험 공통)</li>
+<li>시험 2의 열기 결과 <code>0xf1</code>과 저장장치 크기</li>
+<li>시험 2의 두 요청에 대한 응답(FF 16바이트, 빌려 온 헤더 <code>0x600</code>바이트)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>NAND 식별 요청에 대한 장치의 응답과 그 뒤의 진행</li>
+<li>카드 읽기의 결과와 파일 위치</li>
+<li>둘째 설치 헤더, 섹션 맵, 기록·재부팅·복구</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 기록 함수가 쓰기 전에 하는 준비</h2>
+<p><a href="update-service-report.html">메인 업데이트 진입과 반환값</a>은 메뉴에서 시작한 업데이트가 본 프로그램의 <code>Burn</code>에 닿는 곳까지 따라갔고, <code>Burn</code> 자체는 모델로 바꿨습니다. 이 문서는 그 <code>Burn</code>의 앞부분을 원본 코드로 실행합니다.</p>
+<ol class="flow">
+<li><strong>업데이트 진입</strong><span>래퍼에서 <code>DownloadCard</code>까지 — <a href="update-service-report.html">앞 문서</a></span></li>
+<li class="key"><strong>매체 열기</strong><span>설치된 저장 매체를 FileX로 엶 — 시험 1</span></li>
+<li class="key"><strong>설치 헤더 읽기</strong><span><code>BurnNand</code>가 기존 배치 정보를 요청 — 시험 2</span></li>
+<li class="key"><strong>카드 첫 읽기</strong><span>업데이트 파일의 첫 덩어리 — 시험 2는 진입까지</span></li>
+<li class="open"><strong>섹션 맵과 기록</strong><span>MAIN 쪽에서는 아직 실행하지 않음</span></li>
+</ol>
+<p>읽는 데 필요한 배경 지식입니다.</p>
+<ul>
+<li><strong>NAND 플래시의 식별 요청</strong>: NAND 칩은 제조사와 종류를 알려 주는 식별 정보(ID)를 갖고 있습니다. 저장장치 드라이버는 보통 초기화할 때 이 값을 읽어 어떤 칩인지 구분합니다. 일반 NAND 명령 체계에서는 <code>READ ID</code>(명령 바이트 <code>0x90</code>)가 이 일을 합니다.</li>
+<li><strong>예비 영역</strong>: NAND의 각 페이지에는 데이터 외에 작은 예비 영역이 붙어 있습니다. 보통 오류 정정 부호와 불량 블록 표시를 여기에 둡니다.</li>
+<li><strong>연산 번호</strong>: 이 문서의 “연산 2·4·6”은 펌웨어 안의 저장 계층이 쓰는 내부 번호입니다. NAND 칩에 보내는 명령 바이트가 아닙니다. 연산 2는 식별 요청, 4는 데이터 읽기, 6은 예비 영역 읽기에 쓰였습니다. 내부 번호가 칩의 어떤 명령으로 바뀌는지는 이 문서에서 따라가지 않았습니다.</li>
+<li><strong>FileX</strong>: 이 펌웨어의 파일시스템입니다. 매체를 열 때 등록된 드라이버 함수에 요청 번호를 넘겨 일을 시킵니다.</li>
+</ul>
+</section>
+
+<section id="entry">
+<h2>두 시험의 출발점은 앞 문서에서 관측한 호출 인수입니다</h2>
+<p class="takeaway">두 시험 모두 원본 헤더로 <code>BurnGetHandle</code>을 실행해 핸들을 만든 다음, 앞 문서에서 관측한 인수 그대로 MAIN <code>Burn</code>을 불렀습니다.</p>
+<p>원본 업데이트 헤더 192바이트로 <code>BurnGetHandle</code>을 실행하면 MAIN <code>BurnNand</code>의 주소 <code>0x805dd7b8</code>이 핸들 <code>+0xca4</code>에 들어갑니다. 그 핸들과 덩어리 크기 <code>0x20000</code>, 카드 함수 표 <code>sCardFunc</code>의 주소 <code>0x805e8854</code>를 MAIN <code>Burn</code>에 넘겼습니다. 이 인수는 <code>DownloadCard</code> 실행에서 확인한 값입니다. 다만 두 시험은 <code>DownloadCard</code>에서 이어진 것이 아니라 각각 새로 시작한 실행입니다. <a href="analysis/main-burn-prefix.json">[근거: call_contract, handle_fields]</a> · <a href="analysis/update-service.json">[앞 문서의 근거]</a></p>
+<p>MAIN <code>Burn</code>은 먼저 매체 정보 초기화 함수 <code>FcuMediaInfoInit</code>을 타입 1, 플래그 2로 부릅니다. 플래그 2는 이 초기화 함수 내부의 “cold ID” 경로(식별 정보를 읽는 경로)를 건너뛰게 합니다. 그렇다고 그 뒤 FileX 열기에서 나오는 장치 요청까지 없어지는 것은 아닙니다. 시험 1이 이 점을 보여 줍니다. <a href="analysis/main-burn-prefix.json">[근거: source.main_words]</a></p>
+<details class="evidence"><summary>핸들에 적힌 값과 카드 함수 표</summary>
+<div class="table-wrap"><table class="compact fit">
+<caption>원본 <code>BurnGetHandle</code>을 실행한 뒤의 핸들</caption>
+<thead><tr><th>핸들 안의 위치</th><th>값</th></tr></thead>
+<tbody>{{handle_rows}}</tbody>
+</table></div>
+<p><code>+0xca4</code>는 기록 함수(MAIN <code>BurnNand</code>), <code>+0xca8</code>은 장치 함수(<code>_fx_nand_non_seq_read_driver</code>), <code>+0xcc8</code>은 해시 플래그입니다. 카드 함수 표 <code>0x805e8854</code>에는 읽기 함수 <code>0x805e1684</code>와 <code>HostAck</code> <code>0x805e1a00</code>이 들어 있습니다. 원본 헤더의 SHA-256은 <code class="wrap">{{header_sha256}}</code>입니다.</p>
+</details>
+</section>
+
+<section id="open">
+<h2>시험 1: 원본 매체 열기는 BurnNand보다 먼저 NAND에 요청을 보냅니다</h2>
+<p class="takeaway">설치 매체를 여는 원본 코드는 FileX, NAND 드라이버, 저장 계층을 차례로 거쳐 NAND 식별 요청에 도달했습니다. 이때까지 <code>HostAck</code>와 <code>BurnNand</code>는 실행되지 않았습니다.</p>
+
+<figure class="diagram">
+<figcaption>서로 이어지지 않는 두 시험이 도달한 곳</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 446" role="img" aria-labelledby="dg-runs-title dg-runs-desc">
+<title id="dg-runs-title">MAIN Burn 앞부분의 두 시험</title>
+<desc id="dg-runs-desc">왼쪽은 시험 1입니다. MAIN Burn에 진입해 매체 정보를 초기화하고, 원본 FileX 매체 열기를 실행했습니다. FileX가 NAND 드라이버에 요청 4를 보내고, 드라이버가 TlMediaInit과 TlFcuOperation을 거쳐 NAND 연산 2, 곧 식별 요청을 만들었습니다. 실행은 FcuNandOperationEx 진입 직전에서 멈췄고 블록 이벤트는 281개였습니다. 장치의 응답은 넣지 않았습니다. 오른쪽은 시험 2입니다. 같은 인수로 MAIN Burn에 진입하되, 매체 열기 결과 0xf1과 저장장치 크기를 모델이 답했습니다. 원본 HostAck가 1을 반환한 뒤 BurnNand가 실행돼 설치 헤더를 읽으려고 연산 6을 요청했고, 이때까지 블록 이벤트는 134개였습니다. 모델이 FF 16바이트를 답하자 연산 4를 요청했고, 모델이 0x600바이트를 답했습니다. 이어 카드 읽기 함수가 _fx_file_read에 0x20000바이트를 요청하는 곳에서 멈췄고 누적 블록 이벤트는 156개였습니다. 두 시험은 서로 이어지지 않습니다.</desc>
+<defs><marker id="dg-runs-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="gf" x="0" y="0" width="388" height="412" rx="10"/>
+<rect class="gf" x="412" y="0" width="388" height="412" rx="10"/>
+<text class="h" x="16" y="22">시험 1 — 매체 열기를 원본 코드로 실행</text>
+<text class="h" x="428" y="22">시험 2 — 열기 결과와 크기를 모델이 답함</text>
+
+<rect class="b ok" x="16" y="34" width="356" height="50" rx="8"/>
+<text class="t" x="28" y="55">MAIN Burn 진입</text>
+<text class="s" x="28" y="74">매체 정보 초기화 · 타입 1 · 플래그 2</text>
+<rect class="b ok" x="16" y="98" width="356" height="50" rx="8"/>
+<text class="t" x="28" y="119">FileX 매체 열기</text>
+<text class="s mono" x="28" y="138">_fx_media_open → _fx_media_open_ex</text>
+<rect class="b ok" x="16" y="162" width="356" height="50" rx="8"/>
+<text class="t" x="28" y="183">NAND 드라이버에 요청 4</text>
+<text class="s mono" x="28" y="202">_fx_nand_driver → TlMediaInit</text>
+<rect class="b ok" x="16" y="226" width="356" height="50" rx="8"/>
+<text class="t" x="28" y="247">저장 계층이 NAND 연산을 만듦</text>
+<text class="s mono" x="28" y="266">TlFcuOperation → FcuNandOperation</text>
+<rect class="b key" x="16" y="290" width="356" height="50" rx="8"/>
+<text class="t" x="28" y="311">연산 2(식별 요청) 직전에서 정지</text>
+<text class="s" x="28" y="330">FcuNandOperationEx 진입 · 블록 이벤트 281개</text>
+<rect class="b open" x="16" y="354" width="356" height="50" rx="8"/>
+<text class="t" x="28" y="375">장치의 응답과 그 뒤</text>
+<text class="s" x="28" y="394">응답을 넣지 않음 · BurnNand는 실행 전</text>
+<path class="e" d="M194 84V96" marker-end="url(#dg-runs-ah)"/>
+<path class="e" d="M194 148V160" marker-end="url(#dg-runs-ah)"/>
+<path class="e" d="M194 212V224" marker-end="url(#dg-runs-ah)"/>
+<path class="e" d="M194 276V288" marker-end="url(#dg-runs-ah)"/>
+<path class="e open" d="M194 340V352"/>
+
+<rect class="b ok" x="428" y="34" width="356" height="50" rx="8"/>
+<text class="t" x="440" y="55">MAIN Burn 진입</text>
+<text class="s" x="440" y="74">시험 1과 같은 인수 · 새로 만든 상태</text>
+<rect class="b model" x="428" y="98" width="356" height="50" rx="8"/>
+<text class="t" x="440" y="119">매체 열기와 크기를 모델이 답함</text>
+<text class="s" x="440" y="138">열기 0xf1 · 블록당 256섹터 · 총 262,144섹터</text>
+<rect class="b ok" x="428" y="162" width="356" height="50" rx="8"/>
+<text class="t" x="440" y="183">HostAck가 1을 반환 → BurnNand 실행</text>
+<text class="s mono" x="440" y="202">0x805e1a00 → 0x805dd7b8</text>
+<rect class="b ok" x="428" y="226" width="356" height="50" rx="8"/>
+<text class="t" x="440" y="247">설치 헤더 요청 ①: 연산 6</text>
+<text class="s" x="440" y="266">섹터 0 · 1개 · 이벤트 134개 · 모델이 FF 16바이트</text>
+<rect class="b ok" x="428" y="290" width="356" height="50" rx="8"/>
+<text class="t" x="440" y="311">설치 헤더 요청 ②: 연산 4</text>
+<text class="s" x="440" y="330">섹터 0 · 3개 · 모델이 0x600바이트를 답함</text>
+<rect class="b key" x="428" y="354" width="356" height="50" rx="8"/>
+<text class="t" x="440" y="375">카드 첫 읽기 진입에서 정지</text>
+<text class="s" x="440" y="394">_fx_file_read에 0x20000바이트 요청 · 누적 156개</text>
+<path class="e" d="M606 84V96" marker-end="url(#dg-runs-ah)"/>
+<path class="e" d="M606 148V160" marker-end="url(#dg-runs-ah)"/>
+<path class="e" d="M606 212V224" marker-end="url(#dg-runs-ah)"/>
+<path class="e" d="M606 276V288" marker-end="url(#dg-runs-ah)"/>
+<path class="e" d="M606 340V352" marker-end="url(#dg-runs-ah)"/>
+
+<text class="n mid" x="400" y="436">두 시험은 서로 이어지지 않습니다. 각각 새로 만든 합성 상태에서 시작합니다.</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="model"></i>모델이 답한 구간</li><li><i class="key"></i>실행을 멈춘 지점</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+
+<p>시험 1에서는 설치 매체의 FileX 열기를 원본 코드로 실행했습니다. FileX는 NAND 드라이버에 요청 4를 보냈고, 드라이버는 <code>TlMediaInit</code>과 <code>TlFcuOperation</code>을 거쳐 NAND 연산 2를 요청했습니다. <code>Burn</code> 진입부터 VEX 블록 이벤트 281개 뒤에 <code>FcuNandOperationEx</code>(<code>0x80053124</code>)에 도달했고, 그 본문을 실행하기 전에 멈췄습니다. 이때 식별 정보를 받을 8바이트 버퍼는 모두 <code>FF</code>였습니다. 장치의 응답을 넣지 않았으므로 <code>HostAck</code>와 <code>BurnNand</code>는 아직 실행되지 않았습니다. <a href="analysis/main-burn-prefix.json">[근거: native_open]</a></p>
+<div class="callout"><strong class="label">참고</strong>
+<p>현재 공개된 FileX 헤더에서 드라이버 요청 번호 4는 <code>FX_DRIVER_INIT</code>(드라이버 초기화)입니다. Q7에 들어 있는 FileX가 같은 번호를 쓰는지는 따로 확인하지 않았지만, 요청 4가 매체 초기화 함수 <code>TlMediaInit</code>으로 이어진 관측과 맞습니다. <a href="https://github.com/eclipse-threadx/filex/blob/master/common/inc/fx_api.h">[FileX fx_api.h]</a></p></div>
+<p class="small muted">VEX 블록 이벤트는 에뮬레이터가 센 실행 블록 수입니다. 실물 CPU의 명령 수나 실행 시간이 아닙니다.</p>
+</section>
+
+<section id="header">
+<h2>시험 2: 열기 결과를 넣어 주면 설치 헤더를 읽고 카드 읽기에 들어갑니다</h2>
+<p class="takeaway">매체 열기 결과와 저장장치 크기를 모델이 답하자, 원본 <code>BurnNand</code>는 설치 헤더를 읽는 요청 두 개를 보낸 뒤 카드의 첫 읽기에 진입했습니다.</p>
+<ol class="steps">
+<li><strong>열기와 크기</strong> FileX 열기 모델이 <code>0xf1</code>을 반환하고, 크기 조회 모델이 블록당 256섹터, 총 262,144섹터를 답했습니다.</li>
+<li><strong>HostAck와 BurnNand</strong> 원본 <code>HostAck</code>가 1을 반환했고, 이어 원본 <code>BurnNand</code>가 실행됐습니다.</li>
+<li><strong>첫 요청: 연산 6</strong> <code>BurnNand</code>가 설치 헤더를 읽으려고 보낸 첫 요청은 NAND 연산 6, 섹터 0, 개수 1이었습니다. 여기까지 VEX 블록 이벤트는 134개입니다. 모델은 예비 영역 16바이트를 모두 <code>FF</code>로 답했습니다.</li>
+<li><strong>둘째 요청: 연산 4</strong> 그러자 원본 코드가 연산 4, 섹터 0, 개수 3을 요청했습니다. 모델은 업데이트 파일 <code>0x1000c0</code>에서 빌려 온 <code>0x600</code>바이트를 답했습니다.</li>
+<li><strong>카드 첫 읽기</strong> 원본 카드 읽기 함수가 <code>_fx_file_read</code>에 <code>0x20000</code>바이트를 요청했습니다. 그 진입점에서 실행을 멈췄고, 누적 블록 이벤트는 156개입니다.</li>
+</ol>
+<p><code>BurnNand</code>가 여기서 요청한 것은 첫째 설치 헤더(선택 값 0, 일반 헤더)입니다. 둘째 설치 헤더(선택 값 1)와 섹션 맵은 멈춘 지점 뒤에 있습니다. <a href="analysis/main-burn-prefix.json">[근거: installed_header]</a></p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>연산 4에 답한 <code>0x600</code>바이트는 실제 카메라의 저장장치에서 읽은 것이 아닙니다. 업데이트 파일의 헤더 부분을 빌려 온 시험값입니다. 카드 읽기의 목적지는 합성 기본 버퍼이고, 읽기 함수는 결과를 받기 전에 멈췄습니다. 그래서 카드 파일의 위치와 읽힌 내용은 관측하지 않았습니다. 근거 JSON의 <code>intended_payload_offset</code>은 시험의 의도와 앞선 헤더 읽기 위치를 적어 둔 값이며, 파일 구조체에서 관측한 실제 위치가 아닙니다. <a href="analysis/main-burn-prefix.json">[근거: fixture, first_card_filex]</a> · <a href="tools/check_main_burn.py">[재현 도구: replay_mode]</a></p></div>
+<div class="callout warn"><strong class="label">확인하지 못한 값의 뜻</strong>
+<p>열기 모델이 돌려준 <code>0xf1</code>은 원본 <code>Burn</code>이 열기 결과와 비교하는 값입니다. 현재 공개된 FileX 헤더의 상태 코드 목록에는 이 값이 없습니다. 이 값이 무엇을 뜻하는지는 확인하지 못했습니다.</p></div>
+</section>
+
+<section id="comparison">
+<h2>MAIN과 E01의 BurnNand는 닮았지만 같은 코드가 아닙니다</h2>
+<p class="takeaway">두 함수는 크기가 같고 명령의 종류가 자리마다 같습니다. 그러나 워드의 5분의 1쯤은 호출 주소와 핸들 칸이 달라 서로 다릅니다.</p>
+
+<figure class="diagram">
+<figcaption>같은 자리의 명령 워드 2,760개를 비교한 결과</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 176" role="img" aria-labelledby="dg-cmp-title dg-cmp-desc">
+<title id="dg-cmp-title">MAIN과 E01 BurnNand의 워드 비교</title>
+<desc id="dg-cmp-desc">두 BurnNand는 각각 11,040바이트, 곧 2,760워드입니다. 같은 자리의 워드를 비교하면 2,166개가 완전히 같고 594개가 다릅니다. 명령의 종류를 나타내는 상위 6비트는 2,760개 모두 같습니다.</desc>
+<text class="h" x="8" y="16">워드 전체를 비교</text>
+<rect class="b ok" x="8" y="26" width="616" height="54" rx="8"/>
+<text class="t" x="20" y="49">완전히 같은 워드 2,166개</text>
+<text class="s" x="20" y="68">전체의 약 78%</text>
+<rect class="b" x="628" y="26" width="164" height="54" rx="8"/>
+<text class="t" x="640" y="49">다른 워드 594개</text>
+<text class="s" x="640" y="68">호출 주소, 핸들 칸</text>
+<text class="h" x="8" y="112">명령의 종류(상위 6비트)만 비교</text>
+<rect class="b static" x="8" y="122" width="784" height="46" rx="8"/>
+<text class="t" x="20" y="150">2,760개 모두 같음 — 구조가 같다는 뜻이며, 동작이 같다는 검증은 아닙니다</text>
+</svg>
+</div>
+</figure>
+
+<p>MAIN과 E01의 <code>BurnNand</code>는 각각 11,040바이트입니다. 같은 위치의 워드 2,760개 가운데 2,166개가 같고, 상위 6비트의 명령 종류 필드는 전부 같습니다. 이 비교는 레지스터, 주소, 오프셋, 세부 기능 필드를 빼고 본 것입니다. 명령 종류의 배열이 같다고 동작이 같다고 검증된 것은 아닙니다. 이 수치는 구조를 비교한 결과일 뿐, E01의 기록·종료 실행 결과를 MAIN의 동작 증거로 옮길 수 있다는 뜻이 아닙니다. <a href="analysis/main-burn-prefix.json">[근거: source.comparison]</a></p>
+<div class="table-wrap"><table class="fit">
+<caption>두 구현에서 다른 곳</caption>
+<thead><tr><th>항목</th><th>MAIN</th><th>E01</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>BurnNand</code>의 주소</th><td><code>0x805dd7b8</code></td><td><code>0x80012654</code></td></tr>
+<tr><th scope="row">기록 함수를 적는 칸</th><td><code>+0xca4</code></td><td><code>+0x1254</code></td></tr>
+<tr><th scope="row">해시 플래그 칸</th><td><code>+0xcc8</code></td><td><code>+0x1278</code></td></tr>
+<tr><th scope="row">덩어리 크기·기본 버퍼·보조 버퍼 칸</th><td><code>+0xc98</code> / <code>+0xc9c</code> / <code>+0xca0</code></td><td><code>+0x1248</code> / <code>+0x124c</code> / <code>+0x1250</code></td></tr>
+</tbody>
+</table></div>
+<p>작은 공통점도 하나 있습니다. MAIN의 <code>HostAck</code>와 E01 카드 함수 표의 둘째 함수(준비 확인)는 둘 다 “1을 반환”하는 두 명령짜리 함수이고, 8바이트의 SHA-256이 같습니다(<code class="wrap">{{host_ack_sha256}}</code>). E01 쪽 값은 <a href="analysis/loader-foundation.json">analysis/loader-foundation.json</a>에 있습니다.</p>
+<h3>K-3 Mark III와 비교</h3>
+<p>K-3 Mark III 자료의 고정 커밋은 업데이트 래퍼가 실행 결과를 보존하는 경로와, 종료·자원 해제 조건을 다룹니다. Q7의 이 문서는 그보다 아래쪽인 매체 열기와 저장장치 요청의 진입을 따라갔습니다. 두 기종 모두 어디부터가 모델인지 밝혀야 하며, 반환값이나 NAND 형식, 기록 순서가 같다고 가정하지 않습니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/{{k3_commit}}/analysis/update-finalization-evidence.json">[고정 커밋의 K-3 Mark III 종료·반환 근거]</a></p>
+</section>
+
+<section id="limits">
+<h2>한계와 재현 방법</h2>
+<ul>
+<li>두 시험은 따로 만든 프로젝트, 미리 넣은 뮤텍스와 장치 상태, 범위를 제한한 메모리에서 실행했습니다. 블록 이벤트 수는 MAIN <code>Burn</code> 진입부터 센 값입니다.</li>
+<li>두 시험 모두 메모리 할당, 뮤텍스, 진단 출력을 모델로 바꿨습니다. 어느 시험도 <code>DownloadCard</code>에서 시작하지 않았고, 실제 저장장치·카드 입출력·NAND 컨트롤러를 다루지 않았습니다.</li>
+<li>장치 연산의 본문, 카드 데이터 읽기, 둘째 설치 헤더(선택 값 1)와 섹션 맵, 기록·재부팅·복구는 확인하지 않았습니다.</li>
+<li>다음 단계는 MAIN의 설치 헤더와 저장장치 크기를 바꿔 가며 뒤따르는 분기를 따로 검증하는 일입니다. 카드 읽기의 재시도와 바이트 비교도 MAIN 쪽에서 따로 시험해야 합니다. <a href="analysis/main-burn-prefix.json">[근거: limits, next_actions]</a></li>
+</ul>
+<details class="evidence"><summary>모델로 바꾼 함수 목록</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>시험</th><th>주소</th><th>모델이 맡은 일</th></tr></thead>
+<tbody>{{boundaries}}</tbody>
+</table></div>
+<p>시험 2가 연산 4에 답한 시험값 <code>0x600</code>바이트의 SHA-256은 <code class="wrap">{{installed_sha256}}</code>입니다.</p>
+</details>
+<details class="evidence"><summary>대조한 함수 범위와 워드</summary>
+<div class="table-wrap"><table class="compact">
+<caption>MAIN 함수의 범위는 다음 심볼 주소까지로 잡은 후보이고, E01 함수의 범위는 ELF 심볼에 적힌 크기입니다</caption>
+<thead><tr><th>함수</th><th>구현</th><th>주소</th><th class="n">크기(바이트)</th><th>구간</th></tr></thead>
+<tbody>{{function_rows}}</tbody>
+</table></div>
+<div class="table-wrap"><table class="compact">
+<caption>주소와 값으로 고정한 원본 워드 묶음</caption>
+<thead><tr><th>묶음</th><th>구현</th><th class="n">워드 수</th></tr></thead>
+<tbody>{{word_rows}}</tbody>
+</table></div>
+</details>
+<p>원본 MAIN 코드 98워드와 함수 후보 범위 24개, E01 코드 11워드와 ELF 심볼에 크기가 적힌 <code>BurnNand</code> 범위를 대조합니다. 원본 파일과 분석용 ELF의 해시를 고정하고, 주소 공간을 나눠 명령과 범위를 검사합니다. <a href="tools/verify_main_burn.py">[근거 검사]</a> · <a href="tests/test_update_service.py">[구현·모델 경계 변조 시험]</a></p>
+<pre><code>python tools/check_main_burn.py &lt;원본 fwdc603p.bin&gt; .private/main-expanded.elf --output .private/main-prefix-new.json
+python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/main-burn-prefix.json">analysis/main-burn-prefix.json</a> — 두 시험의 관측값, 모델 목록, MAIN·E01 비교, 한계</li>
+<li><a href="tools/check_main_burn.py">tools/check_main_burn.py</a> — 원본 펌웨어로 다시 실행하는 도구</li>
+<li><a href="tools/verify_main_burn.py">tools/verify_main_burn.py</a> · <a href="tests/test_update_service.py">tests/test_update_service.py</a> — 근거 검사와 변조 시험</li>
+<li><a href="analysis/update-service.json">analysis/update-service.json</a> — 이 문서가 출발점으로 삼은 호출 인수의 근거</li>
+<li><a href="analysis/hq-status.json">analysis/hq-status.json</a> — 연구 목표별 상태 기록</li>
+<li><a href="https://github.com/torvalds/linux/blob/master/include/linux/mtd/rawnand.h">Linux 커널: include/linux/mtd/rawnand.h</a> — 표준 NAND 명령 목록. 식별 정보 읽기 <code>NAND_CMD_READID</code>가 <code>0x90</code></li>
+<li><a href="https://docs.kernel.org/driver-api/mtdnand.html">Linux 커널 문서: MTD NAND Driver Programming Interface</a> — 예비 영역에 오류 정정 부호와 불량 블록 표시를 두는 일반적인 방식</li>
+<li><a href="https://github.com/eclipse-threadx/filex/blob/master/common/inc/fx_api.h">Eclipse ThreadX FileX: fx_api.h</a> — 드라이버 요청 번호(<code>FX_DRIVER_INIT</code> = 4)와 상태 코드. 현재 공개된 버전 기준입니다</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">업데이트와 재패킹 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트·재패킹 안내</a></li><li><a href="implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="main-burn-prefix-report.html" aria-current="page">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="loader-lens-report.html"><small>← 이전</small>Loader 입력 검증과 렌즈 AF 정책</a><a class="next" href="loader-hash-report.html"><small>다음 →</small>첫 블록 281바이트와 MD5 경로</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

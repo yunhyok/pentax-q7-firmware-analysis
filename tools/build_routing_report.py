@@ -1,4 +1,4 @@
-"""Render the Q7 lens/ISP/output follow-up using reviewed prose and evidence."""
+"""Render the Q7 lens/ISP/output report; also defines the shared graph() helper."""
 from build_deep_report import ROOT, read, esc, diagram
 
 
@@ -8,59 +8,55 @@ def graph(key, title, nodes, edges, height, caption, source):
 
 
 def main():
-    values = {key:esc(value) for key,value in read('routing-copy.json').items()}
-    values['lens_graph'] = graph('lens-route', 'AF 콜백에서 렌즈 통신까지', {
-        'af':(20,10,'LensDriveControl','0x8037eb78 / 0x6003c'),
-        'cap':(350,10,'OnNotifyCommand','0x8040a008 / binding 확인'),
-        'exec':(700,10,'ExecuteFocusControl','0x8042e040 / mode 분기'),
-        'q':(20,150,'큐 메시지 6 · 7 · 8','검색 / 위치 이동 / 정지'),
-        'worker':(350,150,'렌즈 큐 수신부','명령별 ComSetFocus…'),
-        'lens':(700,150,'LensCommunication','0x80111214 / 전송 요청'),
-        'vd':(20,290,'mode 3: 검색 보류','pending flag = 1'),
-        'sync':(350,290,'VD 동기화 메시지 2','VdSyncRegularCommunicationAf'),
-        'com':(700,290,'검색 통신 요청','보류한 검색 정보 소비')},
-        [('af','cap',True),('cap','exec',False),('q','worker',True),('worker','lens',False),('sync','com',False)],390,
-        '첫 행 점선은 초기화로 수신자가 확인된 간접 점프입니다. 둘째 행 점선은 큐 전달 관계입니다. 셋째 행의 검색 보류 상태와 독립적으로 발생한 VD 메시지 2가 함께 있어야 검색 정보를 소비합니다. 모드 3이 VD 이벤트를 생성하는 것은 아닙니다.', 'lens-routing.json')
-    values['isp_graph'] = graph('isp-route','상위 설정과 저수준 객체의 연결',{
-        'setup':(20,10,'SetupColorMatrix','상위 ID 0xe · 0xf'),
-        'cache':(350,10,'Still 설정 캐시','0x815c6f30 + index × 4'),
-        'ipu':(700,10,'IpuSetFilter','path type 0 / RAM 복사'),
-        'translator':(20,150,'CTranslatorC12','low ID 10 / 13 선택'),
-        'cm':(350,150,'CCmFilter / CFc1Filter','vtable+0x20: 설정 저장'),
-        'regs':(700,150,'WriteAll → writer','vtable+8 / dirty 조건'),
-        'fip':(350,290,'FIPLIB 후속 갱신','조건에 따라 값 덮어쓰기'),
-        'cbc':(700,290,'CBC 대체 제출','직접 쓰기와 별도 경로')},
-        [('setup','cache',False),('cache','ipu',False),('translator','cm',False),('cm','regs',False),('cm','fip',True),('cm','cbc',True)],390,
-        '첫 행은 설정 저장·소비, 둘째 행은 변환된 필터의 사용 관계입니다. 화살표는 데이터·객체 관계이며 픽셀의 통과 순서가 아닙니다. 점선은 조건부 대체·후속 경로입니다.', 'isp-routing.json')
-    values['gamma_graph'] = graph('gamma-route','통계용 감마 LUT의 실제 쓰기',{
-        'app':(20,10,'App gamma context','0x802559f0'),
-        'sensor':(350,10,'SensorSetGammaWithId','0x801f7390'),
-        'update':(700,10,'UpdateIppIpsGamma','0x801f7244 / busy polling'),
-        'gc':(20,150,'GC LUT writer','0x801d585c / 77 words'),
-        'gcport':(350,150,'0xb5002070','고정 data port에 반복 쓰기'),
-        'dci':(20,290,'DCI LUT writer','0x801d58c4 / count words'),
-        'dcport':(350,290,'0xb5002434','count = 0이면 data write 없음')},
-        [('app','sensor',False),('sensor','update',False),('gc','gcport',False),('dci','dcport',False)],390,
-        '아래 두 행은 UpdateIppIpsGamma의 조건부 호출 대상입니다. GC는 동기화 플래그, DCI는 버퍼+0x3f4 값 0x4d를 검사합니다. 최종 JPEG용 감마라고 단정하지 않았습니다.', 'isp-routing.json')
-    values['matrix_rows'] = ''.join(f'<tr><th>{i}</th><td><code>+0x{0x14+2*i:02x}</code></td><td><code>0x{0xb6000200+4*i:08x}</code></td><td><code>0x{0xb60000c0+4*i:08x}</code></td></tr>' for i in range(9))
-    values['output_graph'] = graph('output-route','HDR 저장 요청과 JPEG 코드 버퍼',{
-        'save':(20,10,'HDR → SaveJpegImage','0x802d33d0'),
-        'exif':(350,10,'ApsExifCreateJpeg','0x802c3454 / descriptor 분기'),
-        'go':(700,10,'CreateCodeGo','0x802bb250 / 압축 작업'),
-        'buffer':(20,150,'image / code buffer','descriptor · pointer · capacity'),
-        'path':(350,150,'PathSubmit → PathGo','설정 제출 후 실행 요청'),
-        'wait':(700,150,'PathWait → code size','0x802bb1ec / 재확인 조건'),
-        'parts':(20,290,'partition → pipe 0','ApsPipePost / 0x1005'),
-        'server':(350,290,'StillServer','pipe 0 / 0x1005 수신'),
-        'ready':(700,290,'StillOnFileReady','pipe 3 / 0x1002 전달'),
-        'store':(20,430,'StillStoreMain','StoreOnSave → ApsSaveFile'),
-        'writer':(350,430,'ApsSaveWrite → callback','item+8: ptr / item+0xc: bytes'),
-        'file':(700,430,'_fx_file_write','0x80087034 / 오류 확인')},
-        [('save','exif',False),('exif','go',False),('buffer','path',False),('path','wait',True),('parts','server',True),('server','ready',False),('store','writer',False),('writer','file',False)],530,
-        'HDR 압축·완료·저장 요청을 나누어 표시했습니다. 점선은 대기 또는 큐 전달 관계입니다. 셋째 행의 pipe 3 메시지를 마지막 행의 StillStoreMain이 받습니다. 마지막 행은 본문에 열거한 저장 함수들을 묶어 표시한 연결이며 실기 파일 쓰기의 관측 결과는 아닙니다.', 'output-routing.json')
-    isp = read('isp-routing.json')
+    from verify_routing import witnesses
+    lens, isp, out = read('lens-routing.json'), read('isp-routing.json'), read('output-routing.json')
+    checks, comparison = read('isp-register-checks.json'), read('routing-comparison.json')
+    values = {}
+    requests = {0: '검색 시작 (SetFocusSerchStart)', 1: '정지 (SetFocusMovementStop)',
+                2: '위치 이동 (SetFocusLocationDrive)', 3: '검색 보류 → VD 동기화 처리'}
+    payloads = {c['mode']: c['local_payload_hex'] for c in lens['bounded_replay']['cases']}
+    modes = sorted(lens['queue']['modes'], key=lambda m: m['mode'])
+    values['lens_rows'] = ''.join(
+        f'<tr><th scope="row">{m["mode"]}</th><td>{esc(requests[m["mode"]])}</td>'
+        f'<td class="n">{m["queue_message"]}{" (VD)" if m["mode"] == 3 else ""}</td>'
+        f'<td>({", ".join(map(str, m["arguments_a0_a3"]))}, …)</td><td><code>{payloads[m["mode"]]}</code></td></tr>'
+        for m in modes)
+    values['lens_sites'] = ''.join(
+        f'<tr><th scope="row">{m["mode"]}</th><td><code>{m["mode_entry"]}</code></td><td><code>{m["queue_send_call"]}</code></td>'
+        f'<td><code>{m["queue_table_slot"]}</code></td><td><code>{m["worker_target"]}</code></td><td><code>{m["lens_communication_call"]}</code></td></tr>'
+        for m in modes)
+    values['matrix_rows'] = ''.join(
+        f'<tr><th scope="row">{i}</th><td><code>+0x{0x14+2*i:02x}</code></td><td><code>0x{0xb6000200+4*i:08x}</code></td>'
+        f'<td><code>0x{0xb60000c0+4*i:08x}</code></td></tr>' for i in range(9))
+    def span(addresses):
+        return ' '.join(f'<code>{a}</code>' for a in addresses)
+    values['register_rows'] = ''.join(
+        f'<tr><th scope="row">{esc(r["name"])}</th><td><code>{r["writer"]}</code></td><td>{span(r["addresses"])}</td>'
+        f'<td>{esc(r["source"])}</td><td>{esc(r["condition"])}</td></tr>' for r in isp['registers'])
+    targets = {0x803537a4: 'CM 기록', 0x8031f750: 'FC1 기록', 0x80354970: 'FC2 기록',
+               0x801d585c: '통계 GC 표', 0x801d58c4: '통계 DCI 표'}
+    def condition(case):
+        data = case['input']
+        return f'갱신 표시 {data["dirty"]}' if 'dirty' in data else f'데이터 {data["words"]}개'
+    cases = checks['cases']
+    values['isp_case_rows'] = ''.join(
+        f'<tr><th scope="row">{targets[c["address"]]} <code>0x{c["address"]:08x}</code></th><td>{condition(c)}</td>'
+        f'<td class="n">{c["mmio_writes"]}</td><td class="n">{c["clock_stub_calls"]}</td><td class="n">{c["assertions"]}</td>'
+        f'<td>{"통과" if c["passed"] else "실패"}</td></tr>' for c in cases)
+    values['isp_mmio'] = str(sum(c['mmio_writes'] for c in cases))
+    values['isp_clock'] = str(sum(c['clock_stub_calls'] for c in cases))
+    values['isp_checks'] = str(sum(c['assertions'] for c in cases))
+    assert all(c['passed'] for c in cases) and len(cases) == 10
+    counts = [len(list(witnesses(d))) for d in (lens, isp, out)]
+    values['word_lens'], values['word_isp'], values['word_out'] = map(str, counts)
+    values['word_total'] = str(sum(counts))
+    values['fn_lens'] = str(len(lens['selected_functions']))
+    values['fn_out'] = str(len(out['selected_functions']))
     values['isp_count'] = str(isp['decompilation']['count'])
-    values['function_rows'] = ''.join(f'<tr><td>{esc(f["name"])}</td><td><code>0x{f["address"]:08x}</code></td><td>{f["size"]}</td></tr>' for f in sorted(isp['selected_functions'],key=lambda f:f['address']))
+    values['function_rows'] = ''.join(
+        f'<tr><td>{esc(f["name"])}</td><td><code>0x{f["address"]:08x}</code></td><td class="n">{f["size"]:,}</td></tr>'
+        for f in sorted(isp['selected_functions'], key=lambda f: f['address']))
+    values['k3_commit'] = comparison['commit']
     page = (ROOT/'analysis/routing-template.html').read_text(encoding='utf-8')
     for key,value in values.items(): page = page.replace('{{'+key+'}}',value)
     assert '{{' not in page, 'unresolved routing template field'

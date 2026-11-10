@@ -733,5 +733,10 @@
       "python tools/check_main_burn.py <original> <expanded ELF> --output <new private JSON>",
       "python tools/check_context_binding.py <original> <expanded ELF> --output <new private JSON>"
     ]
+  },
+  "documentation_revision": {
+    "version": "v0.2.0",
+    "date": "2026-11-10",
+    "note": "Report HTML was restructured and rewritten in v0.2.0. SHA-256 values of *.html files recorded under stable_evidence describe the reports before that revision. The evidence JSON and tool hashes recorded there still match the files. See docs/audit/2026-11-review.md."
   }
 }

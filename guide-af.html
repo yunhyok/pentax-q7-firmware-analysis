@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AF·렌즈 안내 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="PENTAX Q7 펌웨어의 자동 초점(AF) 경로를 초점 위치 계산부터 렌즈 명령, 렌즈 상태 캐시, 완료 알림까지 한 장의 지도로 정리하고, 어느 문서가 어느 단계를 다루는지와 확인한 것·모르는 것을 모은 안내입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html" aria-current="true">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li aria-current="page">AF·렌즈 안내</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">AF와 렌즈 제어 · 주제 안내</p>
+<h1>AF·렌즈 안내</h1>
+<p class="lead">Q7은 촬상 센서의 영상에서 선명도가 가장 높은 렌즈 위치를 찾고, 그 위치로 가라는 명령을 렌즈 안의 모터에 보냅니다. 이 안내는 그 과정이 펌웨어의 어느 함수들에 나뉘어 있고, 여섯 문서가 각각 어느 구간을 확인했는지 한 장으로 보여 줍니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#map">한눈에 보기: AF 명령이 지나가는 길</a></li><li><a href="#background">배경 지식: Q7의 AF가 하는 일</a></li><li><a href="#levels">지금까지 알아낸 것과 아직 모르는 것</a></li><li><a href="#reading">읽는 순서</a></li><li><a href="#comparison">세 기종 AF 비교와의 관계</a></li><li><a href="#purpose">이 연구의 목적과 한계</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>AF 경로는 <strong>초점 위치 계산</strong>에서 렌즈 큐와 렌즈 통신을 거쳐 <strong>완료 알림</strong>까지 아홉 단계로 정리됩니다. 렌즈의 실제 응답과 이동을 뺀 모든 단계에 원본 코드 근거가 있습니다.</li>
+<li>초점 위치 계산 함수는 위치마다의 대비 값에 포물선을 맞춰 꼭짓점을 돌려줍니다. 이 값이 센서 영상의 어디에서 오는지는 확인하지 않았고, 콘트라스트 검출 방식이라는 해석은 공식 사양과 함수 이름·입력 형식에 기댄 추론입니다.</li>
+<li>“렌즈가 AF를 지원한다”, “이 명령을 보내도 된다”, “명령이 성공했다”, “렌즈가 다 움직였다”는 펌웨어 안에서 네 개의 서로 다른 검사입니다. 완료 표시는 소프트웨어의 판정이며 초점이 맞았다는 증거가 아닙니다.</li>
+<li>이 연구는 이후 AF 변경을 검토하기 위한 기초 작업입니다. 고친 코드는 없고, 실제 카메라나 렌즈에서 실행한 실험도 없습니다.</li>
+</ul>
+</section>
+
+<section id="map">
+<h2>한눈에 보기: AF 명령이 지나가는 길</h2>
+<p class="takeaway">아홉 단계 가운데 여덟 단계는 원본 코드로 확인했거나 정적 분석으로 찾았습니다. 렌즈가 실제로 응답하고 움직이는 단계와 광학적 합초는 확인 범위 밖입니다.</p>
+
+<figure class="diagram">
+<figcaption>AF 명령 경로와 단계별 담당 문서 (상자를 누르면 해당 문서로 갑니다)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 548" role="img" aria-labelledby="dg-afmap-title dg-afmap-desc">
+<title id="dg-afmap-title">Q7 AF 명령 경로 전체 지도</title>
+<desc id="dg-afmap-desc">아홉 단계가 세 줄로 이어집니다. 첫 줄 왼쪽에서 오른쪽: 1 초점 위치 계산(PeakCheck, CalcFocus, 문서 A와 B), 2 구동 요청(LensDriveControl, 모드 0부터 3, 문서 C와 F), 3 캡처 서비스(알림 0x6003c를 받아 ExecuteFocusControl, 문서 C와 F). 둘째 줄 오른쪽에서 왼쪽: 4 렌즈 큐(메시지 6, 7, 8과 VD 동기화 메시지 2, 문서 C), 5 렌즈 큐 작업자(LensComThreadMain, 문서 F), 6 렌즈 통신과 허용 검사(LensCommunication, AF 지원과 명령 허용은 다른 검사, 문서 D와 E). 셋째 줄 왼쪽에서 오른쪽: 7 렌즈 응답과 실제 이동(미확인, 시험은 합성 응답만 사용), 8 캐시된 렌즈 상태(VDRC 이동 바이트와 유효성, 문서 D와 E), 9 완료 판정과 알림(0x6003f, 0x10060032, blFocusCompleteflag, 문서 D와 F). 맨 아래: 확인한 지식의 경계. 센서 영상에서 대비 값이 만들어지는 과정, 렌즈의 실제 응답과 이동, 광학적 합초, 실제 시간은 확인하지 않았습니다.</desc>
+<defs>
+<marker id="dg-afmap-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-afmap-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<text class="h" x="8" y="26">AF 서비스 · 캡처 서비스</text>
+<a href="implementation-report.html#af">
+<rect class="b static" x="8" y="40" width="240" height="100" rx="8"/>
+<text class="t" x="20" y="64">1 초점 위치 계산</text>
+<text class="s mono" x="20" y="86">PeakCheck · CalcFocus</text>
+<text class="s" x="20" y="106">대비 표본 → 포물선 꼭짓점</text>
+<text class="n tstatic" x="20" y="127">문서 A, B</text>
+</a>
+<a href="routing-report.html#lens">
+<rect class="b ok" x="280" y="40" width="240" height="100" rx="8"/>
+<text class="t" x="292" y="64">2 구동 요청</text>
+<text class="s mono" x="292" y="86">LensDriveControl</text>
+<text class="s" x="292" y="106">검색·정지·위치 이동·보류</text>
+<text class="n tok" x="292" y="127">문서 C, F</text>
+</a>
+<a href="af-completion-report.html#request">
+<rect class="b ok" x="552" y="40" width="240" height="100" rx="8"/>
+<text class="t" x="564" y="64">3 캡처 서비스</text>
+<text class="s" x="564" y="86">알림 0x6003c 수신</text>
+<text class="s mono" x="564" y="106">ExecuteFocusControl</text>
+<text class="n tok" x="564" y="127">문서 C, F</text>
+</a>
+
+<text class="h" x="8" y="166">렌즈 서비스</text>
+<a href="routing-report.html#lens">
+<rect class="b model" x="552" y="180" width="240" height="100" rx="8"/>
+<text class="t" x="564" y="204">4 렌즈 큐</text>
+<text class="s" x="564" y="226">메시지 6 · 7 · 8</text>
+<text class="s" x="564" y="246">VD 동기화 메시지 2</text>
+<text class="n tmodel" x="564" y="267">문서 C · 큐 전달은 모델</text>
+</a>
+<a href="af-completion-report.html#request">
+<rect class="b ok" x="280" y="180" width="240" height="100" rx="8"/>
+<text class="t" x="292" y="204">5 렌즈 큐 작업자</text>
+<text class="s mono" x="292" y="226">LensComThreadMain</text>
+<text class="s" x="292" y="246">결과 기록 · pending 해제</text>
+<text class="n tok" x="292" y="267">문서 F</text>
+</a>
+<a href="storage-readiness-report.html#gates">
+<rect class="b ok" x="8" y="180" width="240" height="100" rx="8"/>
+<text class="t" x="20" y="204">6 렌즈 통신·허용 검사</text>
+<text class="s mono" x="20" y="226">LensCommunication</text>
+<text class="s" x="20" y="246">AF 지원 ≠ 명령 허용</text>
+<text class="n tok" x="20" y="267">문서 D, E</text>
+</a>
+
+<rect class="b open" x="8" y="320" width="240" height="100" rx="8"/>
+<text class="t" x="20" y="344">7 렌즈 응답·실제 이동</text>
+<text class="s" x="20" y="366">시험은 합성 응답만 사용</text>
+<text class="s" x="20" y="386">통신선·모터 미확인</text>
+<text class="n topen" x="20" y="407">확인한 문서 없음</text>
+<a href="storage-readiness-report.html#cache">
+<rect class="b ok" x="280" y="320" width="240" height="100" rx="8"/>
+<text class="t" x="292" y="344">8 캐시된 렌즈 상태</text>
+<text class="s" x="292" y="366">VDRC 이동 바이트 · 유효성</text>
+<text class="s" x="292" y="386">실패·리셋 때의 변화</text>
+<text class="n tok" x="292" y="407">문서 D, E</text>
+</a>
+<a href="af-completion-report.html#completion">
+<rect class="b key" x="552" y="320" width="240" height="100" rx="8"/>
+<text class="t" x="564" y="344">9 완료 판정·알림</text>
+<text class="s mono" x="564" y="366">0x6003f · 0x10060032</text>
+<text class="s mono" x="564" y="386">blFocusCompleteflag</text>
+<text class="n tk" x="564" y="407">문서 D, F</text>
+</a>
+
+<rect class="b open" x="8" y="460" width="784" height="76" rx="8"/>
+<text class="t" x="20" y="486">확인한 지식의 경계</text>
+<text class="s" x="20" y="510">센서 영상에서 대비 값이 만들어지는 과정, 렌즈의 실제 응답과 이동, 광학적 합초, 실제 시간은 확인하지 않았습니다.</text>
+
+<path class="e" d="M248 90H278" marker-end="url(#dg-afmap-ah)"/>
+<path class="e" d="M520 90H550" marker-end="url(#dg-afmap-ah)"/>
+<path class="e" d="M672 140V178" marker-end="url(#dg-afmap-ah)"/>
+<path class="e model" d="M552 230H522" marker-end="url(#dg-afmap-am)"/>
+<path class="e" d="M280 230H250" marker-end="url(#dg-afmap-ah)"/>
+<path class="e model" d="M128 280V318" marker-end="url(#dg-afmap-am)"/>
+<path class="e model" d="M248 370H278" marker-end="url(#dg-afmap-am)"/>
+<path class="e" d="M520 370H550" marker-end="url(#dg-afmap-ah)"/>
+<path class="e open" d="M672 420V458"/>
+<text class="n" x="680" y="444">완료 플래그 ≠ 합초</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="static"></i>정적 분석 중심(계산 함수만 실행)</li><li><i class="model"></i>모델로 대신한 전달·응답</li><li><i class="key"></i>완료로 판정하는 지점</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+
+<div class="table-wrap"><table class="fit">
+<caption>그림의 문서 기호</caption>
+<thead><tr><th>기호</th><th>문서</th><th>다루는 단계</th></tr></thead>
+<tbody>
+<tr><th scope="row">A</th><td><a href="deep-report.html#af">압축 복원과 주요 함수 300개</a> (AF 절)</td><td>1, 2</td></tr>
+<tr><th scope="row">B</th><td><a href="implementation-report.html#af">재패킹 검증과 업데이트 검사</a> (AF 기초 절)</td><td>1, 2</td></tr>
+<tr><th scope="row">C</th><td><a href="routing-report.html#lens">렌즈 명령·ISP 레지스터·출력 경계</a> (렌즈 절)</td><td>2, 3, 4</td></tr>
+<tr><th scope="row">D</th><td><a href="loader-lens-report.html#lens">Loader 입력 검증과 렌즈 정책</a> (뒤쪽 절반)</td><td>6, 8, 9</td></tr>
+<tr><th scope="row">E</th><td><a href="storage-readiness-report.html#gates">저장 경계와 렌즈 준비 상태</a> (렌즈 절)</td><td>6, 8</td></tr>
+<tr><th scope="row">F</th><td><a href="af-completion-report.html">AF 명령과 완료 판정</a></td><td>2, 3, 5, 9</td></tr>
+</tbody></table></div>
+<p>이 지도는 AF 명령 하나의 경로입니다. AF를 멈추는 명령(<code>0xe0002</code>)은 렌즈 정지 메시지와 다른, AF 시퀀스의 종료 이벤트라는 별도 경로를 씁니다. <a href="af-completion-report.html#abort">AF 명령과 완료 판정의 정지·취소 절</a>에서 다룹니다.</p>
+</section>
+
+<section id="background">
+<h2>배경 지식: Q7의 AF가 하는 일</h2>
+<p class="takeaway">Q7의 공식 AF 방식은 촬상 센서를 쓰는 콘트라스트 검출입니다. 렌즈를 움직여 가며 영상의 선명도 최고점을 찾는 방식입니다.</p>
+
+<h3>콘트라스트 검출 AF</h3>
+<p>리코의 Q7 사양은 AF 방식을 “Contrast detection AF”로 적고, Q7 FAQ는 “촬상 센서를 이용한 콘트라스트 검출 방식”이라고 설명합니다. <dfn title="영상의 선명도(초점 지표)가 가장 높아지는 렌즈 위치를 찾는 자동 초점 방식">콘트라스트 검출 AF</dfn>는 렌즈 위치를 바꿔 가며 영상에서 선명도 값을 구하고, 그 값이 가장 큰 위치를 찾습니다. 렌즈를 한 방향으로 움직이다 값이 떨어지면 되돌아오는 탐색을 흔히 <dfn title="값이 오르는 방향으로 조금씩 이동하다 꼭대기를 지나면 멈추는 탐색">언덕 오르기(hill-climbing)</dfn>라고 부릅니다. 별도 AF 센서가 필요 없는 대신, 움직이는 피사체 추적은 위상차 방식보다 느린 편입니다(<a href="https://cs.uwaterloo.ca/~vanbeek/Publications/prl-2015.pdf">Chen &amp; van Beek</a>).</p>
+<p>펌웨어에서 찾은 것과 맞춰 보면 다음과 같습니다.</p>
+<ul>
+<li><span class="badge static">정적 분석</span> AF 작업 함수 <code>AfMain_Thread_sub</code>는 영역별로 <code>PeakCheck</code>를 부르고 <code>CalcFocus</code>로 초점 위치를 계산한 뒤 <code>LensDriveControl</code>을 부릅니다. <a href="deep-report.html#af">[문서 A]</a></li>
+<li><span class="badge ok">확인</span> <code>CalcFocus</code>가 부르는 <code>Approximation</code>은 표본 수, 위치(정수) 배열, 대비 값(실수) 배열을 받아 포물선을 맞추고 그 꼭짓점 위치를 정수로 돌려줍니다. 합성 곡선 6사례로 실행해 확인했습니다. <a href="implementation-report.html#af">[문서 B]</a></li>
+<li><span class="badge open">미확인</span> 대비 값이 센서 영상의 어느 영역에서 어떤 필터로 만들어지는지, 렌즈를 어떤 순서로 움직이며 표본을 모으는지는 확인하지 않았습니다. 따라서 “센서 영상 위의 언덕 오르기”라는 설명은 공식 사양과 함수 이름·입력 형식에서 나온 추론입니다.</li>
+</ul>
+<p>이름이 <code>WobbCalcFocus</code>인 두 번째 호출 지점도 있습니다. 이름으로 보아 초점을 앞뒤로 조금씩 흔드는 동작(워블링)에 쓰일 수 있지만, 이것도 이름에서 나온 추측입니다.</p>
+
+<h3>Q 마운트 렌즈와 AF 모터</h3>
+<p>Q 마운트의 AF 렌즈는 초점 모터를 렌즈 경통 안에 둡니다(<a href="https://www.ricoh-imaging.co.jp/english/news/2011/201109.html">01·02 렌즈 발표 자료</a>). 카메라는 모터를 직접 돌리지 않고 렌즈에 통신 명령을 보냅니다. Q7 FAQ의 호환표에서 AF가 되는 렌즈는 A군(01 STANDARD PRIME, 02 STANDARD ZOOM, 06 TELEPHOTO ZOOM)입니다. 03 FISH-EYE, 04·05 TOY LENS, 07 MOUNT SHIELD LENS와 K 마운트용 Adapter Q는 수동 초점입니다(<a href="https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html">Q7 FAQ</a>). FAQ 표에 없는 08 WIDE ZOOM은 발표 자료에 AF와 Quick-Shift Focus가 적혀 있습니다(<a href="https://news.ricoh-imaging.co.jp/rim_info2/2013/20131107_018814.html">08 발표 자료</a>).</p>
+<div class="callout"><strong class="label">참고</strong>
+<p>펌웨어는 렌즈가 초기 통신에서 보낸 기능 비트맵으로 AF 지원 여부를 판정합니다. 수동 초점 렌즈가 실제로 이 비트맵에 무엇을 보고하는지는 실물 렌즈 없이 확인할 수 없어 미확인으로 남습니다.</p></div>
+
+<h3>사진가가 고르는 AF 설정과 펌웨어</h3>
+<p>Q7 사양의 AF 방식에는 얼굴 인식, 추적, 자동 다점, 선택, 스폿이 있고, AF 보조광과 수동 초점 확대(2·4·6배)가 있습니다(<a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">사양</a>). 이 설정들이 어떤 펌웨어 함수와 영역 선택으로 이어지는지는 아직 대응시키지 않았습니다. 지금까지의 연구는 “초점 위치가 정해진 뒤 렌즈에 명령이 가고 완료가 판정되는” 구간에 집중돼 있습니다.</p>
+
+<h3>명령, 큐, 완료</h3>
+<p>Q7 펌웨어는 ThreadX 위에서 여러 서비스가 메시지를 주고받는 구조입니다. AF 서비스가 요청을 기록하면 캡처 서비스가 받아 렌즈 큐에 메시지를 넣고, 렌즈 큐 작업자가 실제 통신을 맡습니다. 그래서 “명령의 결과”(작업자가 기록한 값)와 “이동의 완료”(정기 통신으로 갱신되는 렌즈 상태 캐시를 보고 내린 판정)가 다른 시점에 다른 코드에서 정해집니다. 자세한 차이는 <a href="af-completion-report.html#completion">AF 명령과 완료 판정</a>에 있습니다.</p>
+<p>검증 수준 표시(확인·정적 분석·모델·미확인)의 뜻은 <a href="index.html#levels">개요의 검증 수준 읽는 법</a>을 보십시오.</p>
+</section>
+
+<section id="levels">
+<h2>지금까지 알아낸 것과 아직 모르는 것</h2>
+<p class="takeaway">렌즈에 명령을 보내고 완료를 판정하는 소프트웨어 경로는 대부분 확인했고, 영상에서 대비 값을 만드는 앞단과 렌즈가 실제로 움직이는 뒷단이 비어 있습니다.</p>
+<div class="table-wrap"><table>
+<caption>AF·렌즈 주제 전체의 상태. “모델”이 붙은 항목은 입력이나 응답을 연구자가 정해 넣은 조건에서만 성립합니다.</caption>
+<thead><tr><th>항목</th><th>상태</th><th>무엇을 알았나 / 무엇이 남았나</th><th>문서</th></tr></thead>
+<tbody>
+<tr><th scope="row">AF 명령 분기</th><td><span class="badge static">정적 분석</span></td><td>시작 <code>0xe0001</code> → <code>CAFSequenceStart</code>, 중단 <code>0xe0002</code>, 별도 제어 <code>0xe0004</code></td><td><a href="deep-report.html#af">A</a></td></tr>
+<tr><th scope="row">초점 위치 계산</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>대비 표본에 포물선을 맞춰 꼭짓점을 돌려줌. 입력은 합성 곡선 6사례</td><td><a href="implementation-report.html#af">B</a></td></tr>
+<tr><th scope="row">대비 값의 출처</th><td><span class="badge open">미확인</span></td><td>센서 영역·필터·표본 수집 순서</td><td>—</td></tr>
+<tr><th scope="row">AF 요청의 수신자</th><td><span class="badge ok">확인</span></td><td>초기화가 콜백 포인터에 캡처 서비스 수신자를 저장. 요청은 <code>ExecuteFocusControl</code>로 분기</td><td><a href="routing-report.html#lens">C</a></td></tr>
+<tr><th scope="row">구동 모드와 큐 메시지</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>모드 0 검색(6), 1 정지(8), 2 위치 이동(7), 3 검색 보류 후 VD 동기화 메시지 2에서 소비. 큐 전달은 모델</td><td><a href="routing-report.html#lens">C</a></td></tr>
+<tr><th scope="row">AF 지원 판정</th><td><span class="badge ok">확인</span></td><td>통신 상태 비트 <code>0x08</code>과 기능 비트맵 group 2 / operation 4를 함께 검사. 렌즈 ID만으로 정하지 않음</td><td><a href="loader-lens-report.html#lens">D</a></td></tr>
+<tr><th scope="row">AF 지원과 명령 허용</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>서로 다른 검사. AF 지원 0인데 검색이 하위 통신까지 가는 합성 상태가 있음</td><td><a href="storage-readiness-report.html#gates">E</a></td></tr>
+<tr><th scope="row">렌즈 정보 캐시의 해석</th><td><span class="badge ok">확인</span></td><td>위치·속도·이동 한계를 big-endian으로 읽음. 렌즈 ID 1·2의 fallback 값</td><td><a href="loader-lens-report.html#lens">D</a></td></tr>
+<tr><th scope="row">실패·리셋 때의 캐시</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>실패 종류마다 값과 유효성의 보존이 다름. 전체 리셋은 둘 다 지움. 17사례</td><td><a href="storage-readiness-report.html#cache">E</a></td></tr>
+<tr><th scope="row">명령 결과와 이동 완료</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>setter 결과(1·4·6·7·8)와 캐시 기반 완료는 별개. 완료 알림 두 개와 캡처 단계 조건. 20사례</td><td><a href="af-completion-report.html#completion">F</a>, <a href="loader-lens-report.html#completion">D</a></td></tr>
+<tr><th scope="row">AF 시퀀스 정지</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>정지 명령의 분기와 종료 이벤트 대기. 이벤트 전달은 모델</td><td><a href="af-completion-report.html#abort">F</a></td></tr>
+<tr><th scope="row">수동 초점 렌즈의 보고값</th><td><span class="badge open">미확인</span></td><td>토이 렌즈·Adapter Q가 기능 비트맵에 보고하는 값</td><td>—</td></tr>
+<tr><th scope="row">물리 단위와 실제 이동</th><td><span class="badge open">미확인</span></td><td>이동량·속도의 광학·기계 단위, 모터 정지, 합초 정확도</td><td>—</td></tr>
+<tr><th scope="row">렌즈 통신선의 바이트</th><td><span class="badge open">미확인</span></td><td>관측한 것은 API에 넘긴 설정 길이뿐. 실제 프레임은 잡지 않음</td><td>—</td></tr>
+<tr><th scope="row">AF 모드 설정과의 대응</th><td><span class="badge open">미확인</span></td><td>얼굴 인식·추적·스폿 등이 어떤 함수로 이어지는지</td><td>—</td></tr>
+<tr><th scope="row">동시 실행과 시간</th><td><span class="badge open">미확인</span></td><td>실제 RTOS 스케줄링, 대기 101회가 몇 밀리초인지</td><td>—</td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>초기 함수 분석(문서 A)은 <code>LensDriveControl</code>의 간접 호출 수신자를 “미확정”으로 적었습니다. 이 수신자는 이후 문서 C에서 초기화 바인딩을 실행해 확인했습니다. 두 문서를 함께 읽을 때는 문서 C의 결론이 최신입니다.</p></div>
+</section>
+
+<section id="reading">
+<h2>읽는 순서</h2>
+<p>쓰인 날짜 순서가 아니라 AF 경로를 앞에서 뒤로 따라가는 순서입니다.</p>
+<ul class="cards">
+<li class="card"><span class="tag">1단계</span><h3><a href="deep-report.html#af">압축 복원과 주요 함수 300개 — AF 절</a></h3><p class="q">AF 코드는 어디에 있고 어떤 함수로 나뉘는가</p><p>명령 분기, <code>PeakCheck</code>, <code>CalcFocus</code>, <code>LensDriveControl</code> 호출을 정적 분석으로 찾았습니다.</p></li>
+<li class="card"><span class="tag">2단계</span><h3><a href="implementation-report.html#af">재패킹 검증과 업데이트 검사 — AF 기초 절</a></h3><p class="q">초점 위치는 어떻게 계산되고, 바꾸려면 어디를 건드려야 하는가</p><p>포물선 꼭짓점을 돌려주는 계산 함수의 입출력 계약과 두 호출 지점을 정리했습니다.</p></li>
+<li class="card"><span class="tag">3단계</span><h3><a href="routing-report.html#lens">렌즈 명령·ISP 레지스터·출력 경계 — 렌즈 절</a></h3><p class="q">AF 요청은 누구에게 가고, 렌즈 명령은 몇 종류인가</p><p>콜백 수신자를 확정하고 구동 모드 네 가지와 큐 메시지 6·7·8, VD 동기화를 이었습니다.</p></li>
+<li class="card"><span class="tag">4단계</span><h3><a href="loader-lens-report.html#lens">Loader 입력 검증과 렌즈 정책 — 렌즈 절</a></h3><p class="q">렌즈가 보낸 정보는 AF 지원 판정과 계산에 어떻게 쓰이는가</p><p>기능 비트맵, 캐시 해석, 응답과 완료의 첫 구분을 렌즈 32사례로 확인했습니다.</p></li>
+<li class="card"><span class="tag">5단계</span><h3><a href="storage-readiness-report.html#gates">저장 경계와 렌즈 준비 상태 — 렌즈 절</a></h3><p class="q">렌즈가 준비되지 않았거나 통신이 실패하면 무엇이 남는가</p><p>AF 지원·명령 허용·캐시 유효성이 서로 다른 조건임을 17사례로 보였습니다.</p></li>
+<li class="card"><span class="tag">6단계</span><h3><a href="af-completion-report.html">AF 명령과 완료 판정</a></h3><p class="q">“명령이 성공했다”와 “렌즈가 다 움직였다”는 어떻게 다른가</p><p>요청에서 작업자, 캐시 기반 완료, 시퀀스 정지까지 20사례로 재실행했습니다.</p></li>
+</ul>
+</section>
+
+<section id="comparison">
+<h2>세 기종 AF 비교와의 관계</h2>
+<p class="takeaway">K-3 Mark III 저장소의 세 기종 AF 비교는 같은 질문을 세 카메라에 던지는 틀이고, Q7은 그중 렌즈 안 모터와 콘트라스트 AF를 쓰는 별도 사례입니다.</p>
+<p><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/af-foundations.html">세 기종의 AF 변경을 위한 기초 경계</a>는 K-3 Mark III, K-3 II, Q7의 AF를 초점 추정, 렌즈 조건, 요청 구성, 전달과 응답, 이동과 초점 확인의 다섯 단계로 나눠 비교합니다. 이 안내의 1단계는 “초점 추정”, 6단계는 “렌즈 조건”, 2~5단계는 “요청 구성·전달과 응답”, 8~9단계는 “이동과 초점 확인”에 해당합니다.</p>
+<ul>
+<li>값이나 비트 위치가 같아 보여도 기종 사이에 같은 규약이라고 보지 않습니다. 명령 번호, 주소, 상태 비트는 Q7 원본에서 따로 확인했습니다.</li>
+<li>Q7의 초점 계산은 대비 피크 경로입니다. K-3 쪽 자료가 다루는 위상차 상관·디포커스 알고리즘과 같다고 볼 근거는 없습니다(<a href="deep-report.html#af">문서 A의 AF 절</a>).</li>
+<li>Adapter Q로 단 K 마운트 렌즈는 수동 초점이므로, K 마운트 바디 구동 AF의 선택 로직을 Q7에 대입할 수 없습니다.</li>
+</ul>
+</section>
+
+<section id="purpose">
+<h2>이 연구의 목적과 한계</h2>
+<p>AF 관련 문서들은 모두 “이후 AF 동작을 바꾼다면 무엇을 알아야 하는가”를 위한 기초 작업입니다.</p>
+<ul>
+<li>수정한 펌웨어 코드는 없습니다. 계산 함수 대신 <code>CalcFocus</code>의 호출 지점을 감싸는 방식이 첫 후보로 기록돼 있지만, 이것도 후보일 뿐 실행 가능한 변경은 만들지 않았습니다. <a href="implementation-report.html#af">[문서 B]</a></li>
+<li>실제 카메라나 렌즈에서 실행한 실험은 없습니다. 원본 코드를 PC 에뮬레이터에서 실행할 때 렌즈 응답, 큐 전달, 시간은 연구자가 정한 값입니다.</li>
+<li>변경을 설계한다면 명령 결과, 캐시 유효성, 완료 플래그, AF 지원 판정을 각각 다른 조건으로 다뤄야 합니다. 완료 플래그를 “초점이 맞았다”로 읽으면 안 됩니다.</li>
+</ul>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/af-completion.json">analysis/af-completion.json</a> — AF 요청·작업자·완료·정지 재실행 (문서 F)</li>
+<li><a href="analysis/lens-routing.json">analysis/lens-routing.json</a> — 콜백 바인딩, 구동 모드, 큐 (문서 C)</li>
+<li><a href="analysis/lens-foundation.json">analysis/lens-foundation.json</a> — 기능 비트맵, 캐시 해석, 응답·완료 (문서 D)</li>
+<li><a href="analysis/lens-readiness.json">analysis/lens-readiness.json</a> — AF 지원과 명령 허용, 실패·리셋 (문서 E)</li>
+<li><a href="analysis/portability-evidence.json">analysis/portability-evidence.json</a> — 초점 계산 함수의 계약과 렌즈 명령 인수 (문서 B)</li>
+<li><a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">RICOH IMAGING — PENTAX Q7 사양</a> — Contrast detection AF, AF 방식, Q 마운트</li>
+<li><a href="https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html">RICOH IMAGING — PENTAX Q7 FAQ</a> — 촬상 센서 콘트라스트 검출, 렌즈군별 AF/MF 호환표</li>
+<li><a href="https://www.ricoh-imaging.co.jp/english/news/2011/201109.html">RICOH IMAGING — Q 마운트 렌즈 다섯 종 발표(2011)</a> — 01·02 렌즈의 경통 내 AF 모터, Unique 시리즈의 수동 초점</li>
+<li><a href="https://news.ricoh-imaging.co.jp/rim_info2/2013/20131107_018814.html">RICOH IMAGING — PENTAX-08 WIDE ZOOM 발표(2013)</a> — AF 구동과 Quick-Shift Focus</li>
+<li><a href="https://cs.uwaterloo.ca/~vanbeek/Publications/prl-2015.pdf">R. Chen, P. van Beek, Pattern Recognition Letters</a> — 콘트라스트 검출 AF의 초점 지표와 언덕 오르기 탐색</li>
+<li><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/af-foundations.html">K-3 Mark III 저장소 — 세 기종의 AF 기초</a> — 세 기종 비교의 허브</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="guide-af.html" aria-current="page">AF·렌즈 안내</a></li><li><a href="af-completion-report.html">AF 명령과 완료 판정</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="hdr-task-report.html"><small>← 이전</small>FC1 제어 비트와 HDR task 완료</a><a class="next" href="af-completion-report.html"><small>다음 →</small>AF 명령과 완료 판정</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

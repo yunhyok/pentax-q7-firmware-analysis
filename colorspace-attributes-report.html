@@ -1,15 +1,323 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 — 캡처한 글꼴 속성과 별도 축소 실행</title><meta name="description" content="Color Space의 48×48 요청, 원본 setter와 축소 분기, 합성 ID 연결 조건의 전체 인덱스 프레임"><link rel="stylesheet" href="assets/report.css"><link rel="stylesheet" href="assets/deep.css"></head><body>
-<header class="hero"><div><p class="eyebrow">PENTAX Q7 · v1.01 · 2026-11-08 / CAPTURED FONT ATTRIBUTES</p><h1>48×48 요청과<br><span>별도 축소 실행</span></h1><p class="lead">Color Space 갱신에서 sRGB 항목에 전달하는 48×48 글꼴 속성을 확인했습니다. 이 요청을 별도의 합성 컨텍스트에 적용하자 원본 코드가 축소 렌더러를 선택했습니다. 네 글리프를 그린 인덱스 프레임 전체가 독립 계산과 일치했습니다. 실제 UI 컨텍스트 연결은 미확정입니다.</p><p class="links"><a href="colorspace-glyph-report.html">기본 배율 시험</a><a href="colorspace-render-report.html">UI 갱신 요청</a><a href="index.html">전체 분석</a></p></div><aside class="milestone"><strong>4 + 2 + 1</strong><span>갱신 캡처 · 분기 대조 · 전체 축소</span><strong>71 WORDS</strong><span>원본 코드 · 12개 범위</span><strong>2,464 B</strong><span>합성 프레임에서 바뀐 인덱스</span></aside></header>
-<nav aria-label="문서 목차"><a href="#capture">요청 캡처</a><a href="#dispatch">속성·분기</a><a href="#pixels">축소 계산</a><a href="#comparison">K-3 대조</a><a href="#binding">후속 컨텍스트 선택</a><a href="#limits">한계·재현</a></nav><main>
-<section id="capture"><p class="eyebrow">01 / OBSERVATION AND RE-INPUT</p><h2>요청은 관측했고 컨텍스트 연결은 가정했다</h2><p>네 번의 원본 갱신에서 속성 72건과 텍스트 25건의 순서를 기록했습니다. sRGB 위젯 0x0191d00b는 매번 종류 7에 48·48, 종류 12에 0·0, 종류 4에 2를 전달한 뒤 텍스트를 요청했습니다. 속성의 그리기 ID는 17·18·17·18로 바뀌고 텍스트의 ID는 0입니다. 이 단계에서는 두 API를 관측 모델로 대체했습니다. <a href="analysis/colorspace-attributes.json">[A1: refresh]</a></p><figure><div class="diagram-wrap"><svg class="diagram" viewBox="0 0 1000 250" role="img" aria-labelledby="attributes-boundary-title attributes-boundary-desc"><title id="attributes-boundary-title">캡처와 별도 재입력의 경계</title><desc id="attributes-boundary-desc">점선은 별도 재입력과 합성 ID 연결입니다. 실제 UI 상태를 이어 실행한 도식이 아닙니다. 글꼴 파일과 메모리·운영체제 경계는 별도 목록의 모델을 사용합니다.</desc><defs><marker id="attributes-boundary-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8Z"/></marker></defs><path class="edge " d="M290 46 L350 46" marker-end="url(#attributes-boundary-arrow)"/><path class="edge uncertain" d="M620 46 L700 46" marker-end="url(#attributes-boundary-arrow)"/><path class="edge uncertain" d="M700 46 L290 186" marker-end="url(#attributes-boundary-arrow)"/><path class="edge " d="M290 186 L350 186" marker-end="url(#attributes-boundary-arrow)"/><path class="edge " d="M620 186 L700 186" marker-end="url(#attributes-boundary-arrow)"/><rect class="node" x="20" y="10" width="270" height="72" rx="5"/><text class="label" x="32" y="39">원본 갱신 4회</text><text class="sub" x="32" y="63">속성 72건 · 텍스트 25건</text><rect class="node" x="350" y="10" width="270" height="72" rx="5"/><text class="label" x="362" y="39">요청 캡처 모델</text><text class="sub" x="362" y="63">sRGB: 48×48 / 간격 0 / 색 2</text><rect class="node" x="700" y="10" width="270" height="72" rx="5"/><text class="label" x="712" y="39">별도 합성 컨텍스트</text><text class="sub" x="712" y="63">ID17 = 기본 ID0 가정</text><rect class="node" x="20" y="150" width="270" height="72" rx="5"/><text class="label" x="32" y="179">원본 속성 분기·setter</text><text class="sub" x="32" y="203">종류 7 → 12 → 4 적용</text><rect class="node" x="350" y="150" width="270" height="72" rx="5"/><text class="label" x="362" y="179">원본 텍스트·축소 렌더러</text><text class="sub" x="362" y="203">context+0x894 → StretchBlitFont</text><rect class="node" x="700" y="150" width="270" height="72" rx="5"/><text class="label" x="712" y="179">전체 합성 인덱스 프레임</text><text class="sub" x="712" y="203">129,536바이트 + 양끝 보호</text></svg></div><figcaption>점선은 별도 재입력과 합성 ID 연결입니다. 실제 UI 상태를 이어 실행한 도식이 아닙니다. 글꼴 파일과 메모리·운영체제 경계는 별도 목록의 모델을 사용합니다. <a href="analysis/colorspace-attributes.json">[근거]</a></figcaption></figure></section>
-<section id="dispatch"><p class="eyebrow">02 / NATIVE ATTRIBUTE DISPATCH</p><h2>크기·간격·색 설정의 원본 분기를 실행했다</h2><p>별도 실행에서 원본 속성 분기와 setter를 복원했습니다. 종류 7은 context+0x82c·0x82e에 폭과 높이를, 종류 12는 +0x824·0x828에 문자 간격 값을 씁니다. 종류 4는 색 테이블의 슬롯 1에 인덱스 2를 씁니다. 나머지 팔레트 슬롯은 시험 컨텍스트의 입력값입니다. <a href="analysis/colorspace-attributes.json">[A1: attribute_dispatch]</a></p><div class="table-wrap"><table><thead><tr><th>종류</th><th>테이블 위치</th><th>setter 주소</th><th>컨텍스트 쓰기</th></tr></thead><tbody><tr><th>7</th><td><code>0x802a223c</code></td><td><code>0x802185d0</code></td><td>u16 context+0x82c width; u16 context+0x82e height</td></tr><tr><th>12</th><td><code>0x802a2250</code></td><td><code>0x80218544</code></td><td>u32 context+0x824; u32 context+0x828</td></tr><tr><th>4</th><td><code>0x802a2230</code></td><td><code>0x802184cc</code></td><td>u32 context+0x28 palette slot 1</td></tr></tbody></table></div><p>기본 64×48 컨텍스트는 +0x88c를 통해 BlitFont로 들어갔습니다. 캡처한 속성을 적용한 48×48 컨텍스트는 +0x894를 통해 StretchBlitFont로 들어갔습니다. 두 대조 실행은 첫 렌더러 진입까지 각각 114개의 VEX 블록 이벤트를 기록했습니다. 시험에서는 합성 그리기 ID 17과 기본 ID 0을 같은 컨텍스트에 연결했습니다. <a href="analysis/colorspace-attributes.json">[A1: dispatch]</a></p><figure><div class="diagram-wrap"><svg class="diagram" viewBox="0 0 1000 250" role="img" aria-labelledby="attributes-dispatch-title attributes-dispatch-desc"><title id="attributes-dispatch-title">크기 설정에 따른 원본 렌더러 분기</title><desc id="attributes-dispatch-desc">두 대조 실행은 첫 렌더러까지 각각 114 VEX 블록 이벤트입니다. 아래 조건의 전체 실행은 68,969 이벤트이며 실제 실행 시간 측정은 아닙니다.</desc><defs><marker id="attributes-dispatch-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8Z"/></marker></defs><path class="edge " d="M290 46 L350 46" marker-end="url(#attributes-dispatch-arrow)"/><path class="edge " d="M620 46 L700 46" marker-end="url(#attributes-dispatch-arrow)"/><path class="edge " d="M290 186 L350 186" marker-end="url(#attributes-dispatch-arrow)"/><path class="edge " d="M620 186 L700 186" marker-end="url(#attributes-dispatch-arrow)"/><rect class="node" x="20" y="10" width="270" height="72" rx="5"/><text class="label" x="32" y="39">기본 크기 64×48</text><text class="sub" x="32" y="63">속성 적용 전 대조 실행</text><rect class="node" x="350" y="10" width="270" height="72" rx="5"/><text class="label" x="362" y="39">context+0x88c</text><text class="sub" x="362" y="63">BlitFont 0x8022607c</text><rect class="node" x="700" y="10" width="270" height="72" rx="5"/><text class="label" x="712" y="39">첫 글리프 폭 24</text><text class="sub" x="712" y="63">렌더러 진입에서 정지</text><rect class="node" x="20" y="150" width="270" height="72" rx="5"/><text class="label" x="32" y="179">요청 크기 48×48</text><text class="sub" x="32" y="203">캡처 속성 별도 적용</text><rect class="node" x="350" y="150" width="270" height="72" rx="5"/><text class="label" x="362" y="179">context+0x894</text><text class="sub" x="362" y="203">StretchBlitFont 0x80226748</text><rect class="node" x="700" y="150" width="270" height="72" rx="5"/><text class="label" x="712" y="179">첫 글리프 24 → 18</text><text class="sub" x="712" y="203">전체 축소 실행은 별도 검증</text></svg></div><figcaption>두 대조 실행은 첫 렌더러까지 각각 114 VEX 블록 이벤트입니다. 아래 조건의 전체 실행은 68,969 이벤트이며 실제 실행 시간 측정은 아닙니다. <a href="analysis/colorspace-attributes.json">[근거]</a></figcaption></figure></section>
-<section id="pixels"><p class="eyebrow">03 / HORIZONTAL SCALE AND WHOLE-FRAME CHECK</p><h2>절반 간격에서 소스 열을 고른다</h2><p>원본 코드는 Q16 가로 배율을 floor(48×65536/64)로 계산하며 값은 0xc000입니다. 글리프 폭 24·29·34·29는 각각 18·21·25·21로 줄어들며 x 좌표는 96·114·135·160입니다. 높이 48과 y 좌표 64는 유지됩니다. 소스 열은 역배율 간격의 절반에서 시작해 선택하므로 단순히 각 구간의 왼쪽 열을 고르는 계산과 다릅니다. <a href="analysis/colorspace-attributes.json">[A1: scale_oracle·evidence]</a></p><pre><code>factor = (48 &lt;&lt; 16) // 64
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>48×48 글자 크기 요청과 그리기 컨텍스트 선택 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Q7 Color Space 화면이 sRGB 글자에 48×48 크기를 요청한다는 것을 관측하고, 그 요청을 별도 컨텍스트에 적용해 원본 축소 렌더러로 그린 프레임 전체를 독립 계산과 대조했으며, 등록된 두 컨텍스트를 원본 선택기가 고르는 조건을 확인한 기록입니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-ui.html">화면과 글꼴</a></li><li aria-current="page">48×48 요청과 컨텍스트 선택</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">화면과 글꼴 · ⑤ 글자 크기와 그리기 컨텍스트</p>
+<h1>48×48 글자 크기 요청과 그리기 컨텍스트 선택</h1>
+<p class="lead">색공간 화면의 글자는 글꼴 파일의 기본 크기 그대로 그려지지 않습니다. 화면이 요청하는 글자 크기가 어떤 렌더러를 고르게 하는지, 그리고 그 요청이 어느 그리기 상태(컨텍스트)에 적용되는지 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 글자 크기는 컨텍스트에 기록됩니다</a></li><li><a href="#capture">갱신에서 관측한 요청과 별도 시험의 경계</a></li><li><a href="#dispatch">크기 속성이 렌더러를 바꿉니다</a></li><li><a href="#pixels">가로만 4분의 3으로 줄여 그린 결과가 버퍼 전체와 일치</a></li><li><a href="#binding">등록된 컨텍스트를 원본 선택기가 고르는 조건</a></li><li><a href="#comparison">K-3 Mark III와 비교</a></li><li><a href="#limits">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>원본 화면 갱신 4회에서 sRGB 글자 앞에 <strong>크기 48×48, 간격 0, 색 2</strong> 속성이 매번 요청되는 것을 기록했습니다(속성 요청 72건, 글자 요청 25건).</li>
+<li>이 속성을 별도 컨텍스트에 적용하자 원본 코드가 기본 렌더러 대신 <strong>축소 렌더러</strong>를 골랐습니다. 네 글자의 폭은 24·29·34·29에서 18·21·25·21로 줄었고, 프레임 전체(129,536바이트)가 독립 계산과 같았습니다.</li>
+<li>서로 다른 컨텍스트 두 개를 시험용으로 등록하면, 원본 버퍼 교대 코드가 다음 그리기 ID의 컨텍스트로 활성 포인터를 바꿉니다. 다음 슬롯이 비어 있으면 ID만 바뀌고 포인터는 <strong>이전 컨텍스트에 머뭅니다</strong>.</li>
+<li>ID 17·18은 시험에서 정한 입력입니다. 카메라가 실제로 처음 할당하는 값, 갱신부터 픽셀까지 이어진 실행, 화면 출력은 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>갱신 4회의 속성·글자 요청 순서와 인수</li>
+<li>속성 분기와 크기·간격·색 설정 함수, 렌더러 선택</li>
+<li>48×48 축소 그리기 한 번의 프레임 전체 일치</li>
+<li>버퍼 교대와 활성 컨텍스트 선택(두 교대와 빈 슬롯 사례)</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>갱신 단계의 속성·글자 API는 기록 모델</li>
+<li>축소 그리기: 합성 컨텍스트, 그리기 ID 17과 기본 ID 0을 같은 컨텍스트로 연결</li>
+<li>컨텍스트 선택: 등록 테이블과 컨텍스트 두 개(ID 17·18)</li>
+<li>글꼴 파일 읽기·메모리·캐시·진단 경계</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>카메라 시작 때 실제 할당되는 버퍼 ID와 등록 내용</li>
+<li>갱신부터 픽셀까지 한 번에 이어진 실행, 메뉴 전체 합성</li>
+<li>실제 팔레트 색, 화면 전송, LCD 출력</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 글자 크기는 컨텍스트에 기록됩니다</h2>
+<p><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>은 “sRGB”를 글꼴의 기본 크기(셀 64×48)로 그렸습니다. 그런데 실제 화면 갱신은 글자를 그리기 직전에 크기·간격·색 속성을 따로 요청합니다. 이 속성은 <dfn title="그릴 버퍼, 글자 크기, 색, 그리기 함수 표를 담은 구조체. 버퍼마다 하나씩 만들어 둡니다">그리기 컨텍스트</dfn>에 기록되고, 이후 글자 출력은 컨텍스트를 보고 렌더러를 고릅니다.</p>
+<p>그래서 두 가지를 확인해야 했습니다. 하나는 48×48 요청이 어떤 렌더러를 고르게 하는지, 다른 하나는 속성과 글자가 <strong>같은 컨텍스트</strong>를 보는지입니다. 앞의 것은 <a href="#dispatch">축소 렌더러 시험</a>, 뒤의 것은 <a href="#binding">컨텍스트 선택 시험</a>에서 다룹니다.</p>
+<ol class="flow">
+<li class="ok"><strong>① 선택·확정·취소</strong><span><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></span></li>
+<li class="ok"><strong>② 그리기 요청</strong><span><a href="colorspace-render-report.html">그리기 경로</a></span></li>
+<li class="ok"><strong>③ 강조 픽셀</strong><span><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></span></li>
+<li class="ok"><strong>④ 글자 픽셀</strong><span><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></span></li>
+<li class="key"><strong>⑤ 글자 크기·컨텍스트</strong><span>이 문서</span></li>
+<li class="open"><strong>팔레트·LCD</strong><span>미확인</span></li>
+</ol>
+<p>단계 번호는 문서를 읽는 순서입니다. 카메라 안의 실행 순서로는 이 문서의 속성 적용이 ④ 글자 픽셀보다 앞에 옵니다.</p>
+</section>
+
+<section id="capture">
+<h2>갱신에서 관측한 요청과 별도 시험의 경계</h2>
+<p class="takeaway">48×48 요청은 원본 갱신에서 직접 관측했습니다. 그 요청을 축소 렌더러에 넣은 시험은 따로 만든 컨텍스트에서 실행했으므로, 둘 사이의 연결은 시험 조건입니다.</p>
+
+<figure class="diagram">
+<figcaption>관측(위)과 별도 재입력(아래)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 260" role="img" aria-labelledby="dg-attr-cap-title dg-attr-cap-desc">
+<title id="dg-attr-cap-title">요청 관측과 별도 축소 실행의 경계</title>
+<desc id="dg-attr-cap-desc">위쪽: 원본 화면 갱신 4회를 실행하며 속성 요청 72건과 글자 요청 25건을 기록 모델로 붙잡았습니다. sRGB 위젯은 크기 48×48, 간격 0, 색 2를 요청했습니다. 아래쪽: 이 요청을 별도의 합성 컨텍스트에 다시 넣었습니다. 그리기 ID 17과 기본 ID 0이 같은 컨텍스트를 가리킨다고 가정했고, 원본 속성 분기와 설정 함수, 원본 글자 출력과 축소 렌더러를 실행해 전체 합성 프레임을 대조했습니다. 위와 아래를 잇는 선은 점선으로, 연속 실행이 아니라 재입력입니다.</desc>
+<defs>
+<marker id="dg-attr-cap-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-attr-cap-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<text class="h" x="8" y="20">관측: 원본 화면 갱신</text>
+<rect class="b ok" x="8" y="32" width="230" height="64" rx="8"/>
+<text class="t" x="20" y="58">원본 갱신 4회</text>
+<text class="s" x="20" y="79">속성 72건 · 글자 25건</text>
+<rect class="b model" x="284" y="32" width="230" height="64" rx="8"/>
+<text class="t" x="296" y="58">요청 기록 모델</text>
+<text class="s" x="296" y="79">sRGB: 48×48 · 간격 0 · 색 2</text>
+<text class="h" x="8" y="152">별도 시험: 합성 컨텍스트</text>
+<rect class="b model" x="8" y="164" width="180" height="64" rx="8"/>
+<text class="t" x="20" y="190">합성 컨텍스트</text>
+<text class="s" x="20" y="211">ID 17 = 기본 ID 0</text>
+<rect class="b ok" x="214" y="164" width="180" height="64" rx="8"/>
+<text class="t" x="226" y="190">속성 분기·설정</text>
+<text class="s" x="226" y="211">종류 7 → 12 → 4</text>
+<rect class="b ok" x="420" y="164" width="180" height="64" rx="8"/>
+<text class="t" x="432" y="190">축소 렌더러</text>
+<text class="s mono" x="432" y="211">StretchBlitFont</text>
+<rect class="b key" x="626" y="164" width="166" height="64" rx="8"/>
+<text class="t" x="638" y="190">프레임 전체 대조</text>
+<text class="s" x="638" y="211">129,536바이트</text>
+<path class="e" d="M238 64H282" marker-end="url(#dg-attr-cap-ah)"/>
+<path class="e model" d="M399 96V130H98V162" marker-end="url(#dg-attr-cap-am)"/>
+<text class="n" x="410" y="122">같은 인수를 다시 입력 (연속 실행 아님)</text>
+<path class="e" d="M188 196H212" marker-end="url(#dg-attr-cap-ah)"/>
+<path class="e" d="M394 196H418" marker-end="url(#dg-attr-cap-ah)"/>
+<path class="e" d="M600 196H624" marker-end="url(#dg-attr-cap-ah)"/>
+<text class="n" x="8" y="252">글꼴 파일, 메모리, 운영체제 호출은 아래 경계 목록의 모델을 씁니다.</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행</li><li><i class="model"></i>기록 모델·시험 조건</li><li><i class="key"></i>대조한 결과</li></ul>
+</figure>
+
+<p>sRGB 선택지 위젯 <code>0x191d00b</code>은 갱신마다 속성 세 개를 요청한 뒤 글자를 요청했습니다. 속성 요청의 그리기 ID는 갱신마다 17·18·17·18로 바뀌었고, 글자 요청의 ID는 0입니다. 이 시점에서는 속성 API와 글자 API를 기록 모델로 대체했습니다.</p>
+<div class="table-wrap"><table>
+<caption>첫 번째 갱신에서 sRGB 위젯이 보낸 요청 (나머지 세 갱신은 그리기 ID만 다름)</caption>
+<thead><tr><th>순서</th><th>요청</th><th>인수</th><th>뜻</th></tr></thead>
+<tbody><tr><th scope="row">1</th><td>속성 · 그리기 ID 17</td><td><code>[17, 7, 48, 48, 0, 0]</code></td><td>글자 크기 (폭, 높이)</td></tr><tr><th scope="row">2</th><td>속성 · 그리기 ID 17</td><td><code>[17, 12, 0, 0, 0, 0]</code></td><td>글자 간격</td></tr><tr><th scope="row">3</th><td>속성 · 그리기 ID 17</td><td><code>[17, 4, 2, 0, 0, 0]</code></td><td>글자 색 (팔레트 슬롯 1)</td></tr><tr><th scope="row">4</th><td>글자 · ID 0</td><td><code>0, 0xffff, …, 96, 64, 4, 1</code></td><td>(x, y) = (96, 64), 글자 4개</td></tr></tbody>
+</table></div>
+<p class="small muted">네 갱신의 요청 기록은 <a href="colorspace-render-report.html">그리기 경로</a>의 관측과 정규화한 메타데이터 기준으로 바이트 단위까지 일치합니다. 앞선 갱신 기록 SHA-256 <code class="wrap">43856af97a6702886aeadf8cad85564a5f5f25c3e964b3a247dd2584d9731143</code>, 순서 기록 SHA-256 <code class="wrap">2e8a9f3ea98670c10d59087ff45d97af2e2d9674ee86424c3883b3c3dd0de9de</code>. <a href="analysis/colorspace-attributes.json">[근거: bounded_replay.refresh]</a></p>
+</section>
+
+<section id="dispatch">
+<h2>크기 속성이 렌더러를 바꿉니다</h2>
+<p class="takeaway">속성을 적용하지 않은 컨텍스트는 기본 렌더러 <code>BlitFont</code>로, 48×48을 적용한 컨텍스트는 축소 렌더러 <code>StretchBlitFont</code>로 들어갑니다.</p>
+<p>별도 실행에서 원본 속성 분기표와 설정 함수를 실행했습니다. 종류 7은 컨텍스트의 폭·높이 칸에, 종류 12는 글자 간격 칸에, 종류 4는 색 테이블의 슬롯 1에 번호 2를 씁니다. 나머지 팔레트 슬롯은 시험 컨텍스트의 입력값입니다.</p>
+<div class="table-wrap"><table>
+<caption>속성 종류별 원본 분기와 컨텍스트 쓰기</caption>
+<thead><tr><th>종류</th><th>분기표 위치</th><th>분기 진입</th><th>설정 함수</th><th>컨텍스트 쓰기 (원문)</th></tr></thead>
+<tbody><tr><th scope="row">7 · 글자 크기 (폭, 높이)</th><td><code>0x802a223c</code></td><td><code>0x8024c3c0</code></td><td><code>0x802185d0</code></td><td>u16 context+0x82c width; u16 context+0x82e height</td></tr><tr><th scope="row">12 · 글자 간격</th><td><code>0x802a2250</code></td><td><code>0x8024c354</code></td><td><code>0x80218544</code></td><td>u32 context+0x824; u32 context+0x828</td></tr><tr><th scope="row">4 · 글자 색 (팔레트 슬롯 1)</th><td><code>0x802a2230</code></td><td><code>0x8024c3f0</code></td><td><code>0x802184cc</code></td><td>u32 context+0x28 palette slot 1</td></tr></tbody>
+</table></div>
+
+<figure class="diagram">
+<figcaption>글자 크기 설정에 따른 원본 렌더러 분기</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 222" role="img" aria-labelledby="dg-attr-disp-title dg-attr-disp-desc">
+<title id="dg-attr-disp-title">기본 크기와 48×48 크기의 렌더러 선택</title>
+<desc id="dg-attr-disp-desc">위쪽: 속성을 적용하지 않은 기본 크기 64×48 컨텍스트에서는 컨텍스트 +0x88c의 함수 BlitFont 0x8022607c로 들어가고, 첫 글리프를 폭 24 그대로 그리려 합니다. 아래쪽: 관측한 48×48 속성을 적용한 컨텍스트에서는 +0x894의 함수 StretchBlitFont 0x80226748로 들어가고, 첫 글리프 폭 24를 18로 줄입니다. 두 대조 실행은 첫 렌더러에 들어가는 순간 멈췄으며 각각 114 VEX 블록 이벤트였습니다.</desc>
+<defs><marker id="dg-attr-disp-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="8" y="24" width="220" height="64" rx="8"/>
+<text class="t" x="20" y="50">속성 없음: 64×48</text>
+<text class="s" x="20" y="71">글꼴 셀의 기본 크기</text>
+<rect class="b ok" x="284" y="24" width="230" height="64" rx="8"/>
+<text class="t" x="296" y="50">컨텍스트 +0x88c</text>
+<text class="s mono" x="296" y="71">BlitFont 0x8022607c</text>
+<rect class="b" x="570" y="24" width="222" height="64" rx="8"/>
+<text class="t" x="582" y="50">첫 글리프 폭 24</text>
+<text class="s" x="582" y="71">렌더러 입구에서 멈춤</text>
+<rect class="b ok" x="8" y="134" width="220" height="64" rx="8"/>
+<text class="t" x="20" y="160">속성 적용: 48×48</text>
+<text class="s" x="20" y="181">관측한 세 속성</text>
+<rect class="b ok" x="284" y="134" width="230" height="64" rx="8"/>
+<text class="t" x="296" y="160">컨텍스트 +0x894</text>
+<text class="s mono" x="296" y="181">StretchBlitFont 0x80226748</text>
+<rect class="b key" x="570" y="134" width="222" height="64" rx="8"/>
+<text class="t" x="582" y="160">첫 글리프 24 → 18</text>
+<text class="s" x="582" y="181">끝까지 실행한 시험은 아래</text>
+<path class="e" d="M228 56H282" marker-end="url(#dg-attr-disp-ah)"/>
+<path class="e" d="M514 56H568" marker-end="url(#dg-attr-disp-ah)"/>
+<path class="e" d="M228 166H282" marker-end="url(#dg-attr-disp-ah)"/>
+<path class="e" d="M514 166H568" marker-end="url(#dg-attr-disp-ah)"/>
+<text class="n" x="8" y="216">두 대조 실행은 첫 렌더러에 들어갈 때까지 각각 114 VEX 블록 이벤트였습니다.</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행</li><li><i class="key"></i>아래 절에서 프레임 전체까지 확인</li></ul>
+</figure>
+<p>두 대조 실행 모두 컨텍스트의 팔레트 칸은 <code>[0, 2, 1, 3]</code>, 투명 모드는 1이었습니다. 시험에서는 합성 그리기 ID 17과 기본 ID 0을 같은 컨텍스트에 연결했습니다. <a href="analysis/colorspace-attributes.json">[근거: attribute_dispatch, bounded_replay.dispatch]</a></p>
+</section>
+
+<section id="pixels">
+<h2>가로만 4분의 3으로 줄여 그린 결과가 버퍼 전체와 일치</h2>
+<p class="takeaway">축소 렌더러는 높이 48을 그대로 두고 가로만 48/64로 줄입니다. 네 글자를 끝까지 그린 프레임 전체와 양끝 보호 영역이 독립 계산과 같았습니다.</p>
+
+<figure class="diagram">
+<figcaption>“sRGB” 네 글자의 위치와 폭: 기본 크기(위)와 48×48 축소(아래)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 210" role="img" aria-labelledby="dg-attr-scale-title dg-attr-scale-desc"><title id="dg-attr-scale-title">기본 크기와 48×48 축소의 글자 위치 비교</title><desc id="dg-attr-scale-desc">위 줄은 기본 크기로 그린 sRGB 네 글자로, x 96·120·149·183에서 폭 24·29·34·29입니다. 아래 줄은 48×48 속성을 적용한 축소 그리기로, x 96·114·135·160에서 폭 18·21·25·21입니다. 높이는 둘 다 48입니다. 그림은 가로를 5배로 늘렸습니다.</desc><text class="t" x="8" y="60">기본 64×48</text><rect class="b ok" x="150" y="30" width="120" height="48" rx="4"/><text class="t mid" x="210" y="51">s</text><text class="s mid" x="210" y="69">폭 24</text><text class="n mid" x="150" y="94">96</text><rect class="b ok" x="270" y="30" width="145" height="48" rx="4"/><text class="t mid" x="342.5" y="51">R</text><text class="s mid" x="342.5" y="69">폭 29</text><text class="n mid" x="270" y="94">120</text><rect class="b ok" x="415" y="30" width="170" height="48" rx="4"/><text class="t mid" x="500" y="51">G</text><text class="s mid" x="500" y="69">폭 34</text><text class="n mid" x="415" y="94">149</text><rect class="b ok" x="585" y="30" width="145" height="48" rx="4"/><text class="t mid" x="657.5" y="51">B</text><text class="s mid" x="657.5" y="69">폭 29</text><text class="n mid" x="585" y="94">183</text><text class="t" x="8" y="150">48×48 축소</text><rect class="b key" x="150" y="120" width="90" height="48" rx="4"/><text class="t mid" x="195" y="141">s</text><text class="s mid" x="195" y="159">폭 18</text><text class="n mid" x="150" y="184">96</text><rect class="b key" x="240" y="120" width="105" height="48" rx="4"/><text class="t mid" x="292.5" y="141">R</text><text class="s mid" x="292.5" y="159">폭 21</text><text class="n mid" x="240" y="184">114</text><rect class="b key" x="345" y="120" width="125" height="48" rx="4"/><text class="t mid" x="407.5" y="141">G</text><text class="s mid" x="407.5" y="159">폭 25</text><text class="n mid" x="345" y="184">135</text><rect class="b key" x="470" y="120" width="105" height="48" rx="4"/><text class="t mid" x="522.5" y="141">B</text><text class="s mid" x="522.5" y="159">폭 21</text><text class="n mid" x="470" y="184">160</text><text class="n mid" x="730" y="94">212</text><text class="n mid" x="575" y="184">181</text><text class="n" x="8" y="204">가로 5배 확대. 숫자는 각 글자의 시작 x와 끝 x(논리 좌표)입니다. 높이 48·y = 64는 두 줄이 같습니다.</text></svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>기본 크기 — <a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>의 시험</li><li><i class="key"></i>48×48 축소 — 이 문서의 시험</li></ul>
+</figure>
+<p>원본 코드는 <dfn title="정수의 아래 16비트를 소수부로 쓰는 고정소수점 표기">Q16</dfn> 가로 배율을 floor(48 × 65536 / 64)로 계산하며, 값은 <code>0xc000</code>(0.75)입니다. 글자 폭 24·29·34·29는 18·21·25·21로 줄고, x 좌표는 96·114·135·160이 됩니다. 높이 48과 y = 64는 그대로입니다.</p>
+<pre><code>factor = (48 &lt;&lt; 16) // 64
 destination_width = (source_width * factor) &gt;&gt; 16
 inverse_step = (source_width &lt;&lt; 16) // destination_width
-source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16</code></pre><p>원본 축소 실행은 68,969개의 VEX 블록 이벤트 뒤 1을 반환했습니다. 전체 129,536바이트와 양끝 8바이트 보호 구간을 독립 계산과 대조했습니다. 바뀐 바이트 2,464개 중 인덱스 1은 1,297개, 인덱스 2는 1,167개입니다. 이 값은 색상 인덱스이며 실제 RGB 색은 확인하지 않았습니다. <a href="tools/check_colorspace_attributes.py">[A2: scaled_oracle·check_scaled]</a></p><p>전체 프레임 SHA-256: <code>4af7c282e109f4e5bbdd247bda6968483329c732b9d5a88141e2d05017abbded</code></p></section>
-<section id="comparison"><p class="eyebrow">04 / FIXED K-3 MARK III REFERENCE</p><h2>UI 동작 비교와 Q7 렌더러 근거를 구분한다</h2><p>K-3 Mark III의 고정 커밋에서 확인한 Color Space 선택·확정·취소 구조를 비교 기준으로 유지합니다. Q7은 초점 이동 때 값을 쓰고 취소 때 백업을 복구하지만 K-3 Mark III는 확정 전 보류 값을 사용합니다. 이번 결과는 Q7의 텍스트 속성과 렌더러 분기의 근거를 보강합니다. K-3 Mark III의 글꼴 크기·팔레트·화면 버퍼가 같은지는 미확인입니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680/analysis/colorspace-ui-input-evidence.json">[K1: 입력·확정·취소]</a> · <a href="analysis/colorspace-ui.json">[Q1: Q7 값 쓰기·복구]</a></p></section>
-<section id="binding"><p class="eyebrow">05 / CONDITIONAL NATIVE CONTEXT SELECTION</p><h2>등록된 컨텍스트를 원본 선택기가 연결한다</h2><p>후속 시험에서는 서로 다른 두 컨텍스트를 합성 등록 테이블에 넣고 원본 버퍼 교체와 선택기를 실행했습니다. ID 17→18→17의 두 교체와 다음 슬롯이 비어 있는 대조 사례를 검증했습니다. 17·18은 시험에서 지정한 ID이며 실제 카메라의 할당값은 미확인입니다. <a href="analysis/context-binding.json">[B1: 합성 등록·세 대조 조건]</a></p><p>원본 ScreenOsdLayer_Roll은 SetOsd를 거쳐 I43_SetParam(0x1bc, drawID)을 호출합니다. AppOsdSetDrawBuffer는 등록 테이블에서 해당 포인터를 읽어 0x800eb4d8에 씁니다. 명령어 주소는 0x8024a614이며 MIPS 지연 슬롯 때문에 VEX 쓰기 이벤트는 0x8024a610으로 기록됩니다. 텍스트의 ID 0·플래그 1 경로는 이 전역 포인터를 읽습니다. <a href="analysis/context-binding.json">[B1: 원본 명령어·선택 경로]</a></p><figure><div class="diagram-wrap"><svg class="diagram" viewBox="0 0 1000 250" role="img" aria-labelledby="context-binding-title context-binding-desc"><title id="context-binding-title">등록 슬롯에 따른 원본 선택 결과</title><desc id="context-binding-desc">서로 다른 컨텍스트를 등록한 합성 시험입니다. 원본 선택·교체·조회만 실행하고 GDI 본문에서 멈춥니다. 실제 카메라의 ID17·18 할당이나 픽셀 출력은 입증하지 않습니다.</desc><defs><marker id="context-binding-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8Z"/></marker></defs><path class="edge " d="M290 46 L350 46" marker-end="url(#context-binding-arrow)"/><path class="edge " d="M620 46 L700 46" marker-end="url(#context-binding-arrow)"/><path class="edge " d="M290 186 L350 186" marker-end="url(#context-binding-arrow)"/><path class="edge " d="M620 186 L700 186" marker-end="url(#context-binding-arrow)"/><rect class="node" x="20" y="10" width="270" height="72" rx="5"/><text class="label" x="32" y="39">다음 슬롯에 컨텍스트 있음</text><text class="sub" x="32" y="63">시험 ID18 → 컨텍스트 B</text><rect class="node" x="350" y="10" width="270" height="72" rx="5"/><text class="label" x="362" y="39">원본 활성 포인터 쓰기</text><text class="sub" x="362" y="63">0x8024a614 → 0x800eb4d8</text><rect class="node" x="700" y="10" width="270" height="72" rx="5"/><text class="label" x="712" y="39">속성·텍스트 모두 B</text><text class="sub" x="712" y="63">GDI 본문은 관측 모델</text><rect class="node" x="20" y="150" width="270" height="72" rx="5"/><text class="label" x="32" y="179">다음 슬롯이 비어 있음</text><text class="sub" x="32" y="203">화면 draw ID는 18로 교체</text><rect class="node" x="350" y="150" width="270" height="72" rx="5"/><text class="label" x="362" y="179">활성 포인터 쓰기 없음</text><text class="sub" x="362" y="203">이전 컨텍스트 A 유지</text><rect class="node" x="700" y="150" width="270" height="72" rx="5"/><text class="label" x="712" y="179">속성 대체·텍스트 모두 A</text><text class="sub" x="712" y="203">등록·할당 성공은 별도 조건</text></svg></div><figcaption>서로 다른 컨텍스트를 등록한 합성 시험입니다. 원본 선택·교체·조회만 실행하고 GDI 본문에서 멈춥니다. 실제 카메라의 ID17·18 할당이나 픽셀 출력은 입증하지 않습니다. <a href="analysis/context-binding.json">[근거]</a></figcaption></figure><p>두 슬롯이 등록된 조건에서는 원본 교체마다 활성 포인터가 해당 컨텍스트로 바뀌었습니다. 교체 전후에 명시적 속성 ID를 쓰는 호출과 텍스트 ID 0을 쓰는 호출이 같은 포인터를 GDI 진입점에 전달했습니다. 이 시험에서는 크기 setter와 텍스트 GDI 본문을 대체했습니다. 앞선 축소 픽셀 실행은 별도 시험입니다. <a href="tools/check_context_binding.py">[B2: 원본 교체와 두 조회 경로]</a></p><p>다음 ID 18의 등록 슬롯을 비우면 화면의 draw ID는 18로 바뀌지만 활성 컨텍스트 쓰기는 일어나지 않았습니다. 명시적 속성 ID 18로 호출했을 때는 이전 컨텍스트를 대신 사용했습니다. 텍스트 ID 0도 그 포인터를 사용했습니다. 화면 ID 교체만으로는 컨텍스트 선택 성공을 판단할 수 없습니다. <a href="analysis/context-binding.json">[B1: missing_slot]</a></p><p>원본 초기 레이어별 할당 구간은 0–7, 32–39, 64–71입니다. 조회기가 등록된 17·18을 받아들이는 것과 초기 설정 코드가 그 ID를 할당하는 것은 별개입니다. 이번 시험은 등록 테이블과 두 컨텍스트를 공급했습니다. 실제 초기화·할당과 글꼴 설정, UI 갱신부터 최종 픽셀까지의 연속 실행, LCD 출력은 여전히 미검증입니다. <a href="analysis/context-binding.json">[B1: 초기 범위·한계]</a></p><pre><code>python tools/check_context_binding.py &lt;original fwdc603p.bin&gt; .private/main-expanded.elf --output .private/context-binding-new.json</code></pre><p><a href="tools/verify_context_binding.py">B3 원본 근거 검사</a> · <a href="analysis/binding-editorial.json">후속 문단 한국어 검토</a></p></section>
-<section id="limits"><p><strong>모델 설명 정정:</strong> <code>0x800ec08c</code>는 진단 함수가 아니라 <code>I43_SetParam</code>입니다. 이 시험은 해당 호출에서 0을 반환하므로 매개변수 <code>0x1bc</code>의 활성 그리기 컨텍스트 선택을 실행하지 않습니다. 기존 요청·픽셀 결과는 그대로이며, 그 결과로 실제 ID 연결을 입증할 수는 없습니다. <a href="analysis/colorspace-render.json">[R1: ScreenOsdLayer_SetOsd 전달 관계·모델 경계]</a></p><p class="eyebrow">06 / LIMITS AND REPRODUCTION</p><h2>실제 컨텍스트 별칭과 화면 출력은 남아 있다</h2><p>갱신 요청 캡처와 속성 적용·픽셀 실행은 분리된 시험입니다. 시험에서 지정한 그리기 ID 17·18과 텍스트 ID 0의 실제 초기화 연결, 갱신부터 픽셀까지의 연속 실행, 전체 메뉴 합성, 물리 팔레트와 LCD 출력은 미검증입니다. 다음 단계에서는 컨텍스트 등록·전환 경로를 추적해 합성 별칭을 실제 연결로 대체할 수 있는지 확인합니다. <a href="analysis/colorspace-attributes.json">[A1: limits·modeled_boundaries]</a></p><p>원본 71워드와 주소로 지정한 12개 함수 후보 범위, 앞선 갱신·글꼴·sRGB 텍스트 연결을 대조했습니다. 선택된 명령어·해시·도구만 공개하며 원본 글꼴과 픽셀 데이터는 포함하지 않습니다. <a href="tools/verify_glyph.py">[A3: verify_attributes]</a> · <a href="tests/test_colorspace_glyph.py">[A4: 분기·별칭 변조와 절반 간격 검사]</a></p><pre><code>python tools/check_colorspace_attributes.py &lt;original fwdc603p.bin&gt; .private/main-expanded.elf --output .private/attributes-new.json
-python tools/verify_report.py --firmware &lt;original fwdc603p.bin&gt;</code></pre><p><a href="analysis/colorspace-attributes.json">A1 근거 JSON</a> · <a href="tools/check_colorspace_attributes.py">A2 재현 도구</a> · <a href="analysis/attributes-editorial.json">한국어 검토</a> · <a href="analysis/hq-status.json">연구 상태</a></p></section>
-</main><footer>오프라인 원본 코드와 합성 인덱스 RAM 시험. 실제 UI 별칭·LCD 출력·기종 간 화면 이식은 미검증입니다.</footer></body></html>
+source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16</code></pre>
+<p>소스 열은 역배율 간격의 절반 지점에서 고릅니다. 각 구간의 왼쪽 열을 고르는 단순한 계산과는 결과가 다릅니다. <a href="analysis/colorspace-attributes.json">[근거: scale_oracle]</a></p>
+<div class="table-wrap"><table class="fit">
+<caption>48×48 축소 그리기의 결과</caption>
+<tbody>
+<tr><th scope="row">시작 함수 / 반환값</th><td><code>0x8024928c</code> / 1</td></tr>
+<tr><th scope="row">VEX 블록 이벤트</th><td class="n">68,969</td></tr>
+<tr><th scope="row">비교 범위</th><td>129,536바이트 전체 + 양끝 8바이트 보호 구간</td></tr>
+<tr><th scope="row">바뀐 바이트</th><td>2,464개 (번호 1: 1,297개, 번호 2: 1,167개)</td></tr>
+<tr><th scope="row">전체 프레임 SHA-256</th><td><code class="wrap">4af7c282e109f4e5bbdd247bda6968483329c732b9d5a88141e2d05017abbded</code></td></tr>
+</tbody></table></div>
+<p>바뀐 값은 팔레트 번호이며 실제 RGB 색은 확인하지 않았습니다. VEX 블록 이벤트는 에뮬레이터가 센 값이며 실제 실행 시간이 아닙니다. <a href="tools/check_colorspace_attributes.py">[재현 도구: scaled_oracle · check_scaled]</a></p>
+</section>
+
+<section id="binding">
+<h2>등록된 컨텍스트를 원본 선택기가 고르는 조건</h2>
+<p class="takeaway">화면 버퍼를 교대할 때 원본 코드는 다음 그리기 ID의 등록 슬롯에서 컨텍스트를 꺼내 활성 포인터에 씁니다. 속성과 글자는 모두 이 포인터를 따라가므로, 슬롯이 비어 있으면 둘 다 이전 컨텍스트를 씁니다.</p>
+<p>앞의 축소 시험은 그리기 ID 17과 기본 ID 0이 같은 컨텍스트라고 <em>가정</em>했습니다. 이 가정을 원본 코드로 확인하려고, 서로 다른 컨텍스트 두 개를 합성 등록 테이블에 넣고 원본 버퍼 교대와 선택기를 실행했습니다. ID 17→18→17의 두 교대와, 다음 슬롯이 비어 있는 대조 사례를 검증했습니다.</p>
+
+<figure class="diagram">
+<figcaption>등록 슬롯에 따른 원본 선택 결과</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="dg-attr-bind-title dg-attr-bind-desc">
+<title id="dg-attr-bind-title">버퍼 교대 때의 활성 컨텍스트 선택</title>
+<desc id="dg-attr-bind-desc">원본 ScreenOsdLayer_Roll이 그리기 ID와 표시 ID를 맞바꾸고, SetOsd를 거쳐 I43_SetParam(0x1bc, 다음 그리기 ID)를 부릅니다. 매개변수 표를 따라 AppOsdSetDrawBuffer가 등록 테이블의 슬롯을 읽습니다. 슬롯에 컨텍스트가 있으면 활성 포인터 0x800eb4d8에 그 컨텍스트를 쓰고, 이후 크기 속성과 글자 출력이 모두 새 컨텍스트 B를 씁니다. 슬롯이 비어 있으면 화면의 그리기 ID는 18로 바뀌지만 활성 포인터 쓰기가 없어 이전 컨텍스트 A가 남고, 명시적 ID 18의 속성도 A로 대체되며 글자도 A를 씁니다.</desc>
+<defs><marker id="dg-attr-bind-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="8" y="118" width="190" height="64" rx="8"/>
+<text class="t" x="20" y="144">버퍼 교대</text>
+<text class="s mono" x="20" y="165">I43_SetParam(0x1bc)</text>
+<rect class="b ok" x="236" y="118" width="190" height="64" rx="8"/>
+<text class="t" x="248" y="144">등록 슬롯 읽기</text>
+<text class="s mono" x="248" y="165">AppOsdSetDrawBuffer</text>
+<text class="h" x="470" y="20">다음 슬롯에 컨텍스트가 있을 때</text>
+<rect class="b ok" x="470" y="32" width="150" height="64" rx="8"/>
+<text class="t" x="482" y="58">활성 포인터 쓰기</text>
+<text class="s" x="482" y="79">→ 컨텍스트 B</text>
+<rect class="b key" x="642" y="32" width="150" height="64" rx="8"/>
+<text class="t" x="654" y="58">속성·글자 모두 B</text>
+<text class="s" x="654" y="79">새 버퍼에 그림</text>
+<text class="h" x="470" y="190">다음 슬롯이 비어 있을 때</text>
+<rect class="b ok" x="470" y="202" width="150" height="64" rx="8"/>
+<text class="t" x="482" y="228">쓰기 없음</text>
+<text class="s" x="482" y="249">그리기 ID만 18</text>
+<rect class="b open" x="642" y="202" width="150" height="64" rx="8"/>
+<text class="t" x="654" y="228">속성·글자 모두 A</text>
+<text class="s" x="654" y="249">이전 컨텍스트 유지</text>
+<path class="e" d="M198 150H234" marker-end="url(#dg-attr-bind-ah)"/>
+<path class="e" d="M426 150H448V64H468" marker-end="url(#dg-attr-bind-ah)"/>
+<path class="e" d="M448 150V234H468" marker-end="url(#dg-attr-bind-ah)"/>
+<path class="e" d="M620 64H640" marker-end="url(#dg-attr-bind-ah)"/>
+<path class="e" d="M620 234H640" marker-end="url(#dg-attr-bind-ah)"/>
+<text class="n" x="8" y="292">활성 포인터: 0x800eb4d8. 컨텍스트 A·B와 등록 테이블은 시험이 넣은 값이며, GDI 본문은 입구에서 기록만 합니다.</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행</li><li><i class="key"></i>속성과 글자가 같은 새 컨텍스트를 씀</li><li><i class="open"></i>교대가 컨텍스트 전환을 보장하지 않는 경우</li></ul>
+</figure>
+
+<ol class="steps">
+<li><strong>교대와 매개변수 설정</strong> 원본 <code>ScreenOsdLayer_Roll</code>은 등록 테이블에서 현재 그리기 버퍼를 꺼내고 그리기·표시 ID를 맞바꿉니다. 일반 <code>ScreenOsdLayer_SetOsd</code> 분기는 표시 요청을 먼저 내보낸 뒤 <code>I43_SetParam(0x1bc, 다음 그리기 ID)</code>를 부릅니다.</li>
+<li><strong>활성 포인터 쓰기</strong> 매개변수 점프표가 <code>AppOsdSetDrawBuffer</code>로 보냅니다. 범위 안의 ID이고 슬롯이 0이 아니면 활성 포인터(<code>hdcAppOsd</code>, <code>0x800eb4d8</code>)에 컨텍스트를 씁니다. 이 저장 명령은 호출의 지연 슬롯 <code>0x8024a614</code>에 있고, VEX는 쓰기 이벤트를 <code>0x8024a610</code>으로 기록합니다.</li>
+<li><strong>같은 포인터 사용</strong> 명시적 ID를 쓰는 속성 호출과, ID 0·플래그 1인 글자 호출이 모두 이 활성 포인터를 GDI 입구에 넘겼습니다.</li>
+</ol>
+<div class="table-wrap"><table>
+<caption>교대 시험의 사건 순서. A = ID 17용 컨텍스트, B = ID 18용 컨텍스트 (모두 시험 입력)</caption>
+<thead><tr><th>사례</th><th>그리기 ID</th><th>사건 순서</th></tr></thead>
+<tbody><tr><th scope="row">시작</th><td>17</td><td><strong>활성 포인터 ← A</strong></td></tr><tr><th scope="row">교대 1</th><td>17 → 18</td><td>크기 속성 → A → 글자 → A → 캐시 요청 → 표시 요청 ID 17 → <strong>활성 포인터 ← B</strong> → 크기 속성 → B → 글자 → B</td></tr><tr><th scope="row">교대 2</th><td>18 → 17</td><td>크기 속성 → B → 글자 → B → 캐시 요청 → 표시 요청 ID 18 → <strong>활성 포인터 ← A</strong> → 크기 속성 → A → 글자 → A</td></tr><tr><th scope="row">슬롯 18 비움</th><td>17 → 18</td><td>캐시 요청 → 표시 요청 ID 17 → 빈 슬롯 진단 → 크기 속성 → A → 글자 → A (교대 뒤 활성: A)</td></tr></tbody>
+</table></div>
+<p>처음 <code>I43_SetParam</code>은 17을 골랐고, 두 번의 원본 교대가 18과 17을 차례로 골랐습니다. 다음 ID 18의 슬롯을 비우면 화면의 그리기 ID는 18로 바뀌었지만 활성 컨텍스트 쓰기는 일어나지 않았습니다. 명시적 속성 ID 18은 이전 컨텍스트로 대체됐고, 글자 ID 0도 그 포인터를 썼습니다. 화면 ID가 바뀐 것만으로는 컨텍스트 선택이 성공했다고 판단할 수 없습니다. <a href="analysis/context-binding.json">[근거: findings, bounded_replay.replay]</a></p>
+<div class="callout warn"><strong class="label">17·18은 시험 입력입니다</strong>
+<p>원본 펌웨어의 초기 레이어별 할당 범위는 0~7, 32~39, 64~71(최대 ID 71)입니다. 원본 <code>AppOsdCreateBuffer</code>는 고른 레이어 범위를 훑어 첫 빈 컨텍스트를 등록하고, 보조 <code>ScreenOsdLayer_Setup</code>은 레이어 0을 씁니다. 초기 등록 테이블의 슬롯 17과 18은 0입니다. 선택기가 등록된 17·18을 받아들이는 것과 초기 설정 코드가 그 ID를 할당하는 것은 별개입니다. 다음 과제는 첫 색공간 갱신 전의 시작 시 등록 내용과 레이어 0 생성 경로를 추적하는 것입니다.</p></div>
+<details class="evidence"><summary>컨텍스트 선택의 고정 주소와 모델</summary>
+<dl class="kv"><dt>화면 그리기 ID</dt><dd><code>0x80c6ae84</code></dd><dt>화면 표시 ID</dt><dd><code>0x80c6ae86</code></dd><dt>정상 교대 조건</dt><dd><code>u8[0x80c6aea1] == 0</code></dd><dt>등록 테이블 포인터 전역</dt><dd><code>0x8029f340</code></dd><dt>원본 등록 테이블</dt><dd><code>0x800eb34c</code></dd><dt>슬롯 위치</dt><dd><code>registry + 4 + 4 * id</code></dd><dt>활성 그리기 컨텍스트</dt><dd><code>0x800eb4d8</code></dd><dt>표시 컨텍스트</dt><dd><code>0x800eb4d4</code></dd><dt>최대 ID 전역</dt><dd><code>0x800ebd70</code></dd><dt>초기 최대 ID</dt><dd><code>71</code></dd><dt>레이어 범위 전역</dt><dd><code>0x800ebd5c</code></dd><dt>초기 레이어 범위</dt><dd><code>[[0, 7], [32, 39], [64, 71]]</code></dd><dt>그리기 매개변수</dt><dd><code>0x1bc</code></dd><dt>매개변수 점프표 워드</dt><dd><code>0x800f61c0</code></dd><dt>그리기 버퍼 설정 함수</dt><dd><code>0x8024a59c</code></dd><dt>활성 포인터 저장 명령</dt><dd><code>0x8024a614</code></dd><dt>VEX가 기록한 저장 위치</dt><dd><code>0x8024a610</code></dd></dl>
+<div class="table-wrap"><table class="compact">
+<caption>이 시험에서 모델로 대체한 호출</caption>
+<thead><tr><th>주소</th><th>모델 (원문)</th></tr></thead>
+<tbody><tr><th scope="row"><code>0x800b3d40</code></th><td>observe cache request</td></tr><tr><th scope="row"><code>0x8029ef58</code></th><td>record show request before hardware path</td></tr><tr><th scope="row"><code>0x802185d0</code></th><td>observe context before setter body</td></tr><tr><th scope="row"><code>0x80229410</code></th><td>observe context before glyph path</td></tr><tr><th scope="row"><code>0x800402cc</code></th><td>accept display resource lock</td></tr><tr><th scope="row"><code>0x800404e8</code></th><td>accept display resource unlock</td></tr><tr><th scope="row"><code>0x800a14f8</code></th><td>observe missing-slot diagnostic</td></tr></tbody>
+</table></div>
+<p>원본 함수 구간 16개와 워드 86개를 주소·해시로 대조합니다. 시험의 정지 조건은 호출마다 1,000단계입니다.</p>
+</details>
+<pre><code>python tools/check_context_binding.py &lt;원본 fwdc603p.bin&gt; .private/main-expanded.elf --output .private/context-binding-new.json</code></pre>
+<p class="small muted"><a href="tools/check_context_binding.py">[재현 도구: 원본 교체와 두 조회 경로]</a> · <a href="tools/verify_context_binding.py">[원본 근거 검사]</a></p>
+</section>
+
+<section id="comparison">
+<h2>K-3 Mark III와 비교</h2>
+<p>K-3 Mark III 고정 커밋에서 확인한 색공간 선택·확정·취소 구조를 비교 기준으로 둡니다. Q7은 포커스 이동 때 값을 쓰고 취소 때 백업을 되돌리지만, K-3 Mark III는 확정 전 보류값을 씁니다. 이 문서의 결과는 Q7의 글자 속성과 렌더러 분기에 대한 근거입니다. K-3 Mark III의 글꼴 크기·팔레트·화면 버퍼가 Q7과 같은지는 확인하지 않았습니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680/analysis/colorspace-ui-input-evidence.json">[K-3 Mark III 입력·확정·취소]</a> · <a href="colorspace-ui-report.html#state">[Q7 값 쓰기·복원]</a></p>
+</section>
+
+<section id="limits">
+<h2>한계와 재현 방법</h2>
+<ul>
+<li>갱신 요청 기록, 속성 적용·픽셀 실행, 컨텍스트 선택은 서로 분리된 시험입니다. 갱신부터 픽셀까지 이어진 실행, 메뉴 전체 합성, 실제 팔레트, 화면 전송, DMA, 카메라 실행은 확인하지 않았습니다.</li>
+<li>축소 실행이 다룬 것은 글자 네 개, 가로 축소, 세로 1:1, 시작점 하나, 투명 모드 하나입니다.</li>
+<li>글꼴 매체와 FileX 호출, 메모리 할당, 캐시, 진단은 아래 목록의 모델입니다. 컨텍스트와 이어받은 팔레트 슬롯도 시험 입력입니다.</li>
+<li>컨텍스트 선택 시험은 정상 교대 분기(<code>0x80c6aea1</code>의 값 0)를 따랐습니다. 표시 자원 잠금, 캐시, 표시 요청, GDI 설정 함수와 글리프 본문, 빈 슬롯 진단은 모델입니다.</li>
+</ul>
+<div class="callout fix"><strong class="label">정정</strong>
+<p>모델 목록의 <code>0x800ec08c</code>는 진단 함수가 아니라 <code>I43_SetParam</code>입니다. 갱신 요청 기록 시험은 그 호출에서 0을 돌려주므로 매개변수 <code>0x1bc</code>의 활성 그리기 컨텍스트 선택을 실행하지 않습니다. 기존 요청·픽셀 결과는 그대로이며, 그 선택은 <a href="#binding">위 절</a>의 별도 시험에서 원본 코드로 실행했습니다.</p></div>
+<details class="evidence"><summary>모델로 대체한 경계</summary>
+<div class="table-wrap"><table class="compact">
+<caption>단계별로 모델이 대신한 호출</caption>
+<thead><tr><th>단계</th><th>주소</th><th>모델이 하는 일 (원문)</th></tr></thead>
+<tbody><tr><th scope="row">갱신 요청 기록</th><td><code>0x800ee804</code></td><td>Allocate zeroed synthetic GUI heap at the requested size.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80433354</code></td><td>Bypass mode-entry DataHelper_UpdateUserData / arrange-mode display update. This call&#x27;s effects are outside the replay.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80adfeb8</code></td><td>Accept initial UI-start request only. Refreshes execute the original SendRequest.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125c24</code></td><td>Accept the UI start wakeup without an RTOS thread.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x809dc650</code></td><td>Accept capture-thread notification. For mode requests the harness observes the original record and clears it as the receiver would consume it.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8024df84</code></td><td>Observe DCF API boundary after the original prefix-selection routines, without touching media.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125d0c</code></td><td>Capture the original 16-byte queue send record and retain it in the fixture.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125cec</code></td><td>Deliver that exact record once to the native consumer.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125be0</code></td><td>Accept the outer RTOS event wait.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125f14</code></td><td>Accept platform mutex lock.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125f98</code></td><td>Accept platform mutex unlock.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80126090</code></td><td>Accept UI service semaphore acquisition.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x801260b0</code></td><td>Accept UI service semaphore release if reached.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x801049c4</code></td><td>Return 3 to bypass the unrelated factory-error overlay.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8043937c</code></td><td>Observe OSD clear without clearing a real screen.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8024bf9c</code></td><td>Record native attribute parameters before display-context setters.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8043eb54</code></td><td>Record line geometry and palette parameters before shape rasterization.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8043f42c</code></td><td>Record icon commands during refresh. Restore native implementation for the two isolated marker draws.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8024928c</code></td><td>Copy and hash staged text parameters at AppDBTextOutByBufferID before GDI glyph execution.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x802495d8</code></td><td>Reject an unexpected aligned-text branch in these mode 0x53 fixtures.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80262fd4</code></td><td>Return synthetic indexed draw RAM metadata for native roll and isolated marker draws.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x800b3d40</code></td><td>Record cache-region address and size without CPU cache operations.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8029ef58</code></td><td>Record native show-buffer request before downstream display-context submission.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x800ec08c</code></td><td>Return 0 at I43_SetParam after the show-buffer request; skip parameter 0x1bc active draw-context selection.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x8000bf28</code></td><td>Return zeroed synthetic allocations for one display context and one bitmap.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x80262fd4</code></td><td>Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x800b3d40</code></td><td>Record cache address/length and return0 without CPU cache operations.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80240e2c</code></td><td>Return a synthetic media pointer for the observed drive selector.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8007d180</code></td><td>Supply the verified FAT file size at the stat boundary.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8000bf28</code></td><td>After raster setup, allocate the synthetic FileX control block or font buffer.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80074334</code></td><td>Accept the normalized font path at FileX open.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80071a10</code></td><td>Supply the full verified font bytes and return success at FileX read.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8007c258</code></td><td>Accept FileX close for the modeled file.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8000c598</code></td><td>Record release of the FileX control block without allocator effects.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x800a14f8</code></td><td>Record a diagnostic call without emitting text.</td></tr></tbody>
+</table></div>
+</details>
+<p>원본 71워드와 주소로 지정한 함수 후보 구간 12개(<code>ResourceString_DrawStringChangeColor</code>, <code>ResourceString_DrawString</code>, <code>ResourceString_SetFontSize</code>, <code>ScreenOsdLayer_SetTextColor</code>, <code>ScreenOsdLayer_SetAttribute</code>, <code>I43_SetOSDDisplayAttr</code>, <code>AppOsdSetAttributeByBufferID</code>, <code>GdiSetTextSize</code>, <code>GdiSetTextCharacterExtra</code>, <code>GdiSetTextColor</code>, <code>FntDrawTextEx</code>, <code>StretchBlitFont</code>), 앞선 갱신·글꼴·“sRGB” 글자 연결을 대조했습니다. 구간은 다음 복원 심볼 주소까지이며 해시는 후보 구간을 기준으로 합니다. 선택한 명령어·해시·도구만 공개하며 원본 글꼴과 픽셀 데이터는 포함하지 않습니다. <a href="tools/verify_glyph.py">[근거 검사: verify_attributes]</a> · <a href="tests/test_colorspace_glyph.py">[분기·별칭 변조와 절반 간격 검사]</a></p>
+<pre><code>python tools/check_colorspace_attributes.py &lt;원본 fwdc603p.bin&gt; .private/main-expanded.elf --output .private/attributes-new.json
+python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="analysis/colorspace-attributes.json">analysis/colorspace-attributes.json</a> — 갱신 요청 기록, 속성 분기, 렌더러 대조, 축소 그리기 결과, 모델 경계</li>
+<li><a href="tools/check_colorspace_attributes.py">tools/check_colorspace_attributes.py</a> — 원본 코드로 다시 실행하는 도구</li>
+<li><a href="analysis/context-binding.json">analysis/context-binding.json</a> — 버퍼 교대와 활성 컨텍스트 선택의 고정 주소, 세 사례, 한계</li>
+<li><a href="tools/check_context_binding.py">tools/check_context_binding.py</a> · <a href="tools/verify_context_binding.py">tools/verify_context_binding.py</a> — 컨텍스트 선택 재실행과 근거 검사</li>
+<li><a href="analysis/colorspace-glyph.json">analysis/colorspace-glyph.json</a> — 글꼴 파일과 기본 크기 글자 시험의 근거</li>
+<li><a href="analysis/hq-status.json">analysis/hq-status.json</a> — 연구 목표별 상태 기록</li>
+<li><a href="https://en.wikipedia.org/wiki/Q_(number_format)">Wikipedia: Q (number format)</a> — Q16 같은 고정소수점 표기의 일반 설명</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html" aria-current="page">48×48 요청과 컨텍스트 선택</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-glyph-report.html"><small>← 이전</small>글꼴 로딩과 글리프 픽셀</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
