@@ -1,0 +1,425 @@
+{
+  "schema": "q7-dcp-interpolation-public-v1",
+  "observations": {
+    "schema": "Q7-DCP-INTERPOLATION-29-v1",
+    "sources": {
+      "source_manifest_sha256": "e19c30fbbd3950372893d31755b13bbc6da7c6800002d9eacc472be70570cc5b",
+      "sdk_zip_sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1",
+      "source_files_verified": 8
+    },
+    "dcp": {
+      "sha256": "83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff",
+      "bytes": 120686,
+      "encoding_tags_present": {
+        "ProfileHueSatMapEncoding": false,
+        "ProfileLookTableEncoding": false
+      },
+      "sdk_default_encoding": {
+        "name": "encoding_Linear",
+        "value": 0
+      },
+      "tables": {
+        "ProfileHueSatMapData1": {
+          "dimensions_hsv": [
+            90,
+            30,
+            1
+          ],
+          "nodes": 2700,
+          "hue_shift_degrees": {
+            "min": -29.45383071899414,
+            "max": 9.928611755371094
+          },
+          "saturation_scale": {
+            "min": 0.807917058467865,
+            "max": 1.9124749898910522
+          },
+          "value_scale": {
+            "min": 0.7705379128456116,
+            "max": 1.548568606376648
+          },
+          "zero_saturation_nodes": 90,
+          "zero_saturation_value_all_one": true,
+          "identity_nodes": 34,
+          "nonnegative_scales": true
+        },
+        "ProfileHueSatMapData2": {
+          "dimensions_hsv": [
+            90,
+            30,
+            1
+          ],
+          "nodes": 2700,
+          "hue_shift_degrees": {
+            "min": -27.79634666442871,
+            "max": 13.773072242736816
+          },
+          "saturation_scale": {
+            "min": 0.7359523773193359,
+            "max": 1.6407946348190308
+          },
+          "value_scale": {
+            "min": 0.7055674195289612,
+            "max": 1.3937208652496338
+          },
+          "zero_saturation_nodes": 90,
+          "zero_saturation_value_all_one": true,
+          "identity_nodes": 34,
+          "nonnegative_scales": true
+        },
+        "ProfileLookTableData": {
+          "dimensions_hsv": [
+            36,
+            8,
+            16
+          ],
+          "nodes": 4608,
+          "hue_shift_degrees": {
+            "min": -18.484411239624023,
+            "max": 18.484397888183594
+          },
+          "saturation_scale": {
+            "min": 0.87861567735672,
+            "max": 1.0
+          },
+          "value_scale": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "zero_saturation_nodes": 576,
+          "zero_saturation_value_all_one": true,
+          "identity_nodes": 1471,
+          "nonnegative_scales": true
+        }
+      }
+    },
+    "parser_sha256_lf": "83c9ea9d745a4ac12bba4164ff729aeb8e64bdd3783e8575727251758ee3a7e7",
+    "q7_28_helper_sha256_lf": "059b7cda016c0015cc364696a82fd624c15fcb8acbc1858684cd40206dcf678e",
+    "probes": [
+      {
+        "table": "ProfileHueSatMapData1",
+        "input_hsv_degrees": [
+          123.4,
+          0.456,
+          0.321
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -23.847534370422366,
+          1.5081260947704314,
+          1.1804419894695282
+        ],
+        "derived_output_hsv_degrees": [
+          99.55246562957764,
+          0.6877054992153168,
+          0.37892187861971854
+        ],
+        "decimal_reference_max_abs_error": 3.552713678800501e-15
+      },
+      {
+        "table": "ProfileHueSatMapData1",
+        "input_hsv_degrees": [
+          359.9,
+          0.51,
+          0.63
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -10.761270141601578,
+          1.1264950082302096,
+          0.8830167864710093
+        ],
+        "derived_output_hsv_degrees": [
+          349.1387298583984,
+          0.5745124541974069,
+          0.5563005754767358
+        ],
+        "decimal_reference_max_abs_error": 1.5987211554602254e-14
+      },
+      {
+        "table": "ProfileHueSatMapData1",
+        "input_hsv_degrees": [
+          0.1,
+          0.51,
+          0.63
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -10.61606790304184,
+          1.123703344911337,
+          0.8831269677728414
+        ],
+        "derived_output_hsv_degrees": [
+          349.48393209695814,
+          0.5730887059047819,
+          0.5563699896968901
+        ],
+        "decimal_reference_max_abs_error": 1.1102230246251565e-16
+      },
+      {
+        "table": "ProfileHueSatMapData1",
+        "input_hsv_degrees": [
+          287.3,
+          0.999,
+          0.91
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -15.14519405364991,
+          1.0008261019945144,
+          1.5360278223603965
+        ],
+        "derived_output_hsv_degrees": [
+          272.1548059463501,
+          0.9998252758925199,
+          1.0
+        ],
+        "decimal_reference_max_abs_error": 7.105427357601002e-15
+      },
+      {
+        "table": "ProfileHueSatMapData1",
+        "input_hsv_degrees": [
+          47.2,
+          0.123,
+          0.007
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          9.485472855758667,
+          1.3613331479072572,
+          0.9891490082383156
+        ],
+        "derived_output_hsv_degrees": [
+          56.68547285575867,
+          0.16744397719259263,
+          0.00692404305766821
+        ],
+        "decimal_reference_max_abs_error": 2.220446049250313e-16
+      },
+      {
+        "table": "ProfileHueSatMapData2",
+        "input_hsv_degrees": [
+          123.4,
+          0.456,
+          0.321
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -22.283747769927984,
+          1.3275652919769287,
+          1.1717979175567628
+        ],
+        "derived_output_hsv_degrees": [
+          101.11625223007202,
+          0.6053697731414796,
+          0.3761471315357209
+        ],
+        "decimal_reference_max_abs_error": 7.105427357601002e-15
+      },
+      {
+        "table": "ProfileHueSatMapData2",
+        "input_hsv_degrees": [
+          359.9,
+          0.51,
+          0.63
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -7.45560144662859,
+          0.9476865363121033,
+          0.8548394854515791
+        ],
+        "derived_output_hsv_degrees": [
+          352.4443985533714,
+          0.4833201335191727,
+          0.5385488758344948
+        ],
+        "decimal_reference_max_abs_error": 1.9539925233402755e-14
+      },
+      {
+        "table": "ProfileHueSatMapData2",
+        "input_hsv_degrees": [
+          0.1,
+          0.51,
+          0.63
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -7.279200468063355,
+          0.9447375682890415,
+          0.8551127409040927
+        ],
+        "derived_output_hsv_degrees": [
+          352.82079953193664,
+          0.4818161598274112,
+          0.5387210267695784
+        ],
+        "decimal_reference_max_abs_error": 1.1102230246251565e-16
+      },
+      {
+        "table": "ProfileHueSatMapData2",
+        "input_hsv_degrees": [
+          287.3,
+          0.999,
+          0.91
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -13.437679052352912,
+          1.0008930269688368,
+          1.2548122366160155
+        ],
+        "derived_output_hsv_degrees": [
+          273.8623209476471,
+          0.9998921339418679,
+          1.0
+        ],
+        "decimal_reference_max_abs_error": 7.105427357601002e-15
+      },
+      {
+        "table": "ProfileHueSatMapData2",
+        "input_hsv_degrees": [
+          47.2,
+          0.123,
+          0.007
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          13.337935832977298,
+          1.177167742395401,
+          1.0005070568442345
+        ],
+        "derived_output_hsv_degrees": [
+          60.5379358329773,
+          0.14479163231463432,
+          0.007003549397909641
+        ],
+        "decimal_reference_max_abs_error": 3.552713678800501e-15
+      },
+      {
+        "table": "ProfileLookTableData",
+        "input_hsv_degrees": [
+          123.4,
+          0.456,
+          0.321
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          0.7618009032897987,
+          0.9998825507164002,
+          1.0
+        ],
+        "derived_output_hsv_degrees": [
+          124.1618009032898,
+          0.4559464431266785,
+          0.321
+        ],
+        "decimal_reference_max_abs_error": 3.774758283725532e-15
+      },
+      {
+        "table": "ProfileLookTableData",
+        "input_hsv_degrees": [
+          359.9,
+          0.51,
+          0.63
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -0.04468807339667385,
+          1.0,
+          1.0
+        ],
+        "derived_output_hsv_degrees": [
+          359.8553119266033,
+          0.51,
+          0.63
+        ],
+        "decimal_reference_max_abs_error": 8.88872309090516e-15
+      },
+      {
+        "table": "ProfileLookTableData",
+        "input_hsv_degrees": [
+          0.1,
+          0.51,
+          0.63
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          0.03279094742059708,
+          1.0,
+          1.0
+        ],
+        "derived_output_hsv_degrees": [
+          0.13279094742059708,
+          0.51,
+          0.63
+        ],
+        "decimal_reference_max_abs_error": 0.0
+      },
+      {
+        "table": "ProfileLookTableData",
+        "input_hsv_degrees": [
+          287.3,
+          0.999,
+          0.91
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          0.0,
+          1.0,
+          1.0
+        ],
+        "derived_output_hsv_degrees": [
+          287.3,
+          0.999,
+          0.91
+        ],
+        "decimal_reference_max_abs_error": 0.0
+      },
+      {
+        "table": "ProfileLookTableData",
+        "input_hsv_degrees": [
+          47.2,
+          0.123,
+          0.007
+        ],
+        "weighted_coefficients_degrees_scale_scale": [
+          -0.008832016957439483,
+          0.8954880982041359,
+          1.0
+        ],
+        "derived_output_hsv_degrees": [
+          47.19116798304256,
+          0.11014503607910871,
+          0.007
+        ],
+        "decimal_reference_max_abs_error": 1.734723475976807e-18
+      }
+    ],
+    "probe_count": 15,
+    "independent_reference_max_abs_error": 1.9539925233402755e-14,
+    "scope": {
+      "input": "synthetic normalized SDR HSV at each LUT input; H degrees in [0,360), S,V in [0,1]",
+      "math": "Python binary64 direct interpolation versus 50-digit Decimal full-lattice weights",
+      "encoding": 0,
+      "support_overrange": false,
+      "map1_map2": "sampled independently; no white-temperature blend applied",
+      "table_node_values_exported": false,
+      "whole_LUT_or_matrix_exported": false,
+      "native_SDK_executed": false,
+      "RAW_or_Lightroom_rendered": false,
+      "firmware_executed": false,
+      "native_real32_bit_exact_claim": false,
+      "full_render_or_camera_color_equivalence_claim": false
+    }
+  },
+  "_publication": {
+    "task": "Q7-DCP-INTERPOLATION-PUBLIC-30",
+    "research_observations_raw_sha256": "f95afd00938e66fd9cc64296174257473d4415d7e7e3243d115aae9bb3c6fbf1",
+    "research_observations_typed_canonical_sha256": "87831a2abf58d06c7029b96475939322533fb395a1abfc637fe269ca853094a1",
+    "research_code_sha256": {
+      "replay.py": "a5f66446b0cee00cc1e049b086c972dcdd150419a8fb24a99e7b2d038a41f100",
+      "interpolate.py": "e0e5a2fa7128c3b270373553d5d48f707019a6c39c4c8bff97b65f4551a39a70",
+      "reference.py": "5c6943589849524d1081eb2d94418234ad70fc91c11d7e2305872f7af8edbe13"
+    },
+    "public_checker_sha256_lf": "89541a034b910dbf2f90bc15fa1312cea0c102f0493e1c91e2c4a7b695aa545f",
+    "public_math_sha256_lf": "f2b2490dc09b82aa1e0ab6d029d00dab5b5f9b0b2eb52e956c64ec1349a48fc8",
+    "public_source_pins_sha256_lf": "eda6fcaf128f8f67e021c496f326538fc36acd2443fa758baf07597e8f671808",
+    "current_public_structure_helper_sha256_lf": "c62f899abbbdf82ec7f186ce885bc1b5d4317d2cbc4686433edf5c5296df3765",
+    "external_parser_sha256_lf": "83c9ea9d745a4ac12bba4164ff729aeb8e64bdd3783e8575727251758ee3a7e7",
+    "historical_fields_preserved_without_reobserving_original_environment": [
+      "sources",
+      "q7_28_helper_sha256_lf",
+      "scope"
+    ],
+    "numeric_contract": "Python binary64 versus Decimal 50 digits; no SDK real32 bit-identity or Lightroom equivalence",
+    "source_contract": "selected 8 members of exact supplied SDK ZIP; no extraction or original local SDK checkout required",
+    "output_contract": "lexists before inputs and immediately before xb; no general concurrent-path-race guarantee"
+  }
+}

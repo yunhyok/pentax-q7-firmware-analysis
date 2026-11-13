@@ -31,13 +31,14 @@ from build_routing_report import main as build_routing
 from build_task_report import main as build_task
 from build_update_service_report import main as build_update_service
 from build_q7_dcp_report import main as build_q7_dcp
+from build_q7_dcp_interpolation_report import main as build_q7_dcp_interpolation
 from site_chrome import main as refresh_navigation
 
 BUILDERS = (
     build_index, build_structure, build_deep, build_routing, build_pixel, build_final, build_control, build_task,
     build_implementation, build_foundation, build_colorspace, build_numeric, build_lifecycle, build_af,
     build_loader, build_render, build_burn, build_raster, build_glyph, build_attributes,
-    build_update_service, build_main_burn, build_nand_headers, build_nand_boot_read, build_nand_context, build_nand_filex, build_q7_dcp,
+    build_update_service, build_main_burn, build_nand_headers, build_nand_boot_read, build_nand_context, build_nand_filex, build_q7_dcp, build_q7_dcp_interpolation,
 )
 
 

@@ -1,0 +1,182 @@
+{
+  "schema": "q7-dcp-interpolation-source-pins-v1",
+  "sdk_zip": {
+    "bytes": 80509918,
+    "sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1"
+  },
+  "historical_research_source_manifest_sha256": "e19c30fbbd3950372893d31755b13bbc6da7c6800002d9eacc472be70570cc5b",
+  "historical_sdk75_recipe_sha256": "e302fad6da65065323d62ea622aa10493b68832691da0809a8593981a278bf2d",
+  "history_note": "local_matches_archive and recipe_compile_pin_matches preserve research-29 observations; public replay verifies these selected members directly in the supplied pinned ZIP, without requiring the old checkout.",
+  "sources": [
+    {
+      "file": "dng_reference.cpp",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_reference.cpp",
+      "bytes": 80303,
+      "sha256": "912afda9ed871fe50ff0037a1be3361d37c1b8ee1230b907eed36d7512c422b6",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": true,
+      "spans": [
+        {
+          "first_line": 1508,
+          "last_line": 1762,
+          "sha256": "926cff965a23b53bf7f3c5df578e3f961db2e1aeaf73c92306702385634d9cdc"
+        }
+      ]
+    },
+    {
+      "file": "dng_hue_sat_map.cpp",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_hue_sat_map.cpp",
+      "bytes": 11832,
+      "sha256": "7bdb0661575cfe6294e89c9305b2bddc10f9a4288930b8e29c66e3c65cf356e6",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": true,
+      "spans": [
+        {
+          "first_line": 99,
+          "last_line": 140,
+          "sha256": "93b06c6de1b97229fd0c51bdca82c6b2f9e1cd772881431d0155971a24eaf9e2"
+        },
+        {
+          "first_line": 179,
+          "last_line": 252,
+          "sha256": "9a25ac849ed254fc737c321d028f9804bd4636ccdfc5df3369037346fbc97ec0"
+        }
+      ]
+    },
+    {
+      "file": "dng_camera_profile.cpp",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_camera_profile.cpp",
+      "bytes": 46511,
+      "sha256": "988d3d9531ddfefd0faa0b6b4ebf85276a872a55b1956fd2bb964f89c1dd801f",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": true,
+      "spans": [
+        {
+          "first_line": 91,
+          "last_line": 125,
+          "sha256": "314aca491c4be48171936192f7f71ec944c67ed9aaab585b9c5526dc1986e697"
+        },
+        {
+          "first_line": 1467,
+          "last_line": 1502,
+          "sha256": "cd8627708d3db52189bc3bda1769dcdc0d492074045331c3352e9826e61a9cdf"
+        },
+        {
+          "first_line": 1600,
+          "last_line": 1701,
+          "sha256": "f57276c77333124b64c81fab86540e15cd9be31c307cf44245196b705b02003d"
+        },
+        {
+          "first_line": 1734,
+          "last_line": 1736,
+          "sha256": "d1c6479d555d10675897f20a184c893d45ec2b11b3c050ff6a929ab7ce18c5b2"
+        },
+        {
+          "first_line": 1861,
+          "last_line": 1974,
+          "sha256": "8fc26274d22fd2b09f47e2140c47ecaceaca8e203fa09d283599052cf3ac730c"
+        },
+        {
+          "first_line": 2366,
+          "last_line": 2419,
+          "sha256": "b5c57aa4985638065cdd47b6787d17cf4b8e6d729994f709b9bf16d917f1854b"
+        }
+      ]
+    },
+    {
+      "file": "dng_shared.cpp",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_shared.cpp",
+      "bytes": 81025,
+      "sha256": "d0a574d1e9f69379645c95c29b6a8148f3aca19568174608f769ce964a84bb3f",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": true,
+      "spans": [
+        {
+          "first_line": 72,
+          "last_line": 140,
+          "sha256": "cc981d6d9260daca936cb3a626dae8faab942ecb1e31de4c40a65120059562ab"
+        },
+        {
+          "first_line": 992,
+          "last_line": 1032,
+          "sha256": "4c4c849697083073ae7c882bf29a6b9d28e8979cea6c834dbb20beed19950edc"
+        },
+        {
+          "first_line": 1124,
+          "last_line": 1164,
+          "sha256": "c23fa3ac2ba58952ba5c4a5df7dc10f2e2a81d39c39c24d203c89161b0174b60"
+        }
+      ]
+    },
+    {
+      "file": "dng_tag_values.h",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_tag_values.h",
+      "bytes": 12945,
+      "sha256": "e6b5e7157c7e7e2a3867c3dd1b51d7d0ed7ae3a762734e26d9e0455fc3d07bdb",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": null,
+      "spans": [
+        {
+          "first_line": 385,
+          "last_line": 394,
+          "sha256": "4ab1119a1df5fa2560d2d06d50d06079296227c746b5e3627f9d155e7f699ff9"
+        }
+      ]
+    },
+    {
+      "file": "dng_utils.h",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_utils.h",
+      "bytes": 31644,
+      "sha256": "0eb910dd59b46928d5fee734a0cc096eb1a99bab8594d6d2fec77ae0d6fb11e9",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": null,
+      "spans": [
+        {
+          "first_line": 862,
+          "last_line": 909,
+          "sha256": "1fa7e34e0188f4c10cfa53e6b428b15e514cdf8383b5086267549eb46b510ac8"
+        },
+        {
+          "first_line": 941,
+          "last_line": 999,
+          "sha256": "93ef278914f5f003e0c4306e1f47e57796a4e84243b7cd34e00e58f11aac7b9e"
+        }
+      ]
+    },
+    {
+      "file": "dng_render.cpp",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_render.cpp",
+      "bytes": 62319,
+      "sha256": "e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": true,
+      "spans": [
+        {
+          "first_line": 925,
+          "last_line": 1002,
+          "sha256": "da30f5fc9adad734e16316308c455ce8ffc9754e81364d0dc78477bcd48d1314"
+        },
+        {
+          "first_line": 1862,
+          "last_line": 2030,
+          "sha256": "85411f7e829dd7e048f031dfcbc32deb7af46ba36e6f8b4efd338c843800a174"
+        }
+      ]
+    },
+    {
+      "file": "dng_color_spec.cpp",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_color_spec.cpp",
+      "bytes": 15661,
+      "sha256": "6fb9ab59dcbdae9cb27a893c67810416ba7b2651a537673caa7d728d16d7ec0a",
+      "local_matches_archive": true,
+      "recipe_compile_pin_matches": true,
+      "spans": [
+        {
+          "first_line": 530,
+          "last_line": 609,
+          "sha256": "cf4a64d554440335573aaa8144a8e9bcc8ddf9f2d34952e06e923f21e8626d45"
+        }
+      ]
+    }
+  ]
+}
