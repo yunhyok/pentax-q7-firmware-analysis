@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>화면·글꼴 안내 — PENTAX Q7 펌웨어 연구</title>
-<meta name="description" content="Q7이 메뉴 화면 하나(촬영 설정의 Color Space)를 그리는 과정을 메뉴 동작, 갱신 요청, 그리기 컨텍스트와 글자 크기, 글꼴과 2비트 글리프, 8비트 인덱스 버퍼까지 다섯 문서로 따라간 기록의 지도입니다. 어디까지 확인했고 어디서 끊기는지 정리했습니다.">
+<meta name="description" content="Q7이 메뉴 화면 하나(촬영 설정의 Color Space)를 그리는 과정을 메뉴 동작, 갱신 요청, 그리기 컨텍스트와 글자 크기, 글꼴과 2비트 글리프, 8비트 인덱스 버퍼, 화면 가장자리 처리까지 여섯 문서로 따라간 기록의 지도입니다. 어디까지 확인했고 어디서 끊기는지 정리했습니다.">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-camera="q7">
@@ -16,7 +16,7 @@
 <header class="page-head">
 <p class="eyebrow">화면과 글꼴 · 주제 안내</p>
 <h1>화면·글꼴 안내</h1>
-<p class="lead">카메라 메뉴는 버튼 입력을 받아 설정값을 바꾸고, 바뀐 화면을 글자·도형·아이콘 픽셀로 다시 그립니다. 이 주제는 Q7의 색공간(Color Space) 선택 화면 하나를 골라 그 전 과정을 펌웨어 원본 코드로 따라간 기록입니다.</p>
+<p class="lead">카메라 메뉴는 버튼 입력을 받아 설정값을 바꾼 뒤 바뀐 화면을 글자·도형·아이콘 픽셀로 다시 그립니다. 이 주제는 Q7의 색공간(Color Space) 선택 화면 하나를 골라 그 전 과정을 펌웨어 원본 코드로 따라간 기록입니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
@@ -28,21 +28,21 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>대상은 커스텀 설정 C3 메뉴의 “13. Color Space” 화면입니다. 선택지가 sRGB·AdobeRGB 둘뿐이고 세 기종 모두에 있어, K-3 Mark III 저장소의 UI 이식 연구가 첫 비교 단위로 고른 화면입니다.</li>
-<li>Q7은 선택지를 옮기는 <strong>즉시 설정 RAM에 기록</strong>하고, 취소하면 열 때 저장해 둔 값으로 되돌립니다. 이 동작과 화면 갱신 요청, 강조 사각형·선택 아이콘·글자의 픽셀 쓰기를 원본 MIPS 코드를 PC에서 실행해 확인했습니다.</li>
-<li>화면 버퍼는 픽셀당 1바이트의 <strong>팔레트 번호</strong>를 담습니다. 글꼴은 픽셀당 2비트이고, 메뉴 글자는 48×48 크기 요청에 따라 가로로 축소돼 그려집니다.</li>
+<li>Q7은 선택지를 옮기는 <strong>즉시 설정 RAM에 기록</strong>합니다. 취소하면 열 때 저장해 둔 값으로 되돌립니다. 이 동작과 화면 갱신 요청, 강조 사각형·선택 아이콘·글자의 픽셀 쓰기를 원본 MIPS 코드를 PC에서 실행해 확인했습니다.</li>
+<li>화면 버퍼는 픽셀당 1바이트의 <strong>팔레트 번호</strong>를 담습니다. 글꼴은 픽셀당 2비트이며 메뉴 글자는 48×48 크기 요청에 따라 가로로 축소돼 그려집니다. 글자가 화면 가장자리에 걸치면 원본 코드는 행 시작 주소부터 검사하므로, 첫 행에 걸친 보이는 픽셀도 건너뜁니다.</li>
 <li>각 단계는 따로 만든 시험 조건에서 확인했습니다. 버튼에서 화면까지 한 번에 이어진 실행, 실제 팔레트 색, 화면 전송(DMA), LCD 출력은 <strong>확인하지 않았습니다</strong>.</li>
 </ul>
 </section>
 
 <section id="map">
 <h2>한눈에 보기</h2>
-<p class="takeaway">메뉴 화면 하나는 여섯 단계를 거쳐 화면에 나갑니다. 다섯 단계는 원본 코드로 확인했고, 팔레트·DMA·LCD 단계에서 확인된 지식이 끝납니다.</p>
+<p class="takeaway">메뉴 화면 하나는 여섯 단계를 거쳐 화면에 나갑니다. 다섯 단계와 가장자리 처리는 원본 코드로 확인했습니다. 확인된 지식은 팔레트·DMA·LCD 단계 앞에서 끝납니다.</p>
 <figure class="diagram">
 <figcaption>색공간 화면이 그려지는 단계와 각 단계를 다룬 문서</figcaption>
 <div class="dg-scroll">
-<svg class="dg" viewBox="0 0 800 660" role="img" aria-labelledby="dg-guide-map-title dg-guide-map-desc">
+<svg class="dg" viewBox="0 0 800 750" role="img" aria-labelledby="dg-guide-map-title dg-guide-map-desc">
 <title id="dg-guide-map-title">Q7 메뉴 화면을 그리는 단계와 검증 범위</title>
-<desc id="dg-guide-map-desc">위에서 아래로 단계가 이어집니다. 맨 위 물리 버튼에서 화면 이벤트까지는 미확인입니다. 1단계 메뉴 동작: 선택 즉시 설정 RAM에 기록하고 확정은 유지, 취소는 복원합니다. 문서 1이 다룹니다. 2단계 갱신 요청: 큐를 거친 갱신이 글자 줄, 강조 사각형, 아이콘, 글자 크기 요청을 냅니다. 문서 2가 다룹니다. 3단계 그리기 컨텍스트와 글자 크기: 48×48 요청이 축소 렌더러를 고르고, 버퍼 교대가 활성 컨텍스트를 바꿉니다. 문서 5가 다룹니다. 4단계 글꼴과 2비트 글리프: 펌웨어 속 글꼴 파일을 원본 로더가 읽고 2비트 코드를 팔레트 번호로 바꿉니다. 문서 4가 다룹니다. 5단계 8비트 인덱스 버퍼: 강조 사각형, 선택 아이콘, 글자가 합성 버퍼에 팔레트 번호로 쓰입니다. 문서 3, 4, 2가 다룹니다. 여기서 확인된 지식이 끝납니다. 6단계 팔레트 번호를 RGB로 바꾸고 DMA로 LCD에 보내는 단계는 미확인입니다.</desc>
+<desc id="dg-guide-map-desc">위에서 아래로 단계가 이어집니다. 맨 위 물리 버튼에서 화면 이벤트까지는 미확인입니다. 1단계 메뉴 동작: 선택 즉시 설정 RAM에 기록하고 확정은 유지, 취소는 복원합니다. 문서 1이 다룹니다. 2단계 갱신 요청: 큐를 거친 갱신이 글자 줄, 강조 사각형, 아이콘, 글자 크기 요청을 냅니다. 문서 2가 다룹니다. 3단계 그리기 컨텍스트와 글자 크기: 48×48 요청이 축소 렌더러를 고르고, 버퍼 교대가 활성 컨텍스트를 바꿉니다. 문서 5가 다룹니다. 4단계 글꼴과 2비트 글리프: 펌웨어 속 글꼴 파일을 원본 로더가 읽고 2비트 코드를 팔레트 번호로 바꿉니다. 문서 4가 다룹니다. 그 아래 가장자리 처리 단계: 글자가 화면 밖에 걸치면 행 시작 주소를 먼저 검사하므로 첫 행에 걸친 보이는 픽셀 8개도 그리지 않습니다. 문서 6이 다룹니다. 5단계 8비트 인덱스 버퍼: 강조 사각형, 선택 아이콘, 글자가 합성 버퍼에 팔레트 번호로 쓰입니다. 문서 3, 4, 2가 다룹니다. 여기서 확인된 지식이 끝납니다. 6단계 팔레트 번호를 RGB로 바꾸고 DMA로 LCD에 보내는 단계는 미확인입니다.</desc>
 <defs>
 <marker id="dg-guide-map-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 <marker id="dg-guide-map-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
@@ -91,35 +91,45 @@
 <text class="t" x="632" y="394">④ 글꼴·글리프</text>
 <text class="s" x="632" y="418">“sRGB” 4글자</text></a>
 
-<rect class="b key" x="8" y="456" width="292" height="70" rx="8"/>
-<text class="t" x="20" y="484">5. 8비트 인덱스 버퍼</text>
-<text class="s" x="20" y="508">픽셀당 팔레트 번호 1바이트</text>
-<text class="s" x="320" y="484">강조·아이콘·글자를 합성 버퍼에</text>
-<text class="s" x="320" y="508">쓰고 버퍼 전체를 독립 계산과 대조</text>
-<a href="colorspace-raster-report.html"><rect class="b" x="620" y="456" width="172" height="70" rx="8"/>
-<text class="t" x="632" y="484">③ 강조 · ④ 글자</text>
-<text class="s" x="632" y="508">② 아이콘</text></a>
+<rect class="b ok" x="8" y="456" width="292" height="70" rx="8"/>
+<text class="t" x="20" y="484">4′. 화면 가장자리 처리</text>
+<text class="s" x="20" y="508">글자가 화면 밖에 걸칠 때</text>
+<text class="s" x="320" y="484">행 시작 주소를 먼저 검사</text>
+<text class="s" x="320" y="508">첫 행에 걸치면 보이는 8픽셀도 생략</text>
+<a href="colorspace-clip-report.html"><rect class="b" x="620" y="456" width="172" height="70" rx="8"/>
+<text class="t" x="632" y="484">⑥ 가장자리 처리</text>
+<text class="s" x="632" y="508">일곱 위치</text></a>
 
-<path class="e open" d="M4 548H796"/>
-<text class="n topen" x="320" y="542">여기까지 확인 — 이 아래는 확인된 지식 밖</text>
+<rect class="b key" x="8" y="546" width="292" height="70" rx="8"/>
+<text class="t" x="20" y="574">5. 8비트 인덱스 버퍼</text>
+<text class="s" x="20" y="598">픽셀당 팔레트 번호 1바이트</text>
+<text class="s" x="320" y="574">강조·아이콘·글자를 합성 버퍼에</text>
+<text class="s" x="320" y="598">쓰고 버퍼 전체를 독립 계산과 대조</text>
+<a href="colorspace-raster-report.html"><rect class="b" x="620" y="546" width="172" height="70" rx="8"/>
+<text class="t" x="632" y="574">③ 강조 · ④ 글자</text>
+<text class="s" x="632" y="598">② 아이콘</text></a>
 
-<rect class="b open" x="8" y="566" width="292" height="70" rx="8"/>
-<text class="t" x="20" y="594">6. 팔레트 · DMA · LCD</text>
-<text class="s" x="20" y="618">번호 → RGB, 화면 전송</text>
-<text class="s topen" x="320" y="594">실제 RGB 색, 화면 등록, DMA,</text>
-<text class="s topen" x="320" y="618">LCD 출력: 미확인</text>
+<path class="e open" d="M4 638H796"/>
+<text class="n topen" x="320" y="632">여기까지 확인. 이 아래는 확인된 지식 밖</text>
+
+<rect class="b open" x="8" y="656" width="292" height="70" rx="8"/>
+<text class="t" x="20" y="684">6. 팔레트 · DMA · LCD</text>
+<text class="s" x="20" y="708">번호 → RGB, 화면 전송</text>
+<text class="s topen" x="320" y="684">실제 RGB 색, 화면 등록, DMA,</text>
+<text class="s topen" x="320" y="708">LCD 출력: 미확인</text>
 
 <path class="e open" d="M154 70V94" marker-end="url(#dg-guide-map-ao)"/>
 <path class="e" d="M154 166V184" marker-end="url(#dg-guide-map-ah)"/>
 <path class="e" d="M154 256V274" marker-end="url(#dg-guide-map-ah)"/>
 <path class="e" d="M154 346V364" marker-end="url(#dg-guide-map-ah)"/>
 <path class="e" d="M154 436V454" marker-end="url(#dg-guide-map-ah)"/>
-<path class="e open" d="M154 526V564" marker-end="url(#dg-guide-map-ao)"/>
+<path class="e" d="M154 526V544" marker-end="url(#dg-guide-map-ah)"/>
+<path class="e open" d="M154 616V654" marker-end="url(#dg-guide-map-ao)"/>
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인 (입력·버퍼는 시험 조건)</li><li><i class="key"></i>결과를 버퍼 전체로 대조한 곳</li><li><i class="open"></i>미확인</li></ul>
 </figure>
-<p>오른쪽 상자를 누르면 해당 문서로 갑니다. 번호 ①~⑤는 아래 <a href="#order">읽는 순서</a>의 번호입니다. 단계 3~5는 실제 화면 상태를 이어받지 않고, 앞 단계에서 기록한 인수를 새로 만든 시험 컨텍스트에 다시 넣어 확인했습니다. 단계 사이의 화살표는 펌웨어의 흐름이지, 한 번에 이어서 실행했다는 뜻이 아닙니다.</p>
+<p>오른쪽 상자를 누르면 해당 문서로 갑니다. 번호 ①~⑥은 아래 <a href="#order">읽는 순서</a>의 번호입니다. 단계 3~5와 가장자리 처리는 실제 화면 상태를 이어받지 않았습니다. 앞 단계에서 기록한 인수를 새로 만든 시험 컨텍스트에 다시 넣어 확인했습니다. 단계 사이의 화살표는 펌웨어의 흐름을 나타낼 뿐이며 한 번에 이어서 실행했다는 표시가 아닙니다.</p>
 </section>
 
 <section id="background">
@@ -127,20 +137,20 @@
 <p>이 주제의 문서를 읽는 데 필요한 개념만 짧게 정리합니다.</p>
 <dl class="kv">
 <dt>색공간 설정</dt><dd>JPEG에 쓸 색 범위를 sRGB와 AdobeRGB 중에서 고르는 설정입니다. Q7 설명서는 커스텀 설정 C3의 “13. Color Space”로 소개하고 기본값을 sRGB로 적습니다. AdobeRGB를 고르면 파일 이름 앞머리가 <code>IMGP</code>에서 <code>_IMG</code>로 바뀝니다. <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf#page=22">[설명서 20쪽]</a> <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf#page=68">[66쪽]</a></dd>
-<dt>위젯·캔버스·포커스</dt><dd>화면은 글자 라벨, 선택지, 아이콘 같은 부품(위젯)으로 이루어집니다. 캔버스는 위젯을 묶어 키 입력을 나눠 주고, 포커스는 지금 고르고 있는 선택지입니다.</dd>
-<dt>갱신 요청과 큐</dt><dd>상태가 바뀌어도 곧바로 칠하지 않고, UI 서비스의 큐에 “다시 그려라”를 넣습니다. 소비자가 그 메시지를 꺼내 위젯 전체를 다시 쓰고, 위젯은 글자·도형·아이콘 그리기 함수에 요청을 넘깁니다.</dd>
-<dt>그리기 컨텍스트</dt><dd>그릴 버퍼, 글자 크기·색, 그리기 함수 표를 담은 구조체입니다. 화면 버퍼마다 하나가 있고, 버퍼를 교대할 때 “활성 컨텍스트”가 바뀝니다.</dd>
-<dt>글꼴과 글리프</dt><dd>글리프는 글자 하나의 모양 데이터입니다. Q7의 라틴 글꼴은 펌웨어 속 FAT16 영역의 파일이고, 픽셀 하나를 2비트(값 0~3)로 저장합니다.</dd>
+<dt>위젯·캔버스·포커스</dt><dd>화면은 글자 라벨, 선택지, 아이콘 같은 부품(위젯)으로 이루어집니다. 캔버스는 위젯을 묶어 키 입력을 나눠 줍니다. 포커스는 지금 고르고 있는 선택지입니다.</dd>
+<dt>갱신 요청과 큐</dt><dd>상태가 바뀌어도 곧바로 칠하지 않고 UI 서비스의 큐에 “다시 그려라”를 넣습니다. 소비자가 그 메시지를 꺼내 위젯 전체를 다시 씁니다. 위젯은 글자·도형·아이콘 그리기 함수에 요청을 넘깁니다.</dd>
+<dt>그리기 컨텍스트</dt><dd>그릴 버퍼, 글자 크기·색, 그리기 함수 표를 담은 구조체입니다. 화면 버퍼마다 하나가 있으며 버퍼를 교대할 때 “활성 컨텍스트”가 바뀝니다.</dd>
+<dt>글꼴과 글리프</dt><dd>글리프는 글자 하나의 모양 데이터입니다. Q7의 라틴 글꼴은 펌웨어 속 FAT16 영역의 파일입니다. 픽셀 하나를 2비트(값 0~3)로 저장합니다.</dd>
 <dt>인덱스 컬러 버퍼와 팔레트</dt><dd>픽셀에 색을 직접 쓰지 않고 팔레트(색표)의 번호를 쓰는 방식입니다. 실제 색은 표시할 때 팔레트에서 찾습니다. Q7 메뉴 버퍼는 픽셀당 1바이트 번호를 씁니다. 팔레트의 실제 RGB 값은 확인하지 못했습니다. <a href="https://en.wikipedia.org/wiki/Indexed_color">[일반 설명: Indexed color]</a></dd>
 <dt>합성 버퍼와 논리 좌표</dt><dd>시험은 PC 메모리에 만든 버퍼(예: 736×176, 줄 간격 736바이트)에 그렸습니다. 좌표는 그리기 함수가 받은 값입니다. 이 크기와 좌표를 LCD의 화소 수로 바꿔 읽지 않습니다. Q7의 LCD는 공식 사양상 3.0인치, 약 46만 도트입니다. <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf#page=80">[설명서 78쪽]</a></dd>
 </dl>
 <div class="callout fix"><strong class="label">정정</strong>
-<p>이전 판의 문서와 근거 JSON은 메뉴 위치를 “E3”으로 적었습니다. 설명서 20쪽의 인쇄 표기는 C3입니다. PDF에서 글자를 뽑을 때 메뉴 아이콘 “C”가 “E”로 나온 결과이며, 근거 파일 안의 “E3”은 C3 메뉴를 뜻합니다.</p></div>
+<p>이전 판의 문서와 근거 JSON은 메뉴 위치를 “E3”으로 적었습니다. 설명서 20쪽의 인쇄 표기는 C3입니다. PDF에서 글자를 뽑을 때 메뉴 아이콘 “C”가 “E”로 나온 결과입니다. 근거 파일 안의 “E3”은 C3 메뉴를 뜻합니다.</p></div>
 </section>
 
 <section id="layout">
 <h2>색공간 화면의 배치 (개념도)</h2>
-<p class="takeaway">그리기 요청에 담긴 좌표만으로 화면 요소의 위치를 그려 보면, 제목·선택지 두 줄·안내문·하단 버튼 안내로 이루어진 단순한 목록 화면입니다.</p>
+<p class="takeaway">그리기 요청에 담긴 좌표만으로 화면 요소를 배치해 보았습니다. 제목·선택지 두 줄·안내문·하단 버튼 안내로 이루어진 단순한 목록 화면입니다.</p>
 <figure class="diagram">
 <figcaption>개념도: sRGB가 선택된 상태의 요청 좌표 (실제 화면 모습이 아님)</figcaption>
 <div class="dg-scroll">
@@ -205,32 +215,35 @@
 <tr><th scope="row">2비트 글리프 → 팔레트 번호, “sRGB” 기본 크기 그리기</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-glyph-report.html#pixels">④</a></td></tr>
 <tr><th scope="row">48×48 속성 요청 관측과 축소 렌더러의 프레임 전체</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-attributes-report.html#pixels">⑤ 48×48·컨텍스트</a></td></tr>
 <tr><th scope="row">등록 슬롯에 따른 활성 컨텍스트 선택</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-attributes-report.html#binding">⑤</a></td></tr>
+<tr><th scope="row">글자가 화면 가장자리에 걸칠 때의 픽셀 (일곱 위치, 행 시작 주소 우선 검사)</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-clip-report.html#cases">⑥ 가장자리 처리</a></td></tr>
 <tr><th scope="row">카메라가 실제로 할당하는 버퍼 ID와 등록 내용 (시험은 17·18)</th><td><span class="badge open">미확인</span></td><td><a href="colorspace-attributes-report.html#binding">⑤</a></td></tr>
 <tr><th scope="row">물리 버튼에서 화면 이벤트까지</th><td><span class="badge open">미확인</span></td><td><a href="colorspace-ui-report.html#validation">①</a></td></tr>
 <tr><th scope="row">설정의 영구 저장과 전원 재시작 뒤의 값</th><td><span class="badge open">미확인</span></td><td><a href="colorspace-ui-report.html#storage">①</a></td></tr>
 <tr><th scope="row">갱신부터 픽셀까지 한 번에 이어진 실행, 메뉴 전체 합성</th><td><span class="badge open">미확인</span></td><td>모든 문서</td></tr>
+<tr><th scope="row">실제 메뉴가 음수 좌표를 넘기는지, 회전·반전·세로 배율 모드의 가장자리 처리</th><td><span class="badge open">미확인</span></td><td><a href="colorspace-clip-report.html#limits">⑥</a></td></tr>
 <tr><th scope="row">다른 언어 글꼴, 배율 변경, 글꼴 범위 끝 단위</th><td><span class="badge open">미확인</span></td><td><a href="colorspace-glyph-report.html#limits">④</a></td></tr>
 <tr><th scope="row">팔레트의 실제 RGB, 화면 전송(DMA), LCD 출력</th><td><span class="badge open">미확인</span></td><td>모든 문서</td></tr>
 </tbody></table></div>
-<p>배지의 뜻은 <a href="index.html#levels">검증 수준 읽는 법</a>에 있습니다. 실물 카메라에서 실행한 실험은 없습니다.</p>
+<p>배지의 뜻은 <a href="index.html#levels">검증 수준 읽는 법</a>을 보십시오. 실물 카메라에서 실행한 실험은 없습니다.</p>
 </section>
 
 <section id="order">
 <h2>읽는 순서</h2>
-<p>메뉴 동작에서 시작해 요청, 픽셀, 크기·컨텍스트 순으로 읽으면 쉽습니다. 마지막 문서는 앞의 시험들이 깔고 있던 가정(속성과 글자가 같은 컨텍스트를 본다)을 따로 확인합니다.</p>
+<p>메뉴 동작에서 시작해 요청, 픽셀, 크기·컨텍스트 순으로 읽으면 쉽습니다. ⑤는 앞의 시험들이 깔고 있던 가정(속성과 글자가 같은 컨텍스트를 본다)을 따로 확인합니다. ⑥은 같은 축소 렌더러가 화면 가장자리를 어떻게 처리하는지 봅니다.</p>
 <ul class="cards">
-<li class="card"><span class="tag">①</span><h3><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></h3><p class="q">고르는 동안 설정값은 언제 바뀌는가?</p><p>선택 즉시 RAM에 기록하고, 확정은 유지, 취소는 백업 복원. 6개 사례, 바이트 쓰기 18회.</p></li>
+<li class="card"><span class="tag">①</span><h3><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></h3><p class="q">고르는 동안 설정값은 언제 바뀌는가?</p><p>선택 즉시 RAM에 기록. 확정은 유지, 취소는 백업 복원. 6개 사례, 바이트 쓰기 18회.</p></li>
 <li class="card"><span class="tag">②</span><h3><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></h3><p class="q">다시 그릴 때 무엇을 어디에 그리라고 요청하는가?</p><p>갱신 4회에서 글자 줄 25개, 강조 사각형 20개, 선택 아이콘 픽셀 330바이트.</p></li>
 <li class="card"><span class="tag">③</span><h3><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></h3><p class="q">강조 사각형은 버퍼에 어떻게 칠해지는가?</p><p>폭과 x에 따라 halfword 루프 또는 GDI. 7개 사례 모두 버퍼 전체 일치.</p></li>
 <li class="card"><span class="tag">④</span><h3><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></h3><p class="q">글자 모양은 어디서 와서 어떤 번호로 찍히는가?</p><p>FAT16 속 글꼴 파일, 2비트 코드 → 번호 2·1·3. “sRGB” 버퍼 전체 일치.</p></li>
 <li class="card"><span class="tag">⑤</span><h3><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></h3><p class="q">글자 크기 요청과 그리기 컨텍스트는 어떻게 연결되는가?</p><p>48×48 → 축소 렌더러, 폭 0.75배. 빈 슬롯이면 이전 컨텍스트에 머묾.</p></li>
+<li class="card"><span class="tag">⑥</span><h3><a href="colorspace-clip-report.html">색공간 글자가 화면 가장자리에 걸칠 때</a></h3><p class="q">글자가 화면 밖에 걸치면 어느 픽셀을 그리는가?</p><p>행 시작 주소를 먼저 검사. (−9, −12)에서는 보이는 8픽셀도 생략해 228번이 아닌 220번 쓰기. 일곱 위치 모두 버퍼 전체 일치.</p></li>
 </ul>
 </section>
 
 <section id="k3">
 <h2>세 기종 UI 이식 연구와의 관계</h2>
 <p class="takeaway">이 주제는 K-3 Mark III 저장소의 “화면 하나를 다른 기종으로 옮기려면 무엇을 맞춰야 하는가” 연구에서 Q7 몫을 맡습니다.</p>
-<p>K-3 Mark III 저장소의 <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/ui-port-contract.html">UI 이식 설계</a>는 세 기종이 모두 가진 색공간 화면을 첫 비교 단위로 골랐습니다. 그 설계안은 열기·선택·확정·취소의 네 동작과 확정값·보류값을 뼈대로 잡고, “선택은 보류값만 바꾸고 확정할 때 기록한다”를 제안합니다. K-3 Mark III와 K-3 II는 실제로 보류값을 거치지만, Q7은 즉시 기록·취소 복원이어서 이 제안과 다릅니다.</p>
+<p>K-3 Mark III 저장소의 <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/ui-port-contract.html">UI 이식 설계</a>는 세 기종이 모두 가진 색공간 화면을 첫 비교 단위로 골랐습니다. 그 설계안은 열기·선택·확정·취소의 네 동작과 확정값·보류값을 뼈대로 잡습니다. 그리고 “선택은 보류값만 바꾸고 확정할 때 기록한다”를 제안합니다. K-3 Mark III와 K-3 II는 실제로 보류값을 거칩니다. Q7은 즉시 기록·취소 복원이어서 이 제안과 다릅니다.</p>
 <div class="table-wrap"><table>
 <caption>UI 이식 관점에서 본 Q7 쪽 결과</caption>
 <thead><tr><th>이식 설계의 접점</th><th>Q7에서 알아낸 것</th><th>문서</th></tr></thead>
@@ -240,7 +253,7 @@
 <tr><th scope="row">픽셀 형식</th><td>픽셀당 팔레트 번호 1바이트, 0은 건너뜀(투명). K-3 Mark III의 아이콘은 32비트 값 복사로 서로 다름</td><td><a href="colorspace-raster-report.html">③</a> · <a href="colorspace-glyph-report.html#packing">④</a></td></tr>
 <tr><th scope="row">최종 출력</th><td>세 기종 모두 미확인</td><td>—</td></tr>
 </tbody></table></div>
-<p>숫자 ID, 이벤트 번호, 자원 형식, 렌더러는 기종마다 다르므로 같다고 가정하지 않습니다. 화면 코드를 그대로 복사하는 것이 아니라 같은 동작을 대상 기종의 방식으로 다시 만드는 것이 전제입니다. K-3 II 쪽 결과는 <a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/color-ui.html">K-3 II 저장소의 색공간 메뉴와 표시</a>에 있습니다.</p>
+<p>숫자 ID, 이벤트 번호, 자원 형식, 렌더러는 기종마다 다르므로 같다고 가정하지 않습니다. 전제는 화면 코드를 그대로 복사하지 않고 같은 동작을 대상 기종의 방식으로 다시 만드는 것입니다. K-3 II 쪽 결과는 <a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/color-ui.html">K-3 II 저장소의 색공간 메뉴와 표시</a>에 있습니다.</p>
 </section>
 
 <section id="refs">
@@ -251,8 +264,9 @@
 <li><a href="analysis/colorspace-raster.json">analysis/colorspace-raster.json</a> — 강조 사각형 픽셀 7개 사례</li>
 <li><a href="analysis/colorspace-glyph.json">analysis/colorspace-glyph.json</a> — 글꼴 파일과 글리프 픽셀</li>
 <li><a href="analysis/colorspace-attributes.json">analysis/colorspace-attributes.json</a> · <a href="analysis/context-binding.json">analysis/context-binding.json</a> — 글자 속성·축소 그리기, 컨텍스트 선택</li>
+<li><a href="analysis/colorspace-clip.json">analysis/colorspace-clip.json</a> — 화면 가장자리 일곱 위치의 쓰기 수와 프레임 해시</li>
 <li><a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf">PENTAX Q7 사용설명서 (리코 이미징, 영문 PDF)</a> — 20쪽 C3 메뉴의 13. Color Space, 66쪽 파일 이름 접두사, 78쪽 사양(LCD 3.0인치·약 46만 도트, 색공간 sRGB·AdobeRGB)</li>
-<li><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/ui-port-contract.html">K-3 Mark III 저장소: UI 이식 설계</a> — 세 기종 색공간 화면 비교의 본부</li>
+<li><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/ui-port-contract.html">K-3 Mark III 저장소: UI 이식 설계</a> — 세 기종 색공간 화면 비교의 기준 문서</li>
 <li><a href="https://en.wikipedia.org/wiki/Indexed_color">Wikipedia: Indexed color</a> — 팔레트 번호 방식의 일반 설명</li>
 <li><a href="glossary.html">용어집</a></li>
 </ul>
