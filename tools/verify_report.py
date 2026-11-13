@@ -53,6 +53,9 @@ from check_nand_context import validate_report as verify_nand_context
 from build_nand_filex_report import main as build_nand_filex
 from check_nand_filex import validate_report as verify_nand_filex
 
+from build_q7_dcp_report import main as build_q7_dcp
+from check_q7_dcp_structure import validate_report as verify_q7_dcp
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -205,6 +208,8 @@ def verify_deep(firmware):
     verify_html(ROOT / "reports/nand-context.html", build_nand_context)
     verify_nand_filex(read('nand-filex-checks.json'))
     verify_html(ROOT / "reports/nand-filex.html", build_nand_filex)
+    verify_q7_dcp(read("q7-dcp-structure.json"))
+    verify_html(ROOT / "reports/q7-dcp-structure.html", build_q7_dcp)
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode

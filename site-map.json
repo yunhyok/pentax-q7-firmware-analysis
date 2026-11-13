@@ -26,6 +26,7 @@
     "final-color-report.html": "analysis/final-template.html",
     "hdr-control-report.html": "analysis/control-template.html",
     "hdr-task-report.html": "analysis/task-template.html",
+    "reports/q7-dcp-structure.html": "analysis/q7-dcp-template.html",
     "af-completion-report.html": "analysis/af-template.html",
     "colorspace-ui-report.html": "analysis/colorspace-template.html",
     "colorspace-render-report.html": "analysis/render-template.html",
@@ -61,7 +62,8 @@
       {"file": "pixel-report.html", "label": "HDR 버퍼의 JPEG 경로와 색 필터"},
       {"file": "final-color-report.html", "label": "HDR 출력 선택과 FC1 계수"},
       {"file": "hdr-control-report.html", "label": "HDR 네 패스의 FC1 활성화"},
-      {"file": "hdr-task-report.html", "label": "FC1 제어 비트와 HDR task 완료"}
+      {"file": "hdr-task-report.html", "label": "FC1 제어 비트와 HDR task 완료"},
+      {"file": "reports/q7-dcp-structure.html", "label": "DCP 태그·행렬·테이블 비교"}
     ]},
     {"id": "af", "title": "AF와 렌즈 제어", "nav": "AF", "hub": "guide-af.html", "pages": [
       {"file": "guide-af.html", "label": "AF·렌즈 안내"},

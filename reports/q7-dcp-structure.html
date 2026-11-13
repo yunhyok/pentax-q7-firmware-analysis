@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pentax Q7 DCP 구조와 색 처리 범위</title>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="q7"><!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="../index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="../guide-update.html">업데이트</a><a href="../guide-color.html" aria-current="true">색·HDR</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-color.html">색 처리와 HDR</a></li><li aria-current="page">DCP 태그·행렬·테이블 비교</li></ol></nav>
+<!-- /chrome:top --><header class="page-head"><p class="eyebrow">Q7-DCP-PUBLIC-28 · Q7-27 정적 관측의 공개판</p><h1>Pentax Q7 DCP에 저장된 색 처리 요소</h1><p class="lead">상용 프로파일과 matrix-test의 태그·행렬·테이블 구조를 비교했습니다. 실제 렌더링과 펌웨어 동일성은 검증하지 않았습니다.</p></header><div class="layout"><!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#structure">1. 구조와 해석 범위</a></li><li><a href="#ranges">2. 행렬과 테이블의 수치 범위</a></li><li><a href="#tone">3. ToneCurve와 생략 태그</a></li><li><a href="#comparison">4. K-3 III 자료와 대조</a></li><li><a href="#sources">5. 근거와 재현</a></li><li><a href="#public-replay">공개판의 입력과 관측 보존</a></li><li><a href="#limits">6. 남은 과제</a></li></ol></nav>
+<!-- /chrome:toc --><main class="doc" id="main">
+<p class="eyebrow">Q7-DCP-STRUCTURE-27 · 2026-11-13 · 파일 구조 정적 분석</p>
+
+<p class="lead">Adobe Standard에는 두 ColorMatrix, 두 ForwardMatrix, 두 HueSatMap과 하나의 LookTable이 있다. 비교한 matrix-test에는 ColorMatrix 두 개만 있다. <strong>두 파일 모두 ProfileToneCurve를 저장하지 않는다.</strong></p>
+<p>확인 대상은 로컬 DCP 두 개의 바이트와 K-3 III 저장소의 기존 분석 기록이다. 아래 수치는 <a href="../analysis/q7-dcp-structure.json">재현 결과 JSON</a>에서 가져왔다. Adobe 프로파일 원본, 전체 행렬·곡선·LUT, RAW와 사진은 이 문서에 포함하지 않았다.</p>
+
+<section id="structure"><h2>1. 구조와 해석 범위</h2>
+<figure class="diagram">
+<div class="dg-scroll" role="region" tabindex="0" aria-label="DCP 구성 비교 다이어그램, 가로 스크롤 가능">
+<svg class="dg" style="min-width:800px" viewBox="0 0 960 320" role="img" aria-labelledby="structure-title structure-desc">
+<title id="structure-title">Q7 Adobe Standard와 matrix-test의 저장 요소 비교</title>
+<desc id="structure-desc">Adobe에는 ColorMatrix, ForwardMatrix, HueSatMap, LookTable이 있으며 matrix-test에는 ColorMatrix만 있다. 두 프로파일 모두 저장 ToneCurve가 없다. 연결선은 파일의 구성 관계이며 렌더링 순서를 나타내지 않는다.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+<rect class="b static" x="12" y="25" width="205" height="90" rx="8"/><text x="30" y="59">Adobe Standard</text><text x="30" y="86">120,686 bytes · 16 tags</text>
+<path class="e" d="M217 70H250M250 45V145M250 45H283M250 145H283"/>
+<rect class="b static" x="283" y="15" width="296" height="62" rx="8"/><text x="300" y="41">ColorMatrix × 2</text><text x="300" y="64">ForwardMatrix × 2</text>
+<rect class="b static" x="283" y="110" width="296" height="62" rx="8"/><text x="300" y="136">HueSatMap × 2 · 90 × 30 × 1</text><text x="300" y="159">LookTable · 36 × 8 × 16</text>
+<rect class="b static" x="12" y="212" width="205" height="73" rx="8"/><text x="30" y="240">matrix-test</text><text x="30" y="265">270 bytes · 6 tags</text>
+<path class="e" d="M217 248H283" marker-end="url(#arrow)"/>
+<rect class="b static" x="283" y="212" width="296" height="73" rx="8"/><text x="300" y="242">ColorMatrix × 2</text><text x="300" y="266">ForwardMatrix · LUT 없음</text>
+<rect class="b static" x="629" y="70" width="313" height="150" rx="8"/><text x="648" y="101">두 파일에 저장되지 않은 항목</text><text x="648" y="131">ProfileToneCurve</text><text x="648" y="159">encoding · exposure offset</text><text x="648" y="190">렌더러 기본 동작은 별도 조건</text>
+</svg></div>
+<figcaption>구성 관계만 표시했다. 화살표는 Lightroom 내부 실행 순서나 펌웨어의 호출 관계가 아니다.</figcaption>
+</figure>
+<div class="table-wrap" role="region" tabindex="0" aria-label="태그 존재 비교"><table><thead><tr><th scope="col">태그</th><th scope="col">Adobe Q7</th><th scope="col">Q7 matrix-test</th></tr></thead><tbody><tr><td>ColorMatrix1</td><td>type 10, count 9</td><td>type 10, count 9</td></tr><tr><td>ColorMatrix2</td><td>type 10, count 9</td><td>type 10, count 9</td></tr><tr><td>ForwardMatrix1</td><td>type 10, count 9</td><td>없음</td></tr><tr><td>ForwardMatrix2</td><td>type 10, count 9</td><td>없음</td></tr><tr><td>ProfileHueSatMapDims</td><td>90 × 30 × 1</td><td>없음</td></tr><tr><td>ProfileHueSatMapData1</td><td>type 11, count 8100</td><td>없음</td></tr><tr><td>ProfileHueSatMapData2</td><td>type 11, count 8100</td><td>없음</td></tr><tr><td>ProfileLookTableDims</td><td>36 × 8 × 16</td><td>없음</td></tr><tr><td>ProfileLookTableData</td><td>type 11, count 13824</td><td>없음</td></tr><tr><td>ProfileToneCurve</td><td>없음</td><td>없음</td></tr><tr><td>ProfileHueSatMapEncoding</td><td>없음</td><td>없음</td></tr><tr><td>ProfileLookTableEncoding</td><td>없음</td><td>없음</td></tr><tr><td>BaselineExposureOffset</td><td>없음</td><td>없음</td></tr><tr><td>DefaultBlackRender</td><td>없음</td><td>없음</td></tr></tbody></table></div>
+<p>태그 부재는 파일에서 직접 확인한 사실이다. 해당 단계가 렌더러에서 생략되거나 identity로 동작한다는 뜻으로 확대하지 않는다.</p>
+
+</section><section id="ranges"><h2>2. 행렬과 테이블의 수치 범위</h2>
+<div class="table-wrap" role="region" tabindex="0" aria-label="행렬 수치 범위"><table><thead><tr><th scope="col">입력</th><th scope="col">행렬</th><th scope="col">저장 원소 범위</th><th scope="col">행렬식</th></tr></thead><tbody><tr><td>Adobe Standard</td><td>ColorMatrix1</td><td>-0.6194 … 1.2608</td><td>0.622305</td></tr><tr><td>Adobe Standard</td><td>ColorMatrix2</td><td>-0.3938 … 1.121</td><td>0.562366</td></tr><tr><td>Adobe Standard</td><td>ForwardMatrix1</td><td>0 … 0.8251</td><td>0.436491</td></tr><tr><td>Adobe Standard</td><td>ForwardMatrix2</td><td>0 … 0.8251</td><td>0.436491</td></tr><tr><td>matrix-test</td><td>ColorMatrix1</td><td>-1.35329 … 2.03592</td><td>0.723346</td></tr><tr><td>matrix-test</td><td>ColorMatrix2</td><td>-0.559326 … 1.29945</td><td>0.566502</td></tr></tbody></table></div>
+<p>ColorMatrix의 저장 원소를 직접 비교하면 최대 절댓값 차이는 1번에서 0.775119, 2번에서 0.209354다. 이는 정규화 전 파일 값의 차이이며 색차나 최종 픽셀 오차가 아니다. Adobe의 ForwardMatrix1과 ForwardMatrix2는 payload SHA-256이 같다.</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="테이블 수치 범위"><table><thead><tr><th scope="col">테이블</th><th scope="col">H × S × V</th><th scope="col">노드 수</th><th scope="col">색상 이동 (°)</th><th scope="col">채도 배율</th><th scope="col">명도 배율</th><th scope="col">identity 노드</th></tr></thead><tbody><tr><td>HueSatMapData1</td><td>90 × 30 × 1</td><td>2700</td><td>-29.4538 … 9.92861</td><td>0.807917 … 1.91247</td><td>0.770538 … 1.54857</td><td>34</td></tr><tr><td>HueSatMapData2</td><td>90 × 30 × 1</td><td>2700</td><td>-27.7963 … 13.7731</td><td>0.735952 … 1.64079</td><td>0.705567 … 1.39372</td><td>34</td></tr><tr><td>LookTableData</td><td>36 × 8 × 16</td><td>4608</td><td>-18.4844 … 18.4844</td><td>0.878616 … 1</td><td>1 … 1</td><td>1471</td></tr></tbody></table></div>
+<p>각 노드는 색상 이동·채도 배율·명도 배율의 세 FLOAT로 구성된다. 이 표는 전체 노드의 최솟값·최댓값이다. identity 노드는 저장된 세 값이 정확히 (0, 1, 1)인 경우만 센다. 보간 후 픽셀 결과는 계산하지 않았다.</p>
+<p>HueSatMap은 각각 2,700노드이고 LookTable은 4,608노드다. 세 테이블 모두 S=0 위치의 명도 배율이 1이며, 채도·명도 배율이 음수인 노드는 없다. LookTable의 명도 배율은 모든 노드에서 1이지만 색상과 채도는 바뀔 수 있다. 이 사실로 전체 렌더링의 밝기가 보존된다고 판단할 수는 없다.</p>
+
+</section><section id="tone"><h2>3. ToneCurve와 생략 태그</h2>
+<p><code>ProfileToneCurve</code>(50940)가 없으므로 저장 곡선의 0…1 경계, x의 엄격한 증가, y의 비감소, identity 이탈량은 모두 <strong>계산 대상 없음(null)</strong>으로 기록했다. 검사기는 합성 곡선으로 경계 이탈·중복 x·감소 y·비유한값을 검사한다. 합성 검사 통과를 실제 Q7 곡선 검증으로 표시하지 않았다.</p>
+<p>DNG 1.7.1 규격은 저장 ToneCurve의 좌표와 보간 방법을 정의한다. 규격상 LookTableEncoding의 생략 기본값은 linear(0)이며, V=1인 HueSatMap에는 encoding 선택이 적용되지 않는다. BaselineExposureOffset의 기본값은 0 EV, DefaultBlackRender는 Auto다. 이는 <a href="#spec">규격 해석</a>이며 이번에 Lightroom의 실제 기본 동작을 측정한 결과가 아니다.</p>
+<p>두 DCP에는 BaselineExposure(50730)도 없다. RAW의 BaselineExposure, 사용자 노출 조정, 렌더러의 기본 곡선까지 0 또는 identity라고 결론 내릴 근거는 없다.</p>
+
+</section><section id="comparison"><h2>4. K-3 III 자료와 대조</h2>
+<p>기존 <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/2b50cf4f46a61b077789692b3ccc851d4d8d65b9/analysis/adobe-profiles.json">K-3 III Adobe Standard 메타데이터</a>와 비교했다. HueSatMap의 90 × 30 × 1, LookTable의 36 × 8 × 16 차원과 광원 태그 17·21은 같다. ColorMatrix·ForwardMatrix·HueSatMap 데이터·LookTable 데이터의 payload 해시는 모두 다르다. K-3 III 기록에도 ToneCurve가 없다. 이번에는 K-3 III DCP 원본을 다시 읽지 않았다.</p>
+<p>모델 문자열도 구분해야 한다. Adobe 입력은 <code>"PENTAX Q7"</code>, matrix-test는 끝에 공백이 있는 <code>"PENTAX Q7 "</code>다. 이 차이가 프로파일 선택 호환성에 미치는 영향은 확인하지 않았다.</p>
+<ol class="flow" aria-label="파일 구조와 최종 출력 검증의 구분"><li class="static"><strong>이번 확인</strong><span>DCP 태그·해시·수치 범위. RAW와 렌더러 실행 없음.</span></li><li class="model"><strong>별도 조건</strong><span>As Shot 변화와 프로파일·WB의 결합.</span></li><li class="open"><strong>아직 확인하지 않음</strong><span>최종 픽셀 일치와 펌웨어 Custom Image 일치.</span></li></ol>
+<p>과거 <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/2b50cf4f46a61b077789692b3ccc851d4d8d65b9/analysis/lightroom-as-shot.html">As Shot 기록</a>의 Q7 사례에서는 Lightroom 16.0 표시값이 5100 K / Tint −17에서 4900 K / Tint −7로 바뀌었다. 해당 기록의 <code>strict_profile_only_passed</code>는 false다. 따라서 이를 WB가 고정된 프로파일 단독 비교로 취급하지 않는다. 이번 분석에서 Lightroom을 다시 실행하거나 그 수치를 재측정하지 않았다.</p>
+
+</section><section id="sources"><h2>5. 근거와 재현</h2>
+<div class="table-wrap" role="region" tabindex="0" aria-label="입력 파일 해시"><table><thead><tr><th scope="col">입력</th><th scope="col">파일명</th><th scope="col">바이트</th><th scope="col">SHA-256</th></tr></thead><tbody><tr><td>Adobe Standard</td><td>PENTAX Q7 Adobe Standard.dcp</td><td>120686</td><td>83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff</td></tr><tr><td>matrix-test</td><td>pentax-q7-1760-matrix-test.dcp</td><td>270</td><td>fe68b3460a400cf00bf9dfbe49f06f5f1c2cbc1010642d214df375d60504729e</td></tr></tbody></table></div>
+<p>원래 안내된 <code>AdobeStandard</code> 경로 대신 실제 설치 경로의 <code>Adobe Standard</code> 폴더를 사용했다. 입력 해시는 분석 전후 일치했다. IFD 위치는 파일 시작을 기준으로 한 0 기반 바이트 오프셋이다.</p>
+<details><summary>Adobe Q7의 16개 IFD 엔트리</summary><div class="table-wrap" role="region" tabindex="0" aria-label="Adobe Q7 IFD 근거 위치"><table><thead><tr><th scope="col">태그 번호</th><th scope="col">이름</th><th scope="col">type</th><th scope="col">count</th><th scope="col">IFD 위치</th><th scope="col">값 위치</th><th scope="col">값 바이트</th></tr></thead><tbody><tr><td>50708</td><td>UniqueCameraModel</td><td>2</td><td>10</td><td>10</td><td>206</td><td>10</td></tr><tr><td>50721</td><td>ColorMatrix1</td><td>10</td><td>9</td><td>22</td><td>216</td><td>72</td></tr><tr><td>50722</td><td>ColorMatrix2</td><td>10</td><td>9</td><td>34</td><td>288</td><td>72</td></tr><tr><td>50778</td><td>CalibrationIlluminant1</td><td>3</td><td>1</td><td>46</td><td>54</td><td>2</td></tr><tr><td>50779</td><td>CalibrationIlluminant2</td><td>3</td><td>1</td><td>58</td><td>66</td><td>2</td></tr><tr><td>50932</td><td>ProfileCalibrationSignature</td><td>2</td><td>10</td><td>70</td><td>360</td><td>10</td></tr><tr><td>50936</td><td>ProfileName</td><td>2</td><td>15</td><td>82</td><td>370</td><td>15</td></tr><tr><td>50937</td><td>ProfileHueSatMapDims</td><td>4</td><td>3</td><td>94</td><td>386</td><td>12</td></tr><tr><td>50938</td><td>ProfileHueSatMapData1</td><td>11</td><td>8100</td><td>106</td><td>398</td><td>32400</td></tr><tr><td>50939</td><td>ProfileHueSatMapData2</td><td>11</td><td>8100</td><td>118</td><td>32798</td><td>32400</td></tr><tr><td>50941</td><td>ProfileEmbedPolicy</td><td>4</td><td>1</td><td>130</td><td>138</td><td>4</td></tr><tr><td>50942</td><td>ProfileCopyright</td><td>2</td><td>35</td><td>142</td><td>65198</td><td>35</td></tr><tr><td>50964</td><td>ForwardMatrix1</td><td>10</td><td>9</td><td>154</td><td>65234</td><td>72</td></tr><tr><td>50965</td><td>ForwardMatrix2</td><td>10</td><td>9</td><td>166</td><td>65306</td><td>72</td></tr><tr><td>50981</td><td>ProfileLookTableDims</td><td>4</td><td>3</td><td>178</td><td>65378</td><td>12</td></tr><tr><td>50982</td><td>ProfileLookTableData</td><td>11</td><td>13824</td><td>190</td><td>65390</td><td>55296</td></tr></tbody></table></div></details>
+<p><a href="../tools/check_q7_dcp_structure.py">검사기</a>는 K-3 III 저장소의 기존 <code>inspect_adobe_profiles.py</code>를 LF 정규화 SHA-256으로 고정해 재사용한다. 아래 경로 변수에 각 로컬 파일을 지정하고 PowerShell에서 실행한다. 출력 파일은 새 경로여야 한다.</p>
+<pre><code>python -B tools/check_q7_dcp_structure.py --k3-root $k3Root --adobe $adobeDcp --matrix $matrixDcp --output q7-dcp-structure.replay.json
+python -B tools/build_q7_dcp_report.py</code></pre>
+<p>공개 JSON의 연구 관측은 정규화 해시로 전부 검사한다. 재현 출력에는 별도 메타데이터가 추가되므로 공개 파일과 바이트 동일성을 요구하지 않는다. 공개 JSON canonical SHA-256: <code>23b2e830aa89b48ffc5221bb96fd0651c6839169eb80dc6aea70add6e23d5530</code>. 보고서 빌더는 저장소의 <code>analysis/q7-dcp-structure.json</code>과 <code>analysis/q7-dcp-template.html</code>을 읽는다.</p>
+<ul>
+<li id="spec"><a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG Specification 1.7.1.0</a>: 인쇄 쪽수 32–33(ColorMatrix), 49–53(HueSatMap·ToneCurve·ForwardMatrix), 56–57(LookTable), 62–64(black render·exposure offset·encoding).</li>
+<li><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/2b50cf4f46a61b077789692b3ccc851d4d8d65b9/inspect_adobe_profiles.py">K-3 III의 공통 DCP 검사기</a>: 본 분석이 고정한 LF SHA-256은 <code>83c9ea9d745a4ac12bba4164ff729aeb8e64bdd3783e8575727251758ee3a7e7</code>이다.</li>
+<li><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/2b50cf4f46a61b077789692b3ccc851d4d8d65b9/analysis/lightroom-as-shot.json">기존 As Shot 근거 JSON</a>: 사용한 파일 해시는 이번 결과의 <code>source_reports</code>에 기록했다.</li>
+</ul>
+
+</section><section id="public-replay"><h2>공개판의 입력과 관측 보존</h2>
+<p>원본 연구 코드 SHA와 공개 코드의 LF SHA를 <code>_publication</code>에 분리했다. Q7-27의 모든 관측은 그대로 보존하며 원래 관측 객체의 canonical SHA-256을 검사한다. 공개판은 descriptor의 regular-file 여부와 2,000,000바이트 상한을 확인한 뒤 최대 cap+1바이트를 한 번 읽는다. 출처 JSON의 해시 검증과 해석은 그 한 버퍼에서 수행한다.</p>
+<p>출력 경로는 입력을 읽기 전과 쓰기 직전에 <code>lexists</code>로 검사해 dangling symlink도 거부한다. <code>x</code> 모드만으로 안전하다고 가정하지 않는다. 두 경로 검사 사이에 파일시스템 상태가 바뀔 가능성을 완전히 제거한 원자적 보장을 주장하지 않는다. <code>-O</code> 실행은 자체 검사의 assert 제거를 막기 위해 거부한다.</p>
+<p><code>source_reports.*.sha256</code>은 출처 파일의 실제 바이트 해시이고 <code>sha256_lf</code>는 CRLF를 LF로 바꾼 뒤의 해시다. 파서와 두 출처 JSON은 LF 해시로 고정한다. <code>profiles.*.file</code>은 사용자가 지정한 파일명이다. 재현 비교는 이 두 환경 의존 항목만 제외하고 태그·수치·역사적 관측을 모두 대조한다. 실제 파일명과 raw 해시는 <code>_reproduction</code>에 남긴다.</p>
+<p>기존 <code>inputs_unchanged_after_analysis=true</code>는 Q7-27에서 분석 전후 해시를 확인한 역사적 관측이다. 공개판은 입력을 한 번 캡처하므로 이 사후 검사를 새로 수행했다고 주장하지 않으며 <code>post_analysis_input_reread=false</code>로 기록한다.</p>
+<pre><code>git clone https://github.com/yunhyok/pentax-k3iii-firmware-analysis.git k3-reference
+ git -C k3-reference checkout 2b50cf4f46a61b077789692b3ccc851d4d8d65b9
+python -B tools/check_q7_dcp_structure.py --check-record
+python -B -m unittest discover -s tests -p test_q7_dcp_structure.py -v</code></pre>
+<p>전체 재현에는 위 커밋의 <code>inspect_adobe_profiles.py</code>, <code>analysis/adobe-profiles.json</code>, <code>analysis/lightroom-as-shot.json</code>이 필요하다. 상용 Adobe DCP는 사용자 설치본을 지정한다. matrix-test도 기록된 SHA와 일치하는 별도 로컬 파일이 필요하며 이번 공개 패키지에 동봉하지 않는다. CI의 공개 기록 검사와 합성 검사는 원본 DCP나 K-3 III 체크아웃 없이 동작한다.</p>
+</section><section id="limits"><h2>6. 남은 과제</h2>
+<p>태그 구성만으로 Lightroom의 기본 곡선·노출 처리·출력 색공간이나 카메라의 Custom Image를 복원할 수 없다. 후속 비교에서는 같은 RAW, 고정 WB, 노출·Process Version·출력 프로파일을 명시하고 테이블 추가 여부를 단계별로 나눠야 한다. 끝 공백이 있는 모델 문자열의 호환성도 별도로 확인할 항목이다.</p>
+<p>이번 과제는 DCP 구조 분석으로 한정했다. 펌웨어 FC1 비트 의미, HDR task 생성·제출·완료 경로에 대한 새로운 근거는 이 문서에 포함하지 않는다.</p>
+</section></main></div><!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="../guide-color.html">색 처리·HDR 안내</a></li><li><a href="../routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="../pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="../final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="../hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="../hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="q7-dcp-structure.html" aria-current="page">DCP 태그·행렬·테이블 비교</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../hdr-task-report.html"><small>← 이전</small>FC1 제어 비트와 HDR task 완료</a><a class="next" href="../guide-af.html"><small>다음 →</small>AF·렌즈 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom --></body></html>

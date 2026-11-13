@@ -1,0 +1,688 @@
+{
+  "schema": 1,
+  "task": "Q7-DCP-STRUCTURE-27",
+  "scope": "static DCP aggregate analysis; no renderer, RAW, camera or firmware execution",
+  "parser": {
+    "path": "inspect_adobe_profiles.py",
+    "sha256_lf": "83c9ea9d745a4ac12bba4164ff729aeb8e64bdd3783e8575727251758ee3a7e7"
+  },
+  "source_reports": {
+    "analysis/adobe-profiles.json": {
+      "sha256": "92bd90edc7e82e7bf2629b782517d6c44b06de0ce8360b4bc3a0bd6259d6f574",
+      "sha256_lf": "ad818a31bed1807282fef795ae6744ad64cf30d1ba660e87dbb407af92af625e"
+    },
+    "analysis/lightroom-as-shot.json": {
+      "sha256": "5d2e25129c4d97284618ffb38e44423d95b70064af8e8208e9c076c3eba2d7cd",
+      "sha256_lf": "5d2e25129c4d97284618ffb38e44423d95b70064af8e8208e9c076c3eba2d7cd"
+    }
+  },
+  "profiles": {
+    "adobe": {
+      "bytes": 120686,
+      "sha256": "83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 10,
+          "sha256": "37614c0f2c74d32e0682f82f10b9bbb3f417903887241b6c0cf588492a141e27",
+          "text": "PENTAX Q7"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "383324b84205ff6a04e838af5b074469829ed089bc4461c3f156ffa9fd6f4728",
+          "range": {
+            "min": -0.6194,
+            "max": 1.2608
+          }
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "d97029d1bf2af104097b04572fe7a613f903ce35ecd559425cb42e3a8eb61558",
+          "range": {
+            "min": -0.3938,
+            "max": 1.121
+          }
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17,
+          "range": {
+            "min": 17,
+            "max": 17
+          }
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21,
+          "range": {
+            "min": 21,
+            "max": 21
+          }
+        },
+        "ProfileCalibrationSignature": {
+          "type": 2,
+          "count": 10,
+          "sha256": "b6407798ba80f7cd1e9a53353a9053cd097b831e8e3fb5bea49772cab8a0e8bd"
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "d3242020e8db973c5b1d2effc569823494eddb4a29c96350412214f40a0d2326",
+          "text": "Adobe Standard"
+        },
+        "ProfileHueSatMapDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "d337fdc5fab1c73c53ebf75a524091eccb074118afc6e2cc560fb12117b24927",
+          "dimensions": [
+            90,
+            30,
+            1
+          ],
+          "range": {
+            "min": 1,
+            "max": 90
+          }
+        },
+        "ProfileHueSatMapData1": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "1fddb9736be43811c965ff4b7be7dd15c453fb43516740f47e7634886e8cc048",
+          "range": {
+            "min": -29.45383071899414,
+            "max": 9.928611755371094
+          }
+        },
+        "ProfileHueSatMapData2": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "d266b921cccf9288fc69ccb98255d169b7b51b9241d0eaa63c2528ca48254b31",
+          "range": {
+            "min": -27.79634666442871,
+            "max": 13.773072242736816
+          }
+        },
+        "ProfileEmbedPolicy": {
+          "type": 4,
+          "count": 1,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+          "range": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "ProfileCopyright": {
+          "type": 2,
+          "count": 35,
+          "sha256": "99a88701045f32c802ef43f5e45871325e254eff74750cabad7facfcc25a2a00"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "3760ab8dd41f7d7f91f61a53ac97881695b246e5652e39f3b23b3631a779c656",
+          "range": {
+            "min": 0.0,
+            "max": 0.8251
+          }
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "3760ab8dd41f7d7f91f61a53ac97881695b246e5652e39f3b23b3631a779c656",
+          "range": {
+            "min": 0.0,
+            "max": 0.8251
+          }
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ],
+          "range": {
+            "min": 8,
+            "max": 36
+          }
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "a2daae1af80d8163a4aac8435c72b11a47d9a125cf14354bcdddc6bab7dd77c5",
+          "range": {
+            "min": -18.484411239624023,
+            "max": 18.484397888183594
+          }
+        }
+      },
+      "ifd_entry_count": 16,
+      "directory": [
+        {
+          "tag": 50708,
+          "name": "UniqueCameraModel",
+          "type": 2,
+          "count": 10,
+          "entry_offset": 10,
+          "payload_offset": 206,
+          "payload_bytes": 10
+        },
+        {
+          "tag": 50721,
+          "name": "ColorMatrix1",
+          "type": 10,
+          "count": 9,
+          "entry_offset": 22,
+          "payload_offset": 216,
+          "payload_bytes": 72
+        },
+        {
+          "tag": 50722,
+          "name": "ColorMatrix2",
+          "type": 10,
+          "count": 9,
+          "entry_offset": 34,
+          "payload_offset": 288,
+          "payload_bytes": 72
+        },
+        {
+          "tag": 50778,
+          "name": "CalibrationIlluminant1",
+          "type": 3,
+          "count": 1,
+          "entry_offset": 46,
+          "payload_offset": 54,
+          "payload_bytes": 2
+        },
+        {
+          "tag": 50779,
+          "name": "CalibrationIlluminant2",
+          "type": 3,
+          "count": 1,
+          "entry_offset": 58,
+          "payload_offset": 66,
+          "payload_bytes": 2
+        },
+        {
+          "tag": 50932,
+          "name": "ProfileCalibrationSignature",
+          "type": 2,
+          "count": 10,
+          "entry_offset": 70,
+          "payload_offset": 360,
+          "payload_bytes": 10
+        },
+        {
+          "tag": 50936,
+          "name": "ProfileName",
+          "type": 2,
+          "count": 15,
+          "entry_offset": 82,
+          "payload_offset": 370,
+          "payload_bytes": 15
+        },
+        {
+          "tag": 50937,
+          "name": "ProfileHueSatMapDims",
+          "type": 4,
+          "count": 3,
+          "entry_offset": 94,
+          "payload_offset": 386,
+          "payload_bytes": 12
+        },
+        {
+          "tag": 50938,
+          "name": "ProfileHueSatMapData1",
+          "type": 11,
+          "count": 8100,
+          "entry_offset": 106,
+          "payload_offset": 398,
+          "payload_bytes": 32400
+        },
+        {
+          "tag": 50939,
+          "name": "ProfileHueSatMapData2",
+          "type": 11,
+          "count": 8100,
+          "entry_offset": 118,
+          "payload_offset": 32798,
+          "payload_bytes": 32400
+        },
+        {
+          "tag": 50941,
+          "name": "ProfileEmbedPolicy",
+          "type": 4,
+          "count": 1,
+          "entry_offset": 130,
+          "payload_offset": 138,
+          "payload_bytes": 4
+        },
+        {
+          "tag": 50942,
+          "name": "ProfileCopyright",
+          "type": 2,
+          "count": 35,
+          "entry_offset": 142,
+          "payload_offset": 65198,
+          "payload_bytes": 35
+        },
+        {
+          "tag": 50964,
+          "name": "ForwardMatrix1",
+          "type": 10,
+          "count": 9,
+          "entry_offset": 154,
+          "payload_offset": 65234,
+          "payload_bytes": 72
+        },
+        {
+          "tag": 50965,
+          "name": "ForwardMatrix2",
+          "type": 10,
+          "count": 9,
+          "entry_offset": 166,
+          "payload_offset": 65306,
+          "payload_bytes": 72
+        },
+        {
+          "tag": 50981,
+          "name": "ProfileLookTableDims",
+          "type": 4,
+          "count": 3,
+          "entry_offset": 178,
+          "payload_offset": 65378,
+          "payload_bytes": 12
+        },
+        {
+          "tag": 50982,
+          "name": "ProfileLookTableData",
+          "type": 11,
+          "count": 13824,
+          "entry_offset": 190,
+          "payload_offset": 65390,
+          "payload_bytes": 55296
+        }
+      ],
+      "matrices": {
+        "ColorMatrix1": {
+          "shape": [
+            3,
+            3
+          ],
+          "range": {
+            "min": -0.6194,
+            "max": 1.2608
+          },
+          "determinant": 0.6223051264410001
+        },
+        "ColorMatrix2": {
+          "shape": [
+            3,
+            3
+          ],
+          "range": {
+            "min": -0.3938,
+            "max": 1.121
+          },
+          "determinant": 0.562366198791
+        },
+        "ForwardMatrix1": {
+          "shape": [
+            3,
+            3
+          ],
+          "range": {
+            "min": 0.0,
+            "max": 0.8251
+          },
+          "determinant": 0.4364912831219999
+        },
+        "ForwardMatrix2": {
+          "shape": [
+            3,
+            3
+          ],
+          "range": {
+            "min": 0.0,
+            "max": 0.8251
+          },
+          "determinant": 0.4364912831219999
+        }
+      },
+      "tables": {
+        "ProfileHueSatMapData1": {
+          "dimensions_hsv": [
+            90,
+            30,
+            1
+          ],
+          "nodes": 2700,
+          "hue_shift_degrees": {
+            "min": -29.45383071899414,
+            "max": 9.928611755371094
+          },
+          "saturation_scale": {
+            "min": 0.807917058467865,
+            "max": 1.9124749898910522
+          },
+          "value_scale": {
+            "min": 0.7705379128456116,
+            "max": 1.548568606376648
+          },
+          "zero_saturation_nodes": 90,
+          "zero_saturation_value_all_one": true,
+          "identity_nodes": 34,
+          "nonnegative_scales": true
+        },
+        "ProfileHueSatMapData2": {
+          "dimensions_hsv": [
+            90,
+            30,
+            1
+          ],
+          "nodes": 2700,
+          "hue_shift_degrees": {
+            "min": -27.79634666442871,
+            "max": 13.773072242736816
+          },
+          "saturation_scale": {
+            "min": 0.7359523773193359,
+            "max": 1.6407946348190308
+          },
+          "value_scale": {
+            "min": 0.7055674195289612,
+            "max": 1.3937208652496338
+          },
+          "zero_saturation_nodes": 90,
+          "zero_saturation_value_all_one": true,
+          "identity_nodes": 34,
+          "nonnegative_scales": true
+        },
+        "ProfileLookTableData": {
+          "dimensions_hsv": [
+            36,
+            8,
+            16
+          ],
+          "nodes": 4608,
+          "hue_shift_degrees": {
+            "min": -18.484411239624023,
+            "max": 18.484397888183594
+          },
+          "saturation_scale": {
+            "min": 0.87861567735672,
+            "max": 1.0
+          },
+          "value_scale": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "zero_saturation_nodes": 576,
+          "zero_saturation_value_all_one": true,
+          "identity_nodes": 1471,
+          "nonnegative_scales": true
+        }
+      },
+      "tone_curve": {
+        "status": "absent",
+        "points": null,
+        "domain_0_1": null,
+        "strict_x": null,
+        "nondecreasing_y": null,
+        "sdr_endpoints": null,
+        "identity_max_abs_at_knots": null,
+        "identity_rms_at_knots": null
+      },
+      "optional_presence": {
+        "ProfileToneCurve": false,
+        "ProfileHueSatMapEncoding": false,
+        "ProfileLookTableEncoding": false,
+        "BaselineExposure": false,
+        "BaselineExposureOffset": false,
+        "DefaultBlackRender": false
+      },
+      "file": "PENTAX Q7 Adobe Standard.dcp"
+    },
+    "matrix": {
+      "bytes": 270,
+      "sha256": "fe68b3460a400cf00bf9dfbe49f06f5f1c2cbc1010642d214df375d60504729e",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 11,
+          "sha256": "06e06a08eb0646bcfd2847c47414e864e02f62e8c54f4d2820b16a2fa9ec0232",
+          "text": "PENTAX Q7 "
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "a55d705d210a7a8e249dbe9b4aa6927dde542ac0163b15bf50d48f1046c8e115",
+          "range": {
+            "min": -1.353287,
+            "max": 2.035919
+          }
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "00d9040205032c732cae0f071475366ff93f411a58d5284251dc524ac8454e1c",
+          "range": {
+            "min": -0.559326,
+            "max": 1.299454
+          }
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17,
+          "range": {
+            "min": 17,
+            "max": 17
+          }
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21,
+          "range": {
+            "min": 21,
+            "max": 21
+          }
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 28,
+          "sha256": "d1c141192c10b576c6b1aa499768e73f6be0d661963fc83593d62bd19e4da6d7",
+          "text": "PENTAX RAW matrix test 1760"
+        }
+      },
+      "ifd_entry_count": 6,
+      "directory": [
+        {
+          "tag": 50708,
+          "name": "UniqueCameraModel",
+          "type": 2,
+          "count": 11,
+          "entry_offset": 10,
+          "payload_offset": 86,
+          "payload_bytes": 11
+        },
+        {
+          "tag": 50721,
+          "name": "ColorMatrix1",
+          "type": 10,
+          "count": 9,
+          "entry_offset": 22,
+          "payload_offset": 98,
+          "payload_bytes": 72
+        },
+        {
+          "tag": 50722,
+          "name": "ColorMatrix2",
+          "type": 10,
+          "count": 9,
+          "entry_offset": 34,
+          "payload_offset": 170,
+          "payload_bytes": 72
+        },
+        {
+          "tag": 50778,
+          "name": "CalibrationIlluminant1",
+          "type": 3,
+          "count": 1,
+          "entry_offset": 46,
+          "payload_offset": 54,
+          "payload_bytes": 2
+        },
+        {
+          "tag": 50779,
+          "name": "CalibrationIlluminant2",
+          "type": 3,
+          "count": 1,
+          "entry_offset": 58,
+          "payload_offset": 66,
+          "payload_bytes": 2
+        },
+        {
+          "tag": 50936,
+          "name": "ProfileName",
+          "type": 2,
+          "count": 28,
+          "entry_offset": 70,
+          "payload_offset": 242,
+          "payload_bytes": 28
+        }
+      ],
+      "matrices": {
+        "ColorMatrix1": {
+          "shape": [
+            3,
+            3
+          ],
+          "range": {
+            "min": -1.353287,
+            "max": 2.035919
+          },
+          "determinant": 0.7233460961025561
+        },
+        "ColorMatrix2": {
+          "shape": [
+            3,
+            3
+          ],
+          "range": {
+            "min": -0.559326,
+            "max": 1.299454
+          },
+          "determinant": 0.566502258199014
+        }
+      },
+      "tables": {},
+      "tone_curve": {
+        "status": "absent",
+        "points": null,
+        "domain_0_1": null,
+        "strict_x": null,
+        "nondecreasing_y": null,
+        "sdr_endpoints": null,
+        "identity_max_abs_at_knots": null,
+        "identity_rms_at_knots": null
+      },
+      "optional_presence": {
+        "ProfileToneCurve": false,
+        "ProfileHueSatMapEncoding": false,
+        "ProfileLookTableEncoding": false,
+        "BaselineExposure": false,
+        "BaselineExposureOffset": false,
+        "DefaultBlackRender": false
+      },
+      "file": "pentax-q7-1760-matrix-test.dcp"
+    }
+  },
+  "color_matrix_difference": {
+    "ColorMatrix1": {
+      "payload_equal": false,
+      "max_abs_element_difference": 0.7751189999999999
+    },
+    "ColorMatrix2": {
+      "payload_equal": false,
+      "max_abs_element_difference": 0.20935400000000004
+    }
+  },
+  "adobe_forward_pair_payload_equal": true,
+  "k3iii_archived_comparison": {
+    "file": "PENTAX K-3 Mark III Adobe Standard.dcp",
+    "sha256": "c30f2fdb0df54d1e06af6c1b990efc0df639e1e5a16f134f0f0db951b31c3ec5",
+    "matching_shared_payloads": [
+      "CalibrationIlluminant1",
+      "CalibrationIlluminant2",
+      "ProfileHueSatMapDims",
+      "ProfileLookTableDims",
+      "ProfileName"
+    ],
+    "differing_shared_payloads": [
+      "ColorMatrix1",
+      "ColorMatrix2",
+      "ForwardMatrix1",
+      "ForwardMatrix2",
+      "ProfileHueSatMapData1",
+      "ProfileHueSatMapData2",
+      "ProfileLookTableData",
+      "UniqueCameraModel"
+    ],
+    "tone_curve_present": false,
+    "input_reparsed": false
+  },
+  "historical_as_shot_q7": {
+    "tiff_sha256": "0506b9d91f103d7f8bdb7c6877f1c319d54aae680ae0f8c5ad16b9d17fa65eda",
+    "profile_name": "Adobe Standard",
+    "full_xmp_digest": "503F097A9FA804AB87B5D648EB1F36D0",
+    "baseline_temperature_tint": [
+      5100,
+      -17
+    ],
+    "profile_temperature_tint": [
+      4900,
+      -7
+    ],
+    "lightroom_version": "16.0",
+    "manual_wb": false,
+    "strict_profile_only_passed": false,
+    "descriptive_profile_plus_as_shot": true
+  },
+  "self_checks": {
+    "existing_parser_self_test": "passed",
+    "tone_checks": 8
+  },
+  "inputs_unchanged_after_analysis": true,
+  "_publication": {
+    "task": "Q7-DCP-PUBLIC-28",
+    "research_code_sha256": "1ffc7911e8b7f82b6d309656a176fbf69390440423263c0f37e1188b44f64a92",
+    "public_code_sha256_lf": "c62f899abbbdf82ec7f186ce885bc1b5d4317d2cbc4686433edf5c5296df3765",
+    "research_record_sha256": "44a688b31ca9b7fcbfee10adc6911942acd71a589bd70a6259db54304e02beec",
+    "observations_canonical_sha256": "f0118a7afb3b34df06a994f5cdf7ee2b59f1a8de5035a16967769db9d95f335c",
+    "k3iii_public_commit": "2b50cf4f46a61b077789692b3ccc851d4d8d65b9",
+    "k3iii_sources": {
+      "inspect_adobe_profiles.py": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/2b50cf4f46a61b077789692b3ccc851d4d8d65b9/inspect_adobe_profiles.py",
+      "analysis/adobe-profiles.json": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/2b50cf4f46a61b077789692b3ccc851d4d8d65b9/analysis/adobe-profiles.json",
+      "analysis/lightroom-as-shot.json": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/2b50cf4f46a61b077789692b3ccc851d4d8d65b9/analysis/lightroom-as-shot.json"
+    },
+    "capture_contract": "open once; fstat regular descriptor; cap 2000000; read cap+1; hash and parse same captured bytes",
+    "environment_fields": [
+      "profiles.*.file",
+      "source_reports.*.sha256"
+    ],
+    "hash_contract": "DCP uses exact bytes; helper and report pins normalize CRLF to LF; raw report SHA describes local bytes",
+    "historical_postcheck": "inputs_unchanged_after_analysis belongs to research 27; public replay captures once and does not repeat that postcheck"
+  }
+}
