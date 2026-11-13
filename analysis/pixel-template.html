@@ -29,7 +29,7 @@
 <ul>
 <li>분석한 HDR 경로에서 <strong>합성 결과를 담는 버퍼 하나(B)</strong>가 톤 매핑 출력, 렌즈 왜곡 보정(LDC)의 입력·출력, JPEG 압축 입력으로 차례로 쓰입니다. 소프트웨어가 넘기는 주소를 이어 본 결과이며 실제 픽셀 이동은 관측하지 않았습니다.</li>
 <li>HDR 주 이미지의 <strong>실제 압축은 EXIF 조립 전에 <code>ApsJpegDirectCompress</code>가 합니다</strong>. EXIF 단계는 이미 만든 압축 결과의 크기를 씁니다.</li>
-<li>처리는 여러 <strong>패스</strong>로 나뉘고, 제출 모드에 따라 전체·마지막 제외·마지막만을 고릅니다. 색 필터 CM과 FC1은 마지막 패스 전용 필터가 아닙니다.</li>
+<li>처리는 여러 <strong>패스</strong>로 나뉘고 제출 모드에 따라 전체·마지막 제외·마지막만을 고릅니다. 색 필터 CM과 FC1은 마지막 패스 전용 필터가 아닙니다.</li>
 <li>뒤에서 값을 다시 계산하는 <strong>FIPLIB</strong>는 CM에서는 보조 필드 세 개만, FC1에서는 행렬 계수 아홉 개까지 바꿉니다. 두 setter·writer 구간을 원본 명령으로 실행해 객체 바이트와 MMIO 쓰기 {{handoff_mmio}}회를 대조했습니다.</li>
 </ul>
 </section>
@@ -63,15 +63,15 @@
 
 <section id="background">
 <h2>배경: HDR 모드와 이 문서의 질문</h2>
-<p>Q7에는 노출을 달리한 세 장을 한 장으로 합쳐 밝은 곳과 어두운 곳을 함께 살리는 HDR 촬영 기능이 있습니다. 설정 값은 Auto, HDR 1, HDR 2이고, 장면 모드의 HDR·야경 HDR은 JPEG로만 저장됩니다(<a href="https://www.ricoh-imaging.co.jp/english/news/2013/20130613_3.html">리코의 Q7 발표 자료</a>). 펌웨어에서 이 기능은 이미지를 섞는 <code>HdrImageMixing</code>, 톤을 맞추는 <code>IpuToneMapRgb</code> 같은 함수로 나타납니다.</p>
+<p>Q7에는 노출을 달리한 세 장을 한 장으로 합쳐 밝은 곳과 어두운 곳을 함께 살리는 HDR 촬영 기능이 있습니다. 설정 값은 Auto, HDR 1, HDR 2이고 장면 모드의 HDR·야경 HDR은 JPEG로만 저장됩니다(<a href="https://www.ricoh-imaging.co.jp/english/news/2013/20130613_3.html">리코의 Q7 발표 자료</a>). 펌웨어에서 이 기능은 이미지를 섞는 <code>HdrImageMixing</code>, 톤을 맞추는 <code>IpuToneMapRgb</code> 같은 함수로 나타납니다.</p>
 <p>이 문서는 두 가지를 묻습니다.</p>
 <ol>
-<li>합성 결과는 어느 버퍼에 담기고, 그 버퍼가 정말 JPEG 압축의 입력이 되는가</li>
+<li>합성 결과는 어느 버퍼에 담기고 그 버퍼가 정말 JPEG 압축의 입력이 되는가</li>
 <li>색 변환 계수는 처리 도중 누가, 어느 패스에서, 어디까지 바꿀 수 있는가</li>
 </ol>
 <dl class="kv">
 <dt>IPU</dt><dd>펌웨어가 영상 처리 회로를 부르는 단위(<code>Ipu…</code> 함수, <code>CIpuTask</code>). 회로의 정식 명칭은 확인하지 못했습니다.</dd>
-<dt>LDC</dt><dd><code>StillCaptureLDCPass</code>. 일반적으로 렌즈 왜곡 보정(Lens Distortion Correction)을 뜻하며, 픽셀을 다시 배치해 왜곡을 펴는 처리입니다(<a href="https://www.ti.com/document-viewer/lit/html/SPRAD74/GUID-755725C8-ECC4-4BB3-964D-CEA464ACA2F9">TI의 LDC 설명</a> 참고). Q7 사양에도 “Distortion Correction”이 있습니다. 펌웨어의 이 패스가 같은 일을 하는지는 함수 이름으로 추정한 것입니다.</dd>
+<dt>LDC</dt><dd><code>StillCaptureLDCPass</code>. 일반적으로 렌즈 왜곡 보정(Lens Distortion Correction)을 뜻하며 픽셀을 다시 배치해 왜곡을 펴는 처리입니다(<a href="https://www.ti.com/document-viewer/lit/html/SPRAD74/GUID-755725C8-ECC4-4BB3-964D-CEA464ACA2F9">TI의 LDC 설명</a> 참고). Q7 사양에도 “Distortion Correction”이 있습니다. 펌웨어의 이 패스가 같은 일을 하는지는 함수 이름으로 추정한 것입니다.</dd>
 <dt>CM, FC1</dt><dd>3×3 계수를 쓰는 색 필터 클래스 <code>CCmFilter</code>, <code>CFc1Filter</code>. 역할 이름은 클래스 이름에서 왔습니다.</dd>
 <dt>FIPLIB</dt><dd>패스 구성과 필터 값을 계산하는 라이브러리(<code>CFIPLIB</code>, <code>FipLibCalculate</code>). 상위 설정을 입력으로 받아 패스마다 결과(payload)를 만듭니다.</dd>
 <dt>CBC</dt><dd>레지스터에 직접 쓰는 대신 주소·값 쌍을 묶어 한꺼번에 제출하는 경로(<code>CbcBatchExec</code>).</dd>
@@ -148,7 +148,7 @@
 </div>
 <ul class="dg-legend"><li><i class="static"></i>코드를 읽어 확인한 주소 전달</li><li><i class="key"></i>압축 입력이 정해지는 지점</li></ul>
 </figure>
-<p>화살표는 같은 주소(또는 그 안의 위치)가 넘어가는 관계입니다. 픽셀이 실제로 이동했다는 관측이 아닙니다. 첫 줄의 하위 이미지 출력은 B 안에서 반복마다 앞으로 나아가므로, 모든 하위 이미지 주소가 B와 같은 것은 아닙니다.</p>
+<p>화살표는 같은 주소(또는 그 안의 위치)가 넘어가는 관계입니다. 픽셀이 실제로 이동하는 것을 관측하지는 않았습니다. 첫 줄의 하위 이미지 출력은 B 안에서 반복마다 앞으로 나아가므로, 모든 하위 이미지 주소가 B와 같은 것은 아닙니다.</p>
 
 <div class="table-wrap"><table>
 <caption>구간별 근거 — B는 HDR 작업에서 확보한 이미지 버퍼의 시작 주소</caption>
@@ -165,28 +165,28 @@
 <p><a href="analysis/buffer-followup.json">[근거: evidence]</a></p>
 
 <div class="callout"><strong class="label">IPU 제출 단계의 조건</strong>
-<p><code>IpuSubmit</code>은 <code>path+0x964 == 0</code>이면 <code>path+0x28</code>의 출력 블록을 쓰고, 아니면 <code>path+0x8fc</code>의 대체 설명자를 복사합니다. 이 문서는 PathSetBuffers가 B의 view를 설정하는 관계까지 다룹니다. 새로 만든 HDR 경로에서 <code>+0x964</code>가 0으로 남아 <code>path+0x28</code>이 선택된다는 것은 <a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>에서 원본 명령으로 확인했습니다. <a href="analysis/buffer-followup.json">[근거: ipu_output_descriptor]</a></p></div>
+<p><code>IpuSubmit</code>은 <code>path+0x964 == 0</code>이면 <code>path+0x28</code>의 출력 블록을 쓰고 아니면 <code>path+0x8fc</code>의 대체 설명자를 복사합니다. 이 문서는 PathSetBuffers가 B의 view를 설정하는 관계까지 다룹니다. 새로 만든 HDR 경로에서 <code>+0x964</code>가 0으로 남아 <code>path+0x28</code>이 선택된다는 것은 <a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>에서 원본 명령으로 확인했습니다. <a href="analysis/buffer-followup.json">[근거: ipu_output_descriptor]</a></p></div>
 
 <h3 id="compress">실제 압축은 EXIF 전에 일어납니다</h3>
-<p><code>ApsExifCreateJpeg</code> 안의 새 압축 분기(CodeGo)를 HDR의 압축 위치로 보면 안 됩니다. 확인한 세 HDR 호출자는 모두 주 이미지 설명자의 첫 워드가 0인 상태로 <code>SaveJpegImage</code>에 넘깁니다. 한 경로는 이미 압축 결과가 있는 경우로 처음부터 0을 넣습니다. 나머지 두 경로에서는 그보다 앞서 <code>SaveCompressImage</code>가 <code>ApsJpegDirectCompress</code>로 압축한 뒤, 결과가 가리키는 설명자의 첫 워드를 0으로 지웁니다. EXIF의 주 이미지 검사는 이 0을 보고 새 압축을 건너뛰어 기존 압축 크기를 씁니다. <a href="analysis/buffer-followup.json">[근거: hdr_exif_existing_code, hdr_direct_jpeg_input]</a></p>
+<p><code>ApsExifCreateJpeg</code> 안의 새 압축 분기(CodeGo)를 HDR의 압축 위치로 보면 안 됩니다. 확인한 세 HDR 호출자는 모두 주 이미지 설명자의 첫 워드가 0인 상태로 <code>SaveJpegImage</code>에 넘깁니다. 한 경로는 이미 압축 결과가 있는 경우로 처음부터 0을 넣습니다. 나머지 두 경로에서는 그보다 앞서 <code>SaveCompressImage</code>가 <code>ApsJpegDirectCompress</code>로 압축합니다. 그 뒤 결과가 가리키는 설명자의 첫 워드를 0으로 지웁니다. EXIF의 주 이미지 검사는 이 0을 보고 새 압축을 건너뛰어 기존 압축 크기를 씁니다. <a href="analysis/buffer-followup.json">[근거: hdr_exif_existing_code, hdr_direct_jpeg_input]</a></p>
 
 <h3>압축 입력 주소의 변환 규칙</h3>
-<p>DirectCompress는 B를 그대로 쓰지 않습니다. bit 30이 켜져 있으면 최상위 비트를 지우고, 꺼져 있으면 bit 29를 켭니다.</p>
+<p>DirectCompress는 B를 그대로 쓰지 않습니다. bit 30이 켜져 있으면 최상위 비트를 지우고 꺼져 있으면 bit 29를 켭니다.</p>
 <pre><code>T(B) = (B &amp; 0x40000000) ? (B &amp; 0x7fffffff) : (B | 0x20000000)
 IPU 출력 view : B + 하위 이미지 오프셋
 JPEG 주 입력  : T(B)
 EXIF 주 설명자: **descriptor == 0 → 기존 압축 크기 사용</code></pre>
 <p>그래서 IPU 출력과 JPEG 입력의 숫자는 그대로 같지 않습니다. 주소 변환과 view 오프셋을 함께 넣어 비교해야 합니다. <a href="analysis/buffer-followup.json">[근거: jpeg_input_transform]</a></p>
 <div class="callout plain"><strong class="label">해석 (확인하지 않음)</strong>
-<p>MIPS32 주소 규칙(<a href="https://ftp.riken.jp/NetBSD/NetBSD-current/src/sys/arch/mips/include/cpuregs.h">NetBSD의 정의</a>)으로 보면, 캐시를 쓰는 kseg0 주소 <code>0x8…</code>에서 bit 29를 켠 <code>0xa…</code>는 같은 물리 메모리를 캐시 없이 가리키는 kseg1 주소입니다. 압축 회로가 읽을 메모리를 캐시를 거치지 않는 주소로 넘기는 것으로 읽을 수 있습니다. 다만 이것은 주소 규칙에 비춘 해석이며, 실제 버스 주소나 캐시 동작을 측정한 결과가 아닙니다.</p></div>
+<p>MIPS32 주소 규칙(<a href="https://ftp.riken.jp/NetBSD/NetBSD-current/src/sys/arch/mips/include/cpuregs.h">NetBSD의 정의</a>)으로 보면 캐시를 쓰는 kseg0 주소 <code>0x8…</code>에서 bit 29를 켠 값이 <code>0xa…</code>입니다. 이 주소는 같은 물리 메모리를 캐시 없이 가리키는 kseg1 주소입니다. 압축 회로가 읽을 메모리를 캐시를 거치지 않는 주소로 넘기는 것으로 읽을 수 있습니다. 다만 이것은 주소 규칙에 비춘 해석입니다. 실제 버스 주소나 캐시 동작은 측정하지 않았습니다.</p></div>
 
 <details class="evidence"><summary>버퍼 연결 단계별 원문 관찰</summary>
 <ul>
-<li><strong>hdr_output_allocation</strong> — HdrImageMixing이 <code>W+0x70</code>(W는 <code>sp+0x20</code>)에 블록 버퍼 설명자를 두고, <code>HdrAllocBlockBufTag</code>가 할당 주소 B를 설명자 워드 0에 저장합니다. PerformImageMixSubImages 동안 B를 보존했다가 성공하면 <code>context+0x3dc</code>에 씁니다.</li>
-<li><strong>hdr_ipu_output_binding</strong> — PerformImageMixSubImages가 <code>W+0x70</code>을 출력 커서로 쓰고, 출력 설명자 <code>sp+0x138</code>의 워드 0에 복사합니다. <code>W+0x208 == 0</code>이면 format <code>0xf01</code>로 IpuToneMapRgb에 넘깁니다. 이웃한 톤 매핑 호출 두 곳도 같은 설명자를 씁니다.</li>
-<li><strong>hdr_in_place_ldc</strong> — <code>StillCaptureSaveIcaCreateThumbnail</code>이 D를 <code>StillCaptureLDCPass</code>의 원본과 대상으로 함께 넘기고 되복사 플래그를 켭니다. type 8 생성 인자의 <code>+0x18</code>과 <code>+0x34</code>에 모두 <code>D[0]</code>이 들어갑니다.</li>
-<li><strong>hdr_direct_jpeg_input</strong> — 기존 압축이 없는 갈래가 D를 SaveCompressImage에 넘기고, <code>D[0]</code>이 압축 인자 <code>+0x8</code>·<code>+0xc</code>에 들어갑니다. DirectCompress는 <code>+0x8</code>을 B로 읽어 T(B)를 <code>P+0x8</code>에 쓰고, <code>P+0x24</code>에는 압축 결과 버퍼 주소가 따로 들어갑니다. 크기는 <code>PathGetCodeSize</code>로 돌려받습니다.</li>
-<li><strong>jpeg_path_creation</strong> — <code>JpegPathInit</code>이 type 1 생성 콜백 <code>0x801df114</code>를 등록하고, 콜백은 <code>P[0]</code>을 <code>path+0xb8</code>에, <code>P+0x8</code>을 첫 표면 설명자(<code>path+0x8</code>)에 복사합니다.</li>
+<li><strong>hdr_output_allocation</strong>: HdrImageMixing이 <code>W+0x70</code>(W는 <code>sp+0x20</code>)에 블록 버퍼 설명자를 둡니다. <code>HdrAllocBlockBufTag</code>가 할당 주소 B를 설명자 워드 0에 저장합니다. PerformImageMixSubImages 동안 B를 보존했다가 성공하면 <code>context+0x3dc</code>에 씁니다.</li>
+<li><strong>hdr_ipu_output_binding</strong>: PerformImageMixSubImages가 <code>W+0x70</code>을 출력 커서로 쓰고 출력 설명자 <code>sp+0x138</code>의 워드 0에 복사합니다. <code>W+0x208 == 0</code>이면 format <code>0xf01</code>로 IpuToneMapRgb에 넘깁니다. 이웃한 톤 매핑 호출 두 곳도 같은 설명자를 씁니다.</li>
+<li><strong>hdr_in_place_ldc</strong>: <code>StillCaptureSaveIcaCreateThumbnail</code>이 D를 <code>StillCaptureLDCPass</code>의 원본과 대상으로 함께 넘기고 되복사 플래그를 켭니다. type 8 생성 인자의 <code>+0x18</code>과 <code>+0x34</code>에 모두 <code>D[0]</code>이 들어갑니다.</li>
+<li><strong>hdr_direct_jpeg_input</strong>: 기존 압축이 없는 갈래가 D를 SaveCompressImage에 넘기고 <code>D[0]</code>이 압축 인자 <code>+0x8</code>·<code>+0xc</code>에 들어갑니다. DirectCompress는 <code>+0x8</code>을 B로 읽어 T(B)를 <code>P+0x8</code>에 씁니다. <code>P+0x24</code>에는 압축 결과 버퍼 주소가 따로 들어갑니다. 크기는 <code>PathGetCodeSize</code>로 돌려받습니다.</li>
+<li><strong>jpeg_path_creation</strong>: <code>JpegPathInit</code>이 type 1 생성 콜백 <code>0x801df114</code>를 등록합니다. 콜백은 <code>P[0]</code>을 <code>path+0xb8</code>에, <code>P+0x8</code>을 첫 표면 설명자(<code>path+0x8</code>)에 복사합니다.</li>
 </ul>
 <p>할당 함수 <code>HdrAllocBlockBufTag</code>를 비롯한 함수 후보 20개가 근거 집합에 있습니다. <a href="analysis/buffer-followup.json">[근거: selected_functions]</a></p>
 </details>
@@ -194,7 +194,7 @@ EXIF 주 설명자: **descriptor == 0 → 기존 압축 크기 사용</code></pr
 
 <section id="passes">
 <h2>처리 패스의 선택과 레지스터 제출 방식</h2>
-<p class="takeaway">처리는 N개의 패스로 나뉘고, 제출 모드가 그중 어느 범위를 실행할지 정합니다. 마지막 패스 플래그는 따로 있으며, CM·FC1은 마지막 패스에만 쓰이는 필터가 아닙니다.</p>
+<p class="takeaway">처리는 N개의 패스로 나뉘고 제출 모드가 그중 어느 범위를 실행할지 정합니다. 마지막 패스 플래그는 따로 있으며 CM·FC1은 마지막 패스에만 쓰이는 필터가 아닙니다.</p>
 
 <figure class="diagram">
 <figcaption>제출 모드별로 고르는 패스 범위</figcaption>
@@ -217,7 +217,7 @@ EXIF 주 설명자: **descriptor == 0 → 기존 압축 크기 사용</code></pr
 <ul class="dg-legend"><li><i class="static"></i>패스(코드를 읽어 확인한 구조)</li><li><i class="key"></i>마지막 패스</li></ul>
 </figure>
 
-<p>패스 수 N은 FIPLIB 결과 객체의 첫 워드에서 읽습니다. 제출 모드는 <code>SetParam</code>으로 정하는 처리기 파라미터 ID <code>0xa</code>(<code>processor+0x284</code>)이고, Commit이 모드에 따라 시작·끝 번호를 정합니다. 선택한 범위 안에서도 task 포인터가 있는 패스만 처리합니다. 이 범위는 실행 대상으로 삼는 소프트웨어 구간이며, 모든 촬영에서 N이나 모드가 같다는 뜻은 아닙니다. 분석한 HDR 경로의 실제 값(N = 4, 모드 0)은 <a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a>에서 확인했습니다. <a href="analysis/pass-followup.json">[근거: pass_selection]</a></p>
+<p>패스 수 N은 FIPLIB 결과 객체의 첫 워드에서 읽습니다. 제출 모드는 <code>SetParam</code>으로 정하는 처리기 파라미터 ID <code>0xa</code>(<code>processor+0x284</code>)이고 Commit이 모드에 따라 시작·끝 번호를 정합니다. 선택한 범위 안에서도 task 포인터가 있는 패스만 처리합니다. 이 범위는 실행 대상으로 삼는 소프트웨어 구간이며 모든 촬영에서 N이나 모드가 같다는 뜻은 아닙니다. 분석한 HDR 경로의 실제 값(N = 4, 모드 0)은 <a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a>에서 확인했습니다. <a href="analysis/pass-followup.json">[근거: pass_selection]</a></p>
 <div class="table-wrap"><table class="fit">
 <caption>Commit의 선택 범위 — 끝 번호는 포함하지 않음</caption>
 <thead><tr><th><code>processor+0x284</code></th><th>시작</th><th>끝</th><th>대상</th></tr></thead>
@@ -233,7 +233,7 @@ EXIF 주 설명자: **descriptor == 0 → 기존 압축 크기 사용</code></pr
 config(i)  = *(*(processor+0x34) + 0x370 + 0x374*i)
 wrapper(i) = *(*(processor+0x40)+4) + 0x24*i
 is_final   = (i == *(processor+0x308)-1)</code></pre>
-<p class="small muted">공통 필터 표({{common_ids}}개 항목)는 모두 0이고, 마지막 패스 전용 표({{final_ids}}개 항목)는 ID 0만 0이 아닙니다. 이는 ROM 표의 내용이며 실행 중 수정이 없다는 증명은 아닙니다. 마지막 패스 플래그, 촬영 모드, 필터 ID를 같은 개념으로 다루지 않습니다. <a href="analysis/pass-followup.json">[근거: final_selector, filter_tables]</a></p>
+<p class="small muted">공통 필터 표({{common_ids}}개 항목)는 모두 0이고 마지막 패스 전용 표({{final_ids}}개 항목)는 ID 0만 0이 아닙니다. 이는 ROM 표의 내용이며 실행 중 수정이 없다는 증명은 아닙니다. 마지막 패스 플래그, 촬영 모드, 필터 ID를 같은 개념으로 다루지 않습니다. <a href="analysis/pass-followup.json">[근거: final_selector, filter_tables]</a></p>
 
 <div id="cbc">
 <h3>레지스터 직접 쓰기와 CBC 배치 제출</h3>
@@ -245,14 +245,14 @@ is_final   = (i == *(processor+0x308)-1)</code></pre>
 <tr><th scope="row">0</th><td>Go가 task를 큐에 넣고 <code>CIpuDriver::RunTask</code>가 <code>WriteAll</code>을 부름 → UID 비교 → 필터 vtable+8</td><td>CM·FC1 기록 함수가 레지스터에 직접 store</td></tr>
 <tr><th scope="row">0이 아님</th><td>Commit이 배치를 만들고 <code>SubmitToBatch</code> → <code>CollectCbcChunks</code> → UID 비교 → 청크 재사용 또는 생성</td><td>같은 객체 필드를 주소·값 쌍으로 RAM 청크에 담아 <code>CbcBatchExec</code>로 실행</td></tr>
 </tbody></table></div>
-<p>두 경로 모두 현재 필터의 UID를 각 경로에 마지막으로 제출한 UID와 비교합니다. CBC에서 UID가 같으면 저장해 둔 청크를 다시 쓰고, 다르면 새로 만듭니다. 따라서 새 설정이 늘 즉시 MMIO 쓰기로 이어진다고 볼 수 없습니다. 청크를 만드는 과정에서 행렬을 새로 계산하는 연산은 보이지 않았습니다. 청크 배치를 하드웨어가 실행하는 과정은 재현하지 않았습니다. <a href="analysis/pass-followup.json">[근거: emission]</a></p>
-<p class="small muted">표시한 CBC 순회는 <code>processor+0x2f0 &lt; 2</code> 분기입니다. Go의 배치 실행에는 끝 번호가 0이 아니라는 조건도 있습니다. 일반 필터 경로는 config가 있고 <code>task+0x1f8 == 0</code>일 것을 요구합니다. CBC 청크 생성 함수는 CM <code>0x8035330c</code>, FC1 <code>0x8031f8c8</code>입니다.</p>
+<p>두 경로 모두 현재 필터의 UID를 각 경로에 마지막으로 제출한 UID와 비교합니다. CBC에서 UID가 같으면 저장해 둔 청크를 다시 쓰고 다르면 새로 만듭니다. 따라서 새 설정이 늘 즉시 MMIO 쓰기로 이어진다고 볼 수 없습니다. 청크를 만드는 과정에서 행렬을 새로 계산하는 연산은 보이지 않았습니다. 청크 배치를 하드웨어가 실행하는 과정은 재현하지 않았습니다. <a href="analysis/pass-followup.json">[근거: emission]</a></p>
+<p class="small muted">표시한 CBC 순회는 <code>processor+0x2f0 &lt; 2</code> 분기입니다. Go의 배치 실행은 끝 번호가 0이 아닐 것도 요구합니다. 일반 필터 경로는 config가 있고 <code>task+0x1f8 == 0</code>일 것을 요구합니다. CBC 청크 생성 함수는 CM <code>0x8035330c</code>, FC1 <code>0x8031f8c8</code>입니다.</p>
 </div>
 </section>
 
 <section id="overwrite">
 <h2>FIPLIB가 덮어쓰는 범위: CM은 일부, FC1은 계수까지</h2>
-<p class="takeaway">한 패스 안에서 상위 설정이 먼저 필터 값을 채우고, 그 뒤 FIPLIB 결과가 같은 필터 객체를 갱신합니다. CM에서는 보조 필드 세 개만, FC1에서는 행렬 계수 아홉 개와 보조 필드까지 바뀝니다.</p>
+<p class="takeaway">한 패스 안에서 상위 설정이 먼저 필터 값을 채우고 그 뒤 FIPLIB 결과가 같은 필터 객체를 갱신합니다. CM에서는 보조 필드 세 개만, FC1에서는 행렬 계수 아홉 개와 보조 필드까지 바뀝니다.</p>
 
 <figure class="diagram">
 <figcaption>FIPLIB setter가 바꾸는 필드와 남기는 필드</figcaption>
@@ -296,13 +296,13 @@ is_final   = (i == *(processor+0x308)-1)</code></pre>
 <tr><th scope="row">3. FIPLIB 활성화</th><td>필터와 wrapper가 모두 있을 때 따로 실행</td><td>CM은 <code>payload+0x30</code> 워드의 bit 0이 0일 때, FC1은 <code>payload+0x44</code> 바이트가 0일 때 활성화</td></tr>
 <tr><th scope="row">그 뒤 실제 기록</th><td>UID 비교, 기록 함수의 갱신 표시 등</td><td>직접 MMIO 또는 CBC 청크</td></tr>
 </tbody></table></div>
-<p>활성화 단계는 값 갱신의 조건과 별개입니다. 그래서 상위 설정의 활성화 값만으로 최종 활성 상태를 정할 수 없습니다. 원본 표 <code>bFiplibFilterCnange</code>(<code>0x80359448</code>)는 ID <code>0xe</code>에 0, ID <code>0xf</code>에 1을 적어 두어, FC1 설정이 들어오면 FIPLIB 재계산 표시가 켜집니다. <a href="analysis/pass-followup.json">[근거: overwrite, enable_gate]</a></p>
+<p>활성화 단계는 값 갱신의 조건과 별개입니다. 그래서 상위 설정의 활성화 값만으로 최종 활성 상태를 정할 수 없습니다. 원본 표 <code>bFiplibFilterCnange</code>(<code>0x80359448</code>)는 ID <code>0xe</code>에 0, ID <code>0xf</code>에 1을 적어 둡니다. 그래서 FC1 설정이 들어오면 FIPLIB 재계산 표시가 켜집니다. <a href="analysis/pass-followup.json">[근거: overwrite, enable_gate]</a></p>
 
 <h3>CM: 행렬은 남고 보조 필드만 바뀝니다</h3>
 <p>CM의 FIPLIB setter(<code>0x803531bc</code>)는 객체의 <code>+0xb0</code>, <code>+0xb4</code>, <code>+0xb8</code>만 바꿉니다. 행렬 계수가 있는 <code>+0x88</code>~<code>+0xa8</code>은 건드리지 않습니다. 이 setter가 실행됐다는 사실만으로 CM 행렬 전체가 덮어써졌다고 볼 수 없습니다. 다른 호출이나 촬영 모드에서도 계수가 보존되는지는 확인하지 않았습니다.</p>
 
 <h3>FC1: 계수가 교체되고 16비트로 잘립니다</h3>
-<p>FC1의 version <code>0xc</code> FIPLIB setter(<code>0x8031f64c</code>)는 payload에서 32비트 값 아홉 개를 읽어 하위 16비트를 객체의 행렬 필드에 저장합니다. 이 경로가 실행되면 앞서 설정한 FC1 계수가 바뀝니다. 기록 함수는 이 16비트 값을 다시 부호 있는 수로 읽어 32비트로 확장합니다. 저장할 때의 잘림과 기록할 때의 부호 확장을 함께 고려해야 합니다. 같은 분배 함수는 version <code>0xf</code>도 받는데, 이때는 값을 2비트 오른쪽으로 민 뒤 하위 16비트를 남깁니다(<code>0x8031f6bc</code>). 분석한 <code>FipLibCalculate</code>는 version <code>0xc</code>를 냅니다.</p>
+<p>FC1의 version <code>0xc</code> FIPLIB setter(<code>0x8031f64c</code>)는 payload에서 32비트 값 아홉 개를 읽습니다. 그중 하위 16비트를 객체의 행렬 필드에 저장합니다. 이 경로가 실행되면 앞서 설정한 FC1 계수가 바뀝니다. 기록 함수는 이 16비트 값을 다시 부호 있는 수로 읽어 32비트로 확장합니다. 저장할 때의 잘림과 기록할 때의 부호 확장을 함께 고려해야 합니다. 같은 분배 함수는 version <code>0xf</code>도 받습니다. 이때는 값을 2비트 오른쪽으로 민 뒤 하위 16비트를 남깁니다(<code>0x8031f6bc</code>). 분석한 <code>FipLibCalculate</code>는 version <code>0xc</code>를 냅니다.</p>
 <div class="table-wrap"><table class="compact">
 <caption>FIPLIB wrapper+0x1c가 가리키는 payload와 필터 객체의 대응</caption>
 <thead><tr><th>필터</th><th>payload</th><th>필터 객체</th><th>기록 주소</th></tr></thead>
@@ -314,7 +314,7 @@ is_final   = (i == *(processor+0x308)-1)</code></pre>
 <p class="small muted">필터 20(<code>CFc2Filter</code>, setter <code>0x80354668</code>, 기록 함수 <code>0x80354970</code>)은 상위 설정 setter 없이 FIPLIB 값·활성화 경로만 탑니다. FC1과 다른 레지스터 묶음을 씁니다. <a href="analysis/pass-followup.json">[근거: overwrite.ccm, overwrite.fc1, overwrite.fc2]</a></p>
 
 <h3>HDR 톤 매핑이 넣는 FC1 계수</h3>
-<p><code>IpuToneMapRgb</code>는 ID <code>0xf</code>, version <code>0xc</code>의 로컬 설정을 만들어 아래 계수 아홉 개와 보조값 두 개를 넣은 뒤, 필터를 설정하고 활성화합니다. 이 값은 상위 설정이면서 동시에 FIPLIB의 입력입니다. <code>PrepareCalculations</code>(<code>0x80349814</code>)가 계수 아홉 개를 설정 구조체 <code>+0x14</code>~<code>+0x24</code>에서 FIPLIB 입력 <code>+0x1074</code>~<code>+0x1084</code>로 복사하기 때문입니다. <a href="analysis/buffer-followup.json">[근거: hdr_local_matrix]</a> <a href="analysis/pass-followup.json">[근거: hdr_integration]</a></p>
+<p><code>IpuToneMapRgb</code>는 ID <code>0xf</code>, version <code>0xc</code>의 로컬 설정을 만들고 아래 계수 아홉 개와 보조값 두 개를 넣습니다. 그 뒤 필터를 설정하고 활성화합니다. 이 값은 상위 설정이면서 동시에 FIPLIB의 입력입니다. <code>PrepareCalculations</code>(<code>0x80349814</code>)가 계수 아홉 개를 설정 구조체 <code>+0x14</code>~<code>+0x24</code>에서 FIPLIB 입력 <code>+0x1074</code>~<code>+0x1084</code>로 복사하기 때문입니다. <a href="analysis/buffer-followup.json">[근거: hdr_local_matrix]</a> <a href="analysis/pass-followup.json">[근거: hdr_integration]</a></p>
 <div class="table-wrap"><table class="fit">
 <caption>IpuToneMapRgb의 FC1 계수(3행 3열)와 2048로 나눈 값</caption>
 <thead><tr><th>행</th><th class="n">열 1</th><th class="n">열 2</th><th class="n">열 3</th><th class="n">행 합</th></tr></thead>
@@ -322,9 +322,9 @@ is_final   = (i == *(processor+0x308)-1)</code></pre>
 </table></div>
 <p class="small muted">보조값 두 개: {{hdr_trailing}}. 괄호 안은 2048로 나눈 값입니다.</p>
 <div class="callout"><strong class="label">이 계수가 최종 FC1에 남는지</strong>
-<p>이 문서의 근거만으로는 FIPLIB 결과가 이 숫자를 유지하는지 알 수 없습니다. 이어진 분석에서, 분석한 새 HDR 경로에서는 FIPLIB의 FC 블록이 이 11개 값을 그대로 복사해 FC1 객체까지 같은 값이 유지된다는 것을 원본 명령 실행으로 확인했습니다. 이 결론은 마지막 패스에 대한 것입니다(<a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>). 패스별로 FC1이 켜지는지는 <a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a>에서 다룹니다.</p></div>
+<p>이 문서의 근거만으로는 FIPLIB 결과가 이 숫자를 유지하는지 알 수 없습니다. 이어진 분석은 이를 원본 명령 실행으로 확인했습니다. 분석한 새 HDR 경로에서는 FIPLIB의 FC 블록이 이 11개 값을 그대로 복사해 FC1 객체까지 같은 값이 유지됩니다. 이 결론은 마지막 패스에 해당합니다(<a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>). 패스별로 FC1이 켜지는지는 <a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a>에서 다룹니다.</p></div>
 <div class="callout plain"><strong class="label">숫자가 뜻하는 것 (해석)</strong>
-<p>JFIF의 RGB→YCbCr 변환식에서 R·G·B의 계수에 2048을 곱해 표의 펌웨어 정수 계수와 비교했습니다. 아홉 항의 절대 차이는 모두 1 미만이며 최댓값은 0.5024입니다. 예를 들어 Y의 R 계수는 펌웨어에서 612이고, JFIF의 대응 계수에 2048을 곱하면 약 612.4입니다. 이 비교는 계수 항에 한정됩니다. JFIF의 Cb·Cr 상수항 +128이 적용되는지와 FC1의 실제 연산 및 고정소수점 분모는 미확인입니다. 펌웨어에도 “601”이라는 이름의 내장 계수가 같은 값으로 들어 있어 FC1의 색 변환 역할을 추정할 근거가 됩니다. <a href="https://www.w3.org/Graphics/JPEG/jfif3.pdf">[JFIF 1.02, 3쪽]</a> · <a href="final-color-report.html">[HDR 제출 분기와 FC 계수]</a></p></div>
+<p>JFIF의 RGB→YCbCr 변환식에서 R·G·B의 계수에 2048을 곱해 표의 펌웨어 정수 계수와 비교했습니다. 아홉 항의 절대 차이는 모두 1 미만이며 최댓값은 0.5024입니다. 예를 들어 Y의 R 계수는 펌웨어에서 612이고 JFIF의 대응 계수에 2048을 곱하면 약 612.4입니다. 이 비교는 계수 항에 한정됩니다. JFIF의 Cb·Cr 상수항 +128이 적용되는지와 FC1의 실제 연산 및 고정소수점 분모는 미확인입니다. 펌웨어에도 “601”이라는 이름의 내장 계수가 같은 값으로 들어 있어 FC1의 색 변환 역할을 추정할 근거가 됩니다. <a href="https://www.w3.org/Graphics/JPEG/jfif3.pdf">[JFIF 1.02, 3쪽]</a> · <a href="final-color-report.html">[HDR 제출 분기와 FC 계수]</a></p></div>
 </section>
 
 <section id="validation">
@@ -335,7 +335,7 @@ is_final   = (i == *(processor+0x308)-1)</code></pre>
 <thead><tr><th>필터</th><th>setter → writer</th><th>실행 전 계수</th><th>실행 후 계수</th><th>계수 보존</th><th class="n">MMIO 쓰기</th></tr></thead>
 <tbody>{{handoff_rows}}</tbody>
 </table></div>
-<p>CM은 계수가 그대로 남았고, FC1은 payload 값의 하위 16비트로 바뀐 뒤 부호 확장되어 기록됐습니다. 시험은 분기 조건을 만족한 상태(갱신 표시 1)에서 두 함수 구간을 검사한 것입니다. 패스 선택, 갱신 조건의 판단, 카메라 전체 실행을 대신하지 않습니다. <a href="analysis/color-handoff-checks.json">[근거: cases]</a> <a href="tools/check_color_handoff.py">[재현 도구]</a> <a href="tests/test_color_handoff.py">[시험]</a></p>
+<p>CM은 계수가 그대로 남았고 FC1은 payload 값의 하위 16비트로 바뀐 뒤 부호 확장되어 기록됐습니다. 시험은 분기 조건을 만족한 상태(갱신 표시 1)에서 두 함수 구간을 검사한 것입니다. 패스 선택, 갱신 조건의 판단, 카메라 전체 실행을 대신하지 않습니다. <a href="analysis/color-handoff-checks.json">[근거: cases]</a> <a href="tools/check_color_handoff.py">[재현 도구]</a> <a href="tests/test_color_handoff.py">[시험]</a></p>
 <details class="evidence"><summary>객체 해시</summary>
 <div class="table-wrap"><table class="compact">
 <thead><tr><th>필터</th><th>실행 후 객체 SHA-256</th></tr></thead>
@@ -362,7 +362,7 @@ is_final   = (i == *(processor+0x308)-1)</code></pre>
 <section id="limits">
 <h2>한계와 재현 방법</h2>
 <ul>
-<li>CPU가 설명자를 넘기고 계수를 갱신하는 것을 확인했어도 ISP 내부 픽셀 계산을 재현한 것은 아닙니다.</li>
+<li>CPU가 설명자를 넘기고 계수를 갱신하는 것은 확인했지만 ISP 내부 픽셀 계산은 재현하지 않았습니다.</li>
 <li>버퍼 연결은 분석한 HDR 성공 경로의 주소 전달입니다. HDR 보정, 사진 프레임, LDC 같은 선택 처리가 픽셀을 바꿔도 주소 연결은 유지될 수 있으므로, 이 결과는 픽셀이 같다는 증명이 아닙니다.</li>
 <li>실제 촬영에서 선택된 패스 수, FIPLIB가 낸 최종 계수, 센서부터 저장 이미지까지의 픽셀 값은 관측하지 않았습니다. EXIF 분류는 주 JPEG 설명자에 대한 것이며 보조 이미지는 별도 경로입니다.</li>
 <li>재실행은 MMIO를 일반 RAM으로 둔 VEX 실행입니다. 패스 스케줄러, RTOS, CBC 엔진, 센서, JPEG 하드웨어는 구동하지 않았습니다.</li>
@@ -392,7 +392,7 @@ python tools/check_color_handoff.py .private/analysis.elf --output .private/colo
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html" aria-current="page">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">DCP 태그·행렬·테이블 비교</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP LUT 좌표·보간·색 처리 전제</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html" aria-current="page">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="routing-report.html"><small>← 이전</small>AF 수신자·색 행렬 레지스터·JPEG 저장</a><a class="next" href="final-color-report.html"><small>다음 →</small>HDR 출력 선택과 FC1 계수</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

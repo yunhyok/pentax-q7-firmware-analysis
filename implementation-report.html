@@ -20,17 +20,17 @@
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 펌웨어를 고치기 전에 확인할 것</a></li><li><a href="#rebuild">448개 압축 블록을 원본과 똑같이 다시 만들었습니다</a></li><li><a href="#loader">카메라는 파일 끝 32바이트를 검사하고, 로더는 헤더로 기록 방식을 고릅니다</a></li><li><a href="#af">AF 기초: 초점 위치 추정 함수의 입출력을 확인했습니다</a></li><li><a href="#ui">UI 기초: 아이콘 번호, 저장 폭, 그리기 규칙을 확인했습니다</a></li><li><a href="#comparison">K-3 Mark III와 무엇이 다른지</a></li><li><a href="#validation">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 펌웨어를 고치기 전에 확인할 것</a></li><li><a href="#rebuild">448개 압축 블록을 원본과 똑같이 다시 만들었습니다</a></li><li><a href="#loader">카메라는 파일 끝 32바이트를 검사하고 로더는 헤더로 기록 방식을 고릅니다</a></li><li><a href="#af">AF 기초: 초점 위치 추정 함수의 입출력을 확인했습니다</a></li><li><a href="#ui">UI 기초: 아이콘 번호, 저장 폭, 그리기 규칙을 확인했습니다</a></li><li><a href="#comparison">K-3 Mark III와 무엇이 다른지</a></li><li><a href="#validation">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>업데이트 파일 안의 <strong>압축 블록 448개</strong>를 풀었다가 다시 써서 원본과 완전히 같은 파일을 얻었습니다. 압축 형식을 정확히 이해했다는 뜻입니다.</li>
+<li>업데이트 파일 안의 <strong>압축 블록 448개</strong>를 풀었다가 다시 써서 원본과 완전히 같은 파일을 얻었습니다. 이 결과로 압축 형식을 정확히 이해했음을 확인했습니다.</li>
 <li><strong>명령 하나</strong>(버전 정보 함수의 반환값 0을 1로)를 바꾼 파일도 크기와 배치를 그대로 둔 채 만들었습니다. 이 파일을 다시 풀어 PC 에뮬레이터에서 실행하니 1이 반환됐습니다.</li>
 <li>카메라 본 프로그램의 파일 검사 함수는 <strong>파일 끝 32바이트</strong>에 있는 식별자 3개와 바이트 합계만 확인합니다. 로더는 헤더의 종류 값에 따라 기록 함수를 고릅니다. 실제 파일의 값은 NAND 기록 함수를 가리킵니다.</li>
-<li>AF의 초점 위치 추정 함수와 화면 아이콘 그리기 함수도 원본 코드로 실행해 입출력 규칙을 확인했습니다. AF나 화면을 바꾼 펌웨어를 만든 것은 아닙니다.</li>
+<li>AF의 초점 위치 추정 함수와 화면 아이콘 그리기 함수도 원본 코드로 실행해 입출력 규칙을 확인했습니다. AF나 화면을 바꾼 펌웨어는 만들지 않았습니다.</li>
 <li>모든 실험은 PC에서 했습니다. 바꾼 파일을 카메라가 받아들이는지, 기록하고 부팅하는지는 확인하지 않았습니다.</li>
 </ul>
 </section>
@@ -65,7 +65,7 @@
 
 <section id="background">
 <h2>배경: 펌웨어를 고치기 전에 확인할 것</h2>
-<p>Q7의 업데이트 파일 <code>fwdc603p.bin</code>은 여러 실행 파일(<dfn title="Executable and Linkable Format. 실행 코드와 데이터를 담는 표준 파일 형식">ELF</dfn>)을 묶은 꾸러미입니다. 카메라 본 프로그램의 코드 대부분은 압축돼 있고, 압축은 <strong>블록</strong> 448개로 나뉘어 있습니다. 블록 하나는 머리말, 부호표 두 개, 압축 비트열로 이루어집니다. 압축을 푸는 방법은 <a href="deep-report.html">압축 복원과 주요 함수 300개</a>에서 다룹니다.</p>
+<p>Q7의 업데이트 파일 <code>fwdc603p.bin</code>은 여러 실행 파일(<dfn title="Executable and Linkable Format. 실행 코드와 데이터를 담는 표준 파일 형식">ELF</dfn>)을 묶은 꾸러미입니다. 카메라 본 프로그램의 코드 대부분은 압축돼 있고 압축은 <strong>블록</strong> 448개로 나뉘어 있습니다. 블록 하나는 머리말, 부호표 두 개, 압축 비트열로 이루어집니다. 압축을 푸는 방법은 <a href="deep-report.html">압축 복원과 주요 함수 300개</a>에서 다룹니다.</p>
 <p>코드를 한 줄이라도 바꾸려면 푼 내용을 다시 같은 형식으로 묶어야 합니다. 이 작업을 <dfn title="압축을 풀어 고친 뒤 원래 형식으로 다시 묶는 일">재패킹</dfn>이라고 부릅니다. 압축 비트열은 <dfn title="압축 데이터의 최소 단위. 글자 하나를 그대로 적는 리터럴과, 앞에 나온 내용을 다시 쓰라는 복사 두 종류가 있습니다">토큰</dfn>의 나열입니다. 토큰은 바이트 하나를 그대로 적는 “리터럴”과 앞에 나온 내용을 가져오는 “복사” 두 종류입니다.</p>
 <p>이 문서는 서로 다른 네 가지 조사를 묶은 기록입니다. 앞의 둘이 이 주제(업데이트와 재패킹)에 속합니다.</p>
 <ol class="flow">
@@ -146,7 +146,7 @@
 </figure>
 
 <h3>왕복 검증</h3>
-<p>도구는 블록마다 압축 비트열을 토큰으로 해석하고, 그 토큰을 다시 비트열로 적습니다. 부호표와 블록 자리는 건드리지 않습니다. 이렇게 만든 파일은 전체 SHA-256이 원본과 같았습니다. 압축을 푼 내용으로 만든 분석용 ELF도 원본에서 만든 것과 같았습니다. <a href="analysis/rebuild-evidence.json">[근거: roundtrip]</a></p>
+<p>도구는 블록마다 압축 비트열을 토큰으로 해석하고 그 토큰을 다시 비트열로 적습니다. 부호표와 블록 자리는 건드리지 않습니다. 이렇게 만든 파일은 전체 SHA-256이 원본과 같았습니다. 압축을 푼 내용으로 만든 분석용 ELF도 원본에서 만든 것과 같았습니다. <a href="analysis/rebuild-evidence.json">[근거: roundtrip]</a></p>
 <div class="table-wrap"><table class="fit">
 <caption>압축 구간 네 곳의 블록과 토큰</caption>
 <thead><tr><th>구간</th><th class="n">블록</th><th class="n">토큰</th><th>복원 내용 SHA-256 (앞 16자리)</th></tr></thead>
@@ -155,7 +155,7 @@
 <p class="small muted">E04·E05·E06은 업데이트 파일에 들어 있는 ELF의 번호입니다. 분석용 ELF는 압축을 푼 코드를 PC에서 읽기 좋게 묶은 파일이며 카메라에 넣는 업데이트 파일이 아닙니다.</p>
 
 <h3>명령 하나를 바꾼 실험</h3>
-<p>바꾼 곳은 <code>GetFirmwareReleaseVersion</code>이라는 두 명령짜리 함수입니다. 이 함수는 0을 돌려주고 끝납니다. MIPS에서는 복귀 명령(<code>jr ra</code>) 바로 다음 명령이 복귀 전에 실행됩니다. 이 자리를 <dfn title="MIPS에서 분기·복귀 명령 바로 뒤에 놓인 명령. 분기가 일어나기 전에 먼저 실행됩니다">지연 슬롯</dfn>이라고 하며, 여기서 반환값을 정합니다. 이 명령을 “0을 넣어라”에서 “1을 넣어라”로 바꿨습니다.</p>
+<p>바꾼 곳은 <code>GetFirmwareReleaseVersion</code>이라는 두 명령짜리 함수입니다. 이 함수는 0을 돌려주고 끝납니다. MIPS에서는 복귀 명령(<code>jr ra</code>) 바로 다음 명령이 복귀 전에 실행됩니다. 이 자리를 <dfn title="MIPS에서 분기·복귀 명령 바로 뒤에 놓인 명령. 분기가 일어나기 전에 먼저 실행됩니다">지연 슬롯</dfn>이라고 하며 여기서 반환값을 정합니다. 이 명령을 “0을 넣어라”에서 “1을 넣어라”로 바꿨습니다.</p>
 <div class="table-wrap"><table>
 <caption>같은 크기를 유지한 변경 실험의 결과</caption>
 <thead><tr><th>항목</th><th>값</th></tr></thead>
@@ -163,7 +163,7 @@
 </table></div>
 <p>코드 4바이트를 바꾸면 그 뒤의 “복사” 토큰 일부가 틀린 내용을 가져오게 됩니다. 도구는 이런 토큰을 같은 블록의 부호표에 있는 리터럴로 바꿉니다. 다음 블록이 앞 블록을 참조하는 경우도 검사합니다. 필요한 리터럴이 부호표에 없거나 결과가 기존 자리를 넘으면 오류를 내고 멈춥니다. <a href="tools/repack_q7.py">[재패킹 도구]</a> · <a href="tests/test_repack_q7.py">[경계 시험]</a></p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>이 변경은 재패킹 경로를 확인하려는 실험입니다. AF나 화면 기능을 바꾼 펌웨어가 아니며, 바꾼 파일은 배포하지 않습니다. 코드를 끼워 넣거나 지우는 편집, 일반 압축기, 재배치는 이 도구가 지원하지 않습니다. 꼬리표의 버전 바이트도 바꾸지 않았습니다.</p></div>
+<p>이 변경은 재패킹 경로를 확인하려는 실험입니다. AF나 화면 기능을 바꾼 펌웨어가 아니며 바꾼 파일은 배포하지 않습니다. 코드를 끼워 넣거나 지우는 편집, 일반 압축기, 재배치는 이 도구가 지원하지 않습니다. 꼬리표의 버전 바이트도 바꾸지 않았습니다.</p></div>
 <details class="evidence"><summary>파일과 분석용 ELF의 해시</summary>
 <dl class="kv">
 <dt>원본 업데이트 파일</dt><dd><code class="wrap">8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b</code></dd>
@@ -176,11 +176,11 @@
 </section>
 
 <section id="loader">
-<h2>카메라는 파일 끝 32바이트를 검사하고, 로더는 헤더로 기록 방식을 고릅니다</h2>
+<h2>카메라는 파일 끝 32바이트를 검사하고 로더는 헤더로 기록 방식을 고릅니다</h2>
 <p class="takeaway">본 프로그램의 검사 함수를 통과하는 조건은 식별자 3개와 바이트 합계입니다. 실제 기록을 맡는 로더는 별도 헤더의 종류 값 3을 보고 NAND 기록 함수를 선택합니다.</p>
 
 <h3>본 프로그램의 파일 검사</h3>
-<p>카메라 본 프로그램에는 <code>UpdateFW_IsCorrectUpdateFirmware</code>라는 함수가 있습니다. 이 함수는 파일의 마지막 32바이트(이 문서에서는 “꼬리표”라고 부릅니다)를 읽어 세 식별자를 비교하고, 꼬리표 앞의 모든 바이트를 더한 값을 꼬리표에 적힌 합계와 비교합니다. 호출 순서를 보면 이 검사는 파일 준비(<code>UpdateFW_LoadFirmware</code>)와 업데이트 실행(<code>UpdateFW_UpdateFirmware</code>)보다 앞에 있습니다.</p>
+<p>카메라 본 프로그램에는 <code>UpdateFW_IsCorrectUpdateFirmware</code>라는 함수가 있습니다. 이 함수는 파일의 마지막 32바이트(이 문서에서는 “꼬리표”라고 부릅니다)를 읽어 세 식별자를 비교합니다. 또 꼬리표 앞의 모든 바이트를 더한 값을 꼬리표에 적힌 합계와 비교합니다. 호출 순서를 보면 이 검사는 파일 준비(<code>UpdateFW_LoadFirmware</code>)와 업데이트 실행(<code>UpdateFW_UpdateFirmware</code>)보다 앞에 있습니다.</p>
 
 <figure class="diagram">
 <figcaption>검사 함수가 보는 범위</figcaption>
@@ -224,7 +224,7 @@
 꼬리표[24:28] (리틀엔디언 32비트) == 꼬리표 앞 모든 바이트의 합 mod 2^32
 꼬리표[28:32] = 01 01 17 0a   ← 이 함수는 비교하지 않음</code></pre>
 
-<p>이 함수를 원본 코드 그대로 13가지 입력으로 실행했습니다. 입력은 본문 64바이트에 꼬리표 32바이트를 붙인 합성 96바이트 파일입니다. 파일 읽기와 메모리 할당은 모델이 대신했고, 식별자 비교와 합계 계산은 원본 명령이 수행했습니다.</p>
+<p>이 함수를 원본 코드 그대로 13가지 입력으로 실행했습니다. 입력은 본문 64바이트에 꼬리표 32바이트를 붙인 합성 96바이트 파일입니다. 파일 읽기와 메모리 할당은 모델이 대신했고 식별자 비교와 합계 계산은 원본 명령이 수행했습니다.</p>
 <div class="table-wrap"><table>
 <caption>검사 함수 13사례. 반환값 1은 통과, 0은 거부입니다</caption>
 <thead><tr><th>사례</th><th>넣은 조건</th><th class="n">반환값</th></tr></thead>
@@ -241,7 +241,7 @@
 </details>
 
 <h3>로더의 기록 함수 선택</h3>
-<p>업데이트 파일 맨 앞에는 본 프로그램과 별개인 실행 파일이 하나 들어 있습니다. 내장 ELF 가운데 첫째여서 E01이라 부르며, 저장장치에 기록하는 코드를 담은 <strong>로더</strong>입니다. 로더는 파일 오프셋 <code>0x100000</code>에 있는 192바이트 헤더(burn header)를 읽습니다. 로더의 <code>BurnGetHandle</code>은 헤더의 종류 값(<code>+0x08</code>)에 따라 기록 함수를 하나 골라 작업용 구조체(핸들)에 적어 둡니다.</p>
+<p>업데이트 파일 맨 앞에는 본 프로그램과 별개인 실행 파일이 하나 들어 있습니다. 내장 ELF 가운데 첫째여서 E01이라 부르며 저장장치에 기록하는 코드를 담은 <strong>로더</strong>입니다. 로더는 파일 오프셋 <code>0x100000</code>에 있는 192바이트 헤더(burn header)를 읽습니다. 로더의 <code>BurnGetHandle</code>은 헤더의 종류 값(<code>+0x08</code>)에 따라 기록 함수를 하나 골라 작업용 구조체(핸들)에 적어 둡니다.</p>
 
 <figure class="diagram">
 <figcaption>헤더의 종류 값에 따른 기록 함수 선택</figcaption>
@@ -290,7 +290,7 @@
 <thead><tr><th>종류 값</th><th class="n">해시 플래그</th><th>핸들에 적힌 기록 함수 (E01 안의 주소)</th></tr></thead>
 <tbody><tr><th scope="row">3 (실제 파일의 값)</th><td class="n">0</td><td><code>BurnNand</code> <code>0x80012654</code></td></tr><tr><th scope="row">3</th><td class="n">1</td><td><code>BurnNand</code> <code>0x80012654</code></td></tr><tr><th scope="row">8</th><td class="n">0</td><td><code>BurnLbaNand</code> <code>0x8001e328</code></td></tr><tr><th scope="row">5</th><td class="n">0</td><td><code>BurnSdMmc</code> <code>0x80010f18</code></td></tr><tr><th scope="row">7</th><td class="n">0</td><td>선택 없음 (핸들을 만들지 않고 NULL 반환)</td></tr></tbody>
 </table></div>
-<p>헤더 <code>+0x3c</code>에는 해시 플래그가 있습니다. 이 값이 0이 아니면 로더는 MD5 계산을 맡는 작업자를 따로 준비하고 16바이트를 비교합니다. 실제 파일의 값은 0이어서 이 경로를 쓰지 않습니다. 플래그가 켜졌을 때의 코드는 읽어서 확인했고, 실제 계산은 <a href="loader-hash-report.html">기록 헤더와 MD5 경로</a>에서 실행했습니다. 플래그가 0이라고 해서 다른 무결성 검사나 저장장치 조건이 없다고 볼 수는 없습니다. <a href="analysis/rebuild-evidence.json">[근거: boot_dispatch]</a> · <a href="tools/check_rebuild_code.py">[재현 도구]</a></p>
+<p>헤더 <code>+0x3c</code>에는 해시 플래그가 있습니다. 이 값이 0이 아니면 로더는 MD5 계산을 맡는 작업자를 따로 준비하고 16바이트를 비교합니다. 실제 파일의 값은 0이어서 이 경로를 쓰지 않습니다. 플래그가 켜졌을 때의 코드는 읽어서 확인했고 실제 계산은 <a href="loader-hash-report.html">기록 헤더와 MD5 경로</a>에서 실행했습니다. 플래그가 0이라고 해서 다른 무결성 검사나 저장장치 조건이 없다고 볼 수는 없습니다. <a href="analysis/rebuild-evidence.json">[근거: boot_dispatch]</a> · <a href="tools/check_rebuild_code.py">[재현 도구]</a></p>
 <div class="callout"><strong class="label">주소를 읽을 때</strong>
 <p>E01의 주소는 본 프로그램의 주소와 일부 겹칩니다. 그래서 E01의 명령은 E01 이미지 안의 주소와 원본 파일 오프셋을 함께 적어 구분했습니다. E01 함수의 범위는 ELF 심볼(<code>STT_FUNC</code>)에 적힌 크기를 썼습니다. 본 프로그램에도 이름이 같은 <code>BurnGetHandle</code>·<code>BurnNand</code>가 따로 있습니다. 이 차이는 <a href="update-service-report.html">메인 업데이트 진입과 반환값</a>에서 다룹니다.</p></div>
 <details class="evidence"><summary>로더 이미지와 헤더의 위치·해시</summary>
@@ -371,15 +371,15 @@
 </details>
 
 <h3>렌즈 구동 요청</h3>
-<p>추정값은 <code>LensDriveControl</code>이라는 함수가 렌즈 구동 요청으로 바꿉니다. 이 함수는 모드·방향 같은 8비트 값, 16비트 값 하나, 32비트 위치 차이를 공유 구조체에 적고 등록된 콜백에 알립니다. 요청은 렌즈 통신 함수 <code>LensCommunication</code> 쪽으로 넘어갑니다. 하위 제한 모드가 켜진 조건에서는 요청을 큐에 넣지 않고 상태 8을 돌려주며, 관측한 대기 시간 초과 경로는 상태 6을 돌려줍니다. 여기서 본 것은 메모리에 적힌 인수입니다. 실제 통신선에서 잡은 신호가 아닙니다. <a href="analysis/lens-routing.json">[근거: 렌즈 경로]</a> · <a href="analysis/portability-evidence.json">[근거: af.lens_abi]</a></p>
-<p>리코의 공식 자료에 따르면 01·02 Q 마운트 렌즈는 AF 모터가 렌즈 안에 있고, K 마운트 렌즈를 어댑터 Q로 붙이면 수동 초점만 쓸 수 있습니다. 따라서 Q7의 AF 계산을 연구할 때 K 마운트 바디의 구동 방식을 그대로 가져올 수 없습니다. <a href="https://www.ricoh-imaging.co.jp/english/news/2011/201109.html">[리코: Q 마운트 렌즈 발표]</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html">[리코: Q7 FAQ]</a></p>
+<p>추정값은 <code>LensDriveControl</code>이라는 함수가 렌즈 구동 요청으로 바꿉니다. 이 함수는 모드·방향 같은 8비트 값, 16비트 값 하나, 32비트 위치 차이를 공유 구조체에 적고 등록된 콜백에 알립니다. 요청은 렌즈 통신 함수 <code>LensCommunication</code> 쪽으로 넘어갑니다. 하위 제한 모드가 켜진 조건에서는 요청을 큐에 넣지 않고 상태 8을 돌려주며 관측한 대기 시간 초과 경로는 상태 6을 돌려줍니다. 여기서 본 것은 메모리에 적힌 인수입니다. 실제 통신선에서 잡은 신호가 아닙니다. <a href="analysis/lens-routing.json">[근거: 렌즈 경로]</a> · <a href="analysis/portability-evidence.json">[근거: af.lens_abi]</a></p>
+<p>리코의 공식 자료에 따르면 01·02 Q 마운트 렌즈는 AF 모터가 렌즈 안에 있고 K 마운트 렌즈를 어댑터 Q로 붙이면 수동 초점만 쓸 수 있습니다. 따라서 Q7의 AF 계산을 연구할 때 K 마운트 바디의 구동 방식을 그대로 가져올 수 없습니다. <a href="https://www.ricoh-imaging.co.jp/english/news/2011/201109.html">[리코: Q 마운트 렌즈 발표]</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html">[리코: Q7 FAQ]</a></p>
 <div class="callout"><strong class="label">이어지는 문서</strong>
 <p>AF를 바꾸는 일은 이 문서의 범위가 아닙니다. 렌즈가 AF를 지원하는지 판정하는 조건은 <a href="loader-lens-report.html#lens">Loader 입력 검증과 렌즈 정책</a>, 명령과 완료 판정은 <a href="af-completion-report.html">AF 명령과 완료 판정</a>에서 이어집니다. 전체 지도는 <a href="guide-af.html">AF·렌즈 안내</a>에 있습니다.</p></div>
 </section>
 
 <section id="ui">
 <h2>UI 기초: 아이콘 번호, 저장 폭, 그리기 규칙을 확인했습니다</h2>
-<p class="takeaway">Q7의 화면 아이콘은 색 대신 팔레트 번호 한 바이트씩을 화면 버퍼에 씁니다. 번호 0은 투명이고, 재색칠 스타일에서는 번호 1만 남기고 나머지를 지정한 번호로 바꿉니다.</p>
+<p class="takeaway">Q7의 화면 아이콘은 색 대신 팔레트 번호 한 바이트씩을 화면 버퍼에 씁니다. 번호 0은 투명이고 재색칠 스타일에서는 번호 1만 남기고 나머지를 지정한 번호로 바꿉니다.</p>
 <ol class="flow">
 <li class="static"><strong>버튼 입력</strong><span>4방향 키, 전자 다이얼, OK, MENU</span></li>
 <li class="static"><strong>메뉴 부품</strong><span>Canvas·Popup과 설정 번호. 포커스와 명령을 처리</span></li>
@@ -387,7 +387,7 @@
 <li class="ok"><strong>인덱스 그리기</strong><span>팔레트 번호를 화면 버퍼에 기록</span></li>
 <li class="open"><strong>팔레트와 LCD</strong><span>실제 색과 화면 출력은 확인하지 않음</span></li>
 </ol>
-<p>아이콘은 두 묶음에 들어 있습니다. 아이콘 초기화 함수 <code>ResourceIcon_InitializeBootStill</code>(이하 BootStill)이 만드는 표의 항목 수로 확인한 범위는 <dfn title="Run-Length Encoding. 같은 값이 이어지는 구간을 값과 개수로 적는 단순한 압축">RLE</dfn> 묶음이 번호 1…248, Zoran 묶음이 번호 1001…1546입니다. 번호를 고르는 함수만 보아서는 두 범위 사이의 잘못된 번호가 안전하게 처리된다고 말할 수 없습니다.</p>
+<p>아이콘은 두 묶음에 들어 있습니다. 범위는 아이콘 초기화 함수 <code>ResourceIcon_InitializeBootStill</code>(이하 BootStill)이 만드는 표의 항목 수로 확인했습니다. <dfn title="Run-Length Encoding. 같은 값이 이어지는 구간을 값과 개수로 적는 단순한 압축">RLE</dfn> 묶음이 번호 1…248, Zoran 묶음이 번호 1001…1546입니다. 번호를 고르는 함수만 보아서는 두 범위 사이의 잘못된 번호가 안전하게 처리된다고 말할 수 없습니다.</p>
 <p>아이콘에는 폭이 두 가지 있습니다. 화면 배치에 쓰는 논리 폭과, 압축을 푼 데이터의 저장 폭입니다. 두 값은 서로 다릅니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>원본 크기 조회 함수를 실행한 결과</caption>
@@ -411,7 +411,7 @@
 
 <section id="comparison">
 <h2>K-3 Mark III와 무엇이 다른지</h2>
-<p class="takeaway">K-3 Mark III의 메뉴 설계는 참고할 수 있지만, 실행 파일과 자원을 그대로 옮겨 쓸 수 있다는 근거는 없습니다.</p>
+<p class="takeaway">K-3 Mark III의 메뉴 설계는 참고할 수 있지만 실행 파일과 자원을 그대로 옮겨 쓸 수 있다는 근거는 없습니다.</p>
 <p>비교 기준은 K-3 Mark III 저장소의 공개 커밋 <code>1617d141021f95f3a915b000ff701637dcec3967</code>입니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/1617d141021f95f3a915b000ff701637dcec3967/analysis/update-resource-evidence.json">[고정 커밋의 K-3 Mark III 업데이트·자원 근거]</a></p>
 <div class="table-wrap"><table>
 <caption>같은 연구 항목에서 두 기종이 다른 점</caption>
@@ -433,9 +433,9 @@
 <h2>한계와 재현 방법</h2>
 <p>이 문서의 검증은 파일 구조, 원본 MIPS 명령, 합성 메모리에 한정됩니다. 카메라의 플래시 기록, 부팅, 센서 픽셀, 실제 렌즈 구동, LCD 출력은 실행하지 않았습니다.</p>
 <ul>
-<li><strong>재패킹</strong>: 448블록을 모두 다시 풀어 원본과 바이트 단위로 일치함을 확인했고, 바꾼 코드의 반환값 0 → 1을 실행으로 확인했습니다. 지원하는 편집은 크기가 같은 교체뿐입니다.</li>
-<li><strong>파일 검사</strong>: 13사례. 파일 입출력·메모리 할당·진단 출력은 모델이고, 비교와 합산은 원본 코드입니다.</li>
-<li><strong>로더 헤더</strong>: 5사례. 메모리 할당과 진단 출력만 모델로 바꿨고, 기록 함수를 부르기 전에 멈췄습니다.</li>
+<li><strong>재패킹</strong>: 448블록을 모두 다시 풀어 원본과 바이트 단위로 일치함을 확인했고 바꾼 코드의 반환값 0 → 1을 실행으로 확인했습니다. 지원하는 편집은 크기가 같은 교체뿐입니다.</li>
+<li><strong>파일 검사</strong>: 13사례. 파일 입출력·메모리 할당·진단 출력은 모델이고 비교와 합산은 원본 코드입니다.</li>
+<li><strong>로더 헤더</strong>: 5사례. 메모리 할당과 진단 출력만 모델로 바꿨고 기록 함수를 부르기 전에 멈췄습니다.</li>
 <li><strong>AF·UI</strong>: AF 6사례, 크기 조회 6사례(아이콘 5개와 LCD 좌표 1개), 그리기 2사례. 화면 버퍼를 돌려주는 함수 한 곳을 모델로 바꿨습니다.</li>
 <li><strong>남은 일</strong>: 로더가 기록할 위치·보호 조건·실제 적용 조건, 카메라의 파일 수용과 부팅. 앞의 둘은 <a href="guide-update.html">업데이트·재패킹 안내</a>의 뒤 문서들이 이어서 다룹니다.</li>
 </ul>

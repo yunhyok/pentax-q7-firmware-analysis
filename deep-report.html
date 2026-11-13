@@ -27,18 +27,18 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>업데이트 파일 안의 압축 블록 <strong>448개를 모두 풀어</strong> 카메라 프로그램 네 구간(11,266,048바이트)을 되살렸습니다. 이것으로 분석용 MIPS 코드 이미지를 만들 수 있었고, 이후 모든 문서가 이 이미지를 씁니다.</li>
+<li>업데이트 파일 안의 압축 블록 <strong>448개를 모두 풀어</strong> 카메라 프로그램 네 구간(11,266,048바이트)을 되살렸습니다. 이것으로 분석용 MIPS 코드 이미지를 만들 수 있었고 이후 모든 문서가 이 이미지를 씁니다.</li>
 <li>펌웨어 속 작은 파일시스템에서 <strong>주소·이름 레코드 122,154개</strong>를 찾아 코드 주소에 함수 이름을 붙였습니다. 이름이 있으니 수십만 개 명령 중에서 볼 곳을 고를 수 있었습니다.</li>
 <li>이름을 보고 고른 <strong>함수 300개</strong>의 범위와 호출 목록을 만들고 Ghidra로 C 코드 모양으로 바꿨습니다. 이를 바탕으로 ThreadX 커널이 첫 스레드를 띄우는 과정과 AF·셔터·JPEG·색 처리의 호출 관계를 읽었습니다.</li>
-<li>색 행렬 함수 두 개는 원본 MIPS 명령을 PC 에뮬레이터에서 실행했고 <strong>6개 사례가 모두</strong> 따로 계산한 값과 같았습니다. 나머지는 코드를 읽어서 판단한 것이며, 카메라에서 실행한 실험은 없습니다.</li>
-<li>이 문서는 사이트의 첫 개관입니다. AF 렌즈 명령의 수신자, 색 행렬이 하드웨어 레지스터에 닿는 경로, HDR 사진의 JPEG 압축 위치는 <strong>이후 문서에서 더 밝혀졌으며</strong>, 해당 절마다 링크로 표시했습니다.</li>
+<li>색 행렬 함수 두 개는 원본 MIPS 명령을 PC 에뮬레이터에서 실행했고 <strong>6개 사례가 모두</strong> 따로 계산한 값과 같았습니다. 나머지는 코드를 읽어서 판단한 것이며 카메라에서 실행한 실험은 없습니다.</li>
+<li>이 문서는 사이트의 첫 개관입니다. AF 렌즈 명령의 수신자, 색 행렬이 하드웨어 레지스터에 닿는 경로, HDR 사진의 JPEG 압축 위치는 <strong>이후 문서에서 더 밝혀졌습니다</strong>. 해당 절마다 링크로 표시했습니다.</li>
 </ul>
 </section>
 
 <div class="scope">
 <div class="ok"><h3><span class="badge ok">확인</span> 파일 바이트·원본 명령으로 확인</h3>
 <ul>
-<li>압축 블록 448개가 선언된 길이에서 끝 표식에 닿고, 구간 길이가 ELF 선언과 같음</li>
+<li>압축 블록 448개가 선언된 길이에서 끝 표식에 닿고 구간 길이가 ELF 선언과 같음</li>
 <li>심볼 파일 3개의 위치·크기·SHA-256</li>
 <li>행렬 함수 두 개의 원본 명령 실행 결과 6사례</li>
 </ul></div>
@@ -63,8 +63,8 @@
 
 <section id="background">
 <h2>배경: 업데이트 파일에서 읽을 수 있는 코드까지</h2>
-<p class="takeaway">업데이트 파일을 그대로 디스어셈블하면 압축된 바이트만 나옵니다. 압축을 풀고, 주소에 이름을 붙이고, 볼 함수를 고르는 세 단계를 거쳐야 코드를 읽을 수 있습니다.</p>
-<p>Q7의 업데이트 파일 <code>fwdc603p.bin</code>(18,743,520바이트)은 리코 공식 배포본과 바이트 단위로 같습니다. 파일 안에는 MIPS용 ELF 12개가 들어 있습니다. 파일 구조와 12개 ELF는 <a href="structure-report.html">펌웨어 파일 구조</a>에서 다룹니다. 이 문서는 그 다음 단계, 곧 카메라 본 프로그램의 코드를 읽을 수 있게 만드는 과정과 그 코드로 처음 알아낸 것을 정리합니다.</p>
+<p class="takeaway">업데이트 파일을 그대로 디스어셈블하면 압축된 바이트만 나옵니다. 압축을 풀고 주소에 이름을 붙이고 볼 함수를 고르는 세 단계를 거쳐야 코드를 읽을 수 있습니다.</p>
+<p>Q7의 업데이트 파일 <code>fwdc603p.bin</code>(18,743,520바이트)은 리코 공식 배포본과 바이트 단위로 같습니다. 파일 안에는 MIPS용 ELF 12개가 들어 있습니다. 파일 구조와 12개 ELF는 <a href="structure-report.html">펌웨어 파일 구조</a>에서 다룹니다. 이 문서는 그 다음 단계를 다룹니다. 카메라 본 프로그램의 코드를 읽을 수 있게 만드는 과정과 그 코드로 처음 알아낸 것을 정리합니다.</p>
 
 <figure class="diagram">
 <figcaption>분석 파이프라인: 업데이트 파일에서 에뮬레이터 검산까지</figcaption>
@@ -114,11 +114,11 @@
 <h3>이 문서를 읽는 데 필요한 네 가지</h3>
 <dl class="kv">
 <dt>MIPS 명령과 <code>jal</code></dt>
-<dd>Q7의 CPU는 32비트 리틀엔디언 MIPS 명령을 씁니다. 함수 호출은 <dfn title="Jump And Link. 돌아올 주소를 31번 레지스터에 넣고 대상 주소로 점프하는 MIPS 명령">jal</dfn> 명령이며, 돌아올 주소를 31번 레지스터에 넣고 점프합니다. 점프 바로 뒤 명령 하나는 점프보다 먼저 실행됩니다. 이 자리를 <dfn title="MIPS에서 분기·점프 명령 바로 뒤에 놓여 분기 전에 실행되는 명령 자리">지연 슬롯</dfn>이라 부릅니다. 이 문서의 "호출 관계"는 이런 명령어를 하나씩 읽어 얻은 것입니다.</dd>
+<dd>Q7의 CPU는 32비트 리틀엔디언 MIPS 명령을 씁니다. 함수 호출은 <dfn title="Jump And Link. 돌아올 주소를 31번 레지스터에 넣고 대상 주소로 점프하는 MIPS 명령">jal</dfn> 명령이며 돌아올 주소를 31번 레지스터에 넣고 점프합니다. 점프 바로 뒤 명령 하나는 점프보다 먼저 실행됩니다. 이 자리를 <dfn title="MIPS에서 분기·점프 명령 바로 뒤에 놓여 분기 전에 실행되는 명령 자리">지연 슬롯</dfn>이라 부릅니다. 이 문서의 "호출 관계"는 이런 명령어를 하나씩 읽어 얻은 것입니다.</dd>
 <dt>ThreadX</dt>
-<dd>카메라 본 프로그램의 <dfn title="정해진 시간 안에 작업을 처리하도록 만든 작은 운영체제">실시간 운영체제(RTOS)</dfn>입니다. 펌웨어에 <code>ThreadX LX4180/Green Hills</code> 식별 문자열이 있고, 파일시스템은 같은 계열의 FileX(FAT12·16·32 호환)입니다. 작업은 스레드 단위로 나뉘고, 커널이 우선순위에 따라 스레드를 번갈아 실행합니다.</dd>
+<dd>카메라 본 프로그램의 <dfn title="정해진 시간 안에 작업을 처리하도록 만든 작은 운영체제">실시간 운영체제(RTOS)</dfn>입니다. 펌웨어에 <code>ThreadX LX4180/Green Hills</code> 식별 문자열이 있고 파일시스템은 같은 계열의 FileX(FAT12·16·32 호환)입니다. 작업은 스레드 단위로 나뉘고 커널이 우선순위에 따라 스레드를 번갈아 실행합니다.</dd>
 <dt>심볼 복원</dt>
-<dd>코드 주소에 함수 이름을 다시 붙이는 일입니다. Q7은 주소 배열, 문자열 오프셋 배열, 문자열 모음을 별도 파일 세 개로 펌웨어에 넣어 두었습니다. 셋을 이으면 "주소 → 이름" 레코드가 됩니다. 이름은 개발자가 붙인 원래 이름이지만, 그 함수의 범위나 종류(함수인지 데이터인지)는 알려 주지 않습니다.</dd>
+<dd>코드 주소에 함수 이름을 다시 붙이는 일입니다. Q7은 주소 배열, 문자열 오프셋 배열, 문자열 모음을 별도 파일 세 개로 펌웨어에 넣어 두었습니다. 셋을 이으면 "주소 → 이름" 레코드가 됩니다. 이름은 개발자가 붙인 원래 이름이지만 그 함수의 범위나 종류(함수인지 데이터인지)는 알려 주지 않습니다.</dd>
 <dt>디컴파일 기록</dt>
 <dd><dfn title="기계어를 사람이 읽기 쉬운 C 언어 모양으로 되돌리는 작업">디컴파일</dfn> 도구가 만든 C 코드와 그 해시를 말합니다. 원래 소스 코드가 아니라 도구의 재구성입니다. C 출력이 생겼다고 해서 변수 형식이나 간접 호출 대상까지 맞게 복원됐다는 뜻은 아닙니다.</dd>
 </dl>
@@ -128,21 +128,21 @@
 
 <section id="recovery">
 <h2>압축 블록 448개를 풀어 분석용 코드 만들기</h2>
-<p class="takeaway">카메라 본 프로그램의 네 적재 구간은 블록 단위로 압축되어 있었고, 448개 블록을 모두 끝까지 풀었습니다. 그 결과를 원래 주소에 놓은 분석용 ELF가 이후 모든 분석의 바탕입니다.</p>
-<p>E04·E05·E06에 해당하는 네 구간은 블록마다 별도의 <dfn title="자주 나오는 값에 짧은 비트열을 주는 압축 부호표">Huffman 조회표</dfn>와 앞서 나온 바이트를 다시 가리키는 LZ 참조를 씁니다. 펌웨어 자신의 압축 해제 코드(<code>InflateStreamData</code>, <code>InflateProcessor</code>)가 블록 머리를 읽는 방식을 확인하고, 같은 형식을 소프트웨어로 풀었습니다. 펌웨어는 이 해제를 하드웨어 블록에 맡기는 것으로 보입니다(표 데이터를 <code>0xb9800000</code> 영역의 레지스터에 씀).</p>
+<p class="takeaway">카메라 본 프로그램의 네 적재 구간은 블록 단위로 압축되어 있었고 448개 블록을 모두 끝까지 풀었습니다. 그 결과를 원래 주소에 놓은 분석용 ELF가 이후 모든 분석의 바탕입니다.</p>
+<p>E04·E05·E06에 해당하는 네 구간은 블록마다 별도의 <dfn title="자주 나오는 값에 짧은 비트열을 주는 압축 부호표">Huffman 조회표</dfn>를 씁니다. 여기에 앞서 나온 바이트를 다시 가리키는 LZ 참조가 더해집니다. 펌웨어 자신의 압축 해제 코드(<code>InflateStreamData</code>, <code>InflateProcessor</code>)가 블록 머리를 읽는 방식을 확인했습니다. 그리고 같은 형식을 소프트웨어로 풀었습니다. 펌웨어는 이 해제를 하드웨어 블록에 맡기는 것으로 보입니다(표 데이터를 <code>0xb9800000</code> 영역의 레지스터에 씀).</p>
 <ol class="flow">
 <li class="ok"><strong>블록 머리 읽기</strong><span>16바이트 머리, 조회표 크기</span></li>
 <li class="ok"><strong>조회표 + 비트열 해제</strong><span>Huffman 부호와 LZ 참조</span></li>
 <li class="ok"><strong>끝 검사</strong><span>선언된 출력 길이에서 끝 표식, 뒤는 0만</span></li>
 <li class="key"><strong>분석용 ELF</strong><span>ELF 가상주소에 배치</span></li>
 </ol>
-<p>모든 블록이 선언된 파일 범위를 다 쓰고 선언된 출력 길이에서 끝 표식에 닿았습니다. 끝 표식 뒤에는 0만 있었고, 구간마다 풀린 길이가 ELF가 선언한 메모리 크기(<code>p_memsz</code>)와 같았습니다. <a href="analysis/segment-decode.json">[근거: segment-decode.json validation]</a></p>
+<p>모든 블록이 선언된 파일 범위를 다 쓰고 선언된 출력 길이에서 끝 표식에 닿았습니다. 끝 표식 뒤에는 0만 있었고 구간마다 풀린 길이가 ELF가 선언한 메모리 크기(<code>p_memsz</code>)와 같았습니다. <a href="analysis/segment-decode.json">[근거: segment-decode.json validation]</a></p>
 <div class="table-wrap"><table>
 <caption>복원한 네 구간. 범위는 끝값을 포함하지 않습니다. 파일 오프셋과 가상주소(VA)는 서로 다른 좌표입니다.</caption>
 <thead><tr><th>구간</th><th>압축 파일 범위</th><th>복원 VA 범위</th><th class="n">출력 바이트</th><th class="n">블록</th></tr></thead>
 <tbody><tr><th scope="row">E04</th><td><code>0x240314–0x44c204</code></td><td><code>0x8012da80–0x8051fd80</code></td><td class="n">4,137,728</td><td class="n">178</td></tr><tr><th scope="row">E05</th><td><code>0x44c258–0x5ce660</code></td><td><code>0x8051fe00–0x807f2c00</code></td><td class="n">2,960,896</td><td class="n">126</td></tr><tr><th scope="row">E06-text</th><td><code>0x5ce6d4–0x74e7a0</code></td><td><code>0x807f2c80–0x80b62c00</code></td><td class="n">3,604,352</td><td class="n">125</td></tr><tr><th scope="row">E06-data</th><td><code>0x74e7a0–0x77bfcc</code></td><td><code>0x80b62c00–0x80bec380</code></td><td class="n">563,072</td><td class="n">19</td></tr></tbody>
 </table></div>
-<p>합계는 11,266,048바이트, 448개 블록입니다. <code>E06-text</code>는 실행 가능 구간의 파일 이름일 뿐이고, 안에는 코드와 데이터가 섞여 있습니다.</p>
+<p>합계는 11,266,048바이트, 448개 블록입니다. <code>E06-text</code>는 실행 가능 구간의 파일 이름일 뿐이고 안에는 코드와 데이터가 섞여 있습니다.</p>
 <div class="callout"><strong class="label">분석용 ELF는 카메라 파일이 아닙니다</strong>
 <p>풀어낸 바이트를 원래 주소에 놓아 디스어셈블러가 읽을 수 있게 만든 합성 파일입니다. 카메라에 넣는 업데이트 파일이 아니며 공개 저장소에 포함하지 않습니다. 압축을 원본과 같은 바이트로 다시 만드는 일은 <a href="implementation-report.html">재패킹 검증과 업데이트 검사</a>에서 다룹니다.</p></div>
 <details class="evidence"><summary>압축 해제 코드의 근거와 구간 해시</summary>
@@ -156,7 +156,7 @@
 <thead><tr><th>구간</th><th>압축 입력</th><th>복원 출력</th></tr></thead>
 <tbody><tr><th scope="row">E04</th><td><code class="wrap">27095f709e6e14af15ffd1f60d06155dfbe795918bb5d003738041a1acba7c50</code></td><td><code class="wrap">e7d06ec99f6e95025721b62d42f39845a2f2277991f4dfcabc3e3f930ff5bd5b</code></td></tr><tr><th scope="row">E05</th><td><code class="wrap">5b09cdb0bded374b97d9808a404442986bafe07c18f978386fbecd0859698249</code></td><td><code class="wrap">a411eecc87e46c88cd58548fdd677a20419494110b2c1b19bf1852ad4bfa78b2</code></td></tr><tr><th scope="row">E06-text</th><td><code class="wrap">6df5f383ba696e5ea5e0f117cea9f2e9050ff5ddd6825748c4749fe0ed0e0fde</code></td><td><code class="wrap">bd860a234b623260204d7d1013dfec59665367df77fa36e6cd3550b998bf0cac</code></td></tr><tr><th scope="row">E06-data</th><td><code class="wrap">bc91c98a28a6b4c3c05135904025876a3448f4b0cdeece261eedb7f24ba60723</code></td><td><code class="wrap">2099de2e6615c0c6a8a9362f228eaeb696ebb1645cb6d11e0d93e938bf606ecb</code></td></tr></tbody>
 </table></div>
-<p>Huffman·LZ 동작은 표와 비트열에서 추론하고 소프트웨어 해제로 검사했습니다. 카메라에서 실행하거나 하드웨어 결과와 바이트를 비교한 것은 아닙니다. <a href="analysis/segment-decode.json">[근거: limitations]</a></p>
+<p>Huffman·LZ 동작은 표와 비트열에서 추론하고 소프트웨어 해제로 검사했습니다. 카메라에서 실행하거나 하드웨어 결과와 바이트를 비교하지는 않았습니다. <a href="analysis/segment-decode.json">[근거: limitations]</a></p>
 </details>
 
 <h3>주소에 이름 붙이기</h3>
@@ -169,14 +169,14 @@
 <thead><tr><th>파일</th><th class="n">크기(바이트)</th><th>파일 오프셋</th><th>SHA-256</th></tr></thead>
 <tbody><tr><th scope="row"><code>MAINSO~3.ADR</code></th><td class="n">488,616</td><td><code>0xafa6c0</code></td><td><code class="wrap">828e4ae33d154b1b79422cb9de152c9fb418e272fe1ef8fed9f17dc17f7414fc</code></td></tr><tr><th scope="row"><code>MAINSO~5.OFT</code></th><td class="n">488,616</td><td><code>0xb71ec0</code></td><td><code class="wrap">d7f229ce88f6c881c6e33c3fb6f267a90d4dd64d45f20d5935d9d66e932db4e1</code></td></tr><tr><th scope="row"><code>MAINSO~7.STR</code></th><td class="n">3,438,560</td><td><code>0xbe96c0</code></td><td><code class="wrap">d9aeb5f7f938f75e88a4ae1044095ac2d85f747328c862a342b17d9af9e5d1d7</code></td></tr></tbody>
 </table></div>
-<p>FAT16이 선언한 볼륨 크기(35,206,144바이트)는 업데이트 파일보다 큽니다. 그래서 파일시스템 전체가 들어 있다고 보지 않았고, 세 파일의 할당 체인과 문자열 경계만 검사했습니다.</p>
+<p>FAT16이 선언한 볼륨 크기(35,206,144바이트)는 업데이트 파일보다 큽니다. 그래서 파일시스템 전체가 들어 있다고 보지 않았고 세 파일의 할당 체인과 문자열 경계만 검사했습니다.</p>
 </details>
 </section>
 
 <section id="threadx">
 <h2>ThreadX가 첫 스레드를 띄우기까지</h2>
 <p class="takeaway">Q7의 커널 진입 함수는 ThreadX 공식 소스와 같은 순서로 저수준 초기화, 고수준 초기화, 앱 정의 함수를 호출한 뒤 스케줄러로 넘어갑니다. 첫 앱 스레드 <code>AppBootPrimary</code>는 앱 정의 함수가 "등록"하고 스케줄러가 실행합니다.</p>
-<p>ThreadX 문서에 따르면 초기화는 리셋 뒤 개발 도구의 시작 코드, <code>main</code>, 커널 진입(<code>tx_kernel_enter</code>), 앱 정의 함수(<code>tx_application_define</code>), 스케줄 루프 순서로 진행됩니다. <code>tx_kernel_enter</code>는 공식 헤더에서 <code>_tx_initialize_kernel_enter</code>의 다른 이름입니다. 앱 정의 함수는 첫 스레드·큐·이벤트 같은 자원을 만들고, 이 함수가 돌아오면 스케줄러가 준비된 스레드 중 우선순위가 가장 높은 것을 실행합니다. 초기화 동안 인터럽트는 꺼져 있습니다.</p>
+<p>ThreadX 문서에 따르면 초기화는 다음 순서로 진행됩니다. 리셋 뒤 개발 도구의 시작 코드, <code>main</code>, 커널 진입(<code>tx_kernel_enter</code>), 앱 정의 함수(<code>tx_application_define</code>), 스케줄 루프입니다. <code>tx_kernel_enter</code>는 공식 헤더에서 <code>_tx_initialize_kernel_enter</code>의 다른 이름입니다. 앱 정의 함수는 첫 스레드·큐·이벤트 같은 자원을 만듭니다. 이 함수가 돌아오면 스케줄러가 준비된 스레드 중 우선순위가 가장 높은 것을 실행합니다. 초기화 동안 인터럽트는 꺼져 있습니다.</p>
 
 <figure class="diagram">
 <figcaption>Q7 본체(E03)의 ThreadX 시작 순서</figcaption>
@@ -243,10 +243,10 @@
 </tbody>
 </table></div>
 <div class="callout plain"><strong class="label">쉽게 말하면: 명령 워드에서 호출 대상 읽기</strong>
-<p><code>jal</code>은 32비트 워드의 위 6비트가 3(<code>000011</code>)이고, 아래 26비트에 대상 주소를 4로 나눈 값이 들어 있습니다. 첫 줄의 워드 <code>0c03674e</code>에서 아래 26비트 <code>0x03674e</code>에 4를 곱하면 <code>0xd9d38</code>이고, 현재 주소의 위쪽 비트(<code>0x80…</code>)를 붙이면 <code>0x800d9d38</code>, 곧 저수준 초기화 함수입니다. 넷째 줄은 위 6비트가 2인 <code>j</code>(돌아오지 않는 점프)라서, 스케줄러로 넘어간 뒤 커널 진입 함수로는 돌아오지 않습니다.</p></div>
+<p><code>jal</code>은 32비트 워드의 위 6비트가 3(<code>000011</code>)입니다. 아래 26비트에는 대상 주소를 4로 나눈 값이 들어 있습니다. 첫 줄의 워드 <code>0c03674e</code>에서 아래 26비트 <code>0x03674e</code>에 4를 곱하면 <code>0xd9d38</code>입니다. 여기에 현재 주소의 위쪽 비트(<code>0x80…</code>)를 붙이면 <code>0x800d9d38</code>, 곧 저수준 초기화 함수입니다. 넷째 줄은 위 6비트가 2인 <code>j</code>(돌아오지 않는 점프)입니다. 그래서 스케줄러로 넘어간 뒤 커널 진입 함수로는 돌아오지 않습니다.</p></div>
 <p>커널 진입 함수는 CP0 EBase 레지스터의 하위 10비트가 1인지에 따라 기본 컨텍스트와 Cop 컨텍스트 중 하나를 고릅니다. 컨텍스트 이름만으로 두 실행 주체가 물리적으로 어느 코어에 놓이는지까지는 확정하지 않았습니다. <a href="analysis/deep-evidence.json">[근거: _tx_initialize_kernel_enter]</a></p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>첫 ELF(E01)는 <code>Zburn/Main.c</code> 이름이 들어 있는 별도 이미지(업데이트 프로그램)입니다. 위 주소는 모두 카메라 본체 E03 기준이며, E01의 초기화 주소와 섞지 않았습니다. 리셋 벡터에서 커널 진입 함수까지의 경로는 분석하지 않았습니다.</p></div>
+<p>첫 ELF(E01)는 <code>Zburn/Main.c</code> 이름이 들어 있는 별도 이미지(업데이트 프로그램)입니다. 위 주소는 모두 카메라 본체 E03 기준이며 E01의 초기화 주소와 섞지 않았습니다. 리셋 벡터에서 커널 진입 함수까지의 경로는 분석하지 않았습니다.</p></div>
 </section>
 
 <section id="af">
@@ -309,7 +309,7 @@
 <ul class="dg-legend"><li><i class="static"></i>이 문서: 명령어에서 읽은 직접 호출</li><li><i class="ok"></i>이후 문서에서 원본 명령 실행으로 확인</li><li><i class="open"></i>연결 미확인</li></ul>
 </figure>
 
-<p>AF 명령 수신 함수는 명령 값 <code>0x000e0001</code>이면 <code>CAFSequenceStart</code>로 진행하고, <code>0x000e0002</code>이면 중단 상태를 처리합니다. <code>0x000e0004</code>는 별도 제어 상태와 인자를 저장한 뒤 같은 시작 경로를 씁니다. AF 작업 함수에서는 영역별 <code>PeakCheck</code>, 초점 계산, <code>LensDriveControl</code> 호출을 확인했습니다. 콘트라스트와 피크를 다루는 경로는 따라갈 수 있지만, K-3 Mark III의 위상차 상관·디포커스 알고리즘과 같다고 볼 근거는 없습니다. <a href="analysis/deep-evidence.json">[근거: OnNotifyCommand, AfMain_Thread_sub]</a></p>
+<p>AF 명령 수신 함수는 명령 값 <code>0x000e0001</code>이면 <code>CAFSequenceStart</code>로 진행하고 <code>0x000e0002</code>이면 중단 상태를 처리합니다. <code>0x000e0004</code>는 별도 제어 상태와 인자를 저장한 뒤 같은 시작 경로를 씁니다. AF 작업 함수에서는 영역별 <code>PeakCheck</code>, 초점 계산, <code>LensDriveControl</code> 호출을 확인했습니다. 콘트라스트와 피크를 다루는 경로는 따라갈 수 있지만 K-3 Mark III의 위상차 상관·디포커스 알고리즘과 같다고 볼 근거는 없습니다. <a href="analysis/deep-evidence.json">[근거: OnNotifyCommand, AfMain_Thread_sub]</a></p>
 <div class="table-wrap"><table>
 <caption>AF에서 확인한 명령 위치</caption>
 <thead><tr><th>명령 위치</th><th>관찰</th></tr></thead>
@@ -322,7 +322,7 @@
 </tbody>
 </table></div>
 <div class="callout fix"><strong class="label">이후 문서에서 갱신</strong>
-<p>이 문서는 <code>LensDriveControl</code>이 전역 포인터로 명령 <code>0x0006003c</code>를 보내는 간접 분기의 수신자를 확정하지 못했고, 디컴파일러도 이 지점의 간접 흐름을 복원하지 못했다고 경고했습니다. <a href="routing-report.html">렌즈 명령·ISP 레지스터·출력 경계</a>는 AF 초기화 함수가 이 포인터에 캡처 쪽 수신 함수(<code>0x8040a008</code>)를 저장함을 원본 명령 실행으로 확인했습니다. 그 함수는 분기표로 <code>ExecuteFocusControl</code>을 고르고 렌즈 큐 메시지 6·7·8을 보냅니다. 명령 제출 결과와 완료 판정은 <a href="af-completion-report.html">AF 명령과 완료 판정</a>에서 따로 다룹니다. 렌즈 이동량의 물리 단위와 보정식은 여전히 확인하지 않았습니다.</p></div>
+<p>이 문서는 <code>LensDriveControl</code>이 전역 포인터로 명령 <code>0x0006003c</code>를 보내는 간접 분기의 수신자를 확정하지 못했습니다. 디컴파일러가 이 지점의 간접 흐름을 복원하지 못했다는 경고도 적어 두었습니다. <a href="routing-report.html">렌즈 명령·ISP 레지스터·출력 경계</a>는 AF 초기화 함수가 이 포인터에 캡처 쪽 수신 함수(<code>0x8040a008</code>)를 저장함을 원본 명령 실행으로 확인했습니다. 그 함수는 분기표로 <code>ExecuteFocusControl</code>을 고르고 렌즈 큐 메시지 6·7·8을 보냅니다. 명령 제출 결과와 완료 판정은 <a href="af-completion-report.html">AF 명령과 완료 판정</a>에서 따로 다룹니다. 렌즈 이동량의 물리 단위와 보정식은 여전히 확인하지 않았습니다.</p></div>
 
 <h3 id="shutter">셔터: 렌즈 통신, 레지스터 쓰기, 완료 이벤트</h3>
 <p>셔터 제어에는 렌즈 통신과 <dfn title="메모리 주소처럼 읽고 쓰는 하드웨어 레지스터(Memory-Mapped I/O)">MMIO 레지스터</dfn> 쓰기가 함께 나타납니다. 이름이 비슷한 함수가 서로 전혀 다른 일을 하므로 하나씩 구분했습니다. 이름과 레지스터 쓰기만으로 실제 셔터 핀이나 구동 전압을 판정하지는 않았습니다. <a href="analysis/deep-evidence.json">[근거: CaptureLensControlService, LensDataServer]</a></p>
@@ -342,7 +342,7 @@
 
 <section id="jpeg">
 <h2>JPEG: 양자화 테이블 계산과 완료 인터럽트</h2>
-<p class="takeaway">JPEG의 양자화 테이블 계산식, 경로 제출, 완료 인터럽트 처리를 각각 따로 찾았습니다. 셋이 실제 촬영 한 번에서 어떻게 이어지는지는 이 문서 범위 밖이며, HDR 사진의 실제 압축 위치는 이후 문서에서 확인됐습니다.</p>
+<p class="takeaway">JPEG의 양자화 테이블 계산식, 경로 제출, 완료 인터럽트 처리를 각각 따로 찾았습니다. 셋이 실제 촬영 한 번에서 어떻게 이어지는지는 이 문서 범위 밖이며 HDR 사진의 실제 압축 위치는 이후 문서에서 확인됐습니다.</p>
 <p><dfn title="JPEG에서 주파수 성분을 나눠 정밀도를 줄이는 8×8 값의 표. 값이 클수록 더 많이 압축">양자화 테이블</dfn>은 JPEG 압축률을 정하는 64개 값의 표입니다. <code>ApsCmpRecalcDqt</code>는 밝기(Y)와 색차(C)용으로 각각 64개 값을 계산하고 1부터 255까지로 제한합니다. <code>PathSetJpeg</code>는 <code>QtConvert</code>를 두 번 호출해 경로 객체의 <code>+0xc0</code>과 <code>+0x1c0</code>에 테이블을 만듭니다. <a href="analysis/deep-evidence.json">[근거: ApsCmpRecalcDqt, PathSetJpeg, QtConvert]</a></p>
 <pre aria-label="분석으로 재구성한 양자화 계산식"><code>scale = input_scale &amp; 0xffff
 QY[i] = clamp((scale * baseY[i]) &gt;&gt; 14, 1, 255)
@@ -352,10 +352,10 @@ QtConvert: inverse-zigzag 순서로 64개 항목 변환
   mode == 1 : 원본 byte를 32비트 항목에 저장
   그 외     : max(1, 0x4000 / source_byte); 0 입력은 trap</code></pre>
 <figure class="diagram"><figcaption>JPEG 경로 제출(위)과 완료 인터럽트(아래)</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 224" role="img" aria-labelledby="jpg-title jpg-desc"><title id="jpg-title">JPEG 경로 제출(위)과 완료 인터럽트(아래)</title><desc id="jpg-desc">위쪽 실선은 코드 크기 계산에서 시작하는 경로 제출의 직접 호출입니다. 아래쪽 점선은 인터럽트 처리 함수를 등록하는 관계이며 실행 순서를 뜻하지 않습니다. 양자화 테이블이 하드웨어 레지스터에 들어가는 지점은 그리지 않았습니다.</desc><defs><marker id="jpg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><path class="e" d="M240 42H272" marker-end="url(#jpg-arrow)"/><path class="e" d="M504 42H552" marker-end="url(#jpg-arrow)"/><path class="e dash" d="M240 170H272" marker-end="url(#jpg-arrow)"/><path class="e" d="M504 170H552" marker-end="url(#jpg-arrow)"/><rect class="b" x="8" y="12" width="232" height="60" rx="8"/><text class="t" x="20" y="37">ApsCmpGetCodeSizeBySf</text><text class="s mono" x="20" y="57">PathCreate(1) / 0x8014b790</text><rect class="b" x="272" y="12" width="232" height="60" rx="8"/><text class="t" x="284" y="37">PathSubmit</text><text class="s mono" x="284" y="57">0x801c83c8 / type == 1</text><rect class="b" x="552" y="12" width="232" height="60" rx="8"/><text class="t" x="564" y="37">JpegPathSubmit</text><text class="s mono" x="564" y="57">bit 0x40 -&gt; IcaPathSubmit</text><rect class="b" x="8" y="140" width="232" height="60" rx="8"/><text class="t" x="20" y="165">JpegPathInit</text><text class="s mono" x="20" y="185">ISR 등록 / ID 0x14</text><rect class="b" x="272" y="140" width="232" height="60" rx="8"/><text class="t" x="284" y="165">IsrJpegDone</text><text class="s mono" x="284" y="185">상태 읽기 0xb0181ca0</text><rect class="b" x="552" y="140" width="232" height="60" rx="8"/><text class="t" x="564" y="165">이벤트 비트 설정</text><text class="s mono" x="564" y="185">0이면 0x04 / 아니면 0x40</text></svg></div><p>위쪽 실선은 코드 크기 계산에서 시작하는 경로 제출의 직접 호출입니다. 아래쪽 점선은 인터럽트 처리 함수를 등록하는 관계이며 실행 순서를 뜻하지 않습니다. 양자화 테이블이 하드웨어 레지스터에 들어가는 지점은 그리지 않았습니다. <a href="analysis/deep-evidence.json">[근거: deep-evidence.json]</a></p></figure>
-<p><code>PathSubmit</code>은 경로 타입이 1일 때 <code>JpegPathSubmit</code>을 고르고, 이 함수는 객체 <code>+0x3c4</code>의 비트 <code>0x40</code>이 켜져 있으면 <code>IcaPathSubmit</code>을 호출합니다. <code>PathSubmit</code>의 진입점은 <code>0x801c83c8</code>이고 <code>0x801c84bc</code>는 그 안의 호출 위치입니다. <a href="analysis/deep-evidence.json">[근거: 0x801c84bc, 0x801df5a4]</a></p>
+<p><code>PathSubmit</code>은 경로 타입이 1일 때 <code>JpegPathSubmit</code>을 고릅니다. 이 함수는 객체 <code>+0x3c4</code>의 비트 <code>0x40</code>이 켜져 있으면 <code>IcaPathSubmit</code>을 호출합니다. <code>PathSubmit</code>의 진입점은 <code>0x801c83c8</code>이고 <code>0x801c84bc</code>는 그 안의 호출 위치입니다. <a href="analysis/deep-evidence.json">[근거: 0x801c84bc, 0x801df5a4]</a></p>
 <p>완료 처리는 이렇습니다. <code>JpegPathInit</code>이 <code>IsrJpegDone</code>을 인터럽트 ID <code>0x14</code>에 등록합니다. <code>IsrJpegDone</code>은 상태 레지스터 <code>0xb0181ca0</code>을 읽어 0이면 이벤트 비트 <code>0x04</code>(정상), 아니면 <code>0x40</code>(오류)을 설정합니다. 끝에는 ISR 중지 함수로 가는 꼬리 점프가 있습니다. 디컴파일된 C가 이 점프를 다른 모양으로 바꾸었으므로 호출 관계는 어셈블리를 기준으로 적었습니다. 등록은 확인했지만 실제로 인터럽트가 발생하는지는 검사하지 않았습니다. <a href="analysis/deep-evidence.json">[근거: IsrJpegDone, JpegPathInit]</a></p>
 <div class="callout fix"><strong class="label">이후 문서에서 갱신</strong>
-<p>이 문서는 <code>StillCaptureImageTuneJpegEnc</code>(<code>0x802de3e0</code>)가 <code>ApsCmpRecalcDqt</code>와 <code>ApsJpegCreate</code>를 호출하지만 이름에 Emulation이 붙은 입출력 버퍼를 쓰므로 일반 촬영의 JPEG 경로로 단정하지 않았고, 실제 촬영 버퍼와의 연결을 남겨 두었습니다. <a href="pixel-report.html">HDR 버퍼와 색 처리 패스</a>는 HDR 사진의 주 이미지가 <code>SaveCompressImage</code> → <code>ApsJpegDirectCompress</code>에서 압축되고, HDR 처리 결과 버퍼가 JPEG 입력 주소로 설정되는 연결을 확인했습니다. 압축 결과를 파일로 저장하는 경로는 <a href="routing-report.html">렌즈 명령·ISP 레지스터·출력 경계</a>에 있습니다. 두 결과 모두 HDR 경로에 한정되며, 양자화 테이블이 들어가는 하드웨어 레지스터는 아직 확인하지 않았습니다.</p></div>
+<p>이 문서가 본 <code>StillCaptureImageTuneJpegEnc</code>(<code>0x802de3e0</code>)는 <code>ApsCmpRecalcDqt</code>와 <code>ApsJpegCreate</code>를 호출합니다. 하지만 이름에 Emulation이 붙은 입출력 버퍼를 쓰므로 이 문서는 일반 촬영의 JPEG 경로로 단정하지 않았습니다. 실제 촬영 버퍼와의 연결은 남겨 두었습니다. <a href="pixel-report.html">HDR 버퍼와 색 처리 패스</a>는 HDR 사진의 주 이미지가 <code>SaveCompressImage</code> → <code>ApsJpegDirectCompress</code>에서 압축되는 것을 확인했습니다. HDR 처리 결과 버퍼가 JPEG 입력 주소로 설정되는 연결도 확인했습니다. 압축 결과를 파일로 저장하는 경로는 <a href="routing-report.html">렌즈 명령·ISP 레지스터·출력 경계</a>에 있습니다. 두 결과 모두 HDR 경로에 한정됩니다. 양자화 테이블이 들어가는 하드웨어 레지스터는 아직 확인하지 않았습니다.</p></div>
 <details class="evidence"><summary>JPEG 관련 명령 위치</summary>
 <div class="table-wrap"><table class="compact">
 <thead><tr><th>위치</th><th>관찰</th></tr></thead>
@@ -372,7 +372,7 @@ QtConvert: inverse-zigzag 순서로 64개 항목 변환
 
 <section id="color">
 <h2>색 처리: 행렬 계산을 원본 명령으로 검산</h2>
-<p class="takeaway">3×3 색 행렬 곱과 색상 회전 함수의 고정소수점 계산식을 읽었고, 두 함수의 원본 MIPS 명령을 에뮬레이터에서 실행해 6개 사례가 모두 계산식과 일치했습니다. 이것은 계수를 만드는 함수의 검증이지 픽셀 처리의 검증이 아닙니다.</p>
+<p class="takeaway">3×3 색 행렬 곱과 색상 회전 함수의 고정소수점 계산식을 읽었습니다. 두 함수의 원본 MIPS 명령을 에뮬레이터에서 실행하자 6개 사례가 모두 계산식과 일치했습니다. 이것은 계수를 만드는 함수의 검증이지 픽셀 처리의 검증이 아닙니다.</p>
 
 <figure class="diagram">
 <figcaption>색 행렬을 만들고 하드웨어 설정으로 넘기는 경로</figcaption>
@@ -424,7 +424,7 @@ QtConvert: inverse-zigzag 순서로 64개 항목 변환
 <ul class="dg-legend"><li><i class="ok"></i>원본 명령 실행으로 확인 (아래쪽 오른편은 이후 문서)</li><li><i class="static"></i>명령어에서 읽은 직접 호출</li><li><i class="open"></i>미확인</li></ul>
 </figure>
 
-<p><code>MatrixMultiplication</code>은 세 항의 곱을 더한 값에 <code>0x1000</code>을 더하고 13비트 오른쪽으로 민 뒤 하위 16비트를 저장합니다. 이것은 <dfn title="정수의 아래쪽 n비트를 소수 부분으로 약속해 실수를 표현하는 방식. Q13이면 8192가 1.0">Q13 고정소수점</dfn> 곱셈입니다. 8192가 1.0을 뜻하고, 시프트 전에 2<sup>12</sup>(<code>0x1000</code>)를 더해 반올림합니다. <code>HueShift</code>는 같은 구조에 <code>0x80</code>과 8비트를 씁니다. 함수가 입력 행렬을 먼저 복사하므로 출력과 입력 주소가 같아도 계산이 깨지지 않습니다. <a href="analysis/deep-evidence.json">[근거: ColorMatchingService]</a></p>
+<p><code>MatrixMultiplication</code>은 세 항의 곱을 더한 값에 <code>0x1000</code>을 더하고 13비트 오른쪽으로 민 뒤 하위 16비트를 저장합니다. 이것은 <dfn title="정수의 아래쪽 n비트를 소수 부분으로 약속해 실수를 표현하는 방식. Q13이면 8192가 1.0">Q13 고정소수점</dfn> 곱셈입니다. 8192가 1.0을 뜻하고 시프트 전에 2<sup>12</sup>(<code>0x1000</code>)를 더해 반올림합니다. <code>HueShift</code>는 같은 구조에 <code>0x80</code>과 8비트를 씁니다. 함수가 입력 행렬을 먼저 복사하므로 출력과 입력 주소가 같아도 계산이 깨지지 않습니다. <a href="analysis/deep-evidence.json">[근거: ColorMatchingService]</a></p>
 <pre aria-label="분석으로 재구성한 행렬 계산식"><code>acc = Σ A[row,k] × B[k,col]                    // k = 0..2
 MatrixMultiplication: low16(uint32(acc + 0x1000) &gt;&gt; 13)
 HueShift:             low16(uint32(acc + 0x0080) &gt;&gt;  8)
@@ -451,7 +451,7 @@ HueShift:             low16(uint32(acc + 0x0080) &gt;&gt;  8)
 </tbody>
 </table></div>
 <div class="callout fix"><strong class="label">이후 문서에서 갱신</strong>
-<p>이 문서는 행렬이 <code>I43_SetImageProcessing</code> 설정 호출까지 가는 것만 확인했습니다. <a href="routing-report.html">렌즈 명령·ISP 레지스터·출력 경계</a>는 이 설정이 모드별 캐시와 <code>CCmFilter</code>·<code>CFc1Filter</code> 객체를 거쳐 CM·FC1 레지스터에 쓰이는 조건부 경로를 원본 명령으로 확인했습니다. 같은 문서는 감마 쪽에서 통계용 LUT의 고정 포트를 찾았지만 최종 JPEG에 쓰이는 감마라고 보지는 않았고, 화이트밸런스 사전 이득과 센서 이득 레지스터의 연결도 여전히 확인되지 않았다고 적었습니다. <a href="pixel-report.html">HDR 버퍼와 색 처리 패스</a>와 <a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>는 FC1의 계수를 FIPLIB 결과가 덮어쓸 수 있고, CM은 일부 필드만 갱신됨을 보였습니다. 따라서 이 문서의 행렬 값이 그대로 최종 하드웨어 계수가 된다고 읽으면 안 됩니다.</p></div>
+<p>이 문서는 행렬이 <code>I43_SetImageProcessing</code> 설정 호출까지 가는 것만 확인했습니다. <a href="routing-report.html">렌즈 명령·ISP 레지스터·출력 경계</a>는 이 설정이 모드별 캐시와 <code>CCmFilter</code>·<code>CFc1Filter</code> 객체를 거쳐 CM·FC1 레지스터에 쓰이는 조건부 경로를 원본 명령으로 확인했습니다. 같은 문서는 감마 쪽에서 통계용 LUT의 고정 포트를 찾았습니다. 다만 이를 최종 JPEG에 쓰이는 감마라고 보지는 않았습니다. 화이트밸런스 사전 이득과 센서 이득 레지스터의 연결도 여전히 확인되지 않았다고 적었습니다. <a href="pixel-report.html">HDR 버퍼와 색 처리 패스</a>와 <a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>는 FC1의 계수를 FIPLIB 결과가 덮어쓸 수 있고 CM은 일부 필드만 갱신됨을 보였습니다. 따라서 이 문서의 행렬 값이 그대로 최종 하드웨어 계수가 된다고 읽으면 안 됩니다.</p></div>
 </section>
 
 <section id="comparison">
@@ -467,7 +467,7 @@ HueShift:             low16(uint32(acc + 0x0080) &gt;&gt;  8)
 
 <section id="functions">
 <h2>선별 함수 300개의 근거 표</h2>
-<p class="takeaway">함수 300개 모두 Ghidra C 출력이 만들어졌지만, 이것은 "읽을 수 있는 초안"이 생겼다는 뜻일 뿐 형식과 간접 호출이 모두 복원됐다는 뜻은 아닙니다.</p>
+<p class="takeaway">함수 300개 모두 Ghidra C 출력이 만들어졌습니다. 다만 이것은 "읽을 수 있는 초안"이 생겼다는 뜻일 뿐입니다. 형식과 간접 호출이 모두 복원됐다는 뜻은 아닙니다.</p>
 <p>함수는 이름을 보고 골랐습니다. 168개는 압축되지 않은 E03 구간, 132개는 복원한 E04 구간에 있습니다. 함수의 끝은 다음 주소·이름 레코드 바로 앞까지로 추정했습니다. 범위 안의 명령어를 차례로 읽어(선형 스캔) 호출·점프 1,675개를 기록했습니다. 이 목록은 명령어 후보이며 모든 전이가 실제로 실행될 수 있다는 보증은 아닙니다. 점프는 호출과 따로 기록했습니다. <a href="analysis/deep-evidence.json">[근거: deep-evidence.json]</a></p>
 <div class="table-wrap"><table class="fit">
 <caption>전이 종류별 개수</caption>

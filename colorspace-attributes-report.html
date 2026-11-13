@@ -27,8 +27,8 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>원본 화면 갱신 4회에서 sRGB 글자 앞에 <strong>크기 48×48, 간격 0, 색 2</strong> 속성이 매번 요청되는 것을 기록했습니다(속성 요청 72건, 글자 요청 25건).</li>
-<li>이 속성을 별도 컨텍스트에 적용하자 원본 코드가 기본 렌더러 대신 <strong>축소 렌더러</strong>를 골랐습니다. 네 글자의 폭은 24·29·34·29에서 18·21·25·21로 줄었고, 프레임 전체(129,536바이트)가 독립 계산과 같았습니다.</li>
+<li>원본 화면 갱신 4회에서 sRGB 글자 앞에 <strong>크기 48×48, 간격 0, 색 2</strong> 속성이 매번 요청되는 것을 기록했습니다. 속성 요청은 72건, 글자 요청은 25건입니다.</li>
+<li>이 속성을 별도 컨텍스트에 적용하자 원본 코드가 기본 렌더러 대신 <strong>축소 렌더러</strong>를 골랐습니다. 네 글자의 폭은 24·29·34·29에서 18·21·25·21로 줄었고 프레임 전체(129,536바이트)가 독립 계산과 같았습니다.</li>
 <li>서로 다른 컨텍스트 두 개를 시험용으로 등록하면, 원본 버퍼 교대 코드가 다음 그리기 ID의 컨텍스트로 활성 포인터를 바꿉니다. 다음 슬롯이 비어 있으면 ID만 바뀌고 포인터는 <strong>이전 컨텍스트에 머뭅니다</strong>.</li>
 <li>ID 17·18은 시험에서 정한 입력입니다. 카메라가 실제로 처음 할당하는 값, 갱신부터 픽셀까지 이어진 실행, 화면 출력은 확인하지 않았습니다.</li>
 </ul>
@@ -59,7 +59,7 @@
 
 <section id="background">
 <h2>배경: 글자 크기는 컨텍스트에 기록됩니다</h2>
-<p><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>은 “sRGB”를 글꼴의 기본 크기(셀 64×48)로 그렸습니다. 원본 화면 갱신을 재실행했을 때는 텍스트 요청 직전에 크기·간격·색 속성 요청이 관측됐습니다. 이 속성은 <dfn title="그릴 버퍼, 글자 크기, 색, 그리기 함수 표를 담은 구조체. 버퍼마다 하나씩 만들어 둡니다">그리기 컨텍스트</dfn>에 기록되고, 이후 글자 출력은 컨텍스트를 보고 렌더러를 고릅니다.</p>
+<p><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>은 “sRGB”를 글꼴의 기본 크기(셀 64×48)로 그렸습니다. 원본 화면 갱신을 재실행했을 때는 텍스트 요청 직전에 크기·간격·색 속성 요청이 관측됐습니다. 이 속성은 <dfn title="그릴 버퍼, 글자 크기, 색, 그리기 함수 표를 담은 구조체. 버퍼마다 하나씩 만들어 둡니다">그리기 컨텍스트</dfn>에 기록되고 이후 글자 출력은 컨텍스트를 보고 렌더러를 고릅니다.</p>
 <p>그래서 두 가지를 확인해야 했습니다. 하나는 48×48 요청이 어떤 렌더러를 고르게 하는지, 다른 하나는 속성과 글자가 <strong>같은 컨텍스트</strong>를 보는지입니다. 앞의 것은 <a href="#dispatch">축소 렌더러 시험</a>, 뒤의 것은 <a href="#binding">컨텍스트 선택 시험</a>에서 다룹니다.</p>
 <ol class="flow">
 <li class="ok"><strong>① 선택·확정·취소</strong><span><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></span></li>
@@ -118,13 +118,13 @@
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행</li><li><i class="model"></i>기록 모델·시험 조건</li><li><i class="key"></i>대조한 결과</li></ul>
 </figure>
 
-<p>sRGB 선택지 위젯 <code>0x191d00b</code>은 갱신마다 속성 세 개를 요청한 뒤 글자를 요청했습니다. 속성 요청의 그리기 ID는 갱신마다 17·18·17·18로 바뀌었고, 글자 요청의 ID는 0입니다. 이 시점에서는 속성 API와 글자 API를 기록 모델로 대체했습니다.</p>
+<p>sRGB 선택지 위젯 <code>0x191d00b</code>은 갱신마다 속성 세 개를 요청한 뒤 글자를 요청했습니다. 속성 요청의 그리기 ID는 갱신마다 17·18·17·18로 바뀌었고 글자 요청의 ID는 0입니다. 이 시점에서는 속성 API와 글자 API를 기록 모델로 대체했습니다.</p>
 <div class="table-wrap"><table>
 <caption>첫 번째 갱신에서 sRGB 위젯이 보낸 요청 (나머지 세 갱신은 그리기 ID만 다름)</caption>
 <thead><tr><th>순서</th><th>요청</th><th>인수</th><th>뜻</th></tr></thead>
 <tbody><tr><th scope="row">1</th><td>속성 · 그리기 ID 17</td><td><code>[17, 7, 48, 48, 0, 0]</code></td><td>글자 크기 (폭, 높이)</td></tr><tr><th scope="row">2</th><td>속성 · 그리기 ID 17</td><td><code>[17, 12, 0, 0, 0, 0]</code></td><td>글자 간격</td></tr><tr><th scope="row">3</th><td>속성 · 그리기 ID 17</td><td><code>[17, 4, 2, 0, 0, 0]</code></td><td>글자 색 (팔레트 슬롯 1)</td></tr><tr><th scope="row">4</th><td>글자 · ID 0</td><td><code>0, 0xffff, …, 96, 64, 4, 1</code></td><td>(x, y) = (96, 64), 글자 4개</td></tr></tbody>
 </table></div>
-<p class="small muted">네 갱신의 요청 기록은 <a href="colorspace-render-report.html">그리기 경로</a>의 관측과 정규화한 메타데이터 기준으로 바이트 단위까지 일치합니다. 앞선 갱신 기록 SHA-256 <code class="wrap">43856af97a6702886aeadf8cad85564a5f5f25c3e964b3a247dd2584d9731143</code>, 순서 기록 SHA-256 <code class="wrap">2e8a9f3ea98670c10d59087ff45d97af2e2d9674ee86424c3883b3c3dd0de9de</code>. <a href="analysis/colorspace-attributes.json">[근거: bounded_replay.refresh]</a></p>
+<p class="small muted">네 갱신의 요청 기록은 <a href="colorspace-render-report.html">그리기 경로</a>의 관측과 정규화한 메타데이터 기준으로 바이트 단위까지 일치합니다. 그리기 경로의 갱신 기록 SHA-256 <code class="wrap">43856af97a6702886aeadf8cad85564a5f5f25c3e964b3a247dd2584d9731143</code>, 순서 기록 SHA-256 <code class="wrap">2e8a9f3ea98670c10d59087ff45d97af2e2d9674ee86424c3883b3c3dd0de9de</code>. <a href="analysis/colorspace-attributes.json">[근거: bounded_replay.refresh]</a></p>
 </section>
 
 <section id="dispatch">
@@ -186,7 +186,7 @@
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>기본 크기 — <a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a>의 시험</li><li><i class="key"></i>48×48 축소 — 이 문서의 시험</li></ul>
 </figure>
-<p>원본 코드는 <dfn title="정수의 아래 16비트를 소수부로 쓰는 고정소수점 표기">Q16</dfn> 가로 배율을 floor(48 × 65536 / 64)로 계산하며, 값은 <code>0xc000</code>(0.75)입니다. 글자 폭 24·29·34·29는 18·21·25·21로 줄고, x 좌표는 96·114·135·160이 됩니다. 높이 48과 y = 64는 그대로입니다.</p>
+<p>원본 코드는 <dfn title="정수의 아래 16비트를 소수부로 쓰는 고정소수점 표기">Q16</dfn> 가로 배율을 floor(48 × 65536 / 64)로 계산하며 값은 <code>0xc000</code>(0.75)입니다. 글자 폭 24·29·34·29는 18·21·25·21로 줄고 x 좌표는 96·114·135·160이 됩니다. 높이 48과 y = 64는 그대로입니다.</p>
 <pre><code>factor = (48 &lt;&lt; 16) // 64
 destination_width = (source_width * factor) &gt;&gt; 16
 inverse_step = (source_width &lt;&lt; 16) // destination_width
@@ -207,7 +207,7 @@ source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16<
 <section id="binding">
 <h2>등록된 컨텍스트를 원본 선택기가 고르는 조건</h2>
 <p class="takeaway">화면 버퍼를 교대할 때 원본 코드는 다음 그리기 ID의 등록 슬롯에서 컨텍스트를 꺼내 활성 포인터에 씁니다. 속성과 글자는 모두 이 포인터를 따라가므로, 슬롯이 비어 있으면 둘 다 이전 컨텍스트를 씁니다.</p>
-<p>앞의 축소 시험에서는 그리기 ID 17과 기본 ID 0을 같은 합성 컨텍스트에 연결했습니다. 별도의 선택 시험에서는 합성 등록표에 서로 다른 컨텍스트를 넣고, 명시적 속성 ID와 텍스트 ID 0의 호출이 어느 조건에서 같은 포인터를 받는지 확인했습니다. 원본 버퍼 교대와 선택기를 실행해 ID 17→18→17의 두 교대와 다음 슬롯이 비어 있는 사례를 대조했습니다.</p>
+<p>앞의 축소 시험에서는 그리기 ID 17과 기본 ID 0을 같은 합성 컨텍스트에 연결했습니다. 별도의 선택 시험에서는 합성 등록표에 서로 다른 컨텍스트를 넣고 명시적 속성 ID와 텍스트 ID 0의 호출이 어느 조건에서 같은 포인터를 받는지 확인했습니다. 원본 버퍼 교대와 선택기를 실행해 ID 17→18→17의 두 교대와 다음 슬롯이 비어 있는 사례를 대조했습니다.</p>
 
 <figure class="diagram">
 <figcaption>등록 슬롯에 따른 원본 선택 결과</figcaption>
@@ -249,7 +249,7 @@ source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16<
 
 <ol class="steps">
 <li><strong>교대와 매개변수 설정</strong> 원본 <code>ScreenOsdLayer_Roll</code>은 등록 테이블에서 현재 그리기 버퍼를 꺼내고 그리기·표시 ID를 맞바꿉니다. 일반 <code>ScreenOsdLayer_SetOsd</code> 분기는 표시 요청을 먼저 내보낸 뒤 <code>I43_SetParam(0x1bc, 다음 그리기 ID)</code>를 부릅니다.</li>
-<li><strong>활성 포인터 쓰기</strong> 매개변수 점프표가 <code>AppOsdSetDrawBuffer</code>로 보냅니다. 범위 안의 ID이고 슬롯이 0이 아니면 활성 포인터(<code>hdcAppOsd</code>, <code>0x800eb4d8</code>)에 컨텍스트를 씁니다. 이 저장 명령은 호출의 지연 슬롯 <code>0x8024a614</code>에 있고, VEX는 쓰기 이벤트를 <code>0x8024a610</code>으로 기록합니다.</li>
+<li><strong>활성 포인터 쓰기</strong> 매개변수 점프표가 <code>AppOsdSetDrawBuffer</code>로 보냅니다. 범위 안의 ID이고 슬롯이 0이 아니면 활성 포인터(<code>hdcAppOsd</code>, <code>0x800eb4d8</code>)에 컨텍스트를 씁니다. 이 저장 명령은 호출의 지연 슬롯 <code>0x8024a614</code>에 있고 VEX는 쓰기 이벤트를 <code>0x8024a610</code>으로 기록합니다.</li>
 <li><strong>같은 포인터 사용</strong> 명시적 ID를 쓰는 속성 호출과, ID 0·플래그 1인 글자 호출이 모두 이 활성 포인터를 GDI 입구에 넘겼습니다.</li>
 </ol>
 <div class="table-wrap"><table>
@@ -257,9 +257,9 @@ source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16<
 <thead><tr><th>사례</th><th>그리기 ID</th><th>사건 순서</th></tr></thead>
 <tbody><tr><th scope="row">시작</th><td>17</td><td><strong>활성 포인터 ← A</strong></td></tr><tr><th scope="row">교대 1</th><td>17 → 18</td><td>크기 속성 → A → 글자 → A → 캐시 요청 → 표시 요청 ID 17 → <strong>활성 포인터 ← B</strong> → 크기 속성 → B → 글자 → B</td></tr><tr><th scope="row">교대 2</th><td>18 → 17</td><td>크기 속성 → B → 글자 → B → 캐시 요청 → 표시 요청 ID 18 → <strong>활성 포인터 ← A</strong> → 크기 속성 → A → 글자 → A</td></tr><tr><th scope="row">슬롯 18 비움</th><td>17 → 18</td><td>캐시 요청 → 표시 요청 ID 17 → 빈 슬롯 진단 → 크기 속성 → A → 글자 → A (교대 뒤 활성: A)</td></tr></tbody>
 </table></div>
-<p>처음 <code>I43_SetParam</code>은 17을 골랐고, 두 번의 원본 교대가 18과 17을 차례로 골랐습니다. 다음 ID 18의 슬롯을 비우면 화면의 그리기 ID는 18로 바뀌었지만 활성 컨텍스트 쓰기는 일어나지 않았습니다. 명시적 속성 ID 18은 이전 컨텍스트로 대체됐고, 글자 ID 0도 그 포인터를 썼습니다. 화면 ID가 바뀐 것만으로는 컨텍스트 선택이 성공했다고 판단할 수 없습니다. <a href="analysis/context-binding.json">[근거: findings, bounded_replay.replay]</a></p>
+<p>처음 <code>I43_SetParam</code>은 17을 골랐고 두 번의 원본 교대가 18과 17을 차례로 골랐습니다. 다음 ID 18의 슬롯을 비우면 화면의 그리기 ID는 18로 바뀌었지만 활성 컨텍스트 쓰기는 일어나지 않았습니다. 명시적 속성 ID 18은 이전 컨텍스트로 대체됐고 글자 ID 0도 그 포인터를 썼습니다. 화면 ID가 바뀐 것만으로는 컨텍스트 선택이 성공했다고 판단할 수 없습니다. <a href="analysis/context-binding.json">[근거: findings, bounded_replay.replay]</a></p>
 <div class="callout warn"><strong class="label">17·18은 시험 입력입니다</strong>
-<p>원본 펌웨어의 초기 레이어별 할당 범위는 0~7, 32~39, 64~71(최대 ID 71)입니다. 원본 <code>AppOsdCreateBuffer</code>는 고른 레이어 범위를 훑어 첫 빈 컨텍스트를 등록하고, 보조 <code>ScreenOsdLayer_Setup</code>은 레이어 0을 씁니다. 초기 등록 테이블의 슬롯 17과 18은 0입니다. 선택기가 등록된 17·18을 받아들이는 것과 초기 설정 코드가 그 ID를 할당하는 것은 별개입니다. 다음 과제는 첫 색공간 갱신 전의 시작 시 등록 내용과 레이어 0 생성 경로를 추적하는 것입니다.</p></div>
+<p>원본 펌웨어의 초기 레이어별 할당 범위는 0~7, 32~39, 64~71(최대 ID 71)입니다. 원본 <code>AppOsdCreateBuffer</code>는 고른 레이어 범위를 훑어 첫 빈 컨텍스트를 등록하고 보조 <code>ScreenOsdLayer_Setup</code>은 레이어 0을 씁니다. 초기 등록 테이블의 슬롯 17과 18은 0입니다. 선택기가 등록된 17·18을 받아들이는 것과 초기 설정 코드가 그 ID를 할당하는 것은 별개입니다. 다음 과제는 첫 색공간 갱신 전의 시작 시 등록 내용과 레이어 0 생성 경로를 추적하는 것입니다.</p></div>
 <details class="evidence"><summary>컨텍스트 선택의 고정 주소와 모델</summary>
 <dl class="kv"><dt>화면 그리기 ID</dt><dd><code>0x80c6ae84</code></dd><dt>화면 표시 ID</dt><dd><code>0x80c6ae86</code></dd><dt>정상 교대 조건</dt><dd><code>u8[0x80c6aea1] == 0</code></dd><dt>등록 테이블 포인터 전역</dt><dd><code>0x8029f340</code></dd><dt>원본 등록 테이블</dt><dd><code>0x800eb34c</code></dd><dt>슬롯 위치</dt><dd><code>registry + 4 + 4 * id</code></dd><dt>활성 그리기 컨텍스트</dt><dd><code>0x800eb4d8</code></dd><dt>표시 컨텍스트</dt><dd><code>0x800eb4d4</code></dd><dt>최대 ID 전역</dt><dd><code>0x800ebd70</code></dd><dt>초기 최대 ID</dt><dd><code>71</code></dd><dt>레이어 범위 전역</dt><dd><code>0x800ebd5c</code></dd><dt>초기 레이어 범위</dt><dd><code>[[0, 7], [32, 39], [64, 71]]</code></dd><dt>그리기 매개변수</dt><dd><code>0x1bc</code></dd><dt>매개변수 점프표 워드</dt><dd><code>0x800f61c0</code></dd><dt>그리기 버퍼 설정 함수</dt><dd><code>0x8024a59c</code></dd><dt>활성 포인터 저장 명령</dt><dd><code>0x8024a614</code></dd><dt>VEX가 기록한 저장 위치</dt><dd><code>0x8024a610</code></dd></dl>
 <div class="table-wrap"><table class="compact">
@@ -275,7 +275,7 @@ source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16<
 
 <section id="comparison">
 <h2>K-3 Mark III와 비교</h2>
-<p>K-3 Mark III 고정 커밋에서 확인한 색공간 선택·확정·취소 구조를 비교 기준으로 둡니다. Q7은 포커스 이동 때 값을 쓰고 취소 때 백업을 되돌리지만, K-3 Mark III는 확정 전 보류값을 씁니다. 이 문서의 결과는 Q7의 글자 속성과 렌더러 분기에 대한 근거입니다. K-3 Mark III의 글꼴 크기·팔레트·화면 버퍼가 Q7과 같은지는 확인하지 않았습니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680/analysis/colorspace-ui-input-evidence.json">[K-3 Mark III 입력·확정·취소]</a> · <a href="colorspace-ui-report.html#state">[Q7 값 쓰기·복원]</a></p>
+<p>K-3 Mark III 고정 커밋에서 확인한 색공간 선택·확정·취소 구조를 비교 기준으로 둡니다. Q7은 포커스 이동 때 값을 쓰고 취소 때 백업을 되돌리지만 K-3 Mark III는 확정 전 보류값을 씁니다. 이 문서의 결과는 Q7의 글자 속성과 렌더러 분기에 대한 근거입니다. K-3 Mark III의 글꼴 크기·팔레트·화면 버퍼가 Q7과 같은지는 확인하지 않았습니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/d44f5b05e60fb488cda7d38bdcfcb60b8a6f6680/analysis/colorspace-ui-input-evidence.json">[K-3 Mark III 입력·확정·취소]</a> · <a href="colorspace-ui-report.html#state">[Q7 값 쓰기·복원]</a></p>
 </section>
 
 <section id="limits">
@@ -287,7 +287,7 @@ source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16<
 <li>컨텍스트 선택 시험은 정상 교대 분기(<code>0x80c6aea1</code>의 값 0)를 따랐습니다. 표시 자원 잠금, 캐시, 표시 요청, GDI 설정 함수와 글리프 본문, 빈 슬롯 진단은 모델입니다.</li>
 </ul>
 <div class="callout fix"><strong class="label">정정</strong>
-<p>모델 목록의 <code>0x800ec08c</code>는 진단 함수가 아니라 <code>I43_SetParam</code>입니다. 갱신 요청 기록 시험은 그 호출에서 0을 돌려주므로 매개변수 <code>0x1bc</code>의 활성 그리기 컨텍스트 선택을 실행하지 않습니다. 기존 요청·픽셀 결과는 그대로이며, 그 선택은 <a href="#binding">위 절</a>의 별도 시험에서 원본 코드로 실행했습니다.</p></div>
+<p>모델 목록의 <code>0x800ec08c</code>는 진단 함수가 아니라 <code>I43_SetParam</code>입니다. 갱신 요청 기록 시험은 그 호출에서 0을 돌려주므로 매개변수 <code>0x1bc</code>의 활성 그리기 컨텍스트 선택을 실행하지 않습니다. 기존 요청·픽셀 결과는 그대로이며 그 선택은 <a href="#binding">위 절</a>의 별도 시험에서 원본 코드로 실행했습니다.</p></div>
 <details class="evidence"><summary>모델로 대체한 경계</summary>
 <div class="table-wrap"><table class="compact">
 <caption>단계별로 모델이 대신한 호출</caption>
@@ -295,7 +295,7 @@ source_column = (column * inverse_step + (inverse_step &gt;&gt; 1)) &gt;&gt; 16<
 <tbody><tr><th scope="row">갱신 요청 기록</th><td><code>0x800ee804</code></td><td>Allocate zeroed synthetic GUI heap at the requested size.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80433354</code></td><td>Bypass mode-entry DataHelper_UpdateUserData / arrange-mode display update. This call&#x27;s effects are outside the replay.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80adfeb8</code></td><td>Accept initial UI-start request only. Refreshes execute the original SendRequest.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125c24</code></td><td>Accept the UI start wakeup without an RTOS thread.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x809dc650</code></td><td>Accept capture-thread notification. For mode requests the harness observes the original record and clears it as the receiver would consume it.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8024df84</code></td><td>Observe DCF API boundary after the original prefix-selection routines, without touching media.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125d0c</code></td><td>Capture the original 16-byte queue send record and retain it in the fixture.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125cec</code></td><td>Deliver that exact record once to the native consumer.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125be0</code></td><td>Accept the outer RTOS event wait.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125f14</code></td><td>Accept platform mutex lock.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80125f98</code></td><td>Accept platform mutex unlock.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80126090</code></td><td>Accept UI service semaphore acquisition.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x801260b0</code></td><td>Accept UI service semaphore release if reached.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x801049c4</code></td><td>Return 3 to bypass the unrelated factory-error overlay.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8043937c</code></td><td>Observe OSD clear without clearing a real screen.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8024bf9c</code></td><td>Record native attribute parameters before display-context setters.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8043eb54</code></td><td>Record line geometry and palette parameters before shape rasterization.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8043f42c</code></td><td>Record icon commands during refresh. Restore native implementation for the two isolated marker draws.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8024928c</code></td><td>Copy and hash staged text parameters at AppDBTextOutByBufferID before GDI glyph execution.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x802495d8</code></td><td>Reject an unexpected aligned-text branch in these mode 0x53 fixtures.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x80262fd4</code></td><td>Return synthetic indexed draw RAM metadata for native roll and isolated marker draws.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x800b3d40</code></td><td>Record cache-region address and size without CPU cache operations.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x8029ef58</code></td><td>Record native show-buffer request before downstream display-context submission.</td></tr><tr><th scope="row">갱신 요청 기록</th><td><code>0x800ec08c</code></td><td>Return 0 at I43_SetParam after the show-buffer request; skip parameter 0x1bc active draw-context selection.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x8000bf28</code></td><td>Return zeroed synthetic allocations for one display context and one bitmap.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x80262fd4</code></td><td>Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x800b3d40</code></td><td>Record cache address/length and return0 without CPU cache operations.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80240e2c</code></td><td>Return a synthetic media pointer for the observed drive selector.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8007d180</code></td><td>Supply the verified FAT file size at the stat boundary.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8000bf28</code></td><td>After raster setup, allocate the synthetic FileX control block or font buffer.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80074334</code></td><td>Accept the normalized font path at FileX open.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80071a10</code></td><td>Supply the full verified font bytes and return success at FileX read.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8007c258</code></td><td>Accept FileX close for the modeled file.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8000c598</code></td><td>Record release of the FileX control block without allocator effects.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x800a14f8</code></td><td>Record a diagnostic call without emitting text.</td></tr></tbody>
 </table></div>
 </details>
-<p>원본 71워드와 주소로 지정한 함수 후보 구간 12개(<code>ResourceString_DrawStringChangeColor</code>, <code>ResourceString_DrawString</code>, <code>ResourceString_SetFontSize</code>, <code>ScreenOsdLayer_SetTextColor</code>, <code>ScreenOsdLayer_SetAttribute</code>, <code>I43_SetOSDDisplayAttr</code>, <code>AppOsdSetAttributeByBufferID</code>, <code>GdiSetTextSize</code>, <code>GdiSetTextCharacterExtra</code>, <code>GdiSetTextColor</code>, <code>FntDrawTextEx</code>, <code>StretchBlitFont</code>), 앞선 갱신·글꼴·“sRGB” 글자 연결을 대조했습니다. 구간은 다음 복원 심볼 주소까지이며 해시는 후보 구간을 기준으로 합니다. 선택한 명령어·해시·도구만 공개하며 원본 글꼴과 픽셀 데이터는 포함하지 않습니다. <a href="tools/verify_glyph.py">[근거 검사: verify_attributes]</a> · <a href="tests/test_colorspace_glyph.py">[분기·별칭 변조와 절반 간격 검사]</a></p>
+<p>원본 71워드와 주소로 지정한 함수 후보 구간 12개(<code>ResourceString_DrawStringChangeColor</code>, <code>ResourceString_DrawString</code>, <code>ResourceString_SetFontSize</code>, <code>ScreenOsdLayer_SetTextColor</code>, <code>ScreenOsdLayer_SetAttribute</code>, <code>I43_SetOSDDisplayAttr</code>, <code>AppOsdSetAttributeByBufferID</code>, <code>GdiSetTextSize</code>, <code>GdiSetTextCharacterExtra</code>, <code>GdiSetTextColor</code>, <code>FntDrawTextEx</code>, <code>StretchBlitFont</code>), 그리기 경로의 갱신·글꼴·“sRGB” 글자 연결을 대조했습니다. 구간은 다음 복원 심볼 주소까지이며 해시는 후보 구간을 기준으로 합니다. 선택한 명령어·해시·도구만 공개하며 원본 글꼴과 픽셀 데이터는 포함하지 않습니다. <a href="tools/verify_glyph.py">[근거 검사: verify_attributes]</a> · <a href="tests/test_colorspace_glyph.py">[분기·별칭 변조와 절반 간격 검사]</a></p>
 <pre><code>python tools/check_colorspace_attributes.py &lt;원본 fwdc603p.bin&gt; .private/main-expanded.elf --output .private/attributes-new.json
 python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre>
 </section>
@@ -316,8 +316,8 @@ python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html" aria-current="page">48×48 요청과 컨텍스트 선택</a></li><li><a href="colorspace-clip-report.html">색공간 글자의 가장자리 처리</a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-glyph-report.html"><small>← 이전</small>글꼴 로딩과 글리프 픽셀</a><a class="next" href="colorspace-clip-report.html"><small>다음 →</small>색공간 글자의 가장자리 처리</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html" aria-current="page">48×48 요청과 컨텍스트 선택</a></li><li><a href="colorspace-clip-report.html">색공간 글자가 화면 가장자리에 걸칠 때</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-glyph-report.html"><small>← 이전</small>글꼴 로딩과 글리프 픽셀</a><a class="next" href="colorspace-clip-report.html"><small>다음 →</small>색공간 글자가 화면 가장자리에 걸칠 때</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

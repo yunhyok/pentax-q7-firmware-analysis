@@ -11,7 +11,7 @@
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
 <div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="../index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="../guide-update.html">업데이트</a><a href="../guide-color.html" aria-current="true">색·HDR</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-color.html">색 처리와 HDR</a></li><li aria-current="page">DCP LUT 좌표·보간·색 처리 전제</li></ol></nav>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-color.html">색 처리와 HDR</a></li><li aria-current="page">DCP 표의 좌표와 보간</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">색 처리와 HDR · Lightroom 쪽 프로파일 파일 분석</p>
@@ -203,8 +203,8 @@ python -B tools/check_q7_dcp_interpolation.py --k3-root /path/to/parser-root \
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="../guide-color.html">색 처리·HDR 안내</a></li><li><a href="../routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="../pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="../final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="../hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="../hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="q7-dcp-structure.html">DCP 태그·행렬·테이블 비교</a></li><li><a href="q7-dcp-interpolation.html" aria-current="page">DCP LUT 좌표·보간·색 처리 전제</a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="q7-dcp-structure.html"><small>← 이전</small>DCP 태그·행렬·테이블 비교</a><a class="next" href="../guide-af.html"><small>다음 →</small>AF·렌즈 안내</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="../guide-color.html">색 처리·HDR 안내</a></li><li><a href="../routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="../pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="../final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="../hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="../hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a></li><li><a href="q7-dcp-interpolation.html" aria-current="page">DCP 표의 좌표와 보간</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="q7-dcp-structure.html"><small>← 이전</small>Q7용 DCP 두 개에 저장된 태그와 표</a><a class="next" href="../guide-af.html"><small>다음 →</small>AF·렌즈 안내</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

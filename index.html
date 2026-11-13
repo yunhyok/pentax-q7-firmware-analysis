@@ -98,9 +98,9 @@
 <div class="panel">
 <h3>어떤 프로그램들인가</h3>
 <ul>
-<li><strong>카메라 본 프로그램 (E03–E06)</strong> — 촬영, AF, 영상 처리, 메뉴. E04–E06은 압축되어 있어 448블록을 풀어 11,266,048바이트를 복원한 뒤 분석했습니다.</li>
-<li><strong>업데이트 로더 (E01)</strong> — 펌웨어 업데이트를 맡는 별도 프로그램. <dfn title="정해진 시간 안에 반응해야 하는 기기를 위한 작은 운영체제">RTOS</dfn>인 ThreadX와 파일시스템 FileX의 심볼 이름이 남아 있습니다.</li>
-<li><strong>그 밖의 작은 ELF</strong> — 용도를 따로 조사하지 않았습니다.</li>
+<li><strong>카메라 본 프로그램 (E03–E06)</strong>: 촬영, AF, 영상 처리, 메뉴를 맡습니다. E04–E06은 압축되어 있어 448블록을 풀어 11,266,048바이트를 복원한 뒤 분석했습니다.</li>
+<li><strong>업데이트 로더 (E01)</strong>: 펌웨어 업데이트를 맡는 별도 프로그램입니다. <dfn title="정해진 시간 안에 반응해야 하는 기기를 위한 작은 운영체제">RTOS</dfn>인 ThreadX와 파일시스템 FileX의 심볼 이름이 남아 있습니다.</li>
+<li><strong>그 밖의 작은 ELF</strong>: 용도를 따로 조사하지 않았습니다.</li>
 </ul>
 </div>
 <div class="panel">
@@ -119,7 +119,7 @@
 <li><span class="badge ok">확인</span>
 <p>원본 펌웨어의 기계어를 PC의 CPU 에뮬레이터에서 실제로 실행해 관측했거나, 파일의 바이트를 직접 읽어 구조와 해시를 대조한 결과입니다.</p></li>
 <li><span class="badge static">정적 분석</span>
-<p>코드를 실행하지 않고, 기계어를 사람이 읽을 수 있게 바꾼 결과를 읽어서 판단한 내용입니다.</p></li>
+<p>코드를 실행하지 않고 기계어를 사람이 읽을 수 있게 바꾼 결과를 읽어서 판단한 내용입니다.</p></li>
 <li><span class="badge model">모델</span>
 <p>하드웨어의 응답이나 입력 데이터처럼, 실물 대신 연구자가 정해서 넣은 값입니다. 그 조건에서만 성립합니다.</p></li>
 <li><span class="badge open">미확인</span>
@@ -162,14 +162,14 @@
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>확인</li><li><i class="model"></i>모델</li><li><i class="open"></i>미확인</li></ul>
 </figure>
-<p class="wrap-note small muted">이 기종의 RAW로 한 Lightroom 색 프로파일 실험은 성격이 다릅니다. 실제 RAW 파일을 실제 Adobe Lightroom Classic에 넣어 얻은 측정값이며, <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/lightroom-bridge.html">K-3 Mark III 저장소의 Lightroom 색 프로파일 문서</a>에 세 기종을 함께 정리했습니다.</p>
+<p class="wrap-note small muted">이 기종의 RAW로 한 Lightroom 색 프로파일 실험은 성격이 다릅니다. 실제 RAW 파일을 실제 Adobe Lightroom Classic에 넣어 얻은 측정값입니다. <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/lightroom-bridge.html">K-3 Mark III 저장소의 Lightroom 색 프로파일 문서</a>에 세 기종을 함께 정리했습니다.</p>
 </section>
 
 <section class="band wrap" id="map">
 <h2>문서 지도</h2>
 <p class="sub">주제마다 “안내” 문서가 먼저 있습니다. 안내 문서에서 전체 그림을 본 뒤 세부 문서로 들어가면 읽기 쉽습니다. 낯선 용어는 <a href="glossary.html">용어집</a>에서 찾을 수 있습니다.</p>
 <!-- chrome:map -->
-<div class="sitemap"><section><h3 id="map-start">시작하기</h3><ol><li><a href="structure-report.html">펌웨어 파일 구조</a><span>ELF 12개, 심볼, 엔트로피, 재현 절차</span></li><li><a href="deep-report.html">압축 복원과 주요 함수 300개</a><span>ThreadX, AF·셔터·JPEG·색 처리 개관</span></li><li><a href="glossary.html">용어집</a></li></ol></section><section><h3 id="map-update">업데이트와 재패킹</h3><ol><li><a href="guide-update.html">업데이트·재패킹 안내</a></li><li><a href="implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="nand-header-report.html">NAND 식별값과 부트 헤더 재지정</a></li><li><a href="reports/nand-boot-read.html">부트 헤더 값과 별도 읽기 요청</a></li><li><a href="reports/nand-context.html">컨텍스트 등록과 별도 매체 발견</a></li><li><a href="reports/nand-filex.html">AppFb의 FileX 열기와 NAND 응답 경계</a></li><li><a href="loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></section><section><h3 id="map-color">색 처리와 HDR</h3><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">DCP 태그·행렬·테이블 비교</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP LUT 좌표·보간·색 처리 전제</a></li></ol></section><section><h3 id="map-af">AF와 렌즈 제어</h3><ol><li><a href="guide-af.html">AF·렌즈 안내</a></li><li><a href="af-completion-report.html">AF 명령과 완료 판정</a></li></ol></section><section><h3 id="map-ui">화면과 글꼴</h3><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li><li><a href="colorspace-clip-report.html">색공간 글자의 가장자리 처리</a></li></ol></section></div>
+<div class="sitemap"><section><h3 id="map-start">시작하기</h3><ol><li><a href="structure-report.html">펌웨어 파일 구조</a><span>ELF 12개, 심볼, 엔트로피, 재현 절차</span></li><li><a href="deep-report.html">압축 복원과 주요 함수 300개</a><span>ThreadX, AF·셔터·JPEG·색 처리 개관</span></li><li><a href="glossary.html">용어집</a></li></ol></section><section><h3 id="map-update">업데이트와 재패킹</h3><ol><li><a href="guide-update.html">업데이트·재패킹 안내</a></li><li><a href="implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="nand-header-report.html">NAND 식별값과 부트 헤더 재지정</a></li><li><a href="reports/nand-boot-read.html">부트 헤더 값과 별도 읽기 요청</a></li><li><a href="reports/nand-context.html">컨텍스트 등록과 별도 매체 발견</a></li><li><a href="reports/nand-filex.html">AppFb의 FileX 열기와 NAND 응답 경계</a></li><li><a href="loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></section><section><h3 id="map-color">색 처리와 HDR</h3><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a></li></ol></section><section><h3 id="map-af">AF와 렌즈 제어</h3><ol><li><a href="guide-af.html">AF·렌즈 안내</a></li><li><a href="af-completion-report.html">AF 명령과 완료 판정</a></li></ol></section><section><h3 id="map-ui">화면과 글꼴</h3><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li><li><a href="colorspace-clip-report.html">색공간 글자가 화면 가장자리에 걸칠 때</a></li></ol></section></div>
 <!-- /chrome:map -->
 </section>
 

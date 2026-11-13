@@ -28,7 +28,7 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>본 프로그램은 업데이트 파일을 읽어 <strong><code>I:\UPG_FILE.ELF</code></strong>라는 이름으로 다시 쓰도록 요청합니다. 이 준비 단계를 11가지 조건으로 실행했습니다.</li>
-<li>그 뒤 호출이 여러 단계를 내려가 본 프로그램 안의 <code>DownloadCard</code>에 닿습니다. 이 함수는 헤더 192바이트를 읽고, 종류 값 3에 맞는 NAND 기록 함수를 고릅니다.</li>
+<li>그 뒤 호출이 여러 단계를 내려가 본 프로그램 안의 <code>DownloadCard</code>에 닿습니다. 이 함수는 헤더 192바이트를 읽고 종류 값 3에 맞는 NAND 기록 함수를 고릅니다.</li>
 <li>본 프로그램에 든 기록 코드는 E01 로더에 든 같은 이름의 코드와 <strong>별개 구현</strong>입니다. 주소도, 작업용 구조체의 칸 위치도 다릅니다.</li>
 <li>맨 위 함수는 동기 방식일 때 아래 단계가 실패해도 <strong>1을 돌려줍니다</strong>. 그래서 맨 위의 1만 보고 기록이 성공했다고 판단할 수 없습니다. 호출과 반환을 12가지 조건으로 실행했습니다.</li>
 <li>기록 함수의 본문과 NAND 쓰기는 이 문서에서 실행하지 않았습니다. 그 자리는 정해 둔 값을 돌려주는 모델로 바꿨습니다.</li>
@@ -65,7 +65,7 @@
 
 <section id="background">
 <h2>배경: 기록 코드가 두 벌 있습니다</h2>
-<p>리코의 공식 안내에 따르면 사용자는 <code>fwdc603p.bin</code>을 SD 카드의 최상위 폴더에 복사하고, 카메라 메뉴의 펌웨어 버전 화면에서 업데이트를 시작합니다. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[리코: Q7 펌웨어 업데이트 안내]</a> 이 문서는 그 뒤 카메라 본 프로그램 안에서 일어나는 일을 다룹니다.</p>
+<p>리코의 공식 안내에 따르면 사용자는 <code>fwdc603p.bin</code>을 SD 카드의 최상위 폴더에 복사하고 카메라 메뉴의 펌웨어 버전 화면에서 업데이트를 시작합니다. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">[리코: Q7 펌웨어 업데이트 안내]</a> 이 문서는 그 뒤 카메라 본 프로그램 안에서 일어나는 일을 다룹니다.</p>
 <p>Q7 펌웨어에는 저장장치에 기록하는 코드가 두 벌 들어 있습니다.</p>
 <dl class="kv">
 <dt>MAIN</dt><dd>카메라 본 프로그램 안에 든 기록 코드입니다. 메뉴에서 시작한 업데이트가 이 코드를 거칩니다. 이 문서의 대상입니다.</dd>
@@ -83,13 +83,13 @@
 
 <section id="staging">
 <h2>파일 준비: 업데이트 파일을 읽어 I:\UPG_FILE.ELF로 쓰기를 요청합니다</h2>
-<p class="takeaway">준비 함수는 파일 크기를 재고, 저장 공간을 마련하고, 파일 전체를 읽어 다른 이름으로 쓰도록 요청합니다. 중간 조건 하나라도 실패하면 0을 돌려줍니다.</p>
+<p class="takeaway">준비 함수는 파일 크기를 재고 저장 공간을 마련한 뒤 파일 전체를 읽어 다른 이름으로 쓰도록 요청합니다. 중간 조건 하나라도 실패하면 0을 돌려줍니다.</p>
 <p>준비를 맡는 함수는 <code>UpdateFW_LoadFirmware</code>입니다. 원본 코드가 밟는 순서는 다음과 같습니다.</p>
 <ol class="steps">
 <li><strong>파일 크기 재기</strong> 전역 변수에 들어 있는 경로에서 파일 크기의 하위 32비트를 읽습니다. 시험에서는 이 변수에 <code>F:\fwdc603p.bin</code>을 넣었습니다.</li>
 <li><strong>드라이브 글자 정하기</strong> 보드 버전이 3보다 작으면 입력 경로의 드라이브를 F로, 그렇지 않으면 E로 바꿉니다. 보드 버전 3인 사례는 F 경로에서 크기를 재고 E 경로를 열었습니다.</li>
 <li><strong>공간 마련 요청</strong> 크기에 <code>0x2000000</code>을 더합니다. 이 덧셈은 32비트 범위에서 순환합니다. 그 결과를 512로 나눠 올림한 값을 파라미터 <code>0x11e</code>에 적습니다.</li>
-<li><strong>준비 확인, 포맷, 마운트</strong> 파라미터를 되읽어 준비됐는지 확인하고, 저장 매체를 포맷하고 마운트합니다.</li>
+<li><strong>준비 확인, 포맷, 마운트</strong> 파라미터를 되읽어 준비됐는지 확인하고 저장 매체를 포맷하고 마운트합니다.</li>
 <li><strong>읽기</strong> 메모리를 할당하고 입력 파일을 열어, 처음에 잰 길이만큼 읽습니다. 읽힌 길이가 모자라면 실패로 처리합니다.</li>
 <li><strong>쓰기 요청</strong> <code>I:\UPG_FILE.ELF</code>를 쓰기용으로 열어 읽은 내용을 쓰도록 요청하고 닫습니다.</li>
 </ol>
@@ -175,8 +175,8 @@
 </figure>
 
 <h3>파일을 찾고 헤더를 읽기</h3>
-<p><code>I43_UpgradeFlashFromCard</code>는 <code>AppUpgradeFlashFromCard</code>와 <code>BurnUfcMain</code>을 거쳐 MAIN의 <code>DownloadCard</code>에 인수 (<code>0xfe</code>, 0, 1)을 넘깁니다. <code>DownloadCard</code>는 저장 매체의 디렉터리를 훑습니다. 시험에서는 디렉터리 모델이 <code>upg_file.elf</code>라는 항목을 내놓았고, 원본 코드가 이름을 대문자로 바꾼 뒤 <code>.ELF</code>가 들어 있는지 찾아 이 파일을 골랐습니다.</p>
-<p>이어 파일 오프셋 <code>0x100000</code>에서 헤더의 앞 64바이트를 읽고, <code>+0x3e</code>가 <code>0x55aa</code>인지 확인한 다음 128바이트를 더 읽습니다. 읽기 모델은 원본 업데이트 파일의 같은 위치 192바이트를 그대로 내놓았습니다. <a href="analysis/update-service.json">[근거: bridge_cases]</a></p>
+<p><code>I43_UpgradeFlashFromCard</code>는 <code>AppUpgradeFlashFromCard</code>와 <code>BurnUfcMain</code>을 거쳐 MAIN의 <code>DownloadCard</code>에 인수 (<code>0xfe</code>, 0, 1)을 넘깁니다. <code>DownloadCard</code>는 저장 매체의 디렉터리를 훑습니다. 시험에서는 디렉터리 모델이 <code>upg_file.elf</code>라는 항목을 내놓았습니다. 원본 코드는 이름을 대문자로 바꾼 뒤 <code>.ELF</code>가 들어 있는지 찾아 이 파일을 골랐습니다.</p>
+<p>이어 파일 오프셋 <code>0x100000</code>에서 헤더의 앞 64바이트를 읽고 <code>+0x3e</code>가 <code>0x55aa</code>인지 확인한 다음 128바이트를 더 읽습니다. 읽기 모델은 원본 업데이트 파일의 같은 위치 192바이트를 그대로 내놓았습니다. <a href="analysis/update-service.json">[근거: bridge_cases]</a></p>
 
 <h3>기록 함수를 고르기</h3>
 <p>원본 <code>BurnGetHandle</code>은 헤더의 종류 값 3을 보고 MAIN의 <code>BurnNand</code> 주소를 핸들 <code>+0xca4</code>에, 장치 함수의 주소를 <code>+0xca8</code>에 적습니다. 핸들 <code>+0xcc8</code>의 해시 플래그는 0입니다. 그다음 원본 호출부가 <code>Burn</code>에 핸들, 덩어리 크기 <code>0x20000</code>(128KiB), 카드 읽기용 함수 표를 넘깁니다. 이 문서의 실행은 여기까지입니다. <code>Burn</code>의 진입점에서 모델이 대신 값을 돌려주므로, MAIN <code>Burn</code>의 본문과 NAND 쓰기는 실행 범위 밖입니다.</p>
@@ -249,7 +249,7 @@
 
 <section id="returns">
 <h2>반환값: 맨 위의 1은 아래 단계의 성공을 뜻하지 않습니다</h2>
-<p class="takeaway">아래 단계의 결과는 한 단계 올라갈 때마다 다른 숫자로 바뀌고, 동기 방식의 맨 위 래퍼에서는 성공과 실패의 차이가 사라집니다.</p>
+<p class="takeaway">아래 단계의 결과는 한 단계 올라갈 때마다 다른 숫자로 바뀌고 동기 방식의 맨 위 래퍼에서는 성공과 실패의 차이가 사라집니다.</p>
 
 <figure class="diagram">
 <figcaption>Burn의 결과가 위로 올라가며 바뀌는 모습 (동기 방식, 백업 플래그 0)</figcaption>
@@ -308,13 +308,13 @@
 <ul class="dg-legend"><li><i class="model"></i>시험용으로 넣은 값</li><li><i class="ok"></i>원본 코드가 만든 반환값</li><li><i class="key"></i>두 경우가 같아지는 지점</li></ul>
 </figure>
 
-<p>동기 방식의 <code>UpdateFW_UpdateFirmware</code>는 두 경우 모두 I43 어댑터의 결과를 로그 함수에 넘기고, “업데이트 중” 표시를 지운 뒤 1을 반환했습니다. 이 결과는 백업 플래그를 0으로 둔 합성 상태에서 얻었습니다. <a href="analysis/update-service.json">[근거: bridge_cases]</a></p>
+<p>동기 방식의 <code>UpdateFW_UpdateFirmware</code>는 두 경우 모두 I43 어댑터의 결과를 로그 함수에 넘겼습니다. 그리고 “업데이트 중” 표시를 지운 뒤 1을 반환했습니다. 이 결과는 백업 플래그를 0으로 둔 합성 상태에서 얻었습니다. <a href="analysis/update-service.json">[근거: bridge_cases]</a></p>
 <div class="table-wrap"><table class="compact">
 <caption>호출·반환 12사례. “→ 7”은 그 자리의 모델이 7을 돌려줬다는 뜻입니다. 1~8번은 I43 어댑터에서, 9~12번은 맨 위 래퍼에서 시작했습니다</caption>
 <thead><tr><th class="n">번호</th><th>시작</th><th>넣은 조건</th><th class="n">DownloadCard</th><th class="n">I43</th><th class="n">래퍼</th><th class="n">표시</th><th>재부팅</th></tr></thead>
 <tbody>{{bridge_rows}}</tbody>
 </table></div>
-<p class="small muted">가운데 세 칸은 각 함수의 반환값, “표시”는 실행이 끝난 뒤의 “업데이트 중” 표시 값, “재부팅”은 원본 코드가 재부팅 함수(모델)를 불렀는지입니다. — 는 그 사례에서 해당 함수가 실행되지 않았거나 관측 대상이 아니라는 뜻입니다.</p>
+<p class="small muted">가운데 세 칸은 각 함수의 반환값, “표시”는 실행이 끝난 뒤의 “업데이트 중” 표시 값, “재부팅”은 원본 코드가 재부팅 함수(모델)를 불렀는지입니다. — 는 그 사례에서 해당 함수가 실행되지 않았거나 관측 대상이 아님을 나타냅니다.</p>
 <h3>비동기 방식</h3>
 <p>비동기 분기는 원본 <code>UpdateFirmwarePerform</code>의 주소를 스레드 생성 함수 <code>Thread_Create</code>에 넘깁니다. 스레드 생성 모델이 0을 돌려주면 래퍼도 0을 반환하지만 “업데이트 중” 표시는 1로 남습니다. 모델이 1을 돌려준 사례에서도 표시는 1입니다. 두 사례 모두 스레드의 본문을 실행하지 않았으므로, 실제 스케줄링이나 작업 완료를 뜻하지 않습니다.</p>
 <h3>파일 닫기가 실패한 경우</h3>

@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li><strong>1부 Loader</strong> — 로더는 카드에서 읽은 데이터를 바로 믿지 않습니다. 같은 구간을 두 번 읽어 길이와 내용을 비교하고, 다르면 되감아 한 번 더 시도합니다.</li>
-<li><strong>1부 Loader</strong> — 어느 영역에 기록할지는 업데이트 파일의 헤더만으로 정해지지 않습니다. 카메라에 이미 설치된 헤더와 저장장치 크기를 함께 써서 배치표(섹션 맵)를 만듭니다. 그래서 업데이트 파일만 보고는 실제 카메라의 저장 배치를 확정할 수 없습니다.</li>
-<li><strong>2부 렌즈</strong> — 렌즈가 AF를 지원하는지는 렌즈 번호로 정하지 않습니다. 통신 상태 비트 하나와 렌즈가 알려 준 기능 표의 한 칸을 함께 봅니다. 명령을 보낼지 정하는 검사는 이와 별개입니다.</li>
-<li><strong>2부 렌즈</strong> — 구동 명령이 접수됐다는 응답과 렌즈가 이동을 마쳤다는 판정은 서로 다른 경로에서 나옵니다.</li>
+<li><strong>1부 Loader</strong>: 로더는 카드에서 읽은 데이터를 바로 믿지 않습니다. 같은 구간을 두 번 읽어 길이와 내용을 비교하고 다르면 되감아 한 번 더 시도합니다.</li>
+<li><strong>1부 Loader</strong>: 어느 영역에 기록할지는 업데이트 파일의 헤더만으로 정해지지 않습니다. 카메라에 이미 설치된 헤더와 저장장치 크기를 함께 써서 배치표(섹션 맵)를 만듭니다. 그래서 업데이트 파일만 보고는 실제 카메라의 저장 배치를 확정할 수 없습니다.</li>
+<li><strong>2부 렌즈</strong>: 렌즈가 AF를 지원하는지는 렌즈 번호로 정하지 않습니다. 통신 상태 비트 하나와 렌즈가 알려 준 기능 표의 한 칸을 함께 봅니다. 명령을 보낼지 정하는 검사는 이와 별개입니다.</li>
+<li><strong>2부 렌즈</strong>: 구동 명령이 접수됐다는 응답과 렌즈가 이동을 마쳤다는 판정은 서로 다른 경로에서 나옵니다.</li>
 <li>로더 쪽 115사례와 렌즈 쪽 32사례를 원본 코드로 실행했습니다. 파일 내용, 설치된 헤더, 렌즈의 응답은 모두 시험용으로 넣은 값이며 카메라와 렌즈는 연결하지 않았습니다.</li>
 </ul>
 </section>
@@ -67,12 +67,12 @@
 <section id="background">
 <h2>배경: 두 부분을 읽는 데 필요한 것</h2>
 <ul class="cards">
-<li class="card"><span class="tag">1부</span><h3><a href="#card">Loader: 입력 검증과 섹션 배치</a></h3><p class="q">로더는 카드에서 읽은 데이터를 어떻게 확인하고, 어디에 기록할지 어떻게 정합니까?</p><p>두 번 읽어 비교합니다. 기록 위치는 설치된 헤더까지 보고 정합니다.</p></li>
+<li class="card"><span class="tag">1부</span><h3><a href="#card">Loader: 입력 검증과 섹션 배치</a></h3><p class="q">로더는 카드에서 읽은 데이터를 어떻게 확인하고 어디에 기록할지 어떻게 정합니까?</p><p>두 번 읽어 비교합니다. 기록 위치는 설치된 헤더까지 보고 정합니다.</p></li>
 <li class="card"><span class="tag">2부</span><h3><a href="#lens">렌즈: AF 지원 판정에서 완료 판정까지</a></h3><p class="q">렌즈가 알려 준 정보는 AF의 어느 판단에 쓰입니까?</p><p>지원 판정, 명령 허용, 이동 한계와 속도, 완료 판정에 따로따로 쓰입니다.</p></li>
 </ul>
 <h3>1부에 필요한 말</h3>
 <ul>
-<li><strong>로더(E01)</strong>: 업데이트 파일 맨 앞에 든 별도 실행 파일입니다. 저장장치에 기록하는 코드를 담고 있습니다. 카메라 본 프로그램에도 이름이 같은 코드가 따로 있는데, 이 문서가 실행한 것은 E01 쪽입니다.</li>
+<li><strong>로더(E01)</strong>: 업데이트 파일 맨 앞에 든 별도 실행 파일입니다. 저장장치에 기록하는 코드를 담고 있습니다. 카메라 본 프로그램에도 이름이 같은 코드가 따로 있는데 이 문서가 실행한 것은 E01 쪽입니다.</li>
 <li><dfn title="저장장치의 기본 단위. 이 문서에서는 512바이트입니다">섹터</dfn>와 <dfn title="지우기의 단위가 되는 섹터 묶음. 이 문서의 시험 조건에서는 256섹터입니다">블록</dfn>: 섹터는 512바이트입니다. 시험 조건에서는 256섹터(128KiB)를 블록 하나로 두었습니다.</li>
 <li><strong>섹션</strong>: 저장장치를 용도별로 나눈 구역입니다. 로더는 번호 0~6으로 다룹니다.</li>
 <li><strong>설치된 헤더</strong>: 카메라의 저장장치에 이미 기록돼 있는 배치 정보입니다. 업데이트 파일에 든 헤더와 구분합니다.</li>
@@ -88,7 +88,7 @@
 
 <section id="card">
 <h2>1부 Loader ① 카드에서 읽은 데이터를 두 번 읽어 비교합니다</h2>
-<p class="takeaway">실제 업데이트 파일의 설정(해시 플래그 0)에서 카드 읽기 함수는 같은 구간을 두 번 읽고, 읽힌 길이와 내용이 같을 때만 성공으로 처리합니다.</p>
+<p class="takeaway">실제 업데이트 파일의 설정(해시 플래그 0)에서 카드 읽기 함수는 같은 구간을 두 번 읽고 읽힌 길이와 내용이 같을 때만 성공으로 처리합니다.</p>
 <p>로더는 카드의 파일을 직접 읽지 않고 함수 표에 등록된 읽기 함수에 맡깁니다. 이 함수는 핸들에 적힌 해시 플래그에 따라 두 방식 가운데 하나로 동작합니다.</p>
 
 <figure class="diagram">
@@ -139,8 +139,8 @@
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="key"></i>실제 파일의 값</li><li><i class="model"></i>시험용으로 넣은 값·모델</li></ul>
 </figure>
 
-<p>플래그가 0이면 함수는 요청받은 구간을 기본 버퍼에 읽고, 읽은 만큼 되감은 뒤 같은 구간을 비교용 버퍼에 다시 읽습니다. 두 번 읽힌 길이가 같고 내용이 같으면 1을 반환합니다. 내용이 다르면 되감아 전체를 한 번 더 시도하고, 그래도 다르면 0을 반환합니다. 시도는 많아야 두 번입니다.</p>
-<p>플래그가 1이면 요청 길이에 16바이트를 더해 읽습니다. 뒤의 16바이트는 앞부분의 MD5 값이고, 판정은 해시 작업자에게 맡깁니다. 이 문서의 실행에서는 작업자의 판정 결과를 모델이 공급했습니다. 실제 MD5 계산까지 원본 코드로 실행한 결과는 <a href="loader-hash-report.html">기록 헤더와 MD5 경로</a>에 있습니다. <a href="analysis/loader-foundation.json">[근거: replay.card_cases]</a> · <a href="tools/check_burn_input.py">[재현 도구]</a></p>
+<p>플래그가 0이면 함수는 요청받은 구간을 기본 버퍼에 읽고 읽은 만큼 되감은 뒤 같은 구간을 비교용 버퍼에 다시 읽습니다. 두 번 읽힌 길이가 같고 내용이 같으면 1을 반환합니다. 내용이 다르면 되감아 전체를 한 번 더 시도하고 그래도 다르면 0을 반환합니다. 시도는 많아야 두 번입니다.</p>
+<p>플래그가 1이면 요청 길이에 16바이트를 더해 읽습니다. 뒤의 16바이트는 앞부분의 MD5 값이고 판정은 해시 작업자에게 맡깁니다. 이 문서의 실행에서는 작업자의 판정 결과를 모델이 공급했습니다. 실제 MD5 계산까지 원본 코드로 실행한 결과는 <a href="loader-hash-report.html">기록 헤더와 MD5 경로</a>에 있습니다. <a href="analysis/loader-foundation.json">[근거: replay.card_cases]</a> · <a href="tools/check_burn_input.py">[재현 도구]</a></p>
 <div class="table-wrap"><table>
 <caption>카드 읽기 함수 14사례. 시험 입력의 요청 길이는 64바이트(플래그 1에서는 80바이트)입니다</caption>
 <thead><tr><th>사례</th><th class="n">해시 플래그</th><th class="n">읽기 횟수</th><th class="n">되감기 횟수</th><th class="n">반환값</th></tr></thead>
@@ -161,7 +161,7 @@
 
 <section id="map">
 <h2>1부 Loader ② 기록할 위치는 카메라에 설치된 헤더까지 보고 정합니다</h2>
-<p class="takeaway">업데이트 파일 헤더의 모드 바이트는 1입니다. 이 값일 때 로더는 설치된 헤더를 함께 읽어 기존 배치와 일부 값을 보존하고, 크기와 보호 조건을 검사합니다.</p>
+<p class="takeaway">업데이트 파일 헤더의 모드 바이트는 1입니다. 이 값일 때 로더는 설치된 헤더를 함께 읽어 기존 배치와 일부 값을 보존하고 크기와 보호 조건을 검사합니다.</p>
 <p>업데이트 파일에는 페이로드의 구성을 적은 헤더가 있습니다(파일 오프셋 <code>0x1000c0</code>). 이 헤더 <code>+0x234</code>의 하위 바이트(모드 바이트)가 1입니다. 이 분기에서 로더의 <code>BurnGetSectionsMap</code>은 업데이트 헤더와 카메라에 이미 설치된 헤더를 함께 읽어 섹션 맵을 만듭니다. 그래서 업데이트 파일만으로는 실제 카메라의 NAND 배치를 확정할 수 없습니다.</p>
 
 <figure class="diagram">
@@ -247,7 +247,7 @@
 <thead><tr><th>바꾼 조건</th><th class="n">총 섹터 수</th><th class="n">핸들의 보호 값</th><th class="n">반환값</th><th>근거 JSON의 이름</th></tr></thead>
 <tbody>{{map_rows}}</tbody>
 </table></div>
-<p>섹션 2의 길이가 맞지 않는 같은 조건이 핸들의 보호 값에 따라 3(거부) 또는 0(통과)으로 갈렸습니다. 보호 여부가 배치 검사의 결과를 바꾼다는 뜻입니다. <a href="analysis/loader-foundation.json">[근거: replay.section_map_cases]</a></p>
+<p>섹션 2의 길이가 맞지 않는 같은 조건이 핸들의 보호 값에 따라 3(거부) 또는 0(통과)으로 갈렸습니다. 보호 여부가 배치 검사의 결과를 바꿉니다. <a href="analysis/loader-foundation.json">[근거: replay.section_map_cases]</a></p>
 <details class="evidence"><summary>반환 0인 사례가 만든 섹션 맵</summary>
 <div class="table-wrap"><table class="compact fit">
 <caption>단위는 섹터. “넣을 양”은 업데이트 파일에서 이 섹션에 넣는 섹터 수입니다</caption>
@@ -268,7 +268,7 @@
 <tr><th scope="row">그 밖</th><td>섹션 <code>+4</code>의 길이가 0이 아니고 섹션 <code>+8</code>의 넣을 양이 0</td></tr>
 </tbody>
 </table></div>
-<p>이 규칙을 84가지 조합으로 실행했습니다. 섹션 번호 0~6, 헤더 모드 0·1, 핸들의 보호 값 0·1, 그리고 길이와 넣을 양의 세 가지 쌍입니다. 섹션의 위치를 돌려주는 함수는 번호 0에 헤더 <code>+0x3b0</code>을, 나머지에는 헤더 <code>+0x214</code> + 번호 × <code>0x24</code>를 돌려줍니다. 번호 7에서도 주소가 계산되는 것을 관측했지만, 이를 여덟 번째 섹션이 있다는 증거로 쓰지 않았습니다. <a href="analysis/loader-foundation.json">[근거: protection_cases, section_pointer_cases]</a></p>
+<p>이 규칙을 84가지 조합으로 실행했습니다. 섹션 번호 0~6, 헤더 모드 0·1, 핸들의 보호 값 0·1, 그리고 길이와 넣을 양의 세 가지 쌍입니다. 섹션의 위치를 돌려주는 함수는 번호 0에 헤더 <code>+0x3b0</code>을, 나머지에는 헤더 <code>+0x214</code> + 번호 × <code>0x24</code>를 돌려줍니다. 번호 7에서도 주소가 계산되는 것을 관측했지만 이를 여덟 번째 섹션이 있다는 증거로 쓰지 않았습니다. <a href="analysis/loader-foundation.json">[근거: protection_cases, section_pointer_cases]</a></p>
 <details class="evidence"><summary>84조합의 결과 요약과 섹션 위치 계산</summary>
 <div class="table-wrap"><table class="compact fit">
 <caption>섹션 번호별 12조합 가운데 보호로 판정된 수</caption>
@@ -283,12 +283,12 @@
 </details>
 
 <h3>업데이트 헤더의 값과 페이로드의 구성</h3>
-<p>헤더에 적힌 섹터 수로 계산하면 페이로드는 128KiB 덩어리 135개입니다. 코드 영역이 10개, Resource A가 125개이고, 이 합이 페이로드의 길이와 맞습니다.</p>
+<p>헤더에 적힌 섹터 수로 계산하면 페이로드는 128KiB 덩어리 135개입니다. 코드 영역이 10개, Resource A가 125개이고 이 합이 페이로드의 길이와 맞습니다.</p>
 <dl class="kv">
 <dt>페이로드</dt><dd>파일 <code>[0x1000c0, 0x11e00c0)</code> = 135 × <code>0x20000</code>바이트</dd>
 <dt>코드 영역</dt><dd>파일에 실린 양 2,437섹터(헤더의 <code>0x982</code> + 3). 256섹터 단위로 올림하면 10덩어리</dd>
 <dt>Resource A</dt><dd>파일에 실린 양 31,832섹터(<code>0x7c58</code>). 256섹터 단위로 올림하면 125덩어리</dd>
-<dt>위치</dt><dd>Resource A는 파일 <code>0x2400c0</code>에서 시작하고, 그 안의 내장 ELF(E04)는 <code>0x2402c0</code>에서 시작합니다</dd>
+<dt>위치</dt><dd>Resource A는 파일 <code>0x2400c0</code>에서 시작하고 그 안의 내장 ELF(E04)는 <code>0x2402c0</code>에서 시작합니다</dd>
 </dl>
 <p>이것은 파일 배치를 산술로 맞춰 본 결과입니다. <code>BurnNand</code>의 기록 반복문이 실제로 이만큼 소비하는지, 물리 NAND의 블록 크기가 얼마인지는 이 문서에서 실행으로 확인하지 않았습니다. 135덩어리를 끝까지 따라간 실행은 <a href="burn-continuation-report.html">NAND 재시도와 최종 반환</a>에 있습니다. <a href="analysis/loader-foundation.json">[근거: payload_accounting]</a></p>
 <details class="evidence"><summary>원본 업데이트 헤더에서 읽은 값</summary>
@@ -301,13 +301,13 @@
 </details>
 
 <h3>BurnNand의 첫 구간</h3>
-<p>섹션 맵 계산을 따로 떼어 실행한 것에 더해, 로더의 <code>BurnNand</code>를 처음부터 실행해 섹션 맵 호출에서 돌아오는 곳까지 갔습니다. 진입 주소는 <code>0x80012654</code>, 멈춘 곳은 맵 호출의 복귀 주소 <code>0x80012ff0</code>입니다. 그 사이에 원본 코드는 설치된 헤더를 두 번 요청하고, 카드에서 첫 131,072바이트를 읽고, 저장장치 크기를 물었습니다. 세 요청 모두 모델이 답했고 맵 계산은 0을 반환했습니다. 지우기와 기록은 이 실행에 들어 있지 않습니다. 이어지는 구간은 <a href="storage-readiness-report.html">저장 경계와 렌즈 준비 상태</a>에서 다룹니다. <a href="analysis/loader-foundation.json">[근거: replay.burn_nand_prefix]</a></p>
+<p>섹션 맵 계산을 따로 떼어 실행한 것에 더해, 로더의 <code>BurnNand</code>를 처음부터 실행해 섹션 맵 호출에서 돌아오는 곳까지 갔습니다. 진입 주소는 <code>0x80012654</code>, 멈춘 곳은 맵 호출의 복귀 주소 <code>0x80012ff0</code>입니다. 그 사이에 원본 코드는 설치된 헤더를 두 번 요청하고 카드에서 첫 131,072바이트를 읽고 저장장치 크기를 물었습니다. 세 요청 모두 모델이 답했고 맵 계산은 0을 반환했습니다. 지우기와 기록은 이 실행에 들어 있지 않습니다. 이어지는 구간은 <a href="storage-readiness-report.html">저장 경계와 렌즈 준비 상태</a>에서 다룹니다. <a href="analysis/loader-foundation.json">[근거: replay.burn_nand_prefix]</a></p>
 </section>
 
 <section id="lens">
 <h2>2부 렌즈 ① AF 지원 판정과 명령 허용은 서로 다른 검사입니다</h2>
-<p class="takeaway">AF 지원 판정은 통신 상태 비트와 기능 표의 한 칸을 함께 봅니다. 명령을 실제로 보낼지 정하는 검사는 기능 표만 보며, 통신 상태 비트는 다시 확인하지 않습니다.</p>
-<p>여기서부터는 <a href="guide-af.html">AF와 렌즈 제어</a> 주제의 내용입니다. 카메라는 렌즈를 초기화할 때 통신으로 렌즈가 할 수 있는 일을 묻고, 답을 표로 만들어 둡니다.</p>
+<p class="takeaway">AF 지원 판정은 통신 상태 비트와 기능 표의 한 칸을 함께 봅니다. 명령을 실제로 보낼지 정하는 검사는 기능 표만 보며 통신 상태 비트는 다시 확인하지 않습니다.</p>
+<p>여기서부터는 <a href="guide-af.html">AF와 렌즈 제어</a> 주제의 내용입니다. 카메라는 렌즈를 초기화할 때 통신으로 렌즈가 할 수 있는 일을 묻고 답을 표로 만들어 둡니다.</p>
 
 <figure class="diagram">
 <figcaption>기능 표가 두 가지 검사에 쓰이는 방식</figcaption>
@@ -364,13 +364,13 @@
 AF 지원 판정 ExGetAfEnable 0x80114b08:
   (communication_state &amp; 0x08) != 0  AND  operation_flags[2*256 + 4] != 0</code></pre>
 <p>AF 지원 판정 함수는 통신 상태의 <code>0x08</code> 비트와 그룹 2·연산 4의 값을 함께 검사합니다. 렌즈 번호만으로 AF 지원 여부를 정하는 함수가 아닙니다. <a href="analysis/lens-foundation.json">[근거: discovery]</a></p>
-<p>명령 전송 함수는 map-read-OK 바이트가 정확히 1일 때 표를 검사하고, 해당 칸이 0이면 아래 단계로 보내기 전에 7을 반환합니다. 이 함수는 통신 상태 <code>0x08</code> 검사를 다시 하지 않습니다. 검색 명령이 쓰는 연산이 바로 그룹 2·연산 4여서 두 검사가 같은 칸을 보지만, 조건은 서로 다릅니다. 그래서 두 검사를 하나의 조건으로 합쳐 쓰지 않았습니다. <a href="analysis/lens-foundation.json">[근거: discovery.transport_admission]</a></p>
+<p>명령 전송 함수는 map-read-OK 바이트가 정확히 1일 때 표를 검사하고 해당 칸이 0이면 아래 단계로 보내기 전에 7을 반환합니다. 이 함수는 통신 상태 <code>0x08</code> 검사를 다시 하지 않습니다. 검색 명령이 쓰는 연산이 바로 그룹 2·연산 4여서 두 검사가 같은 칸을 보지만 조건은 서로 다릅니다. 그래서 두 검사를 하나의 조건으로 합쳐 쓰지 않았습니다. <a href="analysis/lens-foundation.json">[근거: discovery.transport_admission]</a></p>
 <div class="table-wrap"><table>
 <caption>기능 표 6사례. 렌즈의 응답은 모델이 공급했습니다</caption>
 <thead><tr><th>통신 상태</th><th>지원 그룹</th><th class="n">표[2][4]</th><th class="n">AF 지원 판정</th><th class="n">검색 명령의 결과</th><th>관측한 비트맵 요청</th></tr></thead>
 <tbody>{{capability_rows}}</tbody>
 </table></div>
-<p class="small muted">검색 명령의 결과 7은 “표에서 허용되지 않아 보내지 않음”입니다. 둘째 줄은 표의 칸이 1이어서 명령은 통과하지만, 통신 상태 비트가 꺼져 있어 AF 지원 판정은 0입니다.</p>
+<p class="small muted">검색 명령의 결과 7은 “표에서 허용되지 않아 보내지 않음”입니다. 둘째 줄은 표의 칸이 1이어서 명령은 통과하지만 통신 상태 비트가 꺼져 있어 AF 지원 판정은 0입니다.</p>
 
 <h3>AF 계산이 쓰는 렌즈 값</h3>
 <p>AF 계산은 렌즈가 보고한 위치, 속도, 이동 한계와 그 값이 유효한지를 나타내는 상태를 씁니다. 값 일부는 빅엔디언으로 해석합니다. 이동 한계가 0으로 보고되면 렌즈 번호 1과 2에 서로 다른 대체값을 쓰는 분기도 확인했습니다.</p>
@@ -471,7 +471,7 @@ AF 지원 판정 ExGetAfEnable 0x80114b08:
 </table></div>
 </details>
 <div class="callout"><strong class="label">이어지는 문서</strong>
-<p>렌즈 초기화가 실패하거나 리셋될 때 이 표와 캐시가 어떻게 되는지는 <a href="storage-readiness-report.html">저장 경계와 렌즈 준비 상태</a>의 뒤 절반이, 명령 큐와 완료·취소의 더 많은 사례는 <a href="af-completion-report.html">AF 명령과 완료 판정</a>이 다룹니다.</p></div>
+<p>렌즈 초기화가 실패하거나 리셋될 때 이 표와 캐시가 어떻게 되는지는 <a href="storage-readiness-report.html">저장 경계와 렌즈 준비 상태</a>의 뒤 절반이 다룹니다. 명령 큐와 완료·취소의 더 많은 사례는 <a href="af-completion-report.html">AF 명령과 완료 판정</a>에 있습니다.</p></div>
 </section>
 
 <section id="comparison">
@@ -492,7 +492,7 @@ AF 지원 판정 ExGetAfEnable 0x80114b08:
 
 <section id="validation">
 <h2>한계와 재현 방법</h2>
-<p>원본 코드의 조건을 읽고, 합성 입력을 넣었을 때의 결과를 실행으로 확인했습니다. 실제 통신 응답, NAND 기록, 렌즈 이동, LCD 출력, 촬영은 검사하지 않았습니다.</p>
+<p>원본 코드의 조건을 읽고 합성 입력을 넣었을 때의 결과를 실행으로 확인했습니다. 실제 통신 응답, NAND 기록, 렌즈 이동, LCD 출력, 촬영은 검사하지 않았습니다.</p>
 <h3>1부 Loader</h3>
 <ul>
 <li>실행한 것: 카드 읽기 14사례, 보호 판정 84조합, 섹션 위치 8사례, 섹션 맵 8사례로 보조 함수 114사례와 <code>BurnNand</code> 진입부 1사례.</li>
@@ -523,7 +523,7 @@ AF 지원 판정 ExGetAfEnable 0x80114b08:
 </details>
 <details><summary>도구에 넣은 안전장치</summary>
 <ul>
-<li>재패킹 도구는 오류가 나거나 쓰기가 짧게 끝나면 자기가 만든 파일만 정리하고, 보고서는 맨 마지막에 씁니다. 강제 종료나 전원 손실에도 안전하다고 보장하지는 않습니다.</li>
+<li>재패킹 도구는 오류가 나거나 쓰기가 짧게 끝나면 자기가 만든 파일만 정리하고 보고서는 맨 마지막에 씁니다. 강제 종료나 전원 손실에도 안전하다고 보장하지는 않습니다.</li>
 <li>다시 실행하는 도구는 SHA-256으로 확인한 바이트를 그대로 실행 엔진에 넘깁니다. 확인한 뒤 경로를 다시 열어 다른 파일을 실행하게 될 틈을 없앴습니다.</li>
 </ul>
 </details>

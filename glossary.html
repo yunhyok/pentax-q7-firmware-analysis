@@ -31,18 +31,19 @@
 <dl class="glossary">
 <dt id="vex-events">VEX 블록 이벤트 <small>VEX block events</small></dt><dd>Q7 분석에 쓴 에뮬레이터(angr)가 센 실행 블록 수입니다. 실물 CPU의 명령 수나 실행 시간이 아닙니다.</dd>
 <dt id="machine-code">기계어 <small>machine code</small></dt><dd>CPU가 직접 실행하는 숫자 형태의 명령입니다. 펌웨어 파일에는 소스 코드가 아니라 기계어가 들어 있습니다.</dd>
+<dt id="symbolic-value">기호값 <small>symbolic value</small></dt><dd>분석 도구가 값을 정하지 않고 “아직 모르는 변수”로 다루는 입력입니다. 분기가 이 값에 달려 있으면 결과는 실제 입력에 따라 정해집니다.</dd>
 <dt id="disassembly">디스어셈블 <small>disassembly</small></dt><dd>기계어를 사람이 읽을 수 있는 명령 이름(어셈블리)으로 한 줄씩 바꿔 적는 일입니다. 정보가 바뀌지 않는 일대일 변환입니다.</dd>
 <dt id="descriptor">디스크립터 · 설명자 <small>descriptor</small></dt><dd>다른 데이터의 위치·크기·종류를 적어 둔 작은 기록입니다. 문서마다 가리키는 대상이 다르므로(버퍼, 저장 위치, 화면 항목, 아이콘) 각 문서의 설명을 따릅니다.</dd>
 <dt id="decompile">디컴파일 <small>decompilation</small></dt><dd>기계어를 C와 비슷한 형태의 코드로 되돌려 보는 일입니다. 도구가 추정해서 만들기 때문에 원래 소스와 다르고 틀릴 수도 있어, 이 연구에서는 기계어와 대조해 확인합니다.</dd>
-<dt id="decompile-record">디컴파일 기록 <small>decompilation record</small></dt><dd>디컴파일러가 만든 C 형태의 결과와 그 해시를 남긴 기록입니다. 원래 소스가 아니며, 간접 호출의 대상이나 자료형까지 복원했다는 뜻도 아닙니다.</dd>
+<dt id="decompile-record">디컴파일 기록 <small>decompilation record</small></dt><dd>디컴파일러가 만든 C 형태의 결과와 그 해시를 남긴 기록입니다. 원래 소스가 아니며 간접 호출의 대상이나 자료형까지 복원했다는 뜻도 아닙니다.</dd>
 <dt id="reverse-engineering">리버스 엔지니어링 <small>reverse engineering</small></dt><dd>설계 문서나 소스 코드 없이, 완성된 프로그램을 관찰하고 분석해 동작 원리를 알아내는 일입니다.</dd>
 <dt id="little-endian">리틀엔디언 <small>little-endian</small></dt><dd>여러 바이트로 된 수를 낮은 자리 바이트부터 저장하는 방식입니다. 세 기종의 CPU 모두 이 방식을 씁니다.</dd>
 <dt id="leaf-function">말단 함수 <small>leaf function</small></dt><dd>다른 함수를 부르지 않는 함수입니다. 입력과 출력이 분명해서 따로 떼어 실행해 비교하기 쉽습니다.</dd>
-<dt id="model">모델 · 스텁 <small>model, stub</small></dt><dd>에뮬레이터 안에는 센서나 저장장치 같은 하드웨어가 없습니다. 그래서 그 부분을 부르는 호출은 연구자가 정한 값을 돌려주는 대역으로 바꿉니다. 이 대역이 모델(스텁)이며, 모델을 쓴 결과는 그 조건에서만 성립합니다.</dd>
+<dt id="model">모델 · 스텁 <small>model, stub</small></dt><dd>에뮬레이터 안에는 센서나 저장장치 같은 하드웨어가 없습니다. 그래서 그 부분을 부르는 호출은 연구자가 정한 값을 돌려주는 대역으로 바꿉니다. 이 대역이 모델(스텁)이며 모델을 쓴 결과는 그 조건에서만 성립합니다.</dd>
 <dt id="analysis-elf">분석용 ELF <small>analysis ELF</small></dt><dd>압축을 푼 Q7 프로그램 조각을 실행 주소에 맞춰 한 파일로 묶은 것입니다. 디스어셈블과 에뮬레이션을 하려고 만든 파일이며 카메라에 있는 파일이 아닙니다.</dd>
-<dt id="symbol">심볼 <small>symbol</small></dt><dd>함수나 변수의 이름과 위치를 적어 둔 정보입니다. 남아 있으면 어디를 조사할지 알려 주지만, 이름이 그 함수의 실제 동작을 보증하지는 않습니다.</dd>
+<dt id="symbol">심볼 <small>symbol</small></dt><dd>함수나 변수의 이름과 위치를 적어 둔 정보입니다. 남아 있으면 어디를 조사할지 알려 주지만 이름이 그 함수의 실제 동작을 보증하지는 않습니다.</dd>
 <dt id="emulator">에뮬레이터 <small>emulator</small></dt><dd>다른 CPU의 기계어를 PC에서 실행해 주는 프로그램입니다. 이 연구에서는 카메라 CPU의 원본 코드를 PC에서 한 명령씩 실행하고 메모리에 쓰인 값을 관측하는 데 씁니다. Unicorn과 angr가 이런 도구입니다.</dd>
-<dt id="offset-address">오프셋과 주소 <small>offset, address</small></dt><dd>오프셋은 파일의 처음부터 센 위치이고, 주소는 프로그램이 메모리에 올라간 뒤의 위치입니다. 둘은 다르며, 적재 기준 주소를 알아야 서로 바꿀 수 있습니다.</dd>
+<dt id="offset-address">오프셋과 주소 <small>offset, address</small></dt><dd>오프셋은 파일의 처음부터 센 위치이고 주소는 프로그램이 메모리에 올라간 뒤의 위치입니다. 둘은 다르며 적재 기준 주소를 알아야 서로 바꿀 수 있습니다.</dd>
 <dt id="repack">재포장 · 재패킹 <small>repack</small></dt><dd>펌웨어 파일을 풀었다가 원래 형식으로 다시 묶는 일입니다. 아무것도 바꾸지 않고 재포장한 결과가 원본과 바이트까지 같으면 파일 형식을 정확히 이해했다는 증거가 됩니다.</dd>
 <dt id="load-base">적재 기준 주소 <small>load base</small></dt><dd>프로그램 이미지가 메모리에 놓이는 시작 주소입니다. 펌웨어에 적혀 있지 않은 경우 코드 안의 포인터 값들이 서로 맞아떨어지는지를 보고 추정합니다.</dd>
 <dt id="static-analysis">정적 분석 <small>static analysis</small></dt><dd>프로그램을 실행하지 않고 코드를 읽어서 동작을 판단하는 방법입니다. 실행해서 확인한 결과보다 한 단계 약한 근거로 다룹니다.</dd>
@@ -64,13 +65,14 @@
 <dt id="stack">스택 <small>stack</small></dt><dd>함수가 임시 값과 돌아갈 위치를 쌓아 두는 메모리 영역입니다.</dd>
 <dt id="interrupt">인터럽트 <small>interrupt, IRQ</small></dt><dd>하드웨어가 “일이 끝났다” 같은 신호를 보내 CPU가 하던 일을 잠시 멈추고 처리하게 하는 장치입니다.</dd>
 <dt id="delay-slot">지연 슬롯 <small>delay slot</small></dt><dd>MIPS에서 분기·호출 명령 바로 뒤에 놓인 명령입니다. 분기가 일어나기 전에 먼저 실행됩니다. 그래서 주소가 한 명령씩 어긋나 보이는 곳이 있습니다.</dd>
-<dt id="calling-convention">호출 규약 <small>calling convention</small></dt><dd>함수를 부를 때 인수를 어느 레지스터에 넣고, 어떤 레지스터를 보존해야 하는지 정한 약속입니다. ARM에서는 AAPCS라는 규약을 따릅니다.</dd>
+<dt id="calling-convention">호출 규약 <small>calling convention</small></dt><dd>함수를 부를 때 인수를 어느 레지스터에 넣고 어떤 레지스터를 보존해야 하는지 정한 약속입니다. ARM에서는 AAPCS라는 규약을 따릅니다.</dd>
 </dl>
 </section>
 <section id="os">
 <h2>운영체제와 부팅</h2>
 <dl class="glossary">
-<dt id="main-e01">MAIN · E01 <small>MAIN, E01</small></dt><dd>Q7 펌웨어에 든 기록 코드 두 벌입니다. MAIN은 카메라 본 프로그램 안의 것이고, E01은 업데이트 파일 맨 앞에 든 별도 실행 파일(로더)입니다. 이름이 같은 함수가 많지만 서로 다른 코드입니다.</dd>
+<dt id="filex-request">FileX 드라이버 요청 <small>FileX driver request</small></dt><dd>파일시스템 라이브러리 FileX가 저장장치 드라이버에 할 일을 알리는 번호입니다. 공개된 FileX에서 4는 초기화, 5는 부트 섹터 읽기입니다.</dd>
+<dt id="main-e01">MAIN · E01 <small>MAIN, E01</small></dt><dd>Q7 펌웨어에 든 기록 코드 두 벌입니다. MAIN은 카메라 본 프로그램 안의 것이고 E01은 업데이트 파일 맨 앞에 든 별도 실행 파일(로더)입니다. 이름이 같은 함수가 많지만 서로 다른 코드입니다.</dd>
 <dt id="rtos">RTOS <small>real-time operating system</small></dt><dd>정해진 시간 안에 반응해야 하는 기기를 위한 작은 운영체제입니다. 카메라의 촬영·AF·영상 처리는 RTOS 위에서 돕니다.</dd>
 <dt id="threadx">ThreadX · FileX <small>ThreadX, FileX</small></dt><dd>Q7 펌웨어에 식별 문자열과 심볼이 남아 있는 RTOS와 파일시스템 라이브러리입니다. Express Logic이 만들었고 지금은 Eclipse ThreadX라는 이름으로 공개되어 있습니다.</dd>
 <dt id="mutex">뮤텍스 <small>mutex</small></dt><dd>여러 태스크가 같은 자원을 동시에 쓰지 못하게 막는 잠금 장치입니다.</dd>
@@ -83,7 +85,8 @@
 <h2>저장장치</h2>
 <dl class="glossary">
 <dt id="fat">FAT 파일시스템 <small>FAT</small></dt><dd>SD 카드에 널리 쓰이는 파일 보관 방식입니다. Q7은 펌웨어 안에도 FAT16 구조를 두고 글꼴 같은 자원 파일을 넣어 두었습니다.</dd>
-<dt id="nand">NAND 플래시 <small>NAND flash</small></dt><dd>Q7이 펌웨어를 보관하는 내장 저장장치입니다. 쓰기 전에 지워야 하고, 쓰기에 실패한 블록을 다시 시도하는 절차가 필요합니다.</dd>
+<dt id="nand-context">NAND 컨텍스트 <small>hNandTlInfo</small></dt><dd>Q7 펌웨어가 NAND 저장장치의 상태를 담아 두는 구조체입니다. 부팅 때의 읽기와 파티션 계산이 이 구조체를 씁니다.</dd>
+<dt id="nand">NAND 플래시 <small>NAND flash</small></dt><dd>Q7이 펌웨어를 보관하는 내장 저장장치입니다. 쓰기 전에 지워야 하고 쓰기에 실패한 블록을 다시 시도하는 절차가 필요합니다.</dd>
 <dt id="footer">꼬리말 · 꼬리표 <small>footer</small></dt><dd>업데이트 파일 끝에 붙은 짧은 영역입니다. 식별 값, 길이, 체크섬 같은 검사용 정보가 들어 있습니다.</dd>
 <dt id="installed-header">설치된 헤더 <small>installed header</small></dt><dd>Q7 카메라의 저장장치에 이미 기록되어 있는 배치 정보입니다. 업데이트 파일 안의 헤더와 구분합니다.</dd>
 <dt id="section-map">섹션 · 섹션 맵 <small>section map</small></dt><dd>Q7이 내부 저장장치를 번호 0~6으로 나눈 구역과 그 배치표입니다.</dd>
@@ -94,13 +97,15 @@
 <section id="image">
 <h2>영상 처리와 색</h2>
 <dl class="glossary">
+<dt id="as-shot">As Shot <small>AsShotNeutral</small></dt><dd>촬영할 때 카메라가 기록한 화이트밸런스입니다. RAW에는 회색이 센서에 찍힌 R:G:B 비율로 들어 있고 Lightroom은 이를 색온도와 틴트로 바꿔 보여 줍니다. 같은 값이라도 프로파일이 다르면 표시되는 숫자가 달라집니다.</dd>
 <dt id="dcp">DCP · 카메라 프로파일 <small>DNG Camera Profile</small></dt><dd>Adobe Lightroom과 Camera Raw가 RAW의 색을 해석할 때 쓰는 프로파일 파일입니다. 색 행렬, 색상·채도 보정 표, 톤 곡선이 들어 있습니다.</dd>
-<dt id="fc1-cm">FC1 · CM 필터 <small>CFc1Filter, CCmFilter</small></dt><dd>Q7 영상 처리 회로의 3×3 계수 필터 두 가지입니다. CM은 3×3 계수를 받는 색 필터이고, FC1은 계수 9개와 보조값 2개, 제어 워드, 켜짐 레지스터를 가집니다. HDR 경로에서 FC1이 받는 계수는 RGB를 YCbCr로 바꾸는 계수와 거의 같아 색 변환 단계로 보이지만, 회로 문서로 확인한 것은 아닙니다.</dd>
+<dt id="fc1-cm">FC1 · CM 필터 <small>CFc1Filter, CCmFilter</small></dt><dd>Q7 영상 처리 회로의 3×3 계수 필터 두 가지입니다. CM은 3×3 계수를 받는 색 필터이고 FC1은 계수 9개와 보조값 2개, 제어 워드, 켜짐 레지스터를 가집니다. HDR 경로에서 FC1이 받는 계수는 RGB를 YCbCr로 바꾸는 계수와 거의 같아 색 변환 단계로 보이지만 회로 문서로 확인한 것은 아닙니다.</dd>
 <dt id="fiplib">FIPLIB <small>FIPLIB</small></dt><dd>패스의 구성과 패스마다 쓸 필터 값을 계산하는 Q7 펌웨어 안의 라이브러리입니다(<code>CFIPLIB</code>, <code>FipLibCalculate</code>). 이름의 원말은 모릅니다.</dd>
 <dt id="hdr">HDR <small>high dynamic range</small></dt><dd>노출을 달리한 여러 장을 합쳐 밝은 곳과 어두운 곳을 함께 살리는 촬영 기능입니다. Q7 분석에서는 HDR에서 추가되는 처리 단계를 다룹니다.</dd>
+<dt id="hue-sat-map">HueSatMap <small>HueSatMap</small></dt><dd>DCP 안의 표입니다. 색상·채도·명도 격자마다 색상을 얼마나 돌리고 채도와 명도를 몇 배로 할지 적혀 있습니다. LookTable도 같은 형식이며 적용하는 순서가 다릅니다.</dd>
 <dt id="ipu">IPU <small>image processing unit</small></dt><dd>Q7 펌웨어가 영상 처리 회로를 다루는 코드에 붙인 이름입니다(<code>Ipu…</code> 함수, <code>CIpuTask</code>). 회로의 정식 명칭과 구조는 공개 자료로 확인하지 못했습니다.</dd>
 <dt id="isp">ISP · 영상 처리 파이프라인 <small>image signal processor</small></dt><dd>센서 값을 사진으로 바꾸는 처리 단계의 묶음입니다. 화이트밸런스, 색 변환, 톤 곡선, 압축이 차례로 이어집니다.</dd>
-<dt id="jpeg">JPEG <small>JPEG</small></dt><dd>사진을 압축해 저장하는 표준 형식입니다. 카메라 안에서는 전용 회로가 압축하고, 끝나면 완료 신호와 길이를 알려 줍니다.</dd>
+<dt id="jpeg">JPEG <small>JPEG</small></dt><dd>사진을 압축해 저장하는 표준 형식입니다. 카메라 안에서는 전용 회로가 압축하고 끝나면 완료 신호와 길이를 알려 줍니다.</dd>
 <dt id="raw">RAW · DNG · PEF <small>RAW</small></dt><dd>센서가 받은 값을 거의 그대로 담은 파일입니다. PEF는 펜탁스 고유 형식, DNG는 Adobe가 공개한 형식입니다.</dd>
 <dt id="ycbcr">YCbCr <small>YCbCr</small></dt><dd>밝기(Y)와 두 색차(Cb, Cr)로 색을 나타내는 방식입니다. JPEG는 이 형태로 압축합니다.</dd>
 <dt id="gamma">감마 · 톤 곡선 <small>gamma, tone curve</small></dt><dd>밝기 값을 사람 눈에 맞게 휘어 주는 곡선입니다. 대비와 암부·명부의 표현이 여기서 정해집니다.</dd>
@@ -116,19 +121,21 @@
 <section id="af">
 <h2>AF와 렌즈</h2>
 <dl class="glossary">
-<dt id="setter-pending">setter · pending <small>setter, pending</small></dt><dd>Q7의 렌즈 구동 문서에서 쓰는 말입니다. setter는 검색이나 정지 메시지를 큐에 넣고, 렌즈 작업자가 결과를 기록할 때까지 기다린 뒤 결과값을 돌려주는 함수입니다. pending은 “이 명령의 결과를 아직 받지 못했다”를 나타내는 1바이트 표시입니다.</dd>
-<dt id="lens-command">렌즈 명령과 응답 <small>lens command</small></dt><dd>바디가 렌즈에 보내는 요청과 렌즈가 돌려주는 답입니다. 이 연구는 펌웨어가 명령을 만들고 응답을 해석하는 코드를 다루며, 실제 통신 신호는 관측하지 않았습니다.</dd>
+<dt id="setter-pending">setter · pending <small>setter, pending</small></dt><dd>Q7의 렌즈 구동 문서에서 쓰는 말입니다. setter는 검색이나 정지 메시지를 큐에 넣고 렌즈 작업자가 결과를 기록할 때까지 기다린 뒤 결과값을 돌려주는 함수입니다. pending은 “이 명령의 결과를 아직 받지 못했다”를 나타내는 1바이트 표시입니다.</dd>
+<dt id="lens-command">렌즈 명령과 응답 <small>lens command</small></dt><dd>바디가 렌즈에 보내는 요청과 렌즈가 돌려주는 답입니다. 이 연구는 펌웨어가 명령을 만들고 응답을 해석하는 코드를 다루며 실제 통신 신호는 관측하지 않았습니다.</dd>
 <dt id="contrast-af">콘트라스트 AF <small>contrast-detection AF</small></dt><dd>촬상 센서의 화면에서 대비가 가장 높아지는 렌즈 위치를 찾는 방식입니다. 렌즈를 조금씩 움직여 가며 최고점을 찾습니다.</dd>
 </dl>
 </section>
 <section id="ui">
 <h2>화면</h2>
 <dl class="glossary">
+<dt id="viewport">viewport <small>viewport</small></dt><dd>화면 요소가 실제로 그릴 수 있는 사각형입니다. 자기 영역과 부모 영역이 겹친 부분입니다.</dd>
 <dt id="drawing-context">그리기 컨텍스트 <small>drawing context</small></dt><dd>어느 버퍼에 그릴지, 글자 크기와 색, 그리기 함수 표를 담은 구조체입니다. 그리는 버퍼가 바뀌면 활성 컨텍스트도 바뀝니다.</dd>
 <dt id="glyph">글리프 <small>glyph</small></dt><dd>글꼴에 들어 있는 글자 하나의 모양 데이터입니다.</dd>
 <dt id="logical-coordinate">논리 좌표 <small>logical coordinate</small></dt><dd>그리기 함수가 받는 좌표입니다. 실제 LCD의 화소 위치와 같은지는 확인하지 못했습니다.</dd>
 <dt id="pending-value">보류값 · 임시값 <small>pending value</small></dt><dd>메뉴에서 고르는 중이라 아직 설정에 반영되지 않은 값입니다. 확정하면 설정에 쓰이고 취소하면 버려집니다. Q7은 고르는 즉시 쓰고 취소할 때 되돌리는 방식이라 다릅니다.</dd>
-<dt id="palette">팔레트 · 인덱스 색 <small>palette</small></dt><dd>픽셀마다 색 대신 색 번호를 저장하고, 번호와 실제 색의 대응을 따로 표로 두는 방식입니다.</dd>
+<dt id="rect-clip">사각형 클리핑 <small>rectangle clipping</small></dt><dd>그릴 사각형 가운데 허용된 범위와 겹치는 부분만 남기는 처리입니다. 글자가 화면 가장자리에 걸릴 때 바깥 부분을 그리지 않게 합니다.</dd>
+<dt id="palette">팔레트 · 인덱스 색 <small>palette</small></dt><dd>픽셀마다 색 대신 색 번호를 저장하고 번호와 실제 색의 대응을 따로 표로 두는 방식입니다.</dd>
 <dt id="focus">포커스 <small>focus</small></dt><dd>지금 고르고 있는 항목을 가리키는 표시입니다.</dd>
 <dt id="frame-buffer">프레임 버퍼 <small>frame buffer</small></dt><dd>화면에 내보낼 그림을 담아 두는 메모리 영역입니다.</dd>
 <dt id="resource">화면 자원 <small>resource</small></dt><dd>아이콘, 글꼴, 문자열처럼 프로그램 코드가 아닌 화면용 데이터입니다.</dd>

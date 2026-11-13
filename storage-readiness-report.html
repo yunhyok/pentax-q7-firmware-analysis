@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li><strong>1부 저장</strong> — 로더는 첫 블록을 쓰기 전에 1,024블록 전부의 예비 영역을 읽고, 보호 구간이 아닌 640블록에 지우기를 요청합니다. 첫 기록 요청 전까지 나온 요청은 <strong>3,331개</strong>였습니다.</li>
-<li><strong>1부 저장</strong> — 블록을 쓰는 함수는 기록이 성공했다는 응답만 믿지 않습니다. 같은 자리를 다시 읽어 바이트를 비교하고, 하나라도 다르면 블록 맵에 실패를 적습니다. 이 함수를 8사례로, 사용자 영역 판정을 7사례로 실행했습니다.</li>
-<li><strong>2부 렌즈</strong> — “AF를 지원하는가”와 “이 명령을 보내도 되는가”는 서로 다른 조건을 봅니다. 그래서 AF 지원이 0인데 검색 요청이 전달되는 상태와, 그 반대 상태가 있습니다.</li>
-<li><strong>2부 렌즈</strong> — 응답이 실패했을 때 지워지는 범위는 함수마다 다릅니다. 값은 0인데 “유효”로 남기도 하고, 값은 남았는데 “무효”가 되기도 합니다. 전부 지우는 것은 전체 리셋뿐입니다. 초기화·실패·리셋 17사례로 확인했습니다.</li>
+<li><strong>1부 저장</strong>: 로더는 첫 블록을 쓰기 전에 1,024블록 전부의 예비 영역을 읽고 보호 구간이 아닌 640블록에 지우기를 요청합니다. 첫 기록 요청 전까지 나온 요청은 <strong>3,331개</strong>였습니다.</li>
+<li><strong>1부 저장</strong>: 블록을 쓰는 함수는 기록이 성공했다는 응답만 믿지 않습니다. 같은 자리를 다시 읽어 바이트를 비교하고 하나라도 다르면 블록 맵에 실패를 적습니다. 이 함수를 8사례로, 사용자 영역 판정을 7사례로 실행했습니다.</li>
+<li><strong>2부 렌즈</strong>: “AF를 지원하는가”와 “이 명령을 보내도 되는가”는 서로 다른 조건을 봅니다. 그래서 AF 지원이 0인데 검색 요청이 전달되는 상태와, 그 반대 상태가 있습니다.</li>
+<li><strong>2부 렌즈</strong>: 응답이 실패했을 때 지워지는 범위는 함수마다 다릅니다. 값은 0인데 “유효”로 남기도 하고 값은 남았는데 “무효”가 되기도 합니다. 전부 지우는 것은 전체 리셋뿐입니다. 초기화·실패·리셋 17사례로 확인했습니다.</li>
 <li>저장장치와 렌즈의 응답은 모두 시험용으로 넣은 값입니다. 실제 NAND에 쓰거나 렌즈를 움직인 적이 없습니다.</li>
 </ul>
 </section>
@@ -82,7 +82,7 @@
 <li><strong>기능 표</strong>: 렌즈가 초기 통신에서 “어떤 그룹의 어떤 연산을 할 수 있다”고 알려 준 것을 카메라가 칸마다 0 또는 1로 펼쳐 둔 표입니다. 검색 명령은 그룹 2, 연산 4의 칸을 씁니다.</li>
 <li><strong>표 준비 플래그</strong>: 기능 표를 다 펼친 뒤에 1이 되는 바이트입니다. 근거 파일에서는 <code>map_ready</code>입니다.</li>
 <li><strong>캐시와 유효 상태</strong>: 렌즈가 보낸 값을 카메라가 메모리에 보관해 둔 것이 캐시입니다. 값과 별도로 “유효한지”를 나타내는 상태가 있습니다. 이 문서는 사양 데이터, 표준 데이터, VD 동기 데이터(펌웨어의 이름은 VDRC) 세 가지를 봅니다.</li>
-<li><strong>primary와 regular</strong>: 펌웨어가 렌즈 통신을 나누는 이름입니다. primary는 렌즈의 사양·표준 데이터를 받고, regular는 위치 같은 현재 값을 받습니다.</li>
+<li><strong>primary와 regular</strong>: 펌웨어가 렌즈 통신을 나누는 이름입니다. primary는 렌즈의 사양·표준 데이터를 받고 regular는 위치 같은 현재 값을 받습니다.</li>
 </ul>
 <div class="callout model"><strong class="label">시험 조건</strong>
 <p>1부의 저장장치는 512바이트 섹터 256개가 한 블록인 1,024블록짜리 합성 장치입니다. 설치된 헤더는 사용자 영역을 블록 640부터 384블록으로 둔 시험용 값입니다. 2부에서는 렌즈의 응답과 전원·핀 입력을 사례마다 정해서 넣었습니다. 아래 결과는 이 조건에서 원본 코드가 한 일입니다.</p></div>
@@ -90,7 +90,7 @@
 
 <section id="storage">
 <h2>1부 저장 ① 첫 기록 전에 모든 블록을 살피고 지우기를 요청합니다</h2>
-<p class="takeaway">로더는 첫 블록을 쓰기 전에 블록 1,024개의 예비 영역을 모두 읽고, 사용자 영역이 아닌 블록 0~639에 지우기를 요청했습니다. 요청은 모두 3,331개입니다.</p>
+<p class="takeaway">로더는 첫 블록을 쓰기 전에 블록 1,024개의 예비 영역을 모두 읽고 사용자 영역이 아닌 블록 0~639에 지우기를 요청했습니다. 요청은 모두 3,331개입니다.</p>
 
 <figure class="diagram">
 <figcaption>첫 기록 요청 전까지 로더가 낸 요청 (왼쪽부터 시간 순서, 폭은 요청 수에 비례)</figcaption>
@@ -126,7 +126,7 @@
 </tbody>
 <tfoot><tr><th scope="row">합계</th><td>연산 6이 2,691개, 연산 8이 640개</td><td class="n">3,331</td></tr></tfoot>
 </table></div>
-<p><code>BurnNand</code>(<code>0x80012654</code>)는 원본 패키지의 첫 131,072바이트와 합성 설치 헤더, 저장장치 형상을 받습니다. 먼저 원본 <code>BurnGetSectionsMap</code>(<code>0x8001a710</code>)으로 배치표를 만들고, 이어서 위의 사전 검사를 합니다. 요청을 내는 반복과 순서는 원본 코드가 실행했고, 요청의 결과는 모델이 응답했습니다. 예비 영역은 모두 <code>0xff</code>, 상태는 성공으로 응답했습니다. <a href="analysis/loader-storage.json">[근거: findings.preflight, replay.preflight]</a></p>
+<p><code>BurnNand</code>(<code>0x80012654</code>)는 원본 패키지의 첫 131,072바이트와 합성 설치 헤더, 저장장치 형상을 받습니다. 먼저 원본 <code>BurnGetSectionsMap</code>(<code>0x8001a710</code>)으로 배치표를 만들고 이어서 위의 사전 검사를 합니다. 요청을 내는 반복과 순서는 원본 코드가 실행했고 요청의 결과는 모델이 응답했습니다. 예비 영역은 모두 <code>0xff</code>, 상태는 성공으로 응답했습니다. <a href="analysis/loader-storage.json">[근거: findings.preflight, replay.preflight]</a></p>
 
 <h3>사용자 영역은 지우지 않습니다</h3>
 <p>합성 설치 헤더의 사용자 영역은 시작이 640블록, 길이가 384블록입니다. 원본 <code>BlockUserArea</code>(<code>0x800117d0</code>)는 헤더의 길이와 모드 바이트가 0이 아닌지 먼저 봅니다. 그다음 블록 번호가 시작부터 시작+길이−1까지의 범위에 드는지, 양 끝을 포함해 검사합니다. 경계와 모드, 길이를 바꾼 7사례로 실행했습니다.</p>
@@ -135,12 +135,12 @@
 <thead><tr><th class="n">모드 바이트</th><th class="n">시작</th><th class="n">길이</th><th class="n">검사한 블록</th><th>결과</th></tr></thead>
 <tbody><tr><td class="n">1</td><td class="n">640</td><td class="n">384</td><td class="n">639</td><td>아님 (0)</td></tr><tr><td class="n">1</td><td class="n">640</td><td class="n">384</td><td class="n">640</td><td>사용자 영역 (1)</td></tr><tr><td class="n">1</td><td class="n">640</td><td class="n">384</td><td class="n">1,023</td><td>사용자 영역 (1)</td></tr><tr><td class="n">1</td><td class="n">640</td><td class="n">384</td><td class="n">1,024</td><td>아님 (0)</td></tr><tr><td class="n">0</td><td class="n">640</td><td class="n">384</td><td class="n">640</td><td>아님 (0)</td></tr><tr><td class="n">2</td><td class="n">640</td><td class="n">384</td><td class="n">640</td><td>사용자 영역 (1)</td></tr><tr><td class="n">1</td><td class="n">640</td><td class="n">0</td><td class="n">640</td><td>아님 (0)</td></tr></tbody>
 </table></div>
-<p>모드 바이트가 2인 사례도 사용자 영역으로 판정했습니다. 이 함수는 “0이 아닌가”만 봅니다. “정확히 1인가”를 보는 다른 보호 판정 함수(<a href="loader-lens-report.html">Loader 입력 검증</a>에서 다룸)와 혼동하면 안 됩니다. 설치 헤더에서 이 값들이 있는 자리는 <code>+0x310</code>(시작 640), <code>+0x314</code>(길이 384), <code>+0x234</code>(모드 바이트 1)이고, 핸들 <code>+0x1268</code>의 바이트도 1로 두었습니다.</p>
+<p>모드 바이트가 2인 사례도 사용자 영역으로 판정했습니다. 이 함수는 “0이 아닌가”만 봅니다. “정확히 1인가”를 보는 다른 보호 판정 함수(<a href="loader-lens-report.html">Loader 입력 검증</a>에서 다룸)와 혼동하면 안 됩니다. 설치 헤더에서 이 값들이 있는 자리는 <code>+0x310</code>(시작 640), <code>+0x314</code>(길이 384), <code>+0x234</code>(모드 바이트 1)입니다. 핸들 <code>+0x1268</code>의 바이트도 1로 두었습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>블록 640~1023에 지우기 요청이 없었다는 것은 이 합성 조건에서의 결과입니다. 실제 저장장치가 보호된다는 보장이 아닙니다. 이 구간에도 예비 영역 읽기는 나갔습니다. <a href="analysis/loader-storage.json">[근거: findings.user_area, replay.user_range_cases]</a></p></div>
 
 <h3>첫 기록 요청에서 멈춘 자리</h3>
-<p>사전 검사가 끝나면 원본 코드는 첫 기록 요청을 냅니다. 연산 5, 섹터 0, 256섹터이고 예비 영역 버퍼 16바이트가 딸려 있습니다. 요청을 부르는 명령과 그 지연 슬롯까지 실행하고, 저장 계층의 진입점 <code>0x8008249c</code>에서 멈췄습니다. 연산 5의 처리는 실행하지 않았습니다.</p>
+<p>사전 검사가 끝나면 원본 코드는 첫 기록 요청을 냅니다. 연산 5, 섹터 0, 256섹터이고 예비 영역 버퍼 16바이트가 딸려 있습니다. 요청을 부르는 명령과 그 지연 슬롯까지 실행하고 저장 계층의 진입점 <code>0x8008249c</code>에서 멈췄습니다. 연산 5의 처리는 실행하지 않았습니다.</p>
 <p>이때 기록하려고 준비한 버퍼는 카드에서 읽은 청크와 281바이트가 다릅니다. 무엇이 왜 달라지는지는 <a href="loader-hash-report.html#header">기록 헤더와 MD5 경로</a>에, 이 뒤의 기록과 재시도는 <a href="burn-continuation-report.html">NAND 재시도와 최종 반환</a>에 있습니다. <a href="analysis/loader-storage.json">[근거: findings.program_boundary]</a></p>
 <details class="evidence"><summary>첫 요청들의 인수와 해시</summary>
 <div class="table-wrap"><table class="compact">
@@ -159,7 +159,7 @@
 
 <section id="program">
 <h2>1부 저장 ② 기록한 뒤 다시 읽어 바이트를 비교합니다</h2>
-<p class="takeaway">블록을 쓰는 함수는 기록 요청이 성공했다는 응답에서 끝내지 않습니다. 같은 자리를 다시 읽어 한 바이트씩 비교하고, 하나라도 다르면 실패로 처리합니다.</p>
+<p class="takeaway">블록을 쓰는 함수는 기록 요청이 성공했다는 응답에서 끝내지 않습니다. 같은 자리를 다시 읽어 한 바이트씩 비교하고 하나라도 다르면 실패로 처리합니다.</p>
 
 <figure class="diagram">
 <figcaption>기록·비교 함수의 분기</figcaption>
@@ -200,7 +200,7 @@
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간 (저장장치의 응답은 모델)</li><li><i class="key"></i>성공 반환</li></ul>
 </figure>
 
-<p>이 함수(<code>0x80011da8</code>~<code>0x80011f00</code>)에는 이름이 남아 있지 않습니다. 블록 번호에 핸들 <code>+0x1238</code>의 값(블록당 섹터 수)을 곱해 섹터 위치를 정하고, 그 값을 개수로 써서 연산 5를 요청합니다. 상태가 0이면 핸들 <code>+0x1250</code>의 버퍼로 연산 4를 요청해 다시 읽습니다. 두 상태가 모두 0이면 개수×512바이트를 첫 불일치가 나올 때까지 비교합니다. <a href="analysis/loader-storage.json">[근거: findings.program_helper]</a></p>
+<p>이 함수(<code>0x80011da8</code>~<code>0x80011f00</code>)에는 이름이 남아 있지 않습니다. 블록 번호에 핸들 <code>+0x1238</code>의 값(블록당 섹터 수)을 곱해 섹터 위치를 정하고 그 값을 개수로 써서 연산 5를 요청합니다. 상태가 0이면 핸들 <code>+0x1250</code>의 버퍼로 연산 4를 요청해 다시 읽습니다. 두 상태가 모두 0이면 개수×512바이트를 첫 불일치가 나올 때까지 비교합니다. <a href="analysis/loader-storage.json">[근거: findings.program_helper]</a></p>
 <div class="table-wrap"><table>
 <caption>기록·비교 함수 8사례. 블록 3에 1~2섹터를 쓰는 합성 요청입니다</caption>
 <thead><tr><th>사례</th><th class="n">섹터 수</th><th>저장장치 요청과 응답한 상태</th><th class="n">비교한 바이트</th><th class="n">반환값</th><th>블록 맵</th></tr></thead>
@@ -271,7 +271,7 @@
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 검사</li><li><i class="key"></i>AF 지원 판정의 결과</li><li><i class="model"></i>모델로 대신한 하위 통신</li></ul>
 </figure>
 
-<p>렌즈가 붙어 있는지 묻는 <code>ExGetLensAttached</code>(<code>0x80114894</code>)는 <code>0x08</code> 비트만 봅니다. <code>ExGetAfEnable</code>(<code>0x80114b08</code>)은 여기에 기능 표의 검색 연산 칸을 더 봅니다. 명령을 보내는 <code>LensCommunication</code>(<code>0x80111214</code>)은 표 준비 플래그가 정확히 1일 때만 기능 표로 요청을 거르고, 거부한 요청에는 7을 반환합니다. <a href="analysis/lens-readiness.json">[근거: findings.two_gates]</a></p>
+<p>렌즈가 붙어 있는지 묻는 <code>ExGetLensAttached</code>(<code>0x80114894</code>)는 <code>0x08</code> 비트만 봅니다. <code>ExGetAfEnable</code>(<code>0x80114b08</code>)은 여기에 기능 표의 검색 연산 칸을 더 봅니다. 명령을 보내는 <code>LensCommunication</code>(<code>0x80111214</code>)은 표 준비 플래그가 정확히 1일 때만 기능 표로 요청을 거릅니다. 거부한 요청에는 7을 반환합니다. <a href="analysis/lens-readiness.json">[근거: findings.two_gates]</a></p>
 
 <h3>통신 상태 바이트에 비트가 켜지는 조건</h3>
 <div class="table-wrap"><table class="fit">
@@ -281,7 +281,7 @@
 <tr><th scope="row"><code>0x01</code></th><td>초기 통신(기능 표를 받는 단계)이 성공</td></tr>
 <tr><th scope="row"><code>0x02</code></th><td>기계 초기화 명령이 성공</td></tr>
 <tr><th scope="row"><code>0x04</code></th><td>primary 통신이 1을 반환</td></tr>
-<tr><th scope="row"><code>0x08</code></th><td>primary 통신이 1을 반환했고, regular 통신이 1 또는 7을 반환</td></tr>
+<tr><th scope="row"><code>0x08</code></th><td>primary 통신이 1을 반환했고 regular 통신이 1 또는 7을 반환</td></tr>
 <tr><th scope="row"><code>0x20</code></th><td>regular 응답이 성공</td></tr>
 </tbody>
 </table></div>
@@ -295,20 +295,20 @@
 </table></div>
 <ul>
 <li><strong>AF 지원은 1인데 VD 데이터는 무효</strong>: regular 연산이 기능 표에서 거부되면 명령 함수는 하위 통신에 가기 전에 7을 반환합니다. primary가 성공했으므로 초기화는 그래도 <code>0x08</code>을 켭니다. 그 결과 AF 지원은 1이지만 VD 데이터의 유효 상태는 0입니다.</li>
-<li><strong>AF 지원은 0인데 검색 요청은 전달</strong>: regular 응답이 실패하거나 primary의 사양 응답이 실패하면 <code>0x08</code>이 켜지지 않아 AF 지원이 0입니다. 그런데 기능 표의 검색 연산 칸은 1이어서, 검색 요청은 하위 경계까지 전달됐습니다.</li>
-<li><strong>둘 다 거부</strong>: 검색 연산이 기능 표에 없으면 <code>0x08</code>이 켜져 있어도 AF 지원은 0이고, 검색 요청도 7로 거부됩니다.</li>
+<li><strong>AF 지원은 0인데 검색 요청은 전달</strong>: regular 응답이 실패하거나 primary의 사양 응답이 실패하면 <code>0x08</code>이 켜지지 않아 AF 지원이 0입니다. 그런데 기능 표의 검색 연산 칸은 1이어서 검색 요청은 하위 경계까지 전달됐습니다.</li>
+<li><strong>둘 다 거부</strong>: 검색 연산이 기능 표에 없으면 <code>0x08</code>이 켜져 있어도 AF 지원은 0이고 검색 요청도 7로 거부됩니다.</li>
 <li><strong>기능 표를 받다가 실패</strong>: 초기화가 전원을 끄고 리셋해 모든 값이 0이 됩니다. 표 준비 플래그가 0이므로 검색 요청은 검사 없이 전달됩니다. 이 사례에서 렌즈 스레드에 재시도 메시지 1이 한 번 나갔습니다.</li>
-<li><strong>이미 전원이 켜져 있음</strong>: 초기화 함수가 2를 반환하고, 새로 탐색하지 않은 채 미리 넣어 둔 상태를 그대로 둡니다.</li>
+<li><strong>이미 전원이 켜져 있음</strong>: 초기화 함수가 2를 반환하고 새로 탐색하지 않은 채 미리 넣어 둔 상태를 그대로 둡니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>표의 “전달”은 요청이 모델로 대신한 하위 경계에 도달했다는 뜻입니다. 실제 직렬 전송이나 렌즈의 이동을 본 것이 아닙니다. 부팅 때 쓰는 <code>InitializeLens</code>(<code>0x8011190c</code>)에도 같은 4·8 검사가 있지만, 그쪽은 코드를 읽어 확인했을 뿐입니다. <a href="analysis/lens-readiness.json">[근거: findings.startup_disagreement, replay.startup_cases]</a></p></div>
+<p>표의 “전달”은 요청이 모델로 대신한 하위 경계에 도달했음을 나타냅니다. 실제 직렬 전송이나 렌즈의 이동을 본 것이 아닙니다. 부팅 때 쓰는 <code>InitializeLens</code>(<code>0x8011190c</code>)에도 같은 4·8 검사가 있지만 그쪽은 코드를 읽어 확인했을 뿐입니다. <a href="analysis/lens-readiness.json">[근거: findings.startup_disagreement, replay.startup_cases]</a></p></div>
 </section>
 
 <section id="cache">
 <h2>2부 렌즈 ② 응답이 실패해도 캐시가 전부 지워지지는 않습니다</h2>
 <p class="takeaway">응답 하나가 실패했을 때 지워지는 범위는 통신 함수마다 다릅니다. 값과 유효 상태가 따로 움직이므로 둘을 함께 봐야 합니다. 전부 지우는 것은 전체 리셋뿐입니다.</p>
 <div class="table-wrap"><table>
-<caption>응답 실패 4사례, 리셋 4사례, 타임아웃 2사례가 끝난 뒤의 상태. 시작 상태는 초기화가 모두 성공한 상태(통신 상태 <code>0x2f</code>)이고, 타임아웃 사례만 미리 넣은 값(<code>0x6f</code>)에서 시작합니다</caption>
+<caption>응답 실패 4사례, 리셋 4사례, 타임아웃 2사례가 끝난 뒤의 상태. 시작 상태는 초기화가 모두 성공한 상태(통신 상태 <code>0x2f</code>)이고 타임아웃 사례만 미리 넣은 값(<code>0x6f</code>)에서 시작합니다</caption>
 <thead><tr><th>사례</th><th>통신 상태</th><th class="n">표 준비</th><th>유효 상태 (사양·표준·VD)</th><th>위치 값</th><th class="n">위치 유효</th><th class="n">AF 지원</th><th>검색 요청</th><th>비고</th></tr></thead>
 <tbody><tr><th scope="row">SingleRegular 응답 실패 <code>single-failed-reply</code></th><td><code>0x2f</code></td><td class="n">1</td><td>1 · 1 · 1</td><td><code>0x00000000</code></td><td class="n">1</td><td class="n">1</td><td>전달</td><td>—</td></tr><tr><th scope="row">VD-sync 응답 실패 (새 바이트 없음) <code>vd-sync-failed-reply</code></th><td><code>0x2f</code></td><td class="n">1</td><td>1 · 1 · 1</td><td><code>0x11223344</code></td><td class="n">1</td><td class="n">1</td><td>전달</td><td>—</td></tr><tr><th scope="row">VD-sync 응답 실패 (앞 5바이트만 새 값) <code>vd-sync-failed-prefix</code></th><td><code>0x2f</code></td><td class="n">1</td><td>1 · 1 · 1</td><td><code>0x55667788</code></td><td class="n">1</td><td class="n">1</td><td>전달</td><td>—</td></tr><tr><th scope="row">Primary 갱신 실패 <code>primary-refresh-failed</code></th><td><code>0x2f</code></td><td class="n">1</td><td>0 · 0 · 0</td><td><code>0x11223344</code></td><td class="n">0</td><td class="n">1</td><td>전달</td><td>—</td></tr><tr><th scope="row">전체 리셋을 직접 호출 <code>control-reset</code></th><td><code>0x00</code></td><td class="n">0</td><td>0 · 0 · 0</td><td><code>0x00000000</code></td><td class="n">0</td><td class="n">0</td><td>전달</td><td>래치 0</td></tr><tr><th scope="row">마운트 스위치가 열림 <code>mount-switch-open</code></th><td><code>0x00</code></td><td class="n">0</td><td>0 · 0 · 0</td><td><code>0x00000000</code></td><td class="n">0</td><td class="n">0</td><td>전달</td><td>래치 1</td></tr><tr><th scope="row">감지 인터럽트, 래치가 1 <code>detect-with-latch</code></th><td><code>0x00</code></td><td class="n">0</td><td>0 · 0 · 0</td><td><code>0x00000000</code></td><td class="n">0</td><td class="n">0</td><td>전달</td><td>래치 0</td></tr><tr><th scope="row">감지 인터럽트, 래치가 0 <code>detect-without-latch</code></th><td><code>0x2f</code></td><td class="n">1</td><td>1 · 1 · 1</td><td><code>0x11223344</code></td><td class="n">1</td><td class="n">1</td><td>전달</td><td>래치 0</td></tr><tr><th scope="row">타임아웃, 직전의 표 준비 플래그가 0</th><td><code>0x6f</code></td><td class="n">0</td><td>1 · 1 · 1</td><td><code>0xa5a5a5a5</code></td><td class="n">1</td><td class="n">1</td><td>전달</td><td>결과 5, 재진입 0회</td></tr><tr><th scope="row">타임아웃, 직전의 표 준비 플래그가 1</th><td><code>0x00</code></td><td class="n">0</td><td>0 · 0 · 0</td><td><code>0x00000000</code></td><td class="n">0</td><td class="n">0</td><td>전달</td><td>결과 5, 재진입 1회</td></tr></tbody>
 </table></div>
@@ -317,7 +317,7 @@
 <ul>
 <li><strong>SingleRegular</strong>(<code>0x80115f50</code>) 실패: VD 데이터 버퍼 세 개를 0으로 만듭니다. 그러나 앞서 1이던 유효 상태는 그대로 둡니다. 그래서 위치를 묻는 함수는 “유효”와 함께 위치 0을 돌려줍니다.</li>
 <li><strong>VD-sync</strong>(<code>0x80115c8c</code>) 실패: 이 함수는 이전 수신 버퍼 256바이트를 복사한 뒤, 다른 수신 버퍼의 앞 5바이트를 덮어씁니다. 하위 상태가 성공이 아니어도 그렇게 합니다. 새 바이트가 없으면 이전 위치와 꼬리가 그대로 남습니다. 앞 5바이트만 새 값으로 주면 이동 상태와 위치는 바뀌고 꼬리는 이전 값으로 남아, 서로 다른 때의 값이 섞입니다.</li>
-<li><strong>Primary 갱신</strong>(<code>0x80113eac</code>) 실패: 들어가자마자 사양·표준 데이터의 유효 상태와 VD 상태를 지우고, 실패한 응답의 버퍼를 0으로 만듭니다. 이전 VD 바이트는 남습니다. 위치를 묻는 함수는 “무효”와 함께 이전 값을 돌려줍니다. 통신 상태와 기능 표, AF 지원은 그대로입니다.</li>
+<li><strong>Primary 갱신</strong>(<code>0x80113eac</code>) 실패: 들어가자마자 사양·표준 데이터의 유효 상태와 VD 상태를 지우고 실패한 응답의 버퍼를 0으로 만듭니다. 이전 VD 바이트는 남습니다. 위치를 묻는 함수는 “무효”와 함께 이전 값을 돌려줍니다. 통신 상태와 기능 표, AF 지원은 그대로입니다.</li>
 <li><strong>수신 복사</strong>: <code>LensCommunication</code>은 명령에 설정된 수신 길이(<code>0x801175e0</code>의 반환값)가 0이 아니면 수신 바이트를 호출한 쪽으로 복사합니다. 반환 상태가 실패여도 복사를 막지 않습니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
@@ -327,8 +327,8 @@
 <p>전체 리셋(<code>0x8010f598</code>)은 통신 상태 바이트, 기능 표의 두 비트맵, 표 준비 플래그를 지웁니다. 이어서 <code>0x80111f74</code>로 넘어가 사양·표준·VD 데이터와 유효 상태를 지웁니다. 리셋 뒤에는 표 준비 플래그가 0이므로, 기능 표와 AF 지원이 0이어도 검색 요청은 검사 없이 전달됩니다.</p>
 <ul>
 <li><strong>전원 끄기</strong>: <code>PowerOffSequence</code>(<code>0x8010fa10</code>)는 전원을 끄고 전체 리셋을 부릅니다.</li>
-<li><strong>마운트 스위치</strong>: <code>LensSwControl</code>(<code>0x80110b34</code>)은 스위치 입력이 1이 아니고 감지 입력이 0인 조건에서 전원 끄기를 실행하고 분리 래치를 1로 둡니다.</li>
-<li><strong>감지 인터럽트</strong>: <code>LensDetInt</code>(<code>0x8011045c</code>)는 감지 입력이 1이고, 스위치가 1이 아니고, 래치가 1일 때만 같은 리셋에 이르고 래치를 지웁니다. 래치가 0인 사례에서는 캐시가 그대로 남았습니다.</li>
+<li><strong>마운트 스위치</strong>: <code>LensSwControl</code>(<code>0x80110b34</code>)은 스위치 입력이 1이 아니고 감지 입력이 0인 조건에서 전원 끄기를 실행합니다. 이때 분리 래치를 1로 둡니다.</li>
+<li><strong>감지 인터럽트</strong>: <code>LensDetInt</code>(<code>0x8011045c</code>)는 감지 입력이 1이고 스위치가 1이 아니고 래치가 1일 때만 같은 리셋에 이르고 래치를 지웁니다. 래치가 0인 사례에서는 캐시가 그대로 남았습니다.</li>
 <li><strong>타임아웃</strong>: 통신 대기 지점에 이벤트 마스크 <code>0x100</code>을 넣으면 <code>LensCommunicationBase</code>는 두 사례 모두 5를 반환했습니다. 표 준비 플래그가 0이던 사례는 리셋하지 않았습니다. 1이던 사례는 전체 리셋(<code>0x80110fdc</code>)을 하고 초기화에 다시 들어갔습니다(<code>0x80110ffc</code>). 시험 도구는 다시 들어간 초기화의 상태를 기록하고 거기서 멈췄습니다.</li>
 </ul>
 <p>실패 응답과 전체 리셋은 같은 일이 아닙니다. 이 상태들이 실제로 어떤 순서로, 얼마나 자주 생기는지는 재지 않았습니다. <a href="analysis/lens-readiness.json">[근거: findings.dismount, findings.timeout]</a></p>
@@ -358,7 +358,7 @@
 
 <section id="comparison">
 <h2>K-3 Mark III와 비교</h2>
-<p>K-3 Mark III 자료도 명령의 메타데이터, 합성 전송 응답, 캐시 복사를 나눠서 검사합니다. 같은 구분을 Q7에 적용했지만, 상태 비트와 기능 표, 반환값은 Q7의 원본 코드에서 확인했습니다. K-3의 저장 descriptor·bank·vtable 구조를 Q7의 NAND 섹션 맵에 그대로 맞대지 않았습니다.</p>
+<p>K-3 Mark III 자료도 명령의 메타데이터, 합성 전송 응답, 캐시 복사를 나눠서 검사합니다. 같은 구분을 Q7에 적용했지만 상태 비트와 기능 표, 반환값은 Q7의 원본 코드에서 확인했습니다. K-3의 저장 descriptor·bank·vtable 구조를 Q7의 NAND 섹션 맵에 그대로 맞대지 않았습니다.</p>
 <div class="table-wrap"><table>
 <caption>고정 커밋의 근거와 비교 범위</caption>
 <thead><tr><th>항목</th><th>Q7 (이 문서)</th><th>K-3 Mark III (고정 커밋의 자료)</th></tr></thead>
@@ -379,7 +379,7 @@
 <li><strong>저장</strong>: 사전 검사는 첫 연산 5 앞에서 멈춥니다. 기록·비교 8사례는 1~2섹터짜리 합성 요청입니다. 256섹터 요청의 처리, 모든 청크, 업데이트의 확정, 저장장치에 남는 결과는 다루지 않았습니다.</li>
 <li><strong>저장</strong>: 사용자 영역 판정과, 이 조건에서 연산 8이 그 구간에 나오지 않았다는 사실은 장치 수준의 보호 보장이 아닙니다.</li>
 <li><strong>렌즈</strong>: 원본 코드가 다룬 것은 소프트웨어 상태와 선택한 호출입니다. GPIO, 전원, 큐, 타이머, 렌즈 응답은 합성 값입니다. 실제 렌즈나 카메라의 데이터를 받은 것이 없습니다.</li>
-<li><strong>렌즈</strong>: 검색 요청은 상위 검사를 통과해 모델 경계에 도달했는지만 봤습니다. 타임아웃은 정해 둔 이벤트 마스크 하나의 경로만 실행했고, 겹친 재초기화는 모델에서 멈췄습니다.</li>
+<li><strong>렌즈</strong>: 검색 요청은 상위 검사를 통과해 모델 경계에 도달했는지만 봤습니다. 타임아웃은 정해 둔 이벤트 마스크 하나의 경로만 실행했고 겹친 재초기화는 모델에서 멈췄습니다.</li>
 <li><strong>렌즈</strong>: 캐시가 섞이는 상태는 차례로 넣은 합성 상태에서 나온 것입니다. 타이밍, 실제 발생 여부, 끼어들기, 렌즈를 꽂고 빼는 전체 복구는 범위 밖입니다.</li>
 </ul>
 <p>저장 쪽은 원본 워드 83개와 함수 구간 11개(이름이 있는 함수 8개, 이름 없는 구간 3개)의 해시를 원본 파일에서 다시 계산했습니다. 렌즈 쪽은 워드 153개와 함수 33개입니다. 저장 재실행과 렌즈 17사례는 서로 독립된 두 번의 실행에서 기록 전체가 같았습니다. 실행 엔진은 angr 10.0.5 / VEX입니다.</p>
