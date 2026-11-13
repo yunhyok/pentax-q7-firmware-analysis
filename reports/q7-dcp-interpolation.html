@@ -1,42 +1,211 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q7 DCP — LUT 좌표와 보간</title>
-<link rel="stylesheet" href="../assets/site.css"><style>main.doc{width:calc(100% - 2rem);max-width:68rem;min-width:0;margin:auto;padding:1.5rem}main.doc .scroll{max-width:100%;overflow-x:auto;margin:1rem 0}main.doc .scroll:focus{outline:2px solid var(--edge)}main.doc svg{display:block;min-width:900px}main.doc svg rect{fill:var(--paper);stroke:var(--line-strong)}main.doc svg text{fill:var(--ink);font:16px 'Malgun Gothic',system-ui,sans-serif}main.doc svg .edge{fill:none;stroke:var(--edge);stroke-width:2}main.doc svg .arrow{fill:var(--edge)}main.doc table{min-width:850px}main.doc .source{color:var(--muted);font-size:.9rem}main.doc .hash{overflow-wrap:anywhere}main.doc pre{white-space:pre-wrap;overflow-wrap:anywhere}main.doc nav{display:flex;flex-wrap:wrap;gap:1rem}@media print{main.doc svg,main.doc table{min-width:0;width:100%}}</style></head><body data-camera="q7"><!-- chrome:top -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DCP 표의 좌표와 보간 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="Adobe DNG SDK 1.7.1 소스에서 DCP의 HueSatMap·LookTable을 읽고 보간하는 규칙을 확인하고, Q7 Adobe Standard의 표에 합성 HSV 15건을 넣어 두 독립 구현으로 계산했습니다. encoding 기본값과 항등 표의 차이, 이 실험이 다루지 않는 범위를 정리합니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
 <div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="../index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="../guide-update.html">업데이트</a><a href="../guide-color.html" aria-current="true">색·HDR</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-color.html">색 처리와 HDR</a></li><li aria-current="page">DCP LUT 좌표·보간·색 처리 전제</li></ol></nav>
-<!-- /chrome:top --><main class="doc" id="main">
-<header><p>Q7-DCP-INTERPOLATION-PUBLIC-30 · 원정본과 공개 검증 · 2026-11-13</p><h1>Q7 DCP의 LUT 좌표와 보간</h1><p>Adobe DNG SDK 1.7.1 원본과 설치된 Q7 Adobe Standard DCP를 대조했습니다. encoding 태그의 기본값, 저장 축 순서, hue 경계와 V 배율의 적용을 소스로 확인하고 합성 HSV 15건을 수식으로 재현했습니다.</p><nav aria-label="문서 목차"><a href="#coordinates">좌표와 이웃</a><a href="#pipeline">적용 위치</a><a href="#findings">확인한 결과</a><a href="#samples">수치 표본</a><a href="#limits">한계와 다음 단계</a><a href="#sources">출처·재현</a></nav></header>
-<section id="coordinates"><h2>같은 HSV 축, 서로 다른 이웃 수</h2><p>SDK 내부 hue 범위는 0–6이며 이 보고서의 입력은 읽기 쉬운 도 단위를 씁니다. H 좌표는 H×hueDivisions/360, S 좌표는 S×(satDivisions−1), V 좌표는 V×(valDivisions−1)입니다. 마지막 S·V 격자점은 마지막 구간의 가중치 1로 처리합니다. H의 마지막 구간은 첫 hue로 이어집니다.</p>
-<div class="scroll" role="region" aria-label="LUT 좌표와 보간 도식" tabindex="0"><svg width="900" height="420" viewBox="0 0 900 420" role="img" aria-labelledby="coord-title coord-desc"><title id="coord-title">LUT의 좌표와 이웃 선택</title><desc id="coord-desc">HueSatMap은 네 이웃, LookTable은 여덟 이웃을 사용한다. S가 가장 빠르게 저장되고 H의 마지막 이웃은 0으로 돌아간다. 보간 결과는 색상 이동과 채도 및 V 배율이다.</desc><defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path class="arrow" d="M0 0L8 4L0 8Z"/></marker></defs>
-<rect x="15" y="145" width="235" height="110" rx="6"/><rect x="300" y="20" width="280" height="135" rx="6"/><rect x="300" y="235" width="280" height="135" rx="6"/><rect x="630" y="130" width="250" height="145" rx="6"/>
-<text x="30" y="175">합성 HSV 입력</text><text x="30" y="205">H: [0,360), S,V: [0,1]</text><text x="30" y="235">각 표에 독립 주입</text>
-<text x="315" y="50">Map 1·2: [90,30,1]</text><text x="315" y="80">H 간격 4°, S 간격 1/29</text><text x="315" y="110">H,S 네 이웃 · V축 보간 없음</text><text x="315" y="140">Map 1과 2도 따로 평가</text>
-<text x="315" y="265">Look: [36,8,16]</text><text x="315" y="295">10°, 1/7, 1/15 간격</text><text x="315" y="325">H,S,V 여덟 이웃</text><text x="315" y="355">Map 출력과 직렬 연결 안 함</text>
-<path class="edge" marker-end="url(#a)" d="M250 200H275V85H300"/><path class="edge" marker-end="url(#a)" d="M250 200H275V300H300"/><path class="edge" marker-end="url(#a)" d="M580 85H605V165H630"/><path class="edge" marker-end="url(#a)" d="M580 300H605V240H630"/>
-<text x="645" y="160">각 표별 가중 보간</text><text x="645" y="190">ΔH [°] / S배율 / V배율</text><text x="645" y="220">H 이동 · S,V 곱셈</text><text x="645" y="250">SDR clip · hue wrap</text>
-<text x="30" y="405">저장 순서: V → H → S → (ΔH, S배율, V배율) · hue 이웃: 마지막 ↔ 0</text></svg></div>
-<pre><code>node = ((vIndex × Hdiv + hIndex) × Sdiv + sIndex)
-scalar offset = 3 × node + component
-component: 0=ΔH(도), 1=S 배율, 2=V 배율</code></pre><p class="source">근거: dng_camera_profile.cpp 1467–1502; dng_hue_sat_map.cpp 125–130, 200–206; dng_reference.cpp 1529–1745.</p></section>
-<section id="pipeline"><h2>렌더 경로 안의 서로 다른 적용 위치</h2><p>아래는 SDK 예제 렌더러의 관련 순서입니다. 카메라 펌웨어의 HDR 패스 순서나 Lightroom 내부 실행을 나타내지 않습니다. ColorMatrix·ForwardMatrix는 camera/PCS 변환에 관여하고, white는 HueSatMap1/2의 선택·보간에도 사용됩니다. As Shot 값이 LUT 좌표로 직접 들어가는 구조로 해석하지 않았습니다.</p>
-<div class="scroll" role="region" aria-label="SDK 예제 렌더러 적용 순서" tabindex="0"><svg width="900" height="390" viewBox="0 0 900 390" role="img" aria-labelledby="pipe-title pipe-desc"><title id="pipe-title">SDK의 관련 색 처리 순서</title><desc id="pipe-desc">camera white와 PCS 변환 후 HueSatMap, 선택적인 gain map 및 exposure, LookTable, baseline tone과 후속 출력 처리가 이어진다. 이번 실험은 두 LUT 단계 각각의 수식만 다룬다.</desc>
-<rect x="15" y="20" width="270" height="115" rx="6"/><rect x="315" y="20" width="270" height="115" rx="6"/><rect x="615" y="20" width="270" height="115" rx="6"/><rect x="615" y="240" width="270" height="115" rx="6"/><rect x="315" y="240" width="270" height="115" rx="6"/><rect x="15" y="240" width="270" height="115" rx="6"/>
-<text x="30" y="50">1. Camera white / CameraToPCS</text><text x="30" y="80">ProPhoto RGB로 변환</text><text x="30" y="110">이번 표본에서는 수행하지 않음</text>
-<text x="330" y="50">2. HueSatMap</text><text x="330" y="80">white로 Map1·2 선택·보간</text><text x="330" y="110">이번에는 두 표를 따로 평가</text>
-<text x="630" y="50">3. 선택적 GainTableMap</text><text x="630" y="80">그다음 exposure curve</text><text x="630" y="110">이번 표본에서는 수행하지 않음</text>
-<text x="630" y="270">4. LookTable</text><text x="630" y="300">같은 HSV 보간 함수</text><text x="630" y="330">별도의 합성 입력으로 평가</text>
-<text x="330" y="270">5. Baseline tone</text><text x="330" y="300">ProfileToneCurve와 구분</text><text x="330" y="330">태그 부재만으로 항등 추정 금지</text>
-<text x="30" y="270">6. 후속 RGB 처리·출력</text><text x="30" y="300">색 공간·encoding 등</text><text x="30" y="330">이번 연구 범위 밖</text>
-<path class="edge" marker-end="url(#a)" d="M285 77H315"/><path class="edge" marker-end="url(#a)" d="M585 77H615"/><path class="edge" marker-end="url(#a)" d="M750 135V240"/><path class="edge" marker-end="url(#a)" d="M615 297H585"/><path class="edge" marker-end="url(#a)" d="M315 297H285"/>
-</svg></div><p class="source">근거: dng_render.cpp 925–1002, 1862–2030; dng_color_spec.cpp 530–609. 노드 6은 후속 범위가 남아 있음을 표시하며 전체 출력 경로를 복원한 것으로 세지 않습니다.</p></section>
-<section id="findings"><h2>확인한 결과와 근거</h2><article id="F1"><h3>F1</h3><p>encoding 태그가 없으면 SDK는 HueSatMap과 LookTable에 encoding_Linear(0)를 유지한다. 별도 encode/decode 곡선이 없다는 의미이며 LUT의 항등성을 뜻하지 않는다.</p><p class="source">근거: dng_shared.cpp:126-135; dng_shared.cpp:992-1032; dng_shared.cpp:1124-1164; dng_camera_profile.cpp:1734-1736; dng_camera_profile.cpp:2366-2419; dng_tag_values.h:385-394</p></article><article id="F2"><h3>F2</h3><p>차원 표기는 H,S,V이지만 메모리와 DCP 직렬화 순서는 V 바깥, H 중간, S 안쪽이다. 노드마다 hue shift(도), saturation scale, value scale 순으로 저장한다.</p><p class="source">근거: dng_camera_profile.cpp:1467-1502; dng_hue_sat_map.cpp:125-130; dng_hue_sat_map.cpp:200-206; q7-dcp-interpolation.json:observations.dcp.tables</p></article><article id="F3"><h3>F3</h3><p>HueSatMap [90,30,1]은 H,S의 네 이웃을 보간한다. LookTable [36,8,16]은 H,S,V의 여덟 이웃을 보간한다. 마지막 hue의 다음 이웃은 hue 0이다. shift 값 자체는 일반 선형 가중합이며 각도 최단호 보간을 하지 않는다.</p><p class="source">근거: dng_reference.cpp:1529-1545; dng_reference.cpp:1590-1645; dng_reference.cpp:1649-1731; test_q7_dcp_interpolation.py</p></article><article id="F4"><h3>F4</h3><p>보간한 hue shift를 H에 더하고 S와 V에는 각각 배율을 곱한다. S의 상한은 1, V는 [0,1]로 제한한다. 최종 RGB 변환에서 hue를 주기 6으로 감싼다. V 차원이 1이어도 V 배율은 적용된다.</p><p class="source">근거: dng_reference.cpp:1735-1745; dng_utils.h:941-999; test_q7_dcp_interpolation.py</p></article><article id="F5"><h3>F5</h3><p>SDK 예제 렌더러는 camera white와 CameraToPCS를 거쳐 ProPhoto RGB 공간으로 변환한 뒤 HueSatMap을 적용한다. 선택적인 ProfileGainTableMap과 exposure 처리를 거친 뒤 LookTable, baseline tone 순으로 진행한다. 이번 표본은 각 LUT 입구에서 별도로 주입했으며 이 전체 경로를 실행하지 않았다.</p><p class="source">근거: dng_render.cpp:925-1002; dng_render.cpp:1862-2030; dng_color_spec.cpp:530-609</p></article><article id="F6"><h3>F6</h3><p>HueSatMap1/2는 white의 색온도와 두 calibration temperature에 따라 선택·보간된다. 유효한 서로 다른 온도 사이에서는 역색온도로 첫 표의 가중치를 계산한다. 이번에는 각 표를 독립 평가했으며 As Shot으로 실제 가중치를 산출하지 않았다.</p><p class="source">근거: dng_camera_profile.cpp:1861-1974; dng_render.cpp:925-971</p></article><article id="F7"><h3>F7</h3><p>명시한 합성 HSV 5개를 세 표에 넣은 15건에서 binary64 구현과 50자리 Decimal 전체 격자 가중합의 최대 절대 차이는 1.9539925233402755e-14이다. SDK real32의 비트 일치나 Lightroom의 구현 일치를 뜻하지 않는다.</p><p class="source">근거: q7-dcp-interpolation.json:observations; q7_dcp_interpolation_math.py; test_q7_dcp_interpolation.py</p></article><article id="F8"><h3>F8</h3><p>이 고정 DCP의 LookTable에서 모든 저장 value scale은 1이다. 반면 HueSatMap1/2에는 1이 아닌 value scale이 있다. LookTable 단독의 정규 SDR 범위에서 V가 유지되는 수식상 성질은 이 저장값에서 나오며 encoding 태그 부재 때문이 아니다. H,S 변화에 따라 RGB와 휘도는 달라질 수 있다.</p><p class="source">근거: q7-dcp-interpolation.json:observations.dcp.tables; dng_reference.cpp:1735-1745; dng_utils.h:941-999</p></article></section>
-<section id="samples"><h2>합성 HSV에 대한 소수의 가중 보간 결과</h2><p>표의 Map1·Map2·Look은 서로 연결된 픽셀 처리 결과가 아닙니다. 각 LUT에 같은 다섯 입력을 별도로 넣었습니다. 출력 HSV는 선택한 SDR·linear 가정 아래의 수식값이며 RGB 이미지나 카메라의 최종 색을 관측한 값이 아닙니다. 표시는 9자리 유효숫자로 줄였으며 JSON에는 계산값을 보존했습니다.</p><div class="scroll" role="region" aria-label="15건의 보간 수치 표" tabindex="0"><table><caption>ΔH는 도, S·V 계수는 곱셈 배율</caption><thead><tr><th scope="col">표</th><th scope="col">입력 H,S,V</th><th scope="col">ΔH, S배율, V배율</th><th scope="col">수식상 출력 H,S,V</th></tr></thead><tbody><tr><td>HueSatMapData1</td><td>123.4, 0.456, 0.321</td><td>-23.8475344, 1.50812609, 1.18044199</td><td>99.5524656, 0.687705499, 0.378921879</td></tr><tr><td>HueSatMapData1</td><td>359.9, 0.51, 0.63</td><td>-10.7612701, 1.12649501, 0.883016786</td><td>349.13873, 0.574512454, 0.556300575</td></tr><tr><td>HueSatMapData1</td><td>0.1, 0.51, 0.63</td><td>-10.6160679, 1.12370334, 0.883126968</td><td>349.483932, 0.573088706, 0.55636999</td></tr><tr><td>HueSatMapData1</td><td>287.3, 0.999, 0.91</td><td>-15.1451941, 1.0008261, 1.53602782</td><td>272.154806, 0.999825276, 1</td></tr><tr><td>HueSatMapData1</td><td>47.2, 0.123, 0.007</td><td>9.48547286, 1.36133315, 0.989149008</td><td>56.6854729, 0.167443977, 0.00692404306</td></tr><tr><td>HueSatMapData2</td><td>123.4, 0.456, 0.321</td><td>-22.2837478, 1.32756529, 1.17179792</td><td>101.116252, 0.605369773, 0.376147132</td></tr><tr><td>HueSatMapData2</td><td>359.9, 0.51, 0.63</td><td>-7.45560145, 0.947686536, 0.854839485</td><td>352.444399, 0.483320134, 0.538548876</td></tr><tr><td>HueSatMapData2</td><td>0.1, 0.51, 0.63</td><td>-7.27920047, 0.944737568, 0.855112741</td><td>352.8208, 0.48181616, 0.538721027</td></tr><tr><td>HueSatMapData2</td><td>287.3, 0.999, 0.91</td><td>-13.4376791, 1.00089303, 1.25481224</td><td>273.862321, 0.999892134, 1</td></tr><tr><td>HueSatMapData2</td><td>47.2, 0.123, 0.007</td><td>13.3379358, 1.17716774, 1.00050706</td><td>60.5379358, 0.144791632, 0.0070035494</td></tr><tr><td>LookTableData</td><td>123.4, 0.456, 0.321</td><td>0.761800903, 0.999882551, 1</td><td>124.161801, 0.455946443, 0.321</td></tr><tr><td>LookTableData</td><td>359.9, 0.51, 0.63</td><td>-0.0446880734, 1, 1</td><td>359.855312, 0.51, 0.63</td></tr><tr><td>LookTableData</td><td>0.1, 0.51, 0.63</td><td>0.0327909474, 1, 1</td><td>0.132790947, 0.51, 0.63</td></tr><tr><td>LookTableData</td><td>287.3, 0.999, 0.91</td><td>0, 1, 1</td><td>287.3, 0.999, 0.91</td></tr><tr><td>LookTableData</td><td>47.2, 0.123, 0.007</td><td>-0.00883201696, 0.895488098, 1</td><td>47.191168, 0.110145036, 0.007</td></tr></tbody></table></div><p>공개 패키지의 테스트 16개가 통과했습니다. 보간 경계와 원정본 전체 검사, 입력·출력 보호를 자산 없이 검사하며 아래 명령으로 실행할 수 있습니다. 보간 기준 구현은 모든 격자점에 Decimal 가중치를 적용하여 직접 구현의 셀 선택·stride 계산을 공유하지 않습니다. 15건의 최대 차이는 <code>1.9539925233402755e-14</code>입니다.</p><p><a href="../analysis/q7-dcp-interpolation.json">입력·집계·표본 JSON</a> · <a href="../tests/test_q7_dcp_interpolation.py">자산 없는 경계 검사</a> · <a href="../tools/q7_dcp_interpolation_math.py">직접 보간</a> · <a href="../tools/q7_dcp_interpolation_math.py">Decimal 기준 구현</a></p></section>
-<section id="limits"><h2>해석 범위와 다음 단계</h2><ul><li>공통 전제는 finite normalized SDR HSV, linear encoding, supportOverrange=false다. profile.IsHDR()의 실제 분기나 overrange encode/decode는 이번 수치 실험에서 실행하지 않았다.</li><li>HSV의 V는 RGB의 최댓값이다. 광도·휘도·노출값과 같은 물리량으로 해석하지 않는다. S=0일 때 H는 색 관측값으로 의미가 없고 SDK RGB→HSV는 H=0을 사용한다.</li><li>SDK RefBaselineHueSatMap의 real32 연산을 Python binary64로 옮겼다. Decimal 교차 검증은 같은 수식의 독립 구현이며 native SDK 실행 검증이 아니다.</li><li>SDK의 SetDelta는 S=0 노드의 value scale을 1로 보정한다. 이 DCP의 해당 값들은 이미 모두 1이며 생략된 S=0 행도 없다. 범용 DCP의 생략 행 재구성은 구현하지 않았다.</li><li>ColorMatrix, ForwardMatrix, CameraNeutral/As Shot, exposure, ProfileToneCurve, gamut/clipping, 후속 출력 색 공간을 적용한 결과가 아니다. 테이블별 출력들을 서로 이어 붙이지 않았다.</li><li>III75의 원본 SDK ZIP과 source pins를 재사용했지만 III75 Stage 2 검증이 Q7 LUT·Stage 3·Lightroom 렌더링을 검증해 주지는 않는다. 카메라 FC1/HDR 패스와도 대응시킨 결과가 아니다.</li><li>원래 연구는 Q7-28 도구와 설치 DCP를 읽기 전용으로 사용했다. 공개 재현은 현재 구조 도구와 외부 III 파서를 재사용한다. 전체 LUT·행렬·원본 코드·이미지를 복사하거나 배포하지 않았다. 표의 수치는 합성 입력에 대한 소수의 가중 보간 결과다.</li></ul><h3>후속 검증</h3><ol><li>동일한 합성 RGB와 고정 표를 원본 SDK의 RefBaselineHueSatMap 또는 DoBaselineHueSatMap에 넣어 real32 출력·클리핑·hue wrap을 교차 확인한다. <span class="source">native SDK 함수 실행은 이번 연구 범위 밖이며 후속 검증 항목이다.</span></li><li>명시한 white XY를 사용해 HueSatMapForWhite_Dual의 가중치와 생성 표를 재현한다. CameraNeutral→WhiteXY 추정과 두 calibration illuminant 변환은 각각 검증한다. <span class="source">Lightroom에 표시된 색온도를 SDK의 white XY/As Shot과 동일시하지 않는다.</span></li><li>색 변환, HueSatMap, exposure, LookTable, tone을 단계별로 분리한 수치 추적을 설계한다. <span class="source">RAW·Lightroom 신규 실행이나 완성 렌더 비교는 현재 범위 밖이다.</span></li></ol><p>이번 연구는 K-3 III의 SDK75 출처와 Q7의 DCP28 입력 검증을 함께 사용했습니다. III의 Stage 2 native 실행과 이번 LUT 수식 검증은 서로 다른 증거입니다. 실기 FC1 제어 비트나 HDR task 완료 경로에 관한 새 결론은 추가하지 않았습니다.</p></section>
-<section id="sources"><h2>고정한 소스와 재현</h2><p>공개 검증기는 29번 관측의 모든 필드·타입·직렬화 해시를 검사한 뒤 표본과 문서를 만듭니다. 원정본의 <code>sources</code>, 이전 helper 해시와 <code>scope</code>는 역사적 출처·전제입니다. 현재 실행의 입력·모듈 해시는 별도 <code>_reproduction</code>에 기록하며 원래 환경을 다시 관측했다고 주장하지 않습니다.</p><p class="hash">원정본 파일 SHA-256: f95afd00938e66fd9cc64296174257473d4415d7e7e3243d115aae9bb3c6fbf1</p><p class="hash">원정본 typed canonical SHA-256: 87831a2abf58d06c7029b96475939322533fb395a1abfc637fe269ca853094a1</p><p>원래 helper의 <code>059b7cda…</code>와 현재 공개 helper의 <code>c62f899a…</code>를 구분합니다. public source pin과 모듈의 변경 정보는 <code>_publication</code>에서 따로 관리합니다.</p><p class="hash">원본 SDK ZIP SHA-256: c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1</p><p class="hash">Q7 Adobe Standard DCP SHA-256: 83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff</p><p>SDK ZIP은 III75 recipe의 80,509,918바이트 입력 핀과 일치합니다. 연구29에서 아래 소스의 ZIP 멤버와 로컬 파일을 직접 비교했습니다. 현재 공개 CLI는 지정한 ZIP에서 이 8개 멤버의 바이트와 구간 해시를 검사하며 당시 로컬 파일 비교를 다시 수행하지 않습니다. 원본 SDK 소스·ZIP·DCP는 공개 패키지에 포함하지 않습니다. 각 구간의 원래 줄바꿈을 포함한 해시는 <a href="../analysis/q7-dcp-interpolation-sources.json">선택 소스와 구간 해시</a>에 있습니다.</p><div class="scroll" role="region" aria-label="원본 소스 해시 표" tabindex="0"><table><caption>SDK dng_sdk/source 아래 원본 파일</caption><thead><tr><th scope="col">파일</th><th scope="col">대조 구간</th><th scope="col">파일 SHA-256</th></tr></thead><tbody><tr><th scope="row">dng_reference.cpp</th><td>1508–1762</td><td class="hash">912afda9ed871fe50ff0037a1be3361d37c1b8ee1230b907eed36d7512c422b6</td></tr><tr><th scope="row">dng_hue_sat_map.cpp</th><td>99–140, 179–252</td><td class="hash">7bdb0661575cfe6294e89c9305b2bddc10f9a4288930b8e29c66e3c65cf356e6</td></tr><tr><th scope="row">dng_camera_profile.cpp</th><td>91–125, 1467–1502, 1600–1701, 1734–1736, 1861–1974, 2366–2419</td><td class="hash">988d3d9531ddfefd0faa0b6b4ebf85276a872a55b1956fd2bb964f89c1dd801f</td></tr><tr><th scope="row">dng_shared.cpp</th><td>72–140, 992–1032, 1124–1164</td><td class="hash">d0a574d1e9f69379645c95c29b6a8148f3aca19568174608f769ce964a84bb3f</td></tr><tr><th scope="row">dng_tag_values.h</th><td>385–394</td><td class="hash">e6b5e7157c7e7e2a3867c3dd1b51d7d0ed7ae3a762734e26d9e0455fc3d07bdb</td></tr><tr><th scope="row">dng_utils.h</th><td>862–909, 941–999</td><td class="hash">0eb910dd59b46928d5fee734a0cc096eb1a99bab8594d6d2fec77ae0d6fb11e9</td></tr><tr><th scope="row">dng_render.cpp</th><td>925–1002, 1862–2030</td><td class="hash">e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c</td></tr><tr><th scope="row">dng_color_spec.cpp</th><td>530–609</td><td class="hash">6fb9ab59dcbdae9cb27a893c67810416ba7b2651a537673caa7d728d16d7ec0a</td></tr></tbody></table></div><pre><code>python -B -m unittest discover -s tests -p test_q7_dcp_interpolation.py -v
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">색 처리와 HDR · Lightroom 쪽 프로파일 파일 분석</p>
+<h1>DCP 표의 좌표와 보간</h1>
+<p class="lead">DCP의 HueSatMap과 LookTable은 색상·채도·명도 격자에 보정값을 적어 둔 표입니다. 픽셀 색이 격자점 사이에 놓일 때 어떤 이웃을 어떻게 섞는지 Adobe의 공개 SDK 소스로 확인하고, Q7 Adobe Standard의 표로 직접 계산해 보았습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: HSV 표와 보간</a></li><li><a href="#coordinates">표본 하나가 놓이는 칸과 이웃</a></li><li><a href="#pipeline">렌더 경로 안에서 두 표의 위치</a></li><li><a href="#findings">소스에서 확인한 여덟 가지</a></li><li><a href="#samples">합성 HSV 15건의 계산 결과</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#sources">재현 방법과 고정한 소스</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>Adobe DNG SDK 1.7.1의 소스를 읽어 표 보간 규칙을 확인했습니다. HueSatMap(90×30×1)은 <strong>이웃 네 개</strong>, LookTable(36×8×16)은 <strong>이웃 여덟 개</strong>를 섞습니다. 마지막 색상 칸 다음은 첫 칸으로 이어집니다.</li>
+<li>Q7 Adobe Standard의 세 표에 합성 HSV 다섯 개를 넣어 모두 <strong>15건</strong>을 계산했습니다. Python 배정밀도(binary64) 구현과 50자리 Decimal 기준 구현의 차이는 최대 1.95×10⁻¹⁴였습니다.</li>
+<li>encoding 태그가 없으면 SDK는 <strong>linear(0)</strong>를 씁니다. 이것은 “명도에 별도 곡선을 씌우지 않는다”는 설정일 뿐입니다. 표가 색을 바꾸지 않는다는 뜻과는 다릅니다.</li>
+<li>SDK 코드를 직접 실행하지 않았고 RAW 현상도, Lightroom 출력도 만들지 않았습니다. 세 표는 서로 이어 붙이지 않고 따로 평가했습니다. Adobe 표의 값 자체는 저장소에 싣지 않았습니다.</li>
+<li>이 계산은 표 하나의 수식을 재현한 것입니다. 이 프로파일이나 계산 결과가 카메라의 색을 재현한다는 근거는 아닙니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 파일과 계산으로 확인한 것</h3>
+<ul>
+<li>DCP 파일의 표 크기·노드 수·encoding 태그 부재와 해시</li>
+<li>SDK ZIP 안 소스 8개의 바이트와 구간 해시</li>
+<li>두 독립 구현의 15건 계산 결과 일치(PC에서 실행)</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 소스를 읽어 판단한 것</h3>
+<ul>
+<li>저장 순서, 이웃 선택, 색상 경계 처리, 배율 적용과 클리핑</li>
+<li>SDK 예제 렌더러에서 두 표가 놓이는 위치</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건</h3>
+<ul>
+<li>합성 HSV 입력 다섯 개, 각 표의 입구에 직접 넣음</li>
+<li>linear encoding, 정규 SDR 범위, 범위 초과 값 처리 없음</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>SDK 원본 함수의 real32 출력과의 비트 일치</li>
+<li>행렬·노출·톤 곡선까지 이어진 전체 경로, RAW 현상, Lightroom 출력</li>
+<li>화이트밸런스에 따른 HueSatMap 1·2의 실제 혼합 비율</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: HSV 표와 보간</h2>
+<p class="takeaway">표(<a href="../glossary.html#lut">LUT</a>)는 격자점에만 값을 적어 두므로 그 사이의 색은 가까운 격자점들을 거리에 따라 섞어서 정합니다.</p>
+<p><a href="q7-dcp-structure.html">앞 문서</a>에서 본 대로 Q7 Adobe Standard에는 HueSatMap 두 장과 LookTable 하나가 있습니다. <a href="#spec">DNG 규격</a>에 따르면 표의 노드마다 색상 이동(도), 채도 배율, 명도 배율의 세 값이 들어 있습니다. 표는 선형 ProPhoto RGB를 HSV로 바꾼 좌표에서 찾습니다.</p>
+<p>격자는 듬성듬성합니다. HueSatMap은 색상을 90칸(4°마다), 채도를 30칸으로 나누고 명도 칸은 1개입니다. 픽셀이 격자점 사이에 놓이면 주변 격자점의 값을 거리 비율로 섞습니다. 이것을 <dfn title="격자점 사이 값을 양쪽 격자점 값의 거리 비율 평균으로 정하는 방법. 축이 셋이면 이웃 여덟 개를 쓴다">선형 보간</dfn>이라고 합니다. 축이 둘이면 이웃 네 개, 셋이면 여덟 개가 필요합니다.</p>
+<p>규칙을 정확히 알아야 표 값에서 실제 색 변화를 계산할 수 있습니다. 같은 SDK를 쓴 K-3 Mark III 쪽 연구와 비교할 때도 이 규칙이 기준이 됩니다.</p>
+<p>읽는 순서: <a href="#coordinates">격자 칸과 이웃</a> → <a href="#pipeline">렌더 경로 안의 위치</a> → <a href="#findings">소스에서 확인한 내용</a> → <a href="#samples">15건 계산</a> → <a href="#limits">한계</a> → <a href="#sources">재현</a></p>
+</section>
+
+<section id="coordinates">
+<h2>표본 하나가 놓이는 칸과 이웃</h2>
+<p class="takeaway">HueSatMap은 색상·채도 두 축에서 이웃 네 개를, LookTable은 명도까지 세 축에서 이웃 여덟 개를 섞습니다.</p>
+<figure class="diagram">
+<figcaption>합성 표본 하나의 격자 위치와 꼭짓점 가중치 (첫 번째 표본, 실제 표 크기 기준)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 372" role="img" aria-labelledby="dg-grid-title dg-grid-desc"><title id="dg-grid-title">표본 하나가 놓인 격자 칸과 이웃 가중치</title><desc id="dg-grid-desc">합성 표본 H 123.4도, S 0.456, V 0.321가 두 표의 격자 안 어디에 놓이는지 그린 그림입니다. 왼쪽 HueSatMap(90×30×1)에서는 H 칸 30과 31, S 칸 13과 14로 둘러싸인 사각형 안에 표본이 있고 네 꼭짓점의 값을 가중 평균합니다. 명도 축은 칸이 하나뿐이라 보간하지 않습니다. 오른쪽 LookTable(36×8×16)에서는 V 칸 4과 5의 두 층에서 각각 네 꼭짓점을 섞고, 두 층을 0.185와 0.815의 비율로 다시 섞어 모두 여덟 이웃을 씁니다.</desc><text class="t" x="8" y="22">HueSatMap 90×30×1: 이웃 네 개</text><text class="s" x="8" y="44">H 칸 30·31, S 칸 13·14 (명도 축 없음)</text><text class="n end" x="72" y="266">S 13/29</text><text class="n end" x="72" y="96">S 14/29</text><text class="t" x="420" y="22">LookTable 36×8×16: 이웃 여덟 개</text><text class="s" x="420" y="44">H 칸 12·13, S 칸 3·4, V 칸 4·5</text><text class="s" x="470" y="78">V 4/15층 · ×0.185</text><text class="s" x="650" y="78">V 5/15층 · ×0.815</text><text class="n end" x="462" y="246">S 3/7</text><text class="n end" x="462" y="116">S 4/7</text><path class="e open" d="M410 60V300"/><text class="s" x="8" y="340">표본 H 123.4°, S 0.456, V 0.321. 꼭짓점 숫자는 한 층 안의 가중치이며 합은 1입니다.</text><text class="s" x="8" y="362">LookTable은 두 V층에서 각각 네 이웃을 섞은 뒤 층 이름 옆의 층 가중치로 다시 섞습니다.</text><rect class="b mute" x="80" y="92" width="250" height="170" rx="2"/><path class="e open" d="M292.5 262V223.9H80"/><rect class="b ok" x="75" y="257" width="10" height="10" rx="2"/><rect class="b ok" x="75" y="87" width="10" height="10" rx="2"/><rect class="b ok" x="325" y="257" width="10" height="10" rx="2"/><rect class="b ok" x="325" y="87" width="10" height="10" rx="2"/><rect class="b key" x="286.5" y="217.9" width="12" height="12" rx="6"/><text class="n" x="80" y="82">×0.034</text><text class="n end" x="330" y="82">×0.190</text><text class="n" x="80" y="282">×0.116</text><text class="n end" x="330" y="282">×0.660</text><text class="n tstatic" x="80" y="298">H 120°</text><text class="n end tstatic" x="330" y="298">H 124°</text><rect class="b mute" x="470" y="112" width="130" height="130" rx="2"/><path class="e open" d="M514.2 242V217.0H470"/><rect class="b ok" x="465" y="237" width="10" height="10" rx="2"/><rect class="b ok" x="465" y="107" width="10" height="10" rx="2"/><rect class="b ok" x="595" y="237" width="10" height="10" rx="2"/><rect class="b ok" x="595" y="107" width="10" height="10" rx="2"/><rect class="b key" x="508.2" y="211.0" width="12" height="12" rx="6"/><text class="n" x="470" y="102">×0.127</text><text class="n end" x="600" y="102">×0.065</text><text class="n" x="470" y="262">×0.533</text><text class="n end" x="600" y="262">×0.275</text><text class="n tstatic" x="470" y="278">H 120°</text><text class="n end tstatic" x="600" y="278">H 130°</text><rect class="b mute" x="650" y="112" width="130" height="130" rx="2"/><path class="e open" d="M694.2 242V217.0H650"/><rect class="b ok" x="645" y="237" width="10" height="10" rx="2"/><rect class="b ok" x="645" y="107" width="10" height="10" rx="2"/><rect class="b ok" x="775" y="237" width="10" height="10" rx="2"/><rect class="b ok" x="775" y="107" width="10" height="10" rx="2"/><rect class="b key" x="688.2" y="211.0" width="12" height="12" rx="6"/><text class="n" x="650" y="102">×0.127</text><text class="n end" x="780" y="102">×0.065</text><text class="n" x="650" y="262">×0.533</text><text class="n end" x="780" y="262">×0.275</text><text class="n tstatic" x="650" y="278">H 120°</text><text class="n end tstatic" x="780" y="278">H 130°</text></svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>합성 표본의 위치</li><li><i class="ok"></i>보간에 쓰이는 격자점</li><li><i class="mute"></i>표본을 둘러싼 격자 칸</li></ul>
+</figure>
+<p>입력은 읽기 쉽게 도 단위로 썼습니다. SDK 내부의 색상 범위는 0~6입니다. 좌표는 아래 식으로 정합니다.</p>
+<dl class="kv">
+<dt>H 좌표</dt><dd>H × 색상 칸 수 / 360. 마지막 칸 다음은 첫 칸으로 돌아갑니다.</dd>
+<dt>S 좌표</dt><dd>S × (채도 칸 수 − 1). 마지막 격자점에서는 마지막 구간의 가중치 1로 처리합니다.</dd>
+<dt>V 좌표</dt><dd>V × (명도 칸 수 − 1). 명도 칸이 1개인 HueSatMap에서는 명도 방향으로 보간하지 않습니다.</dd>
+</dl>
+<p>표는 V가 가장 바깥, H가 가운데, S가 가장 안쪽인 순서로 저장됩니다. 차원은 H, S, V 순서로 표기하므로 읽을 때 헷갈리기 쉽습니다.</p>
+<pre><code>노드 번호   = (vIndex × Hdiv + hIndex) × Sdiv + sIndex
+저장 위치   = 3 × 노드 번호 + 성분
+성분        0 = 색상 이동(도), 1 = 채도 배율, 2 = 명도 배율</code></pre>
+<p class="small muted">근거: <code>dng_camera_profile.cpp</code> 1467~1502, <code>dng_hue_sat_map.cpp</code> 125~130·200~206, <code>dng_reference.cpp</code> 1529~1745</p>
+</section>
+
+<section id="pipeline">
+<h2>렌더 경로 안에서 두 표의 위치</h2>
+<p class="takeaway">SDK 예제 렌더러에서 HueSatMap과 LookTable은 서로 다른 단계에 놓입니다. 이 문서는 두 표의 수식만 따로 계산했습니다.</p>
+<ol class="flow" aria-label="SDK 예제 렌더러의 색 처리 순서">
+<li class="open"><strong>1. 카메라 white·CameraToPCS</strong><span>ProPhoto RGB로 변환. 이 표본에서는 하지 않음</span></li>
+<li class="ok"><strong>2. HueSatMap</strong><span>white로 1·2를 고르거나 섞음. 여기서는 두 장을 따로 평가</span></li>
+<li class="open"><strong>3. GainTableMap·노출</strong><span>선택 단계. 하지 않음</span></li>
+<li class="ok"><strong>4. LookTable</strong><span>같은 보간 함수. 별도 합성 입력으로 평가</span></li>
+<li class="open"><strong>5. 기본 톤</strong><span>ProfileToneCurve와 구분. 태그가 없다고 항등으로 보지 않음</span></li>
+<li class="open"><strong>6. 이후 RGB 처리·출력</strong><span>출력 색공간 등. 이 연구 범위 밖</span></li>
+</ol>
+<p>이 순서는 SDK 예제 렌더러의 것입니다. 카메라 펌웨어의 HDR 패스 순서도, Lightroom 내부의 실제 실행 순서도 아닙니다. ColorMatrix·ForwardMatrix는 카메라 색을 기준 색공간으로 옮기는 데 관여합니다. white 값은 HueSatMap 1·2를 고르고 섞는 데에도 쓰입니다. As Shot 값이 표의 좌표로 바로 들어가는 구조는 아닙니다.</p>
+<p class="small muted">근거: <code>dng_render.cpp</code> 925~1002·1862~2030, <code>dng_color_spec.cpp</code> 530~609</p>
+</section>
+
+<section id="findings">
+<h2>소스에서 확인한 여덟 가지</h2>
+<p class="takeaway">encoding 기본값, 저장 순서, 이웃 수, 배율 적용, 표의 위치와 혼합, 계산 정밀도, LookTable의 명도 배율을 소스와 파일로 확인했습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>확인한 내용과 근거가 된 SDK 소스 구간</caption>
+<thead><tr><th scope="col">번호</th><th scope="col">확인한 내용</th><th scope="col">근거</th></tr></thead>
+<tbody>
+<tr id="F1"><th scope="row">F1</th><td>encoding 태그가 없으면 SDK는 HueSatMap과 LookTable에 <code>encoding_Linear</code>(0)를 그대로 둡니다. 명도에 별도 encode/decode 곡선을 쓰지 않는다는 뜻이며, 표가 항등이라는 뜻은 아닙니다.</td><td><code>dng_shared.cpp</code> 126~135, 992~1032, 1124~1164 · <code>dng_camera_profile.cpp</code> 1734~1736, 2366~2419 · <code>dng_tag_values.h</code> 385~394</td></tr>
+<tr id="F2"><th scope="row">F2</th><td>차원 표기는 H, S, V이지만 메모리와 DCP의 저장 순서는 V 바깥, H 가운데, S 안쪽입니다. 노드마다 색상 이동(도), 채도 배율, 명도 배율 순으로 저장합니다.</td><td><code>dng_camera_profile.cpp</code> 1467~1502 · <code>dng_hue_sat_map.cpp</code> 125~130, 200~206 · JSON <code>observations.dcp.tables</code></td></tr>
+<tr id="F3"><th scope="row">F3</th><td>HueSatMap [90,30,1]은 H·S의 이웃 네 개를, LookTable [36,8,16]은 H·S·V의 이웃 여덟 개를 보간합니다. 마지막 색상 칸의 다음 이웃은 0번 칸입니다. 색상 이동 값은 보통의 선형 가중합으로 섞으며 각도의 최단 경로로 보간하지 않습니다.</td><td><code>dng_reference.cpp</code> 1529~1545, 1590~1645, 1649~1731 · 테스트</td></tr>
+<tr id="F4"><th scope="row">F4</th><td>보간한 색상 이동을 H에 더하고 S와 V에는 각각 배율을 곱합니다. S는 1을 넘지 않게, V는 0~1로 자릅니다. RGB로 되돌릴 때 색상을 주기 6으로 감쌉니다. 명도 칸이 1개여도 명도 배율은 적용됩니다.</td><td><code>dng_reference.cpp</code> 1735~1745 · <code>dng_utils.h</code> 941~999 · 테스트</td></tr>
+<tr id="F5"><th scope="row">F5</th><td>SDK 예제 렌더러는 카메라 white와 CameraToPCS로 ProPhoto RGB에 옮긴 뒤 HueSatMap을 적용합니다. 이어서 선택적인 ProfileGainTableMap과 노출 처리, LookTable, 기본 톤 순으로 진행합니다. 이 문서의 표본은 각 표의 입구에 따로 넣었으며 이 전체 경로를 실행하지 않았습니다.</td><td><code>dng_render.cpp</code> 925~1002, 1862~2030 · <code>dng_color_spec.cpp</code> 530~609</td></tr>
+<tr id="F6"><th scope="row">F6</th><td>HueSatMap 1·2는 white의 색온도와 두 보정 광원의 색온도에 따라 고르거나 섞습니다. 서로 다른 유효 온도 사이에서는 역색온도로 첫 표의 가중치를 계산합니다. 여기서는 두 표를 따로 평가했고 As Shot으로 실제 가중치를 내지 않았습니다.</td><td><code>dng_camera_profile.cpp</code> 1861~1974 · <code>dng_render.cpp</code> 925~971</td></tr>
+<tr id="F7"><th scope="row">F7</th><td>합성 HSV 5개를 세 표에 넣은 15건에서 binary64 구현과 50자리 Decimal 전체 격자 가중합의 최대 절대 차이는 1.9539925233402755e-14입니다. SDK real32와의 비트 일치나 Lightroom 구현과의 일치를 뜻하지 않습니다.</td><td>JSON <code>observations</code> · <code>q7_dcp_interpolation_math.py</code> · 테스트</td></tr>
+<tr id="F8"><th scope="row">F8</th><td>이 DCP의 LookTable은 저장된 명도 배율이 모두 1입니다. HueSatMap 1·2에는 1이 아닌 명도 배율이 있습니다. LookTable만 거칠 때 정규 SDR 범위에서 V가 유지되는 것은 이 저장값 때문이며 encoding 태그가 없어서가 아닙니다. 그래도 H·S가 바뀌므로 RGB와 휘도는 달라질 수 있습니다.</td><td>JSON <code>observations.dcp.tables</code> · <code>dng_reference.cpp</code> 1735~1745 · <code>dng_utils.h</code> 941~999</td></tr>
+</tbody></table></div>
+<div class="callout plain"><strong class="label">기본 encoding과 항등 표는 다릅니다</strong>
+<p>encoding은 표를 찾기 전에 명도 좌표를 어떻게 바꿀지 정하는 설정입니다. linear(0)는 좌표를 그대로 씁니다. 항등 표는 모든 노드가 (0, 1, 1)이라 색을 전혀 바꾸지 않는 표입니다. Q7 Adobe Standard의 표는 encoding이 기본값 linear이면서 항등 표가 아닙니다. 항등 노드는 일부뿐입니다(<a href="q7-dcp-structure.html#ranges">구조 문서의 값 범위 표</a>).</p></div>
+</section>
+
+<section id="samples">
+<h2>합성 HSV 15건의 계산 결과</h2>
+<p class="takeaway">다섯 입력을 세 표에 각각 넣었습니다. 두 독립 구현의 차이는 모든 건에서 1.95×10⁻¹⁴ 이하입니다.</p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>HueSatMap 1, HueSatMap 2, LookTable의 결과는 서로 이어진 픽셀 처리가 아닙니다. 각 표에 같은 다섯 입력을 따로 넣었습니다. 출력 HSV는 SDR·linear 전제 아래의 수식값이며 RGB 이미지나 카메라의 최종 색을 관측한 값이 아닙니다.</p></div>
+<div class="table-wrap"><table class="compact">
+<caption>입력과 보간 계수, 수식상 출력 (위에서부터 H(도), S, V / 색상 이동(도), 채도 배율, 명도 배율, 유효숫자 9자리)</caption>
+<thead><tr><th scope="col">표</th><th scope="col">입력 H, S, V</th><th scope="col">보간 계수</th><th scope="col">출력 H, S, V</th><th scope="col">Decimal과의 차이</th></tr></thead>
+<tbody><tr><th scope="row">HueSatMap 1</th><td class="n">123.4<br>0.456<br>0.321</td><td class="n">-23.8475344<br>1.50812609<br>1.18044199</td><td class="n">99.5524656<br>0.687705499<br>0.378921879</td><td class="n">3.55×10⁻¹⁵</td></tr><tr><th scope="row">HueSatMap 1</th><td class="n">359.9<br>0.51<br>0.63</td><td class="n">-10.7612701<br>1.12649501<br>0.883016786</td><td class="n">349.13873<br>0.574512454<br>0.556300575</td><td class="n">1.60×10⁻¹⁴</td></tr><tr><th scope="row">HueSatMap 1</th><td class="n">0.1<br>0.51<br>0.63</td><td class="n">-10.6160679<br>1.12370334<br>0.883126968</td><td class="n">349.483932<br>0.573088706<br>0.55636999</td><td class="n">1.11×10⁻¹⁶</td></tr><tr><th scope="row">HueSatMap 1</th><td class="n">287.3<br>0.999<br>0.91</td><td class="n">-15.1451941<br>1.0008261<br>1.53602782</td><td class="n">272.154806<br>0.999825276<br>1</td><td class="n">7.11×10⁻¹⁵</td></tr><tr><th scope="row">HueSatMap 1</th><td class="n">47.2<br>0.123<br>0.007</td><td class="n">9.48547286<br>1.36133315<br>0.989149008</td><td class="n">56.6854729<br>0.167443977<br>0.00692404306</td><td class="n">2.22×10⁻¹⁶</td></tr><tr><th scope="row">HueSatMap 2</th><td class="n">123.4<br>0.456<br>0.321</td><td class="n">-22.2837478<br>1.32756529<br>1.17179792</td><td class="n">101.116252<br>0.605369773<br>0.376147132</td><td class="n">7.11×10⁻¹⁵</td></tr><tr><th scope="row">HueSatMap 2</th><td class="n">359.9<br>0.51<br>0.63</td><td class="n">-7.45560145<br>0.947686536<br>0.854839485</td><td class="n">352.444399<br>0.483320134<br>0.538548876</td><td class="n">1.95×10⁻¹⁴</td></tr><tr><th scope="row">HueSatMap 2</th><td class="n">0.1<br>0.51<br>0.63</td><td class="n">-7.27920047<br>0.944737568<br>0.855112741</td><td class="n">352.8208<br>0.48181616<br>0.538721027</td><td class="n">1.11×10⁻¹⁶</td></tr><tr><th scope="row">HueSatMap 2</th><td class="n">287.3<br>0.999<br>0.91</td><td class="n">-13.4376791<br>1.00089303<br>1.25481224</td><td class="n">273.862321<br>0.999892134<br>1</td><td class="n">7.11×10⁻¹⁵</td></tr><tr><th scope="row">HueSatMap 2</th><td class="n">47.2<br>0.123<br>0.007</td><td class="n">13.3379358<br>1.17716774<br>1.00050706</td><td class="n">60.5379358<br>0.144791632<br>0.0070035494</td><td class="n">3.55×10⁻¹⁵</td></tr><tr><th scope="row">LookTable</th><td class="n">123.4<br>0.456<br>0.321</td><td class="n">0.761800903<br>0.999882551<br>1</td><td class="n">124.161801<br>0.455946443<br>0.321</td><td class="n">3.77×10⁻¹⁵</td></tr><tr><th scope="row">LookTable</th><td class="n">359.9<br>0.51<br>0.63</td><td class="n">-0.0446880734<br>1<br>1</td><td class="n">359.855312<br>0.51<br>0.63</td><td class="n">8.89×10⁻¹⁵</td></tr><tr><th scope="row">LookTable</th><td class="n">0.1<br>0.51<br>0.63</td><td class="n">0.0327909474<br>1<br>1</td><td class="n">0.132790947<br>0.51<br>0.63</td><td class="n">0</td></tr><tr><th scope="row">LookTable</th><td class="n">287.3<br>0.999<br>0.91</td><td class="n">0<br>1<br>1</td><td class="n">287.3<br>0.999<br>0.91</td><td class="n">0</td></tr><tr><th scope="row">LookTable</th><td class="n">47.2<br>0.123<br>0.007</td><td class="n">-0.00883201696<br>0.895488098<br>1</td><td class="n">47.191168<br>0.110145036<br>0.007</td><td class="n">1.73×10⁻¹⁸</td></tr></tbody></table></div>
+<p>표본에는 경계 사례가 들어 있습니다. 359.9°와 0.1°는 마지막 색상 칸과 첫 칸 사이를 지나는지 보는 입력입니다. 287.3°·S 0.999·V 0.91은 HueSatMap의 명도 배율 때문에 V가 1을 넘어 1로 잘리는 경우입니다.</p>
+<p>공개 패키지의 테스트 16개가 통과합니다. 보간 경계, 기록 전체 검사, 입력·출력 보호를 원본 자료 없이 시험합니다. Decimal 기준 구현은 모든 격자점에 가중치를 곱해 더하는 방식이라 직접 구현의 칸 선택이나 저장 위치 계산을 공유하지 않습니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<p class="takeaway">표 하나의 수식을 재현한 결과입니다. SDK 원본 실행, 전체 렌더 경로, RAW·Lightroom 출력은 아직 없습니다.</p>
+<ul>
+<li>공통 전제는 유한한 정규 SDR HSV, linear encoding, <code>supportOverrange=false</code>입니다. <code>profile.IsHDR()</code>의 실제 분기와 범위 초과 값의 encode/decode는 실행하지 않았습니다.</li>
+<li>HSV의 V는 RGB의 최댓값입니다. 광도·휘도·노출값 같은 물리량으로 읽으면 안 됩니다. S=0이면 H는 색으로서 의미가 없습니다. SDK의 RGB→HSV는 이때 H=0을 씁니다.</li>
+<li>SDK <code>RefBaselineHueSatMap</code>의 real32 연산을 Python binary64로 옮겼습니다. Decimal 교차 검증은 같은 수식의 독립 구현이며 SDK를 직접 실행한 검증과는 다릅니다.</li>
+<li>SDK의 <code>SetDelta</code>는 S=0 노드의 명도 배율을 1로 보정합니다. 이 DCP의 해당 값은 이미 모두 1이고 생략된 S=0 행도 없습니다. 일반 DCP의 생략 행 재구성은 구현하지 않았습니다.</li>
+<li>적용하지 않은 단계: ColorMatrix, ForwardMatrix, CameraNeutral/As Shot, 노출, ProfileToneCurve, 색역 클리핑, 출력 색공간. 표별 결과도 서로 이어 붙이지 않았습니다.</li>
+<li>K-3 Mark III 연구의 SDK ZIP과 소스 고정값을 다시 썼습니다. 그 연구의 SDK 실행 검증이 Q7 표, 전체 렌더 경로, Lightroom 출력을 검증해 주지는 않습니다. 카메라 FC1·HDR 패스와도 대응시키지 않았고 펌웨어 쪽 새 결론도 없습니다.</li>
+<li>전체 표·행렬·SDK 원본 코드·이미지는 복사하거나 배포하지 않았습니다. 표의 수치는 합성 입력 다섯 개의 가중 보간 결과뿐입니다.</li>
+</ul>
+<h3>다음에 확인할 것</h3>
+<ol class="steps">
+<li><strong>SDK 함수 직접 실행</strong> 같은 합성 RGB와 고정 표를 SDK의 <code>RefBaselineHueSatMap</code> 또는 <code>DoBaselineHueSatMap</code>에 넣어 real32 출력·클리핑·색상 감싸기를 대조합니다.</li>
+<li><strong>두 HueSatMap의 혼합</strong> 명시한 white XY로 <code>HueSatMapForWhite_Dual</code>의 가중치와 만들어지는 표를 재현합니다. CameraNeutral→WhiteXY 추정과 두 보정 광원 변환은 따로 검증합니다. Lightroom에 표시된 색온도를 SDK의 white XY나 As Shot과 같다고 보지 않습니다.</li>
+<li><strong>단계별 수치 추적</strong> 색 변환, HueSatMap, 노출, LookTable, 톤을 단계별로 나눈 추적을 설계합니다. RAW·Lightroom 실행이나 완성 렌더 비교는 지금 범위 밖입니다.</li>
+</ol>
+</section>
+
+<section id="sources">
+<h2>재현 방법과 고정한 소스</h2>
+<p class="takeaway">공개 기록 검사와 테스트는 원본 자료 없이 돌아갑니다. 전체 재현에는 SDK ZIP, 설치된 DCP, K-3 Mark III 쪽 파서가 필요합니다.</p>
+<pre><code>python -B -m unittest discover -s tests -p test_q7_dcp_interpolation.py -v
 python -B tools/check_q7_dcp_interpolation.py --check-record
-python -B tools/check_q7_dcp_interpolation.py --k3-root /path/to/parser-root --sdk /path/to/dng-sdk.zip --dcp /path/to/installed.dcp --output new-observations.json</code></pre><p>공개 CLI는 현재 Q7 구조 도구와 외부 루트의 inspect_adobe_profiles.py를 고정 해시로 확인한 뒤 재사용합니다. 원본 ZIP은 인수로 지정하며 선택한 8개 소스만 메모리에서 검사합니다. 결과 경로는 새 파일이어야 합니다. parser의 assertion을 제거하는 <code>-O</code> 실행은 시작부에서 거부합니다. 실행 인수와 입력·출력 보호는 <a href="../tools/check_q7_dcp_interpolation.py">공개 CLI</a>에서 확인할 수 있습니다.</p><p><a href="../analysis/q7-dcp-interpolation.json">전체 원정본 JSON</a> · <a href="../tests/test_q7_dcp_interpolation.py">보간 경계 검사</a> · <a href="../tests/test_q7_dcp_interpolation.py">입출력 보호 검사</a></p></section>
-</main><!-- chrome:bottom -->
+python -B tools/check_q7_dcp_interpolation.py --k3-root /path/to/parser-root \
+  --sdk /path/to/dng-sdk.zip --dcp /path/to/installed.dcp --output new-observations.json</code></pre>
+<p><a href="../tools/check_q7_dcp_interpolation.py">공개 CLI</a>는 현재 Q7 구조 도구와 외부 루트의 <code>inspect_adobe_profiles.py</code>를 고정 해시로 확인한 뒤 다시 씁니다. SDK ZIP은 인수로 받고 선택한 소스 8개만 메모리에서 검사합니다. 결과 경로는 새 파일이어야 합니다. 파서의 assert가 빠지는 <code>-O</code> 실행은 시작할 때 거부합니다.</p>
+<dl class="kv">
+<dt>SDK ZIP SHA-256</dt><dd><code class="wrap">c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1</code> (80,509,918바이트, K-3 Mark III 연구의 입력 고정값과 같음)</dd>
+<dt>Q7 Adobe Standard DCP</dt><dd><code class="wrap">83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff</code></dd>
+<dt>원래 관측 파일 SHA-256</dt><dd><code class="wrap">f95afd00938e66fd9cc64296174257473d4415d7e7e3243d115aae9bb3c6fbf1</code></dd>
+<dt>원래 관측 typed canonical SHA-256</dt><dd><code class="wrap">87831a2abf58d06c7029b96475939322533fb395a1abfc637fe269ca853094a1</code></dd>
+</dl>
+<details class="evidence"><summary>SDK 소스 8개와 대조 구간</summary>
+<div class="table-wrap"><table class="compact">
+<caption><code>dng_sdk/source</code> 아래 원본 파일 (구간별 해시는 sources JSON)</caption>
+<thead><tr><th scope="col">파일</th><th scope="col">대조 구간(줄)</th><th scope="col">바이트</th><th scope="col">파일 SHA-256</th></tr></thead>
+<tbody><tr><th scope="row"><code>dng_reference.cpp</code></th><td>1508~1762</td><td class="n">80,303</td><td><code class="wrap">912afda9ed871fe50ff0037a1be3361d37c1b8ee1230b907eed36d7512c422b6</code></td></tr><tr><th scope="row"><code>dng_hue_sat_map.cpp</code></th><td>99~140, 179~252</td><td class="n">11,832</td><td><code class="wrap">7bdb0661575cfe6294e89c9305b2bddc10f9a4288930b8e29c66e3c65cf356e6</code></td></tr><tr><th scope="row"><code>dng_camera_profile.cpp</code></th><td>91~125, 1467~1502, 1600~1701, 1734~1736, 1861~1974, 2366~2419</td><td class="n">46,511</td><td><code class="wrap">988d3d9531ddfefd0faa0b6b4ebf85276a872a55b1956fd2bb964f89c1dd801f</code></td></tr><tr><th scope="row"><code>dng_shared.cpp</code></th><td>72~140, 992~1032, 1124~1164</td><td class="n">81,025</td><td><code class="wrap">d0a574d1e9f69379645c95c29b6a8148f3aca19568174608f769ce964a84bb3f</code></td></tr><tr><th scope="row"><code>dng_tag_values.h</code></th><td>385~394</td><td class="n">12,945</td><td><code class="wrap">e6b5e7157c7e7e2a3867c3dd1b51d7d0ed7ae3a762734e26d9e0455fc3d07bdb</code></td></tr><tr><th scope="row"><code>dng_utils.h</code></th><td>862~909, 941~999</td><td class="n">31,644</td><td><code class="wrap">0eb910dd59b46928d5fee734a0cc096eb1a99bab8594d6d2fec77ae0d6fb11e9</code></td></tr><tr><th scope="row"><code>dng_render.cpp</code></th><td>925~1002, 1862~2030</td><td class="n">62,319</td><td><code class="wrap">e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c</code></td></tr><tr><th scope="row"><code>dng_color_spec.cpp</code></th><td>530~609</td><td class="n">15,661</td><td><code class="wrap">6fb9ab59dcbdae9cb27a893c67810416ba7b2651a537673caa7d728d16d7ec0a</code></td></tr></tbody></table></div>
+<p>원래 연구에서는 이 소스의 ZIP 멤버와 로컬 파일을 직접 비교했습니다. 공개 CLI는 지정한 ZIP에서 8개 멤버의 바이트와 구간 해시만 검사하며 로컬 파일 비교를 다시 하지 않습니다. 원래 줄바꿈을 포함한 구간 해시는 <a href="../analysis/q7-dcp-interpolation-sources.json">선택 소스와 구간 해시</a>에 있습니다.</p>
+</details>
+<details class="evidence"><summary>원래 관측과 공개 검증의 관계</summary>
+<p>공개 검증기는 원래 관측의 모든 필드·타입·직렬화 해시를 검사한 뒤 표본과 문서를 만듭니다. 원래 기록의 <code>sources</code>, 예전 helper 해시, <code>scope</code>는 당시의 출처와 전제입니다. 현재 실행의 입력·모듈 해시는 <code>_reproduction</code>에 따로 적으며 원래 환경을 다시 관측했다고 주장하지 않습니다.</p>
+<p>예전 helper(<code>059b7cda…</code>)와 현재 공개 helper(<code>c62f899a…</code>)는 서로 다른 파일입니다. 공개 소스 고정값과 모듈 변경 정보는 <code>_publication</code>에서 따로 관리합니다.</p>
+</details>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="../analysis/q7-dcp-interpolation.json">analysis/q7-dcp-interpolation.json</a> — 입력, 표 집계, 15건의 표본과 범위 선언</li>
+<li><a href="../analysis/q7-dcp-interpolation-sources.json">analysis/q7-dcp-interpolation-sources.json</a> — SDK ZIP과 소스 8개의 구간 해시</li>
+<li><a href="../tools/q7_dcp_interpolation_math.py">tools/q7_dcp_interpolation_math.py</a> — 직접 보간 구현과 Decimal 기준 구현</li>
+<li><a href="../tools/check_q7_dcp_interpolation.py">tools/check_q7_dcp_interpolation.py</a> — 공개 기록 검사와 전체 재현 CLI</li>
+<li><a href="../tests/test_q7_dcp_interpolation.py">tests/test_q7_dcp_interpolation.py</a> — 보간 경계와 입출력 보호 시험</li>
+<li id="spec"><a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG Specification 1.7.1.0</a> — 49~50쪽(HueSatMap 저장 순서와 노드 값), 56~57쪽(LookTable), 63~64쪽(encoding, 2.5차원 표에는 적용되지 않음)</li>
+<li><a href="q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a> — 이 문서가 쓰는 표의 크기와 값 범위</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
 <nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="../guide-color.html">색 처리·HDR 안내</a></li><li><a href="../routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="../pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="../final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="../hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="../hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="q7-dcp-structure.html">DCP 태그·행렬·테이블 비교</a></li><li><a href="q7-dcp-interpolation.html" aria-current="page">DCP LUT 좌표·보간·색 처리 전제</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="q7-dcp-structure.html"><small>← 이전</small>DCP 태그·행렬·테이블 비교</a><a class="next" href="../guide-af.html"><small>다음 →</small>AF·렌즈 안내</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
-<!-- /chrome:bottom --></body></html>
+<!-- /chrome:bottom -->
+</body>
+</html>

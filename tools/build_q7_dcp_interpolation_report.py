@@ -40,16 +40,18 @@ def square(x, y, w, h, c, step, tag):
     px, py = x + c['hf'] * w, y + h - c['sf'] * h
     out = [f'<rect class="b mute" x="{x}" y="{y}" width="{w}" height="{h}" rx="2"/>',
            f'<path class="e open" d="M{px:.1f} {y + h}V{py:.1f}H{x}"/>']
-    for dh, ds in ((0, 0), (1, 0), (0, 1), (1, 1)):
+    w0, w1 = 1 - c['hf'], c['hf']
+    weights = {(dh, ds): (w1 if dh else w0) * (c['sf'] if ds else 1 - c['sf']) for dh in (0, 1) for ds in (0, 1)}
+    for (dh, ds) in weights:
         cx, cy = x + dh * w, y + h - ds * h
-        weight = (c['hf'] if dh else 1 - c['hf']) * (c['sf'] if ds else 1 - c['sf'])
         out.append(f'<rect class="b ok" x="{cx - 5}" y="{cy - 5}" width="10" height="10" rx="2"/>')
-        tx = cx - 8 if dh else cx + 8
-        ty = cy + 18 if ds else cy - 10
-        out.append(f'<text class="n{" end" if dh else ""}" x="{tx}" y="{ty}">×{weight:.3f}</text>')
     out.append(f'<rect class="b key" x="{px - 6:.1f}" y="{py - 6:.1f}" width="12" height="12" rx="6"/>')
-    out.append(f'<text class="n mid" x="{x}" y="{y + h + 18}">{c["h0"] * step:g}°</text>'
-               f'<text class="n mid" x="{x + w}" y="{y + h + 18}">{(c["h0"] + 1) * step:g}°</text>')
+    out.append(f'<text class="n" x="{x}" y="{y - 10}">×{weights[0, 1]:.3f}</text>'
+               f'<text class="n end" x="{x + w}" y="{y - 10}">×{weights[1, 1]:.3f}</text>'
+               f'<text class="n" x="{x}" y="{y + h + 20}">×{weights[0, 0]:.3f}</text>'
+               f'<text class="n end" x="{x + w}" y="{y + h + 20}">×{weights[1, 0]:.3f}</text>'
+               f'<text class="n tstatic" x="{x}" y="{y + h + 36}">H {c["h0"] * step:g}°</text>'
+               f'<text class="n end tstatic" x="{x + w}" y="{y + h + 36}">H {(c["h0"] + 1) * step:g}°</text>')
     return ''.join(out), tag
 
 
@@ -66,20 +68,20 @@ def diagram(probe_input, map_dims, look_dims):
         f'<text class="n end" x="72" y="96">S {m["s0"] + 1}/{m["ns"] - 1}</text>',
         '<text class="t" x="420" y="22">LookTable 36×8×16: 이웃 여덟 개</text>',
         f'<text class="s" x="420" y="44">H 칸 {k["h0"]}·{k["h0"] + 1}, S 칸 {k["s0"]}·{k["s0"] + 1}, V 칸 {k["v0"]}·{k["v0"] + 1}</text>',
-        f'<text class="s" x="470" y="90">V {k["v0"]}/{k["nv"] - 1}층 · ×{1 - k["vf"]:.3f}</text>',
-        f'<text class="s" x="650" y="90">V {k["v0"] + 1}/{k["nv"] - 1}층 · ×{k["vf"]:.3f}</text>',
+        f'<text class="s" x="470" y="78">V {k["v0"]}/{k["nv"] - 1}층 · ×{1 - k["vf"]:.3f}</text>',
+        f'<text class="s" x="650" y="78">V {k["v0"] + 1}/{k["nv"] - 1}층 · ×{k["vf"]:.3f}</text>',
         f'<text class="n end" x="462" y="246">S {k["s0"]}/{k["ns"] - 1}</text>',
         f'<text class="n end" x="462" y="116">S {k["s0"] + 1}/{k["ns"] - 1}</text>',
         '<path class="e open" d="M410 60V300"/>',
-        f'<text class="s" x="8" y="320">표본 H {h:g}°, S {s:g}, V {v:g}. 꼭짓점 숫자는 그 격자점의 가중치이며 합은 1입니다.</text>',
-        '<text class="s" x="8" y="342">LookTable은 두 V층에서 각각 네 이웃을 섞은 뒤 층의 가중치로 다시 섞습니다.</text>',
+        f'<text class="s" x="8" y="340">표본 H {h:g}°, S {s:g}, V {v:g}. 꼭짓점 숫자는 한 층 안의 가중치이며 합은 1입니다.</text>',
+        '<text class="s" x="8" y="362">LookTable은 두 V층에서 각각 네 이웃을 섞은 뒤 층 이름 옆의 층 가중치로 다시 섞습니다.</text>',
     ]
     desc = (f'합성 표본 H {h:g}도, S {s:g}, V {v:g}가 두 표의 격자 안 어디에 놓이는지 그린 그림입니다. '
             f'왼쪽 HueSatMap(90×30×1)에서는 H 칸 {m["h0"]}과 {m["h0"] + 1}, S 칸 {m["s0"]}과 {m["s0"] + 1}로 둘러싸인 사각형 안에 표본이 있고 '
             '네 꼭짓점의 값을 가중 평균합니다. 명도 축은 칸이 하나뿐이라 보간하지 않습니다. '
             f'오른쪽 LookTable(36×8×16)에서는 V 칸 {k["v0"]}과 {k["v0"] + 1}의 두 층에서 각각 네 꼭짓점을 섞고, '
             f'두 층을 {1 - k["vf"]:.3f}와 {k["vf"]:.3f}의 비율로 다시 섞어 모두 여덟 이웃을 씁니다.')
-    return ('<svg class="dg" viewBox="0 0 800 352" role="img" aria-labelledby="dg-grid-title dg-grid-desc">'
+    return ('<svg class="dg" viewBox="0 0 800 372" role="img" aria-labelledby="dg-grid-title dg-grid-desc">'
             '<title id="dg-grid-title">표본 하나가 놓인 격자 칸과 이웃 가중치</title>'
             f'<desc id="dg-grid-desc">{escape(desc)}</desc>' + ''.join(text) + left + slice_a + slice_b + '</svg>')
 
@@ -132,8 +134,8 @@ def render(record):
     }
     text = (ROOT / 'analysis/q7-dcp-interpolation-template.html').read_text(encoding='utf-8')
     for key, value in values.items():
-        if text.count(key) != 1:
-            raise ValueError('Expected one template marker: ' + key)
+        if text.count(key) < 1:
+            raise ValueError('Missing template marker: ' + key)
         text = text.replace(key, value)
     if '{{' in text:
         raise ValueError('Unexpanded template marker')
