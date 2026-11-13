@@ -50,6 +50,8 @@ from build_nand_boot_read_report import main as build_nand_boot_read
 from check_nand_boot_read import validate_report as verify_nand_boot_read
 from build_nand_context_report import main as build_nand_context
 from check_nand_context import validate_report as verify_nand_context
+from build_nand_filex_report import main as build_nand_filex
+from check_nand_filex import validate_report as verify_nand_filex
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -201,6 +203,8 @@ def verify_deep(firmware):
     verify_html(ROOT / "reports/nand-boot-read.html", build_nand_boot_read)
     verify_nand_context(read('nand-context-checks.json'))
     verify_html(ROOT / "reports/nand-context.html", build_nand_context)
+    verify_nand_filex(read('nand-filex-checks.json'))
+    verify_html(ROOT / "reports/nand-filex.html", build_nand_filex)
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode
