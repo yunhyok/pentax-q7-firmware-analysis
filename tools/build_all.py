@@ -19,6 +19,7 @@ from build_io_followup import build_loader
 from build_lifecycle_report import main as build_lifecycle
 from build_main_burn_report import main as build_main_burn
 from build_nand_header_report import main as build_nand_headers
+from build_nand_boot_read_report import main as build_nand_boot_read
 from build_numeric_report import main as build_numeric
 from build_pixel_report import main as build_pixel
 from build_raster_report import main as build_raster
@@ -33,7 +34,7 @@ BUILDERS = (
     build_index, build_structure, build_deep, build_routing, build_pixel, build_final, build_control, build_task,
     build_implementation, build_foundation, build_colorspace, build_numeric, build_lifecycle, build_af,
     build_loader, build_render, build_burn, build_raster, build_glyph, build_attributes,
-    build_update_service, build_main_burn, build_nand_headers,
+    build_update_service, build_main_burn, build_nand_headers, build_nand_boot_read,
 )
 
 

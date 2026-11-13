@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>부트 헤더 값의 소비와 별도 읽기 요청 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="헤더 값의 복사와 매체 정보 조회, 별도 geometry 요청 9, 별도 부트 읽기 요청 5를 구분해 원본 MIPS/VEX로 재현했습니다. NAND 응답 이후와 물리적 위치 단위는 미확인입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="../index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="../guide-update.html" aria-current="true">업데이트</a><a href="../guide-color.html">색·HDR</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-update.html">업데이트와 재패킹</a></li><li aria-current="page">부트 헤더 값과 별도 읽기 요청</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head"><p class="eyebrow">업데이트와 재패킹 · 헤더 반환 이후</p>
+<h1>부트 헤더 값의 소비와 별도 읽기 요청</h1>
+<p class="lead">헤더 +0x200의 값이 핸들에 복사되는 지점과, 그 값을 첫 부트 읽기 요청에 넘기는 지점을 확인했습니다. 다만 원래 Burn/FileX 흐름은 이 읽기를 생략하므로 읽기 경로에는 요청과 context를 별도로 공급했습니다.</p></header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#experiments">연속 실행과 두 별도 요청을 구분했습니다</a></li><li><a href="#header">헤더 값은 복사되지만 정보 조회의 크기는 바꾸지 않았습니다</a></li><li><a href="#dispatch">원래 Burn/FileX 흐름은 부트 읽기 요청을 건너뜁니다</a></li><li><a href="#boot-read">kind 1 경로는 +0xc10을 첫 읽기의 위치로 전달합니다</a></li><li><a href="#comparison">K-3 III와는 저장 계층과 증거의 경계를 대조했습니다</a></li><li><a href="#reproduce">원본 검증과 재현 방법</a></li></ol></nav>
+<!-- /chrome:toc -->
+
+<main class="doc" id="main">
+<section class="summary"><h2 data-toc="no">핵심 요약</h2><ul>
+<li>원본 코드는 선택한 헤더 <code>+0x200</code>의 값을 핸들 <code>+0xc10</code>으로 복사합니다. 이어진 정보 조회는 다른 필드에서 크기·간격을 읽으며, 이번 경로에서는 <code>+0xc10</code>을 사용하지 않았습니다.</li>
+<li>성공 상태 사본에 별도로 공급한 요청 9는 geometry 계산을 실행했습니다. 계산 입력은 <code>+0xbf4</code>이며, <code>+0xc10</code>은 읽지 않았습니다.</li>
+<li>별도 요청 5와 kind 1 context를 공급한 6조건에서 <code>+0xc10</code> 값은 NAND Ex 진입까지 위치 인수로 그대로 전달됐습니다. Null context 대조군은 <code>0xf2</code>를 반환했습니다.</li>
+<li>관측한 값은 내부 호출 인수입니다. 실제 NAND의 sector·page·block 단위, 유효한 위치 범위, 읽기 성공을 뜻하지 않습니다.</li></ul>
+<p><a href="../analysis/nand-boot-read-checks.json">[실행 관측·원본 대조]</a> · <a href="../tools/check_nand_boot_read.py">[재현기]</a></p></section>
+
+<section id="experiments"><h2>연속 실행과 두 별도 요청을 구분했습니다</h2>
+<p><a href="../nand-header-report.html">앞선 헤더 재지정 분석</a>의 종료 지점은 헤더 함수에서 돌아온 직후인 <code>0x80084114</code>였습니다. 호출자는 아직 헤더 <code>+0x200</code>을 읽지 않았습니다. 이번 시험은 그 뒤의 복사·정보 조회까지 이어 갑니다. 요청 9와 요청 5는 이 성공 상태에서 각각 사본을 만들고 호출 상태를 재설정한 시험입니다. 실제 FileX에서 연달아 발생한 요청들이 아닙니다.</p>
+<div class="table-wrap"><table class="compact"><caption>공개 재현기에 포함한 시험 그룹</caption><thead><tr><th>시험</th><th>입력·모델</th><th>종료 경계</th></tr></thead><tbody>
+<tr><th scope="row">헤더·정보 조회 6조건</th><td>합성 헤더, 기존 매체 열기 모델, 성공 시 retry·semaphore API 모델</td><td>성공 5조건: 정보 조회 반환 <code>0x805e549c</code><br>실패 1조건: driver 반환 <code>0x80066b88</code></td></tr>
+<tr><th scope="row">별도 요청 9 · 5조건</th><td>각 성공 상태의 사본, 요청 9 및 PC/RA/SP 재설정</td><td>geometry를 거친 합성 호출 반환</td></tr>
+<tr><th scope="row">별도 요청 5 · 7조건</th><td>헤더 입력부터 다시 실행한 상태의 사본, 요청 5·context·PC/RA/SP 공급</td><td>kind 1: NAND Ex 본문 직전<br>null: 합성 호출 반환</td></tr>
+</tbody></table></div>
+<figure class="diagram"><figcaption>정보 조회 상태에서 갈라지는 독립 시험</figcaption><div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 440" role="img" aria-labelledby="copies-title copies-desc">
+<title id="copies-title">헤더 소비와 두 독립 사본</title><desc id="copies-desc">합성 헤더의 값을 원본 코드가 핸들에 복사하고 API 모델을 거쳐 매체 정보를 조회합니다. 그 성공 상태의 별도 사본에 요청 9 또는 요청 5를 공급합니다. 요청 9는 요청 5의 선행 실행이 아닙니다.</desc>
+<defs><marker id="copies-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b model" x="20" y="10" width="350" height="57" rx="8"/><text class="t" x="34" y="34">선택한 합성 헤더 +0x200</text><text class="s" x="34" y="55">0 · 패턴 · 모든 비트 1 · 재지정된 두 번째 값</text>
+<rect class="b ok" x="430" y="10" width="350" height="57" rx="8"/><text class="t" x="444" y="34">ID 해석에서 나온 다른 필드</text><text class="s mono" x="444" y="55">+0xbf4 = 0x100000 · +0xc14 = 5 / 8</text>
+<path class="e" d="M195 67V88" marker-end="url(#copies-arrow)"/><rect class="b ok" x="20" y="94" width="350" height="57" rx="8"/><text class="t" x="34" y="118">원본 load / store → HANDLE+0xc10</text><text class="s mono" x="34" y="139">0x80084120 / 0x80084128</text>
+<path class="e" d="M195 151V173" marker-end="url(#copies-arrow)"/><rect class="b model" x="20" y="179" width="350" height="57" rx="8"/><text class="t" x="34" y="203">retry·semaphore API 성공 모델</text><text class="s" x="34" y="224">원본 FileX 반환 → 원본 정보 조회</text>
+<path class="e" d="M195 236V258" marker-end="url(#copies-arrow)"/><rect class="b ok" x="20" y="264" width="760" height="58" rx="8"/><text class="t" x="34" y="288">정보 조회 반환 0x805e549c: +0xc88 = 32 / 256 · +0xc8c = 0x100000</text><text class="s" x="34" y="309">이번 조회는 +0xc10을 읽지 않음 · 자연 FileX의 요청 5 호출도 생략</text>
+<path class="e" d="M605 67V252" marker-end="url(#copies-arrow)"/>
+<path class="e dash" d="M195 322V351" marker-end="url(#copies-arrow)"/><path class="e dash" d="M605 322V351" marker-end="url(#copies-arrow)"/>
+<rect class="b model" x="20" y="357" width="350" height="70" rx="8"/><text class="t" x="34" y="381">사본 A: 별도 요청 9</text><text class="s" x="34" y="401">geometry: +0xbf4 → +0xbc8 = 1041</text><text class="s" x="34" y="419">+0xc10을 읽지 않음</text>
+<rect class="b model" x="430" y="357" width="350" height="70" rx="8"/><text class="t" x="444" y="381">사본 B: 별도 요청 5 + kind 1</text><text class="s" x="444" y="401">+0xc10 → 첫 읽기 요청의 위치 인수</text><text class="s" x="444" y="419">사본 A의 실행은 선행하지 않음</text>
+</svg></div><p>실선은 실행한 원본 경로, 점선은 새로 공급한 호출 상태입니다. 기존 모델은 각 시험의 prefix에 유지됩니다.</p></figure>
+</section>
+
+<section id="header"><h2>헤더 값은 복사되지만 정보 조회의 크기는 바꾸지 않았습니다</h2>
+<p>원본 <code>0x80084120</code>은 헤더 <code>+0x200</code>을 읽고 <code>0x80084128</code>은 핸들 <code>+0xc10</code>에 씁니다. 값 0도 쓰기 이벤트로 확인했습니다. 재지정 성공에서는 첫 헤더 값 대신 두 번째 헤더 값이 복사됩니다. 이후 정보 조회는 <code>+0xbf4</code>·<code>+0xc14</code>를 읽어 <code>+0xc8c</code>·<code>+0xc88</code>에 씁니다. <a href="../analysis/nand-boot-read-checks.json">[header_information.cases]</a></p>
+<div class="table-wrap"><table class="compact"><caption>헤더 입력과 후속 정보 조회, 별도 geometry 결과</caption><thead><tr><th>조건</th><th>복사된 +0xc10</th><th>정보 간격 / 크기</th><th>별도 geometry</th><th>누적 VEX 이벤트</th></tr></thead><tbody>{{header_rows}}</tbody></table></div>
+<p>두 번째 데이터 응답을 7로 공급한 실패 조건은 헤더 함수의 실패 해제 요청만 실행합니다. 호출자의 복사는 실행하지 않고 driver 상태 <code>0x90</code>을 저장한 뒤 <code>0x80066b88</code>에서 멈춥니다. 성공 해제의 반환 주소 <code>0x8008413c</code>와 실패 해제의 반환 주소 <code>0x80056744</code>를 구분해 기록했습니다. 해제 모델은 실제로 메모리를 해제하지 않습니다.</p>
+<p>별도 요청 9의 geometry 계산은 <code>ceil(0x100000 / (16 × 63)) = 1041</code>을 핸들 <code>+0xbc8</code>에 씁니다. 5조건 모두 반환값 1, driver 상태 0, 별도 VEX 이벤트 17건입니다. 이 수치는 실제 NAND 용량이나 물리적 geometry의 측정값이 아닙니다.</p>
+</section>
+
+<section id="dispatch"><h2>원래 Burn/FileX 흐름은 부트 읽기 요청을 건너뜁니다</h2>
+<p>Burn은 FileX의 7번째 인수로 <code>0x80000000</code>을 전달합니다. FileX는 요청 4의 callback 상태가 0일 때 요청 5를 준비합니다. <code>0x80066bb4</code>에서 이 특수값이면 두 번째 driver callback을 생략합니다. 따라서 아래 요청 5 시험은 연속 실행에서 자연스럽게 발생한 호출이 아닙니다. <a href="../analysis/nand-boot-read-checks.json">[static_dispatch·source.decoded_burn]</a></p>
+<p>다른 인수는 앞선 초기화가 성공하면 callback <code>0x80066bc0</code>을 실행합니다. <code>0xffffffff</code>도 callback을 먼저 거치고 뒤의 FileX fallback에서 따로 검사합니다. 다만 특수값이 아닌 요청 4는 <code>TlDriverInit</code>을 요구합니다. 이 함수의 성공과 kind 1 context 확보는 별개 조건입니다. 자연 초기화부터 요청 5까지의 전체 경로는 실행하지 않았습니다.</p>
+<p>이번에는 정보 조회 상태의 사본에서 요청 번호를 5로 바꾸고 전역 <code>hNandTlInfo(0x8008c14c)</code>에 null 또는 kind 1 합성 context를 공급했습니다. PC·RA·SP도 새 호출에 맞게 설정했습니다. 원본 전역의 초기값은 0입니다. 공급한 포인터는 원본 등록 경로나 <code>TlDriverInit</code> 성공을 입증하지 않습니다.</p>
+</section>
+
+<section id="boot-read"><h2>kind 1 경로는 +0xc10을 첫 읽기의 위치로 전달합니다</h2>
+<p><code>TlBootRead</code>의 <code>0x80084598</code>은 핸들 <code>+0xc10</code>을 읽습니다. kind 1 분기에서 <code>0x800847f0</code>이 이 값을 위치 인수로 옮깁니다. <code>0x80084800</code>이 <code>TlMediaOperation</code>을 호출합니다. 아래 함수들을 거쳐도 값은 바뀌지 않았습니다. <a href="../analysis/nand-boot-read-checks.json">[boot_read.cases·source.selected_e03_ranges]</a></p>
+<figure class="diagram"><figcaption>별도 요청 5의 첫 읽기 호출과 정지 지점</figcaption><div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 360" role="img" aria-labelledby="boot-title boot-desc">
+<title id="boot-title">헤더 값이 NAND Ex 위치 인수에 도달하는 경로</title><desc id="boot-desc">요청 5와 kind 1 context를 공급한 driver 호출은 TlBootRead에서 핸들 값을 읽어 TlMediaOperation, TlFcuOperation, FcuNandOperation을 거쳐 NAND Ex에 전달합니다. NAND Ex 본문과 응답, retry 및 부트 버퍼 해석은 실행하지 않았습니다.</desc>
+<defs><marker id="boot-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b model" x="20" y="10" width="760" height="48" rx="8"/><text class="t" x="34" y="40">공급한 요청 5 · kind 1 context · PC/RA/SP → _fx_nand_driver</text>
+<path class="e" d="M400 58V78" marker-end="url(#boot-arrow)"/><rect class="b ok" x="20" y="84" width="760" height="48" rx="8"/><text class="t" x="34" y="113">TlBootRead → TlMediaOperation: op 4 / position = +0xc10 / count 1</text>
+<path class="e" d="M400 132V152" marker-end="url(#boot-arrow)"/><rect class="b ok" x="20" y="158" width="760" height="48" rx="8"/><text class="t" x="34" y="187">TlFcuOperation → FcuNandOperation: 위치 보존 · stack-local spare</text>
+<path class="e" d="M400 206V226" marker-end="url(#boot-arrow)"/><rect class="b ok" x="20" y="232" width="760" height="57" rx="8"/><text class="t" x="34" y="255">FcuNandOperationEx 진입 0x80053124에서 정지</text><text class="s mono" x="34" y="277">[1, HANDLE, 4, word, 1, DATA, spare, 16]</text>
+<rect class="b open" x="20" y="312" width="760" height="38" rx="8"/><text class="s" x="34" y="337">미실행: NAND Ex 본문 · NAND 응답 · retry 판단 · partition / boot-buffer 해석</text>
+</svg></div></figure>
+<div class="table-wrap"><table class="compact"><caption>서로 독립된 요청 5의 7개 조건</caption><thead><tr><th>조건</th><th>복사된 word</th><th>헤더 탐색 간격</th><th>NAND Ex 위치</th><th>VEX 이벤트</th><th>결과·종료</th></tr></thead><tbody>{{boot_rows}}</tbody></table></div>
+<p>비정렬 값 <code>0x123</code>은 헤더 탐색 간격 32와 256에서 모두 그대로 전달됐습니다. 이는 앞선 헤더 <code>+0x14</code>의 재지정 위치 정렬과 구분됩니다. 재지정된 두 번째 헤더의 값도 그대로 사용했습니다. <code>0xffffffff</code>의 전달까지 확인했습니다. 유효한 주소 범위는 검증하지 않았습니다.</p>
+<p>양성 6조건의 NAND Ex 인수는 <code>[1, 0x24002000, 4, word, 1, 0x24006000, 0x70000eb0, 16]</code>, 반환 주소는 <code>0x80053f0c</code>입니다. spare는 <code>TlFcuOperation 진입 SP − 0x78 + 0x20</code>과 일치합니다. wrapper 분기는 핸들 <code>+0xc24=0</code>과 ELF mode byte <code>0x80059a59=0</code> 조건입니다.</p>
+<p>읽기 목적 버퍼 8 KiB의 SHA는 실행 전후 동일합니다. 이 경계에서 남아 있는 driver 상태 <code>0x90</code>은 FileX가 앞서 준비한 값입니다. 완료된 읽기의 오류 결과가 아닙니다. Null context 경로도 null 검사보다 먼저 <code>DATA[1]</code>을 읽으므로 읽기 가능한 합성 버퍼가 필요합니다. 이 조건에서는 NAND 연산 체인에 진입하지 않고 반환값·driver 상태 <code>0xf2</code>를 확인했습니다.</p>
+</section>
+
+<section id="comparison"><h2>K-3 III와는 저장 계층과 증거의 경계를 대조했습니다</h2>
+<p><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/ab51036c69e79e36212c174d1f1fe96df9a5e863/analysis/startup-storage.html">K-3 III의 부팅·저장소 분석</a>은 M0·BOOT·RTOS 사이의 적재와 bank 선택값을 구분합니다. 그 자료에서도 단계 사이 주소 대응과 bank 값의 생산 경로에는 미확정 항목이 남아 있습니다. Q7의 이번 결과는 FileX 아래 NAND 부트 읽기의 위치 인수까지입니다. K-3 III의 bank나 eMMC 단위를 이 Q7 필드에 대응시킬 근거는 확보하지 못했습니다.</p>
+<p>두 분석에서 원본 코드의 분기·인수·반환과 공급한 저장장치 응답을 구분하는 방법은 같습니다. 이번 Q7 시험은 NAND 응답 전에 멈추므로 실제 부트 데이터나 이후 실행 이미지까지 연결됐다는 결론은 내리지 않습니다.</p>
+</section>
+
+<section id="reproduce"><h2>원본 검증과 재현 방법</h2>
+<p>실행 엔진은 <strong>angr 10.0.5 / MIPS32 little-endian / VEX</strong>입니다. 이 환경에서는 Unicorn을 사용할 수 없었습니다. REA의 네이티브 공급자도 사용할 수 없어 원본 바이트 대조와 VEX 실행을 근거로 삼았습니다.</p>
+<p>원본 펌웨어·분석 ELF의 전체 SHA-256을 검사하고 추가 E03 <strong>{{range_count}}개 범위·{{range_bytes}}바이트</strong>를 고정한 해시 및 ELF와 대조합니다. E05는 원본 압축 스트림에서 새로 복원해 Burn 호출 구간 216바이트를 대조합니다. 공유 헤더 시험의 원본 범위·워드 검증도 재사용합니다. <a href="../analysis/nand-boot-read-checks.json">[source]</a></p>
+<p>공개 CLI는 새 결과 파일만 만들며 입력·기존 출력·파일 별칭을 덮어쓰지 않습니다. <code>python -O</code>도 거부합니다. 재현은 순차 실행을 전제로 합니다. 보고서 생성에는 원본이나 angr가 필요하지 않습니다.</p>
+<pre><code>python tools/check_nand_boot_read.py &lt;원본 fwdc603p.bin&gt; &lt;분석 main-expanded.elf&gt; --output &lt;새 결과.json&gt;
+python tools/build_nand_boot_read_report.py
+python -m unittest discover -s tests -p test_nand_boot_read.py</code></pre>
+<p>분석 ELF는 <a href="../tools/build_analysis_elf.py">기존 도구</a>로 복원합니다. 펌웨어와 ELF는 공개 저장소에 포함하지 않습니다. <a href="../tools/check_nand_boot_read.py">재현기</a> · <a href="../tests/test_nand_boot_read.py">출력 보호·변조 검사</a></p>
+<dl><dt>원본 SHA-256</dt><dd><code class="wrap">{{firmware_sha}}</code></dd><dt>분석 ELF SHA-256</dt><dd><code class="wrap">{{elf_sha}}</code></dd><dt>정규화한 결과 SHA-256</dt><dd><code class="wrap">{{report_sha}}</code></dd></dl>
+<details class="evidence"><summary>추가로 고정한 E03 범위</summary><p>주소로 선택한 검사 범위이며 ELF가 선언한 함수 크기가 아닙니다. 표에는 코드 외 전역값과 분기 표도 포함됩니다.</p><div class="table-wrap"><table class="compact"><caption>원본 바이트와 분석 ELF의 대조</caption><thead><tr><th>가상 주소</th><th>바이트</th><th>원본 오프셋</th><th>SHA-256</th></tr></thead><tbody>{{range_rows}}</tbody></table></div></details>
+<p>분석 ELF는 RWX이고 RAM·ID·헤더는 합성 입력입니다. 공유 prefix는 전역 <code>0x81547f10</code>에 32비트 0, <code>0x8008c2dc</code>에 1바이트 0, <code>0x8008c2f4</code>에 32비트 0을 넣고 뒤 두 주소의 쓰기를 허용합니다. 원본 코드 바이트 대조와 실제 메모리 내용·권한의 검증은 별개입니다. <a href="../tools/check_main_burn.py">[공유 상태와 모델]</a></p>
+<p>JSON의 PC는 VEX 콜백 문맥이므로 MIPS 지연 슬롯의 정확한 명령 주소와 다를 수 있습니다. <code>arguments</code>는 raw ABI 슬롯 8개를 저장합니다. 의미 있는 인수는 TlBootRead 앞 2개, TlFcuOperation·FcuNandOperation 앞 7개, TlMediaOperation·NAND Ex 8개입니다. VEX 이벤트 수는 명령 수나 실행 시간이 아닙니다.</p>
+<p>장착 NAND의 응답·물리 단위·주소 별칭·TLB·캐시·DMA, 카메라 쓰기·부팅·복구는 검증하지 않았습니다. NAND Ex 응답 이후의 retry와 partition 해석, 자연 초기화로 만든 context가 다음 확인 대상입니다.</p>
+</section>
+</main></div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">업데이트와 재패킹 — 이 주제의 문서</h2><ol><li><a href="../guide-update.html">업데이트·재패킹 안내</a></li><li><a href="../implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="../update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="../loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="../main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="../nand-header-report.html">NAND 식별값과 부트 헤더 재지정</a></li><li><a href="nand-boot-read.html" aria-current="page">부트 헤더 값과 별도 읽기 요청</a></li><li><a href="../loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="../burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="../storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="../recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../nand-header-report.html"><small>← 이전</small>NAND 식별값과 부트 헤더 재지정</a><a class="next" href="../loader-hash-report.html"><small>다음 →</small>첫 블록 281바이트와 MD5 경로</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body></html>

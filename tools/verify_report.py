@@ -46,6 +46,8 @@ from verify_main_burn import verify as verify_main_burn
 from build_main_burn_report import main as build_main_burn
 from build_nand_header_report import main as build_nand_headers
 from check_nand_headers import validate_report as verify_nand_headers, source_evidence as nand_source
+from build_nand_boot_read_report import main as build_nand_boot_read
+from check_nand_boot_read import validate_report as verify_nand_boot_read
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -90,7 +92,7 @@ def check_page(page):
         path = unquote(url.path)
         assert ".private" not in path and "_workspace" not in path
         if path:
-            target = (ROOT / path).resolve()
+            target = (page.parent / path).resolve()
             assert target.is_relative_to(ROOT) and target.is_file(), f"broken local link: {link}"
             if url.fragment and target.suffix == ".html":
                 other = Links()
@@ -104,7 +106,7 @@ def check_page(page):
 
 def verify_static_pages():
     """Hand-written pages (topic guides, glossary) and the shared navigation of every page."""
-    from site_chrome import Site
+    from site_chrome import Site, relative
     site = Site()
     for page in site.index:
         if page not in site.sources:
@@ -113,7 +115,7 @@ def verify_static_pages():
         source = site.source_path(page)
         text = source.read_text(encoding="utf-8")
         assert site.render(page, text) == text, f"{source.name}: navigation is stale; run python tools/build_all.py"
-        assert 'href="assets/site.css"' in text, f"{source.name}: must use the shared stylesheet"
+        assert f'href="{relative("assets/site.css", page)}"' in text, f"{source.name}: must use the shared stylesheet"
 
 
 def read(name):
@@ -193,6 +195,8 @@ def verify_deep(firmware):
     verify_main_burn()
     verify_nand_headers(read('nand-header-checks.json'))
     verify_html(ROOT / "nand-header-report.html", build_nand_headers)
+    verify_nand_boot_read(read('nand-boot-read-checks.json'))
+    verify_html(ROOT / "reports/nand-boot-read.html", build_nand_boot_read)
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode
