@@ -1,6 +1,6 @@
 # PENTAX Q7 펌웨어 1.01 분석
 
-리코가 배포한 Q7 펌웨어 `fwdc603p.bin`에서 프로그램을 꺼내 압축을 풀고, 카메라가 업데이트를 설치하고 색을 처리하고 초점을 맞추고 메뉴 글자를 그리는 코드를 추적한 연구 기록입니다.
+리코가 배포한 Q7 펌웨어 `fwdc603p.bin`에서 프로그램을 꺼내 압축을 풀고 카메라가 업데이트를 설치하고 색을 처리하고 초점을 맞추고 메뉴 글자를 그리는 코드를 추적한 연구 기록입니다.
 
 **문서는 여기서 읽습니다 → [https://yunhyok.github.io/pentax-q7-firmware-analysis/](https://yunhyok.github.io/pentax-q7-firmware-analysis/)**
 
@@ -8,7 +8,7 @@
 
 <sub>사진: Tomidaooooooo, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Pentax_Q7_jp475.png) (형식 변환·크기 축소). 자세한 출처는 [assets/photos/CREDITS.md](assets/photos/CREDITS.md).</sub>
 
-> **먼저 알아 둘 점.** 모든 분석은 PC에서 했습니다. 수정한 펌웨어를 카메라에 설치하거나 실행한 적이 없습니다. 이 저장소에는 카메라에 넣을 수 있는 펌웨어가 없고, 원본 펌웨어와 거기서 꺼낸 프로그램·심볼 목록·디컴파일 원문도 없습니다.
+> **먼저 알아 둘 점.** 모든 분석은 PC에서 했습니다. 수정한 펌웨어를 카메라에 설치하거나 실행한 적이 없습니다. 이 저장소에는 카메라에 넣을 수 있는 펌웨어가 없고 원본 펌웨어와 거기서 꺼낸 프로그램·심볼 목록·디컴파일 원문도 없습니다.
 
 ## 무엇을 알아냈나
 
@@ -58,7 +58,7 @@ python tools/inspect_q7.py fwdc603p.bin --output .private/recheck.json --private
 python tools/verify_report.py --firmware fwdc603p.bin
 ```
 
-디컴파일까지 다시 하려면 Ghidra 12.1과 JDK 21이, 원본 명령 재실행에는 angr 10.0.5가 필요합니다. 파일 오프셋과 ELF 주소는 다른 값이며, 정적 분석 결과를 카메라 실행 결과로 읽으면 안 됩니다.
+디컴파일까지 다시 하려면 Ghidra 12.1과 JDK 21이, 원본 명령 재실행에는 angr 10.0.5가 필요합니다. 파일 오프셋과 ELF 주소는 다른 값이며 정적 분석 결과를 카메라 실행 결과로 읽으면 안 됩니다.
 
 ## 문서를 고치는 방법
 

@@ -27,7 +27,7 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>AF 작업이 보낸 검색·정지 요청이 캡처 서비스를 거쳐 <strong>렌즈 큐 작업자</strong>에 닿는 길을 원본 코드로 이었습니다. 큐·대기·하위 통신은 모델로 대신하고 20개 사례(명령·완료 12, 캐시 대기 3, 취소 5)를 실행했습니다.</li>
+<li>AF 작업이 보낸 검색·정지 요청이 캡처 서비스를 거쳐 <strong>렌즈 큐 작업자</strong>에 닿는 길을 원본 코드로 이었습니다. 큐·대기·하위 통신은 모델로 대신했습니다. 실행한 사례는 20개(명령·완료 12, 캐시 대기 3, 취소 5)입니다.</li>
 <li><strong>명령의 처리 결과</strong>(성공·거부·링크 실패·시간 초과)와 <strong>이동 완료</strong>는 따로 판정합니다. 검색 명령이 거부되거나 시간 초과로 끝나도 완료 확인 절차는 시작됐습니다.</li>
 <li>이동 완료는 렌즈 정보 캐시의 “이동 중” 바이트가 0이 되는 것으로 판정합니다. 캐시가 유효한지 알려 주는 값은 이 판정에 쓰지 않습니다. 통신 실패나 리셋으로 캐시가 0이 되어도 완료 알림이 나갔습니다.</li>
 <li>완료 알림이 세우는 <code>blFocusCompleteflag</code>는 소프트웨어 표시입니다. 초점이 실제로 맞았거나 렌즈가 기계적으로 멈췄다는 증거가 아닙니다. 이 연구에서 실제 렌즈를 움직인 일은 없습니다.</li>
@@ -59,7 +59,7 @@
 
 <section id="background">
 <h2>배경: AF 요청이 렌즈에 닿는 길</h2>
-<p>Q7은 촬상 센서의 영상으로 초점을 찾는 <dfn title="렌즈를 조금씩 움직이며 영상의 선명도(대비)가 가장 높은 위치를 찾는 자동 초점 방식">콘트라스트 검출 AF</dfn>를 씁니다(<a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">리코 공식 사양</a>). 초점용 모터는 바디가 아니라 AF 렌즈 안에 있으므로, 카메라는 “초점 렌즈를 움직여라”를 렌즈 통신 명령으로 보냅니다. 이 문서는 AF 계산이 끝난 뒤 그 명령이 렌즈 쪽으로 나가고 결과가 돌아오는 구간을 다룹니다. AF 전체의 지도는 <a href="guide-af.html">AF·렌즈 안내</a>에 있습니다.</p>
+<p>Q7은 촬상 센서의 영상으로 초점을 찾는 <dfn title="렌즈를 조금씩 움직이며 영상의 선명도(대비)가 가장 높은 위치를 찾는 자동 초점 방식">콘트라스트 검출 AF</dfn>를 씁니다(<a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">리코 공식 사양</a>). 초점용 모터는 바디에 없고 AF 렌즈 안에 있습니다. 그래서 카메라는 “초점 렌즈를 움직여라”를 렌즈 통신 명령으로 보냅니다. 이 문서는 AF 계산이 끝난 뒤 그 명령이 렌즈 쪽으로 나가고 결과가 돌아오는 구간을 다룹니다. AF 전체의 지도는 <a href="guide-af.html">AF·렌즈 안내</a>에 있습니다.</p>
 <ol class="flow">
 <li class="static"><strong>AF 작업</strong><span>초점 위치 계산 후 <code>LensDriveControl</code> 호출 — <a href="deep-report.html#af">주요 함수 분석</a></span></li>
 <li class="ok"><strong>캡처 서비스</strong><span>알림 <code>0x6003c</code>를 받아 검색·정지 setter 선택</span></li>
@@ -70,7 +70,7 @@
 </ol>
 <p>읽기 전에 알아 둘 말이 몇 개 있습니다.</p>
 <dl class="kv">
-<dt><dfn title="렌즈 명령을 큐에 넣고 결과가 올 때까지 기다리는 함수">setter</dfn></dt><dd>검색이나 정지 메시지를 큐에 넣고, 작업자가 결과를 기록할 때까지 기다린 뒤 결과값을 돌려주는 함수입니다.</dd>
+<dt><dfn title="렌즈 명령을 큐에 넣고 결과가 올 때까지 기다리는 함수">setter</dfn></dt><dd>검색이나 정지 메시지를 큐에 넣고 작업자가 결과를 기록할 때까지 기다린 뒤 결과값을 돌려주는 함수입니다.</dd>
 <dt>pending</dt><dd>“이 명령의 결과를 아직 받지 못했다”는 표시 바이트입니다. 작업자가 결과를 기록하면서 지웁니다.</dd>
 <dt><dfn title="렌즈가 정기적으로 보내 온 상태를 RAM에 보관해 둔 사본">렌즈 정보 캐시</dfn></dt><dd>정기 통신으로 받은 렌즈 상태의 사본입니다. 그중 VDRC 이동 바이트가 “초점 렌즈가 움직이는 중”을 나타냅니다. 값과 별도로 “캐시가 유효한가”를 나타내는 바이트가 있습니다.</dd>
 <dt>완료 확인 상태</dt><dd>캡처 쪽이 이동 완료를 판정하려고 두는 0·1·2 단계입니다. 0은 확인하지 않음, 1은 이동 시작 대기, 2는 이동 끝 대기입니다.</dd>
@@ -81,7 +81,7 @@
 
 <section id="request">
 <h2>요청이 렌즈 작업자에 닿고 결과가 돌아오는 길</h2>
-<p class="takeaway">AF 요청은 캡처 서비스의 원본 분기표를 거쳐 검색·정지 setter에 닿고, setter가 큐에 넣은 메시지를 원본 렌즈 작업자가 처리했습니다. setter의 결과값과 바깥 수신자의 반환값 1은 다른 값입니다.</p>
+<p class="takeaway">AF 요청은 캡처 서비스의 원본 분기표를 거쳐 검색·정지 setter에 닿고 setter가 큐에 넣은 메시지를 원본 렌즈 작업자가 처리했습니다. setter의 결과값과 바깥 수신자의 반환값 1은 다른 값입니다.</p>
 
 <figure class="diagram">
 <figcaption>AF 요청에서 렌즈 작업자까지, 그리고 결과가 돌아오는 길</figcaption>
@@ -144,7 +144,7 @@
 </figure>
 
 <ol class="steps">
-<li><strong>요청 기록</strong> <code>LensDriveControl</code>이 모드, 대기 플래그, 인수를 공유 구조체 <code>tFocusControlInfo</code>에 쓰고 <code>blFocusCompleteflag</code>를 지운 뒤 캡처 서비스에 <code>(0x6003c, 0)</code>을 보냅니다.</li>
+<li><strong>요청 기록</strong> <code>LensDriveControl</code>이 모드, 대기 플래그, 인수를 공유 구조체 <code>tFocusControlInfo</code>에 쓰고 <code>blFocusCompleteflag</code>를 지웁니다. 그 뒤 캡처 서비스에 <code>(0x6003c, 0)</code>을 보냅니다.</li>
 <li><strong>분기</strong> 캡처 수신자의 원본 분기표가 <code>0x6003c</code>를 <code>ExecuteFocusControl</code>로 보냅니다. 모드 0은 검색, 모드 1은 정지 setter를 부릅니다.</li>
 <li><strong>제출</strong> setter가 pending 바이트를 세우고 메시지 6 또는 8을 큐에 넣습니다. 큐 모델이 받아들이면, 정해 둔 대기 회차에 그 메시지를 원본 작업자에게 넘깁니다.</li>
 <li><strong>작업자 처리</strong> 원본 <code>LensComThreadMain</code>이 메시지를 받고 이전 통신이 끝났는지 확인한 뒤 검색 또는 정지 작업 함수를 고릅니다. 작업 함수는 하위 통신 <code>LensCommunication</code>을 부르고 결과 바이트를 쓴 뒤 pending을 지웁니다. 시험은 작업자가 다음 메시지를 기다리기 전에 멈춥니다.</li>
@@ -163,11 +163,11 @@
 <tr><th scope="row" class="n">8</th><td>구동 제한 바이트가 정확히 1. 큐에 넣지 않음</td></tr>
 </tbody></table></div>
 <p>시간 초과 판정에는 두 가지 사례가 있습니다. 하나는 작업자가 101번째 대기에서 성공 1을 기록하고 pending을 지웠는데도 setter가 6을 돌려준 경우입니다. 다른 하나는 큐가 제출에 0을 돌려주고 메시지를 전달하지 않은 경우입니다. 이때 setter는 하위 통신 없이 101회 기다린 뒤 6을 돌려줬고 pending은 1로 남았습니다. 101회는 대기 함수 호출 횟수이며 경과 시간은 재지 않았습니다. <a href="analysis/af-completion.json">[근거: findings.admission]</a> · <a href="tools/check_af_completion.py">[재현 도구: CASES, run_worker]</a></p>
-<p>연산 맵이 준비되지 않은 상태(map-ready 0)에서 AF 지원 getter도 0을 돌려줬지만, 검색 요청은 하위 API까지 전달됐습니다. AF 지원 판정과 명령 허용이 서로 다른 검사라는 점은 <a href="storage-readiness-report.html#gates">렌즈 준비 상태 분석</a>에서 자세히 다룹니다.</p>
+<p>연산 맵이 준비되지 않은 상태(map-ready 0)에서 AF 지원 getter도 0을 돌려줬지만 검색 요청은 하위 API까지 전달됐습니다. AF 지원 판정과 명령 허용이 서로 다른 검사라는 점은 <a href="storage-readiness-report.html#gates">렌즈 준비 상태 분석</a>에서 자세히 다룹니다.</p>
 
 <details class="evidence"><summary>큐 거부 사례의 회귀 검사</summary>
-<p>큐 거부 사례에서는 원본 전송 래퍼가 0을 <code>0x801134ec</code>로 돌려주고, setter는 pending을 다시 읽어 제한된 대기에 들어갑니다. 바깥 반환값과 완료 확인 상태는 모두 1이었습니다.</p>
-<p>이 시험이 실제로 무엇을 잡는지 확인하려고, 전달 예약을 첫 대기로 해 둔 채 큐 거부를 공급했습니다. 그리고 큐 승인 조건(<code>queue_send_result==1</code>)을 지운 시험용 변형을 만들어 비교했습니다. 변형은 첫 대기에서 작업자를 실행하므로 실패해야 합니다.</p>
+<p>큐 거부 사례에서는 원본 전송 래퍼가 0을 <code>0x801134ec</code>로 돌려주고 setter는 pending을 다시 읽어 제한된 대기에 들어갑니다. 바깥 반환값과 완료 확인 상태는 모두 1이었습니다.</p>
+<p>이 시험이 실제로 무엇을 잡는지 확인하려고 전달 예약을 첫 대기로 해 둔 채 큐 거부를 공급했습니다. 그리고 큐 승인 조건(<code>queue_send_result==1</code>)을 지운 시험용 변형을 만들어 비교했습니다. 변형은 첫 대기에서 작업자를 실행하므로 실패해야 합니다.</p>
 <div class="table-wrap"><table class="fit compact">
 <caption>정상 시험과 시험용 변형의 비교 (큐 제출 결과 0, 전달 예약 1회째)</caption>
 <thead><tr><th>실행</th><th class="n">대기</th><th>작업자 결과</th><th class="n">pending</th><th class="n">setter 결과</th><th class="n">하위 통신 호출</th></tr></thead>
@@ -183,12 +183,12 @@
 <tr><th scope="row">검색</th><td><code>(0,1,2,4)</code></td><td class="n">6</td><td class="n">2</td><td>3 / 1</td></tr>
 <tr><th scope="row">정지</th><td><code>(0,1,2,6)</code></td><td class="n">8</td><td class="n">1</td><td>0 / 0</td></tr>
 </tbody></table></div>
-<p>검색에는 합성 페이로드 <code>12 34 56</code>을 넣었습니다. 정지 작업 함수는 <code>0x801162ac</code>에서 지역 바이트에 0을 쓰지만, 메타데이터의 길이가 TX 0이어서 이 바이트는 하위 TX 데이터로 복사되지 않습니다. 이 길이는 원본 API에서 관측한 설정값입니다. 통신선에서 잡은 바이트 수가 아닙니다. <a href="analysis/af-completion.json">[근거: findings.transport]</a></p>
+<p>검색에는 합성 페이로드 <code>12 34 56</code>을 넣었습니다. 정지 작업 함수는 <code>0x801162ac</code>에서 지역 바이트에 0을 쓰지만 메타데이터의 길이가 TX 0이어서 이 바이트는 하위 TX 데이터로 복사되지 않습니다. 이 길이는 원본 API에서 관측한 설정값입니다. 통신선에서 잡은 바이트 수가 아닙니다. <a href="analysis/af-completion.json">[근거: findings.transport]</a></p>
 </section>
 
 <section id="completion">
 <h2>명령의 성공과 이동 완료는 다른 판정입니다</h2>
-<p class="takeaway">완료 확인은 setter 결과와 상관없이 대기 플래그로 시작하고, 캐시의 이동 바이트가 0이 되면 끝납니다. 캐시의 유효성은 보지 않습니다.</p>
+<p class="takeaway">완료 확인은 setter 결과와 상관없이 대기 플래그로 시작하고 캐시의 이동 바이트가 0이 되면 끝납니다. 캐시의 유효성은 보지 않습니다.</p>
 
 <figure class="diagram">
 <figcaption>캐시 기반 완료 확인의 단계</figcaption>
@@ -254,9 +254,9 @@
 정지 요청: 캡처 쪽 완료 확인 상태를 지움</code></pre>
 
 <h3>캐시가 0이 되는 다른 이유</h3>
-<p>이동값 0을 계속 넣은 사례는 일곱 번째 콜백에서 상태 2가 되고 여덟 번째 콜백에서 완료됐습니다. 시작 횟수가 6에 이르러 상태 2로 넘어갔기 때문입니다. 렌즈가 한 번도 “움직이는 중”을 보고하지 않아도 완료가 나온다는 뜻입니다.</p>
+<p>이동값 0을 계속 넣은 사례는 일곱 번째 콜백에서 상태 2가 되고 여덟 번째 콜백에서 완료됐습니다. 시작 횟수가 6에 이르러 상태 2로 넘어갔기 때문입니다. 렌즈가 한 번도 “움직이는 중”을 보고하지 않아도 완료가 나옵니다.</p>
 <ul>
-<li>검색 링크가 실패한 뒤 원본 정기 통신도 실패하자 캐시의 이동값이 0이 됐고, 이전 유효성 1은 남았습니다.</li>
+<li>검색 링크가 실패한 뒤 원본 정기 통신도 실패하자 캐시의 이동값이 0이 됐고 이전 유효성 1은 남았습니다.</li>
 <li>상태 2에서 렌즈 제어를 리셋하자 이동값과 유효성이 모두 0이 됐습니다. 캡처 쪽 상태 2는 지워지지 않았으므로 다음 콜백이 완료를 알렸습니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
@@ -266,7 +266,7 @@
 
 <section id="phase">
 <h2>완료 플래그와 촬영 단계는 따로 바뀝니다</h2>
-<p class="takeaway">이동이 완료되면 알림 두 개가 나갑니다. 하나는 완료 플래그를 세우고, 다른 하나는 캡처 단계가 4일 때만 단계를 5로 바꿉니다.</p>
+<p class="takeaway">이동이 완료되면 알림 두 개가 나갑니다. 하나는 완료 플래그를 세우고 다른 하나는 캡처 단계가 4일 때만 단계를 5로 바꿉니다.</p>
 
 <figure class="diagram">
 <figcaption>AF 알림 세 개와 각각이 바꾸는 것</figcaption>
@@ -412,12 +412,12 @@
 <caption>연속 명령은 화살표로 구분했습니다. 대기 횟수는 인수 1인 대기 API의 호출 횟수입니다. 최종 값은 마지막 단계의 관측값입니다.</caption>
 <thead><tr><th>사례</th><th>명령</th><th>setter 결과</th><th>대기 횟수</th><th class="n">최종 확인 상태</th><th class="n">AF 완료 플래그</th><th class="n">캡처 단계</th></tr></thead>
 <tbody><tr><th scope="row">검색 성공 뒤 이동값 1 → 2 → 0<br><span class="small muted">search-ack-then-motion</span></th><td>검색</td><td>1</td><td>1</td><td class="n">0</td><td class="n">1</td><td class="n">3</td></tr><tr><th scope="row">캡처 단계 4로 시작한 검색<br><span class="small muted">phase-four-conditional-advance</span></th><td>검색</td><td>1</td><td>1</td><td class="n">0</td><td class="n">1</td><td class="n">5</td></tr><tr><th scope="row">연산 맵이 검색을 거부, 유효성 0인 이동값 0이 계속됨<br><span class="small muted">search-map-denied-then-invalid-zero</span></th><td>검색</td><td>7</td><td>1</td><td class="n">0</td><td class="n">1</td><td class="n">3</td></tr><tr><th scope="row">하위 링크 실패 뒤 정기 통신 실패로 캐시가 0<br><span class="small muted">search-link-error-then-failed-regular-zero</span></th><td>검색</td><td>4</td><td>1</td><td class="n">0</td><td class="n">1</td><td class="n">3</td></tr><tr><th scope="row">작업자가 101번째 대기에서 결과를 기록<br><span class="small muted">search-late-worker-at-timeout</span></th><td>검색</td><td>6</td><td>101</td><td class="n">1</td><td class="n">0</td><td class="n">3</td></tr><tr><th scope="row">구동 제한 1, 대기 플래그 0: 큐 없이 즉시 완료<br><span class="small muted">search-inhibited-immediate-notify</span></th><td>검색</td><td>8</td><td>0</td><td class="n">0</td><td class="n">1</td><td class="n">3</td></tr><tr><th scope="row">map-ready 0·AF 지원 0인데 검색이 하위 API까지 전달<br><span class="small muted">search-ready-clear-forwarded</span></th><td>검색</td><td>1</td><td>1</td><td class="n">1</td><td class="n">0</td><td class="n">3</td></tr><tr><th scope="row">이동 중 정지 명령 성공<br><span class="small muted">stop-ack-while-cache-moving</span></th><td>검색 → 정지</td><td>1 → 1</td><td>1 → 1</td><td class="n">0</td><td class="n">0</td><td class="n">3</td></tr><tr><th scope="row">정지가 연산 맵에서 거부돼도 확인 상태 0<br><span class="small muted">stop-map-denied-clears-check</span></th><td>검색 → 정지</td><td>1 → 7</td><td>1 → 1</td><td class="n">0</td><td class="n">0</td><td class="n">3</td></tr><tr><th scope="row">정지 메시지가 전달되지 않아 시간 초과<br><span class="small muted">stop-timeout-clears-check</span></th><td>검색 → 정지</td><td>1 → 6</td><td>1 → 101</td><td class="n">0</td><td class="n">0</td><td class="n">3</td></tr><tr><th scope="row">상태 2에서 렌즈 제어 리셋<br><span class="small muted">reset-zero-during-motion-check</span></th><td>검색</td><td>1</td><td>1</td><td class="n">0</td><td class="n">1</td><td class="n">3</td></tr><tr><th scope="row">큐가 제출을 거부(0)<br><span class="small muted">search-queue-rejected</span></th><td>검색</td><td>6</td><td>101</td><td class="n">1</td><td class="n">0</td><td class="n">3</td></tr></tbody></table></div>
-<p>사례 이름에 들어간 <code>ack</code>는 합성 하위 API가 성공을 돌려줬다는 뜻입니다. 실물 응답을 수집했다는 뜻이 아닙니다. 사례마다의 입력·이벤트·반환값 전체는 <a href="analysis/af-completion.json">근거 JSON</a>의 <code>replay.command_cases</code>, <code>wait_cases</code>, <code>abort_cases</code>에 있습니다.</p>
+<p>사례 이름에 들어간 <code>ack</code>는 합성 하위 API가 성공을 돌려줬음을 나타냅니다. 실물 응답을 수집한 것은 아닙니다. 사례마다의 입력·이벤트·반환값 전체는 <a href="analysis/af-completion.json">근거 JSON</a>의 <code>replay.command_cases</code>, <code>wait_cases</code>, <code>abort_cases</code>에 있습니다.</p>
 </section>
 
 <section id="comparison">
 <h2>K-3 Mark III와 비교</h2>
-<p>K-3 Mark III의 고정 커밋 자료도 요청의 디스크립터·슬롯·큐 소비자와 완료 콜백을 나눠 다룹니다. Q7에서는 실제 캡처 수신자, 렌즈 큐 작업자, 캐시 기반 완료 조건을 이었습니다. 두 기종의 수명주기 구분은 비교할 수 있지만, 명령 번호·주소·상태 비트나 렌즈 통신 규약이 같다는 근거는 없습니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/5f2dcc60263fb8e0a552987e0405b6609ddde688/analysis/af-request-consumer-evidence.json">[고정 커밋의 K-3 Mark III 요청 소비자 근거]</a></p>
+<p>K-3 Mark III의 고정 커밋 자료도 요청의 디스크립터·슬롯·큐 소비자와 완료 콜백을 나눠 다룹니다. Q7에서는 실제 캡처 수신자, 렌즈 큐 작업자, 캐시 기반 완료 조건을 이었습니다. 두 기종의 수명주기 구분은 비교할 수 있지만 명령 번호·주소·상태 비트나 렌즈 통신 규약이 같다는 근거는 없습니다. <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/5f2dcc60263fb8e0a552987e0405b6609ddde688/analysis/af-request-consumer-evidence.json">[고정 커밋의 K-3 Mark III 요청 소비자 근거]</a></p>
 <div class="table-wrap"><table>
 <caption>수명주기 항목별 대응. 세 기종 전체 비교는 <a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/af-foundations.html">세 기종 AF 기초</a>에 있습니다.</caption>
 <thead><tr><th>항목</th><th>Q7 (이 문서)</th><th>K-3 Mark III (고정 커밋 자료)</th></tr></thead>
@@ -435,12 +435,12 @@
 <ul>
 <li>원본 MIPS 코드를 VEX로 실행했습니다. 큐·대기·이벤트·하위 링크 API 6개는 모델이 대신했습니다(아래 표). 실제 렌즈, AF 센서 입력, RTOS 동시성, 실제 시간, 기계적 이동은 측정하지 않았습니다.</li>
 <li>원본 수신자 getter와 <code>CaptureLensControlService</code> 초기화는 실행했습니다. 다만 AF 초기화 전체 대신, 따로 확인한 초기화 바인딩대로 콜백 슬롯에 getter 값을 넣었습니다. AF 알고리즘 스레드 전체는 시작하지 않았습니다.</li>
-<li>초기 준비 상태, 캡처 단계, 온도 바이트와 설정은 합성 값입니다. 정기 통신을 흉내 낸 이동값 표본은 명시적 입력이며, 실패·리셋 사례만 원본 코드가 캐시를 바꿉니다.</li>
+<li>초기 준비 상태, 캡처 단계, 온도 바이트와 설정은 합성 값입니다. 정기 통신을 흉내 낸 이동값 표본은 명시적 입력이며 실패·리셋 사례만 원본 코드가 캐시를 바꿉니다.</li>
 <li>작업자는 렌즈 제어 RAM을 복사한 별도 실행 환경에서 큐 메시지 하나를 받습니다. 다음 수신에서 작업자의 스택·레지스터는 버립니다. 실제 스케줄러나, 시험한 같은 회차 이후의 늦은 전달은 추론하지 않았습니다.</li>
 <li>단계 4 사례는 그 단계를 직접 넣었을 뿐 촬영 수명주기 전체를 실행하지 않았습니다. 완료 플래그, ACK, 이동 완료는 서로 다른 소프트웨어 경계로 남습니다.</li>
 </ul>
 <div class="callout"><strong class="label">이후 변경을 설계할 때</strong>
-<p>AF 동작을 바꾸려면 명령 결과, 캐시 유효성, 완료 플래그를 각각 다른 조건으로 검토해야 합니다. 이 문서는 그 판단을 위한 기초 자료이며, 수정한 코드나 실제 렌즈 실험은 없습니다.</p></div>
+<p>AF 동작을 바꾸려면 명령 결과, 캐시 유효성, 완료 플래그를 각각 다른 조건으로 검토해야 합니다. 이 문서는 그 판단을 위한 기초 자료이며 수정한 코드나 실제 렌즈 실험은 없습니다.</p></div>
 
 <details class="evidence"><summary>모델로 대신한 API 6개</summary>
 <div class="table-wrap"><table class="compact">

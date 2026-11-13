@@ -29,8 +29,8 @@
 <ul>
 <li>분석한 HDR 경로(합성용으로 새로 만드는 처리 경로)에서는 제출 함수가 대체 출력 대신 <strong>HDR 작업 버퍼 안의 일반 출력 블록</strong>을 고릅니다. 원본 코드로 두 분기를 모두 실행해 확인했습니다.</li>
 <li>HDR이 넣는 <strong>색 변환 계수 9개와 보조값 2개</strong>는 패스 계산 라이브러리(FIPLIB)를 거쳐 FC1 레지스터 쓰기까지 값이 바뀌지 않습니다. 이 구간에는 계수를 곱하거나 다시 계산하는 단계가 없습니다.</li>
-<li>이 구간의 원본 함수 5개를 {{case_count}}개 사례로 이어서 실행했고, 순서가 있는 레지스터 쓰기 {{mmio_total}}회가 예상값과 모두 일치했습니다.</li>
-<li>계수가 보존된다는 사실과 FC1이 실제로 켜진다는 사실은 별개입니다. 패스별 활성화는 <a href="hdr-control-report.html">다음 문서</a>에서 다루며, 실제 촬영의 픽셀은 확인하지 않았습니다.</li>
+<li>이 구간의 원본 함수 5개를 {{case_count}}개 사례로 이어서 실행했습니다. 순서가 있는 레지스터 쓰기 {{mmio_total}}회가 예상값과 모두 일치했습니다.</li>
+<li>계수가 보존된다는 사실과 FC1이 실제로 켜진다는 사실은 별개입니다. 패스별 활성화는 <a href="hdr-control-report.html">다음 문서</a>에서 다루며 실제 촬영의 픽셀은 확인하지 않았습니다.</li>
 </ul>
 </section>
 
@@ -66,14 +66,14 @@
 <p>Q7의 HDR 촬영은 노출이 다른 사진 세 장(부족·표준·과다)을 연달아 찍어 한 장으로 합칩니다. 밝은 곳과 어두운 곳의 계조를 함께 남기려는 기능입니다(<a href="https://www.ricoh-imaging.co.jp/english/products/q7/feature/04.html">리코 Q7 소개</a>). 메뉴의 HDR 촬영 설정은 Auto·HDR 1·HDR 2입니다(<a href="https://www.imaging-resource.com/cameras/pentax-q7-review/specifications">Imaging Resource 사양표</a>, 제조사 설명서 원문은 확인하지 못했습니다).</p>
 <p>합친 결과는 보통 사진과 마찬가지로 IPU(이미지 처리 하드웨어)의 색 처리를 거쳐 JPEG로 저장됩니다. 펌웨어는 이 처리를 여러 번의 <dfn title="IPU가 이미지를 한 번 훑으며 처리하는 단위. 한 장을 여러 패스로 나눠 처리한다">패스</dfn>로 나눠 하드웨어에 맡깁니다. 이 문서와 뒤의 두 문서는 그중 FC1이라는 색 단계를 따라갑니다.</p>
 <div class="callout plain"><strong class="label">FC1은 무엇으로 보이는가</strong>
-<p>펌웨어 안의 이름은 <code>CFc1Filter</code>입니다. 계수 9개, 보조값 2개, 제어 워드 하나, 켜고 끄는 값 하나를 하드웨어 레지스터에 씁니다. 계수가 주어지지 않으면 내장 계수를 고르는데, 그 함수 이름이 “ITU-R 601 RGB-to-YUV”와 “ITU-R 709 RGB-to-YUV”입니다. HDR이 넣는 9개 값도 내장 601 값과 똑같습니다.</p>
-<p>그래서 FC1은 RGB 색을 JPEG가 쓰는 밝기·색차(YUV, YCbCr) 형식으로 바꾸는 색 변환 단계로 보입니다. 다만 “FC”가 무엇의 약자인지는 펌웨어에 적혀 있지 않습니다. 이 해석은 함수 이름과 계수 값에서 끌어낸 <strong>추정</strong>이며, 하드웨어 문서로 확인한 것이 아닙니다.</p></div>
+<p>펌웨어 안의 이름은 <code>CFc1Filter</code>입니다. 계수 9개, 보조값 2개, 제어 워드 하나, 켜고 끄는 값 하나를 하드웨어 레지스터에 씁니다. 계수가 주어지지 않으면 내장 계수를 고르는데 그 함수 이름이 “ITU-R 601 RGB-to-YUV”와 “ITU-R 709 RGB-to-YUV”입니다. HDR이 넣는 9개 값도 내장 601 값과 똑같습니다.</p>
+<p>그래서 FC1은 RGB 색을 JPEG가 쓰는 밝기·색차(YUV, YCbCr) 형식으로 바꾸는 색 변환 단계로 보입니다. 다만 “FC”가 무엇의 약자인지는 펌웨어에 적혀 있지 않습니다. 이 해석은 함수 이름과 계수 값에서 끌어낸 <strong>추정</strong>이며 하드웨어 문서로 확인한 것이 아닙니다.</p></div>
 <p>세 문서는 같은 질문을 단계별로 이어 갑니다.</p>
 <ol class="flow">
 <li class="static"><strong>버퍼와 패스</strong><span>HDR 출력 버퍼, 마지막 패스 표시, 계수 덮어쓰기 — <a href="pixel-report.html">HDR 버퍼와 색 처리 패스</a></span></li>
 <li class="key"><strong>출력 선택과 계수</strong><span>이 문서</span></li>
 <li class="ok"><strong>패스별 활성화와 제출</strong><span>네 패스 중 어디서 FC1이 켜지나 — <a href="hdr-control-report.html">FC1 활성화와 제출 패스</a></span></li>
-<li class="ok"><strong>제어 비트와 task 완료</strong><span>제어 비트의 출처, task 생성·큐 제출, IRQ부터 PathWait 통과까지의 완료 — <a href="hdr-task-report.html">FC1 비트와 HDR task</a></span></li>
+<li class="ok"><strong>제어 비트와 task 완료</strong><span>제어 비트의 출처, task 생성·큐 제출, IRQ부터 PathWait 통과까지의 완료: <a href="hdr-task-report.html">FC1 비트와 HDR task</a></span></li>
 </ol>
 <p>색 처리 주제 전체의 지도는 <a href="guide-color.html">색 처리·HDR 안내</a>에, 색 행렬 객체가 레지스터에 기록되는 일반 경로는 <a href="routing-report.html#matrix">렌즈 명령·ISP 레지스터 문서</a>에 있습니다.</p>
 <dl class="kv">
@@ -87,7 +87,7 @@
 
 <section id="selector">
 <h2>HDR 결과는 일반 출력 블록으로 제출됩니다</h2>
-<p class="takeaway">대체 출력 디스크립터의 타입 필드가 0이면 일반 출력 블록이 선택되고, 새 HDR 경로에서는 이 값이 제출 때까지 0으로 남습니다.</p>
+<p class="takeaway">대체 출력 디스크립터의 타입 필드가 0이면 일반 출력 블록이 선택되고 새 HDR 경로에서는 이 값이 제출 때까지 0으로 남습니다.</p>
 
 <figure class="diagram">
 <figcaption>IpuSubmit의 출력 선택: 어떤 조건에서 어느 버퍼가 제출되나</figcaption>
@@ -135,8 +135,8 @@
 <ul class="dg-legend"><li><i class="static"></i>코드를 읽어 확인</li><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="model"></i>비교용으로 넣은 설정</li><li><i class="key"></i>새 HDR 경로가 고르는 출력</li></ul>
 </figure>
 
-<p><code>path+0x964</code>는 따로 있는 경로 플래그가 아닙니다. <code>path+0x8fc</code>에 놓인 대체 출력 디스크립터의 <code>+0x68</code>, 즉 이미지 타입 필드입니다. 새 경로를 만들 때 이 필드는 0으로 초기화됩니다. 값이 0이면 IpuSubmit은 <code>path+0x28</code>의 출력 블록으로 디스크립터를 만들고, 0이 아니면 대체 디스크립터를 복사합니다. <a href="analysis/submit-followup.json">[근거: hdr_output_selector, type_0_registry]</a></p>
-<p>HDR 제출 전에 불리는 설정 함수를 따라가 보면, 필터 설정은 별도의 processor 객체를 고치고 형식·배율·버퍼 설정은 경로 앞쪽 필드를 고칩니다. 분석한 호출 순서에는 대체 출력 디스크립터를 채우는 함수가 없습니다. 이 조건에서 형식 <code>0x0f01</code>은 type 8 출력 디스크립터로 바뀌고, 원래 출력 블록 주소는 surface의 첫 워드에 남습니다. <a href="analysis/submit-followup.json">[근거: HDR 설정·surface 바인딩]</a></p>
+<p><code>path+0x964</code>는 따로 있는 경로 플래그가 아닙니다. <code>path+0x8fc</code>에 놓인 대체 출력 디스크립터의 <code>+0x68</code>, 즉 이미지 타입 필드입니다. 새 경로를 만들 때 이 필드는 0으로 초기화됩니다. 값이 0이면 IpuSubmit은 <code>path+0x28</code>의 출력 블록으로 디스크립터를 만들고 0이 아니면 대체 디스크립터를 복사합니다. <a href="analysis/submit-followup.json">[근거: hdr_output_selector, type_0_registry]</a></p>
+<p>HDR 제출 전에 불리는 설정 함수를 따라가 보면, 필터 설정은 별도의 processor 객체를 고치고 형식·배율·버퍼 설정은 경로 앞쪽 필드를 고칩니다. 분석한 호출 순서에는 대체 출력 디스크립터를 채우는 함수가 없습니다. 이 조건에서 형식 <code>0x0f01</code>은 type 8 출력 디스크립터로 바뀌고 원래 출력 블록 주소는 surface의 첫 워드에 남습니다. <a href="analysis/submit-followup.json">[근거: HDR 설정·surface 바인딩]</a></p>
 
 <div class="table-wrap"><table class="compact">
 <caption>분석한 경로: <code>W+0x208 == 0</code> → IpuToneMapRgb, 새 type 0 경로, 형식 <code>0x0f01</code></caption>
@@ -150,14 +150,14 @@
 </tbody></table></div>
 
 <h3>두 분기를 모두 실행해 보기</h3>
-<p>제출 분기를 원본 MIPS 명령으로 다시 실행했습니다. 새 경로에서는 설정한 출력 블록이 선택됐습니다. 비교 사례에서는 실제 <code>PathSetDescriptorsbyId</code>를 호출해 대체 디스크립터를 넣었고, 같은 출력 블록 설정을 유지한 채 대체 주소가 선택됐습니다. <a href="analysis/submit-followup.json">[근거: replay]</a> <a href="tools/check_submit_choice.py">[재현 도구]</a></p>
+<p>제출 분기를 원본 MIPS 명령으로 다시 실행했습니다. 새 경로에서는 설정한 출력 블록이 선택됐습니다. 비교 사례에서는 실제 <code>PathSetDescriptorsbyId</code>를 호출해 대체 디스크립터를 넣었고 같은 출력 블록 설정을 유지한 채 대체 주소가 선택됐습니다. <a href="analysis/submit-followup.json">[근거: replay]</a> <a href="tools/check_submit_choice.py">[재현 도구]</a></p>
 <div class="table-wrap"><table>
 <caption>SetImage(kind 2) 진입 시점의 값. 주소는 합성 버퍼 주소입니다.</caption>
 <thead><tr><th>사례</th><th>path+0x28</th><th class="n">path+0x964</th><th>분기 도착 주소</th><th>제출 surface[0]</th><th class="n">image type</th><th class="n">kind</th></tr></thead>
 <tbody>{{submit_rows}}</tbody>
 </table></div>
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>선택자와 디스크립터 생성·복사 코드는 원본 명령을 실행했고, kind 2는 함수 진입에서 멈췄습니다. 메모리 할당, RTOS, IpuInit, processor·observer 생성자, 앞선 SetImage(kind 0·1·5)는 대체 함수로 처리했습니다. 카메라 전체를 실행하거나 메모리 버스를 관측한 것은 아닙니다.</p></div>
+<p>선택자와 디스크립터 생성·복사 코드는 원본 명령을 실행했고 kind 2는 함수 진입에서 멈췄습니다. 메모리 할당, RTOS, IpuInit, processor·observer 생성자, 앞선 SetImage(kind 0·1·5)는 대체 함수로 처리했습니다. 카메라 전체를 실행하거나 메모리 버스를 관측하지는 않았습니다.</p></div>
 <details class="evidence"><summary>대체 함수 {{submit_stub_count}}개</summary>
 <div class="table-wrap"><table class="compact fit">
 <caption>출력 선택 재실행에서 원본 대신 모델이 처리한 함수</caption>
@@ -170,7 +170,7 @@
 
 <section id="producer">
 <h2>HDR 계수는 FC 블록에 그대로 복사됩니다</h2>
-<p class="takeaway">HDR이 만든 색 변환 설정의 값 11개는 FIPLIB 입력, 패스 입력, FC 블록, 내보내기 payload를 거쳐 FC1 레지스터까지 가며, 그 사이에 계산이 끼지 않습니다.</p>
+<p class="takeaway">HDR이 만든 색 변환 설정의 값 11개는 FIPLIB 입력, 패스 입력, FC 블록, 내보내기 payload를 거쳐 FC1 레지스터까지 갑니다. 그 사이에 계산은 끼지 않습니다.</p>
 
 <figure class="diagram">
 <figcaption>계수 11개의 이동 경로: HDR 설정에서 FC1 레지스터까지</figcaption>
@@ -218,7 +218,7 @@
 <ul class="dg-legend"><li><i class="static"></i>코드를 읽어 연결</li><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="key"></i>레지스터 쓰기(RAM 모델로 기록)</li></ul>
 </figure>
 
-<p>FC 객체는 mode 1에서 패스 입력 <code>+0x68</code>의 포인터를 읽습니다. 포인터가 있으면 행렬 계수 9개와 추가 필드 2개를 그대로 복사하고, 없으면 내장 계수를 고릅니다. 이어지는 Export는 16비트 값 11개를 부호 확장해 32비트 필드로 내보냅니다. 이 경로는 계수를 새로 곱하지 않고 복사하거나 내장값을 고를 뿐입니다. <a href="analysis/fiplib-followup.json">[근거: fc1_generator]</a></p>
+<p>FC 객체는 mode 1에서 패스 입력 <code>+0x68</code>의 포인터를 읽습니다. 포인터가 있으면 행렬 계수 9개와 추가 필드 2개를 그대로 복사하고 없으면 내장 계수를 고릅니다. 이어지는 Export는 16비트 값 11개를 부호 확장해 32비트 필드로 내보냅니다. 이 경로는 계수를 새로 곱하지 않고 복사하거나 내장값을 고를 뿐입니다. <a href="analysis/fiplib-followup.json">[근거: fc1_generator]</a></p>
 
 <h3>새 HDR 경로에서 계수가 FC1 쪽으로 가는 이유</h3>
 <p>processor 생성자는 디스크립터 슬롯을 비우고 기본값으로 ID <code>0xf</code>와 <code>0x19</code>만 설치합니다. IpuToneMapRgb는 HDR 보조 설정 ID <code>0x1f</code>와 로컬 ID <code>0xa</code>·<code>0xf</code>를 설치합니다. 보조 설정은 HDR 캐시 생성부와 HdrSetZLightFilter에서 ID <code>0x1f</code>, version <code>0xc</code>로 제한됩니다. 분석한 새 경로에는 ID <code>0x1d</code>가 없습니다. <a href="analysis/fiplib-followup.json">[근거: hdr_case]</a></p>
@@ -235,7 +235,7 @@
 <tr><th scope="row">내보내기</th><td>호출 <code>0x801784f4</code> → FC Export <code>0x8017ad04</code></td><td><code>pass+0x118</code> → <code>payload+0x100..0x12c</code>. 내부 기록 <code>+8</code>과 wrapper <code>+0x1c</code>가 같은 payload를 가리킴</td></tr>
 </tbody></table></div>
 <div class="callout"><strong class="label">참고</strong>
-<p>직접 실행 경로와 COP 작업자 경로 모두 같은 Analyze·Export 호출로 이어지는 것을 확인했습니다. 전체 FIPLIB 패스 계산이나 COP 스레드를 실제로 돌린 것은 아닙니다. 패스마다 이 계수를 저장하는 것과 FC1을 켜는 것은 서로 다른 조건입니다.</p></div>
+<p>직접 실행 경로와 COP 작업자 경로 모두 같은 Analyze·Export 호출로 이어지는 것을 확인했습니다. 전체 FIPLIB 패스 계산이나 COP 스레드를 실제로 돌리지는 않았습니다. 패스마다 이 계수를 저장하는 것과 FC1을 켜는 것은 서로 다른 조건입니다.</p></div>
 </section>
 
 <section id="values">
@@ -244,8 +244,8 @@
 <pre aria-label="HDR FC 계수 행렬과 보조값 두 개"><code>{{matrix}}
 
 보조값: {{companions}}</code></pre>
-<p>이 값들은 HDR의 상위 디스크립터에서 FIPLIB 입력, FC 블록, 출력 payload를 거쳐 FC1 객체까지 유지됩니다. FC1 writer는 계수와 보조값을 부호 확장해 <code>{{coef_first_addr}}</code>부터 <code>{{coef_last_addr}}</code>까지 쓰고, 제어 워드는 <code>{{fc_word_addr}}</code>에 씁니다. <a href="analysis/fiplib-followup.json">[근거: hdr_case.source]</a> <a href="analysis/fiplib-coefficient-checks.json">[근거: cases]</a></p>
-<p><a href="pixel-report.html#overwrite">계수 덮어쓰기 분석</a>은 FIPLIB가 FC1 값을 덮어쓸 수 있다고 정리합니다. 그 결론은 그대로이며, 여기서 확인한 FC mode 1 경로에서는 덮어쓰는 값이 원래 HDR 값과 같다는 뜻입니다.</p>
+<p>이 값들은 HDR의 상위 디스크립터에서 FIPLIB 입력, FC 블록, 출력 payload를 거쳐 FC1 객체까지 유지됩니다. FC1 writer는 계수와 보조값을 부호 확장해 <code>{{coef_first_addr}}</code>부터 <code>{{coef_last_addr}}</code>까지 씁니다. 제어 워드는 <code>{{fc_word_addr}}</code>에 씁니다. <a href="analysis/fiplib-followup.json">[근거: hdr_case.source]</a> <a href="analysis/fiplib-coefficient-checks.json">[근거: cases]</a></p>
+<p><a href="pixel-report.html#overwrite">계수 덮어쓰기 분석</a>은 FIPLIB가 FC1 값을 덮어쓸 수 있다고 정리합니다. 그 결론은 그대로입니다. 여기서 확인한 FC mode 1 경로에서는 덮어쓰는 값이 원래 HDR 값과 같습니다.</p>
 
 <h3>숫자로 비교한 BT.601 색 변환</h3>
 <div class="table-wrap"><table class="compact">
@@ -254,7 +254,7 @@
 <tbody>{{bt601_rows}}</tbody>
 </table></div>
 <div class="callout warn"><strong class="label">추정임을 밝힙니다</strong>
-<p>2048을 1.0으로 보면 아홉 값이 <a href="https://www.itu.int/rec/R-REC-BT.601-7-201103-I/en">ITU-R BT.601</a>의 밝기·색차 변환 계수와 반올림 오차(2048 단위로 최대 {{bt601_maxdiff}}) 안에서 맞습니다. 펌웨어의 내장 계수 이름(“ITU-R 601 RGB-to-YUV”)과도 어울립니다. 하지만 고정소수점 분모 2048, 행의 순서(Y·Cb·Cr), 보조값 2개의 뜻은 하드웨어 문서로 확인하지 않았습니다. 센서 RGB의 원색·전달함수나 ISP 내부 연산 순서도 이 표로 정할 수 없습니다.</p></div>
+<p>2048을 1.0으로 보면 아홉 값이 <a href="https://www.itu.int/rec/R-REC-BT.601-7-201103-I/en">ITU-R BT.601</a>의 밝기·색차 변환 계수와 맞습니다. 차이는 반올림 오차(2048 단위로 최대 {{bt601_maxdiff}}) 안입니다. 펌웨어의 내장 계수 이름(“ITU-R 601 RGB-to-YUV”)과도 어울립니다. 하지만 고정소수점 분모 2048, 행의 순서(Y·Cb·Cr), 보조값 2개의 뜻은 하드웨어 문서로 확인하지 않았습니다. 센서 RGB의 원색·전달함수나 ISP 내부 연산 순서도 이 표로 정할 수 없습니다.</p></div>
 <details class="evidence"><summary>값 11개의 위치: 디스크립터 → FIPLIB 입력 → payload → 레지스터</summary>
 <div class="table-wrap"><table class="compact">
 <caption>HDR 로컬 설정 ID <code>0xf</code>, version <code>0xc</code>. version <code>0xc</code>는 이동 0, 보조값 배율 1, 오프셋 0이라 값이 그대로 복사됩니다.</caption>
@@ -280,12 +280,12 @@
 <thead><tr><th>사례</th><th class="n">mode</th><th>계수 9개 + 보조값 2개</th><th class="n"><code>0xb60000fc</code> 값</th><th class="n">MMIO 쓰기</th></tr></thead>
 <tbody>{{numeric_rows}}</tbody>
 </table></div>
-<p class="small muted">601·709라는 이름은 원본 함수 심볼을 따른 것입니다. 내장 601 값이 HDR 값과 같다는 사실만으로 어느 분기를 탔는지 추정하지 않았고, 포인터의 출처를 따로 추적했습니다. 패스 입력·wrapper·dirty 상태는 합성했으며, 전체 FIPLIB나 ISP 하드웨어를 실행한 것은 아닙니다.</p>
+<p class="small muted">601·709라는 이름은 원본 함수 심볼을 따른 것입니다. 내장 601 값이 HDR 값과 같다는 사실만으로 어느 분기를 탔는지 추정하지 않았고 포인터의 출처를 따로 추적했습니다. 패스 입력·wrapper·dirty 상태는 합성했습니다. 전체 FIPLIB나 ISP 하드웨어는 실행하지 않았습니다.</p>
 </section>
 
 <section id="comparison">
 <h2>K-3 Mark III와 비교</h2>
-<p>K-3 Mark III의 공개 커밋 <code>{{k3_commit}}</code>을 고정해 출력 디스크립터 분기와 계수 계산을 대조했습니다. 로컬의 커밋되지 않은 파일은 빼고, 그 커밋의 원본 파일 4개를 SHA-256으로 확인했습니다. K-3의 JPEG 용량 분기와 Q13 행렬 준비는 같은 질문을 검토할 때 참고가 되지만, Q7의 제출 조건이나 FIPLIB 계수 경로를 대신 증명하지는 않습니다. <a href="analysis/final-comparison.json">[근거: claims, source_blobs]</a></p>
+<p>K-3 Mark III의 공개 커밋 <code>{{k3_commit}}</code>을 고정해 출력 디스크립터 분기와 계수 계산을 대조했습니다. 로컬의 커밋되지 않은 파일은 빼고 그 커밋의 원본 파일 4개를 SHA-256으로 확인했습니다. K-3의 JPEG 용량 분기와 Q13 행렬 준비는 같은 질문을 검토할 때 참고가 되지만 Q7의 제출 조건이나 FIPLIB 계수 경로를 대신 증명하지는 않습니다. <a href="analysis/final-comparison.json">[근거: claims, source_blobs]</a></p>
 <div class="table-wrap"><table class="compact">
 <caption>같은 질문에 대한 두 기종의 현재 근거</caption>
 <thead><tr><th>질문</th><th>K-3 Mark III</th><th>Q7 (이 문서)</th></tr></thead>
@@ -311,7 +311,7 @@ python tools/verify_report.py --firmware path/to/fwdc603p.bin
 # 분석용 ELF 만드는 절차: deep-report.html#reproduce
 python tools/check_submit_choice.py .private/main-expanded.elf --output .private/submit-recheck.json
 python tools/check_fiplib_coefficients.py .private/main-expanded.elf --output .private/fc-recheck.json</code></pre>
-<p>각 재실행 도구는 입력 ELF의 SHA-256을 검사하고, 이미 있는 출력 파일은 덮어쓰지 않습니다. 실행 엔진은 VEX이며 선택 사항인 Unicorn 엔진은 쓰지 않았습니다. 공개 CI는 원본 펌웨어 없이 메타데이터, 기준값, 도구 테스트, HTML, 링크를 검사합니다. 원본 명령 재실행과 원본 펌웨어 대조는 로컬에서 합니다. 원본 BIN, 추출 ELF, 전체 디컴파일은 공개하지 않습니다.</p>
+<p>각 재실행 도구는 입력 ELF의 SHA-256을 검사하고 이미 있는 출력 파일은 덮어쓰지 않습니다. 실행 엔진은 VEX이며 선택 사항인 Unicorn 엔진은 쓰지 않았습니다. 공개 CI는 원본 펌웨어 없이 메타데이터, 기준값, 도구 테스트, HTML, 링크를 검사합니다. 원본 명령 재실행과 원본 펌웨어 대조는 로컬에서 합니다. 원본 BIN, 추출 ELF, 전체 디컴파일은 공개하지 않습니다.</p>
 </section>
 
 <section id="refs">
@@ -332,7 +332,7 @@ python tools/check_fiplib_coefficients.py .private/main-expanded.elf --output .p
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html" aria-current="page">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">DCP 태그·행렬·테이블 비교</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP LUT 좌표·보간·색 처리 전제</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html" aria-current="page">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="pixel-report.html"><small>← 이전</small>HDR 버퍼의 JPEG 경로와 색 필터</a><a class="next" href="hdr-control-report.html"><small>다음 →</small>HDR 네 패스의 FC1 활성화</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

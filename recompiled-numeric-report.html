@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>색 변환 계수를 준비할 때 쓰는 <strong>Q13 3×3 행렬 곱</strong> 함수를 C로 새로 작성해 MIPS 기계어로 컴파일했습니다. 새 코드는 164바이트이고, 원본 함수 구간 236바이트 안에 들어갑니다.</li>
+<li>색 변환 계수를 준비할 때 쓰는 <strong>Q13 3×3 행렬 곱</strong> 함수를 C로 새로 작성해 MIPS 기계어로 컴파일했습니다. 새 코드는 164바이트이고 원본 함수 구간 236바이트 안에 들어갑니다.</li>
 <li>원본 코드와 새 코드를 PC 에뮬레이터에서 같은 입력 <strong>96개</strong>로 실행했습니다. 출력과 쓰는 순서가 모두 같았습니다. 이 함수를 부르는 원본 <code>MakeColorMatrix</code> 안에서도 설정 <strong>4개</strong>(행렬 곱 호출 58회)의 결과가 같았습니다.</li>
 <li>새 코드를 압축된 업데이트 파일에 넣는 첫 시도는 블록 자리보다 60바이트가 커서 실패했습니다. 원래 부호표를 그대로 쓰면서 바뀐 부분만 다시 인코딩하는 방법으로 자리에 맞췄습니다. <strong>448개 블록</strong>을 모두 다시 풀어, 바꾸려던 164바이트 범위 밖은 한 바이트도 달라지지 않았음을 확인했습니다.</li>
-<li>수정한 파일은 공개하지 않고 연구용 비공개 경로에만 둡니다. 카메라에 넣은 적이 없으며, 카메라가 이 파일을 받아들이는지와 부팅하는지는 확인하지 않았습니다.</li>
+<li>수정한 파일은 공개하지 않고 연구용 비공개 경로에만 둡니다. 카메라에 넣은 적이 없으며 카메라가 이 파일을 받아들이는지와 부팅하는지는 확인하지 않았습니다.</li>
 </ul>
 </section>
 
@@ -65,7 +65,7 @@
 
 <section id="background">
 <h2>배경: 왜 작은 계산 함수 하나로 시험하는가</h2>
-<p>제조사의 원본 소스 코드는 공개되어 있지 않습니다. 펌웨어를 고치는 방법은 두 가지입니다. 기계어 몇 바이트를 직접 바꾸거나, 함수를 C로 새로 작성해 컴파일한 결과로 원본 함수를 대체하는 것입니다. 두 번째 방법이 유지하기 쉽지만, 아래 순서로 확인할 것이 있습니다.</p>
+<p>제조사의 원본 소스 코드는 공개되어 있지 않습니다. 펌웨어를 고치는 방법은 두 가지입니다. 기계어 몇 바이트를 직접 바꾸거나, 함수를 C로 새로 작성해 컴파일한 결과로 원본 함수를 대체하는 것입니다. 두 번째 방법이 유지하기 쉽지만 아래 순서로 확인할 것이 있습니다.</p>
 <ol class="flow">
 <li class="key"><strong>같은 결과를 내는가</strong><span>원본과 새 코드를 같은 입력으로 실행해 비교 — <a href="#arithmetic">함수</a>, <a href="#caller">호출 함수</a></span></li>
 <li class="key"><strong>제자리에 들어가는가</strong><span>함수 자리와 호출 규약 — <a href="#abi">컴파일과 배치</a></span></li>
@@ -77,7 +77,7 @@
 <ul>
 <li><strong>Q13 고정소수점</strong>: 소수를 정수로 다루는 방법입니다. 실제 값에 8,192(2<sup>13</sup>)를 곱해 16비트 정수로 보관합니다. 이런 값 둘을 곱하면 8,192가 한 번 더 곱해진 결과가 나오므로, 곱한 뒤 반올림하고 13비트를 내립니다.</li>
 <li><strong>호출 규약(o32)</strong>: 함수가 인수를 어느 레지스터로 받고 어떤 레지스터를 보존해야 하는지 정한 약속입니다. 32비트 MIPS의 o32 규약에서는 인수 넷까지 <code>a0</code>~<code>a3</code>로, 그 뒤는 스택으로 넘깁니다. 호출 뒤에도 값이 남아 있어야 하는 범용 레지스터는 <code>$16</code>~<code>$23</code>(s0~s7)과 <code>$28</code>~<code>$30</code>(gp, sp, s8)뿐입니다. <a href="https://math-atlas.sourceforge.net/devel/assembly/mipsabi32.pdf">[System V ABI MIPS 보충판 3판, 3장]</a></li>
-<li><strong>압축 블록과 블록 자리</strong>: 업데이트 파일 안에서 본 프로그램은 압축 구간 4곳, 블록 448개로 나뉘어 있습니다. 블록마다 파일 안에서 차지하는 자리의 크기가 정해져 있습니다. 블록의 압축 비트열은 바이트를 그대로 적는 <dfn title="압축 비트열에서 바이트 하나를 그대로 적은 항목">리터럴</dfn>과 앞의 내용을 가져오는 <dfn title="압축 비트열에서 앞서 나온 내용을 길이와 거리로 가리켜 가져오는 항목">복사 토큰</dfn>의 나열이고, 블록마다 딸린 부호표로 적혀 있습니다. 자세한 설명은 <a href="implementation-report.html">재패킹 검증과 업데이트 검사</a>에 있습니다.</li>
+<li><strong>압축 블록과 블록 자리</strong>: 업데이트 파일 안에서 본 프로그램은 압축 구간 4곳, 블록 448개로 나뉩니다. 블록마다 파일 안에서 차지하는 자리의 크기가 정해져 있습니다. 블록의 압축 비트열은 바이트를 그대로 적는 <dfn title="압축 비트열에서 바이트 하나를 그대로 적은 항목">리터럴</dfn>과 앞의 내용을 가져오는 <dfn title="압축 비트열에서 앞서 나온 내용을 길이와 거리로 가리켜 가져오는 항목">복사 토큰</dfn>의 나열이고 블록마다 딸린 부호표로 적혀 있습니다. 자세한 설명은 <a href="implementation-report.html">재패킹 검증과 업데이트 검사</a>에서 다룹니다.</li>
 </ul>
 </section>
 
@@ -95,7 +95,7 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 <p>이 함수는 색 처리 계수를 준비할 때 쓰입니다. 픽셀마다 실행된다는 증거는 아닙니다. <a href="analysis/recompiled-numeric.json">[근거: arithmetic]</a> · <a href="source/reconstructed/q7_numeric.c">[새로 작성한 C 소스]</a></p>
 
 <h3>입력과 출력이 겹쳐도 같은 결과</h3>
-<p>원본은 출력을 쓰기 전에 두 입력을 스택에 복사해 둡니다. 그래서 출력 버퍼가 입력 버퍼와 겹쳐도 계산 도중에 입력이 바뀌지 않습니다. 새 C 코드는 아홉 원소를 모두 계산한 뒤에 출력하는 방식으로 같은 성질을 지킵니다. 이를 확인하려고 경계 입력 8종을 버퍼 배치 8가지로 실행하고, 난수 32개를 배치에 고루 나눠 실행했습니다.</p>
+<p>원본은 출력을 쓰기 전에 두 입력을 스택에 복사해 둡니다. 그래서 출력 버퍼가 입력 버퍼와 겹쳐도 계산 도중에 입력이 바뀌지 않습니다. 새 C 코드는 아홉 원소를 모두 계산한 뒤에 출력하는 방식으로 같은 성질을 지킵니다. 이를 확인하려고 경계 입력 8종을 버퍼 배치 8가지로 실행하고 난수 32개를 배치에 고루 나눠 실행했습니다.</p>
 <div class="table-wrap"><table>
 <caption>경계 입력 8종. 종류마다 버퍼 배치 8가지로 실행했습니다 (8 × 8 = 64사례)</caption>
 <thead><tr><th>입력</th><th>보려는 것</th><th class="n">사례</th></tr></thead>
@@ -111,7 +111,7 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 
 <section id="abi">
 <h2>컴파일 조건과 원래 자리에 넣기</h2>
-<p class="takeaway">새 코드는 원본과 같은 명령 체계·호출 규약으로 컴파일했고, 164바이트여서 원본 함수 구간 236바이트의 앞부분만 차지합니다.</p>
+<p class="takeaway">새 코드는 원본과 같은 명령 체계·호출 규약으로 컴파일했고 164바이트여서 원본 함수 구간 236바이트의 앞부분만 차지합니다.</p>
 
 <figure class="diagram">
 <figcaption>검증 환경: 코드 이미지 두 벌을 같은 입력으로 실행</figcaption>
@@ -151,7 +151,7 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 </figure>
 
 <h3>컴파일 조건</h3>
-<p>컴파일러는 Zig 0.15.2에 든 C 컴파일러(Clang 20.1.2)입니다. 대상은 리틀엔디언 MIPS32r2, o32 호출 규약으로 고정했고, 크기를 줄이는 최적화(<code>-Oz</code>)를 썼습니다.</p>
+<p>컴파일러는 Zig 0.15.2에 든 C 컴파일러(Clang 20.1.2)입니다. 대상은 리틀엔디언 MIPS32r2, o32 호출 규약으로 고정했고 크기를 줄이는 최적화(<code>-Oz</code>)를 썼습니다.</p>
 <pre><code>zig cc -target mipsel-freestanding-none \
   -mcpu=mips32r2+noabicalls -mabi=o32 -mfp32 -fno-pic -G0 \
   -std=c11 -ffreestanding -fno-builtin -fno-stack-protector \
@@ -161,7 +161,7 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 <ul>
 <li>원본 E03·E04의 ELF 헤더와 새로 만든 객체 파일은 모두 32비트 리틀엔디언 MIPS이고 <code>e_flags</code>가 <code>0x70001001</code>로 같습니다. 이 값은 MIPS32r2 계열(<code>0x70000000</code>), o32(<code>0x1000</code>), NOREORDER(<code>0x1</code>)를 합친 것입니다. <a href="https://raw.githubusercontent.com/llvm/llvm-project/main/llvm/include/llvm/BinaryFormat/ELF.h">[LLVM의 ELF 정의]</a></li>
 <li>새 객체의 <code>.MIPS.abiflags</code>는 ISA 32 리비전 2, 32비트 범용 레지스터, 32비트 부동소수점 레지스터, 부동소수점 ABI 속성 1을 적고 있습니다. 원본 ELF에는 부동소수점 ABI를 적은 곳이 없습니다. 그래서 펌웨어 전체의 ABI는 확정하지 않았습니다. 이 함수는 정수 포인터만 받고 부동소수점 명령을 쓰지 않습니다.</li>
-<li>새 코드에는 밖의 함수를 부르는 곳이 없고, 코드 영역에 재배치 항목도 없습니다. 재배치 항목 하나(<code>.rel.pdr</code>)는 메모리에 올리지 않는 정보 구역에만 있습니다.</li>
+<li>새 코드에는 밖의 함수를 부르는 곳이 없고 코드 영역에 재배치 항목도 없습니다. 재배치 항목 하나(<code>.rel.pdr</code>)는 메모리에 올리지 않는 정보 구역에만 있습니다.</li>
 </ul>
 <p><a href="analysis/recompiled-numeric.json">[근거: abi, replay.build]</a></p>
 
@@ -188,7 +188,7 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 
 <h3>HI/LO 레지스터는 값이 다릅니다</h3>
 <p>출력과 메모리는 같았지만 곱셈 결과가 남는 HI/LO 레지스터의 값은 달랐습니다. 모든 원소가 −32,768이고 세 버퍼가 떨어져 있는 사례에서, 18바이트 출력은 같았습니다. 그런데 함수가 끝났을 때 (HI, LO)는 원본이 (0, <code>0xc0000000</code>), 새 코드가 (0, 0)이었습니다.</p>
-<p>o32 규약에서 HI/LO는 호출 뒤에 보존되는 레지스터가 아닙니다. 원본 <code>MakeColorMatrix</code> 구간에도 이 값을 읽는 명령(<code>MFHI</code>, <code>MFLO</code>)이 없습니다. 다만 이 결과는 검사한 출력, 메모리, 호출 규약의 범위에서만 같다는 뜻입니다. 다른 호출 함수, 보존 대상이 아닌 레지스터, 쓰지 않는 스택 바이트, 기계 상태 전체가 같다고 보지 않습니다. <a href="analysis/recompiled-numeric.json">[근거: replay.machine_state_probe]</a></p>
+<p>o32 규약에서 HI/LO는 호출 뒤에 보존되는 레지스터가 아닙니다. 원본 <code>MakeColorMatrix</code> 구간에도 이 값을 읽는 명령(<code>MFHI</code>, <code>MFLO</code>)이 없습니다. 다만 이 결과가 같은 범위는 검사한 출력, 메모리, 호출 규약까지입니다. 다른 호출 함수, 보존 대상이 아닌 레지스터, 쓰지 않는 스택 바이트, 기계 상태 전체가 같다고 보지 않습니다. <a href="analysis/recompiled-numeric.json">[근거: replay.machine_state_probe]</a></p>
 
 <details class="evidence"><summary>소스·산출물·컴파일러의 SHA-256</summary>
 <dl class="kv">
@@ -200,32 +200,32 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 <dt>Zig 0.15.2 Windows x86-64 배포 ZIP</dt><dd><code class="wrap">3a0ed1e8799a2f8ce2a6e6290a9ff22e6906f8227865911fb7ddedc3cc14cb0c</code></dd>
 <dt>컴파일러가 알려 준 버전 문자열</dt><dd><code class="wrap">clang version 20.1.2 (https://github.com/ziglang/zig-bootstrap 7ef74e656cf8ddbd6bf891a8475892aa1afa6891)</code></dd>
 </dl>
-<p>배포 ZIP의 해시는 공식 <a href="https://ziglang.org/download/index.json">Zig 배포 색인</a>의 0.15.2 항목과 같은 값입니다. 실행 파일과 C 입력은 해시를 확인한 바이트를 그대로 쓰고, 산출물의 해시를 다시 검사합니다. 컴파일러에 딸린 지원 폴더의 파일을 하나하나 해시하지는 않았습니다.</p>
+<p>배포 ZIP의 해시는 공식 <a href="https://ziglang.org/download/index.json">Zig 배포 색인</a>의 0.15.2 항목과 같은 값입니다. 실행 파일과 C 입력은 해시를 확인한 바이트를 그대로 쓰고 산출물의 해시를 다시 검사합니다. 컴파일러에 딸린 지원 폴더의 파일을 하나하나 해시하지는 않았습니다.</p>
 </details>
 </section>
 
 <section id="caller">
 <h2>원본 호출 함수 안에서도 결과가 같습니다</h2>
 <p class="takeaway">행렬 곱 함수를 실제로 부르는 원본 <code>MakeColorMatrix</code>를 처음부터 끝까지 실행했습니다. 네 설정에서 호출 58회의 인수와 그 뒤의 쓰기가 두 이미지에서 모두 같았습니다.</p>
-<p><code>MakeColorMatrix</code>(<code>0x8041c180</code>)는 색공간과 픽처 스타일 설정에 따라 여러 행렬을 차례로 곱합니다. 원래 진입점에서 실제 반환까지 실행했고, 아래 단계의 함수를 대체하거나 분기를 강제로 바꾸지 않았습니다. 원본의 색상 회전 함수와 조회 표도 그대로 썼습니다. 실행은 관찰만 하는 방식으로 기록했습니다.</p>
+<p><code>MakeColorMatrix</code>(<code>0x8041c180</code>)는 색공간과 픽처 스타일 설정에 따라 여러 행렬을 차례로 곱합니다. 원래 진입점에서 실제 반환까지 실행했고 아래 단계의 함수를 대체하거나 분기를 강제로 바꾸지 않았습니다. 원본의 색상 회전 함수와 조회 표도 그대로 썼습니다. 실행은 관찰만 하는 방식으로 기록했습니다.</p>
 <div class="table-wrap"><table>
 <caption>호출 함수 4사례. 설정값은 합성 설정 객체에 넣은 값입니다</caption>
 <thead><tr><th>색공간 값</th><th class="n">스타일</th><th class="n">색상</th><th class="n">채도</th><th class="n">행렬 곱 호출</th><th class="n">스택 밖 쓰기</th><th>행렬 곱을 부른 자리</th></tr></thead>
 <tbody><tr><th scope="row">sRGB (0)</th><td class="n">0</td><td class="n">4</td><td class="n">4</td><td class="n">14</td><td class="n">210</td><td><code>0x8041c2b4</code>, <code>0x8041c2f8</code>, <code>0x8041c480</code>, <code>0x8041c498</code></td></tr><tr><th scope="row">AdobeRGB (1)</th><td class="n">0</td><td class="n">4</td><td class="n">4</td><td class="n">15</td><td class="n">210</td><td><code>0x8041c2b4</code>, <code>0x8041c2f8</code>, <code>0x8041c480</code>, <code>0x8041c498</code>, <code>0x8041c694</code></td></tr><tr><th scope="row">sRGB (0)</th><td class="n">1</td><td class="n">0</td><td class="n">8</td><td class="n">14</td><td class="n">210</td><td><code>0x8041c2b4</code>, <code>0x8041c2f8</code>, <code>0x8041c480</code>, <code>0x8041c498</code></td></tr><tr><th scope="row">AdobeRGB (1)</th><td class="n">2</td><td class="n">8</td><td class="n">0</td><td class="n">15</td><td class="n">210</td><td><code>0x8041c2b4</code>, <code>0x8041c2f8</code>, <code>0x8041c480</code>, <code>0x8041c498</code>, <code>0x8041c694</code></td></tr></tbody>
 </table></div>
 <ul>
-<li>sRGB 두 사례는 행렬 곱을 14회씩, AdobeRGB 두 사례는 15회씩 불렀습니다. 합계 58회이고, 출력이 입력과 같은 버퍼인 호출도 들어 있습니다.</li>
+<li>sRGB 두 사례는 행렬 곱을 14회씩, AdobeRGB 두 사례는 15회씩 불렀습니다. 합계 58회이고 출력이 입력과 같은 버퍼인 호출도 들어 있습니다.</li>
 <li>두 이미지에서 호출한 자리, 인수, 입력의 해시, 출력 버퍼와 작업 영역, 스택 밖 쓰기의 주소·크기·값의 순서를 비교했습니다.</li>
 <li>둘째 객체 포인터는 비워 두었고(null), 다섯째 출력 포인터는 유효한 합성 버퍼입니다. o32 규약의 보존 레지스터, 스택 포인터, 복귀 주소, 스택으로 넘긴 다섯째 인수가 그대로인지와, 허용한 범위 밖을 읽거나 쓰지 않는지도 검사했습니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>이 네 설정이 모든 픽처 스타일이나 둘째 객체가 있는 분기를 지나가는 것은 아닙니다. 확인한 것은 함수가 주고받는 값의 범위에서 같다는 것이며, 영상의 픽셀이나 카메라에서의 실행은 다루지 않았습니다. <a href="analysis/recompiled-numeric.json">[근거: caller, replay.caller_cases]</a> · <a href="tools/check_recompiled_numeric.py">[재현 도구: replay_caller]</a></p></div>
+<p>이 네 설정이 모든 픽처 스타일이나 둘째 객체가 있는 분기를 지나가는 것은 아닙니다. 함수가 주고받는 값의 범위에서 같음을 확인했고 영상의 픽셀이나 카메라에서의 실행은 다루지 않았습니다. <a href="analysis/recompiled-numeric.json">[근거: caller, replay.caller_cases]</a> · <a href="tools/check_recompiled_numeric.py">[재현 도구: replay_caller]</a></p></div>
 </section>
 
 <section id="package">
 <h2>압축된 업데이트 파일의 원래 블록 자리에 다시 넣기</h2>
-<p class="takeaway">함수 자리에 들어가는 것과 압축 블록 자리에 들어가는 것은 다른 문제입니다. 첫 방법은 60바이트가 모자랐고, 바뀐 부분만 다시 인코딩하는 방법으로 3바이트를 남기고 들어갔습니다.</p>
-<p>코드를 바꾸면 그 블록의 압축 비트열도 바뀝니다. 바뀐 자리의 리터럴이 달라지고, 그 자리를 가져다 쓰던 복사 토큰이 틀린 내용을 가리키게 됩니다. 고친 비트열이 블록 자리보다 길어지면 파일의 배치를 바꾸지 않고는 넣을 수 없습니다.</p>
+<p class="takeaway">함수 자리에 들어가는 것과 압축 블록 자리에 들어가는 것은 다른 문제입니다. 첫 방법은 60바이트가 모자랐고 바뀐 부분만 다시 인코딩하는 방법으로 3바이트를 남기고 들어갔습니다.</p>
+<p>코드를 바꾸면 그 블록의 압축 비트열도 바뀝니다. 바뀐 자리의 리터럴이 달라지고 그 자리를 가져다 쓰던 복사 토큰이 틀린 내용을 가리키게 됩니다. 고친 비트열이 블록 자리보다 길어지면 파일의 배치를 바꾸지 않고는 넣을 수 없습니다.</p>
 
 <figure class="diagram">
 <figcaption>E04 블록 154의 압축 비트 수와 블록 자리의 크기</figcaption>
@@ -251,8 +251,8 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 </figure>
 
 <ol class="steps">
-<li><strong>첫 시도: 틀어진 토큰을 리터럴로 바꾸기</strong> 기존 토큰·부호표·자리를 그대로 두고, 틀어진 복사 토큰만 리터럴로 풀어 쓰는 기존 재패킹 도구를 썼습니다. 바뀐 코드에는 9,916바이트가 필요했고 자리는 9,856바이트였습니다. 도구는 파일을 쓰기 전에 거부했습니다. 이 실패는 이 방법의 한계이며, 다른 압축 방법으로도 안 된다는 뜻이 아닙니다.</li>
-<li><strong>창 재인코딩</strong> 원래 부호표는 그대로 두고, 바뀐 범위와 겹치는 토큰들을 “창” 단위로 묶어 다시 구성했습니다. 창마다 원래 부호표로 적을 수 있는 리터럴·길이·거리 표현의 비트 수를 비교해 가장 짧은 조합을 고릅니다(동적 계획법). 블록 154는 창 21개에서 토큰 102개를 새로 구성했고, 새 복사 토큰 48개 가운데 16개는 앞 블록의 내용을 가리킵니다. 창 밖에서 틀어진 복사 토큰도 따로 고쳤습니다. 결과는 78,817비트(9,853바이트)이고, 자리 끝에 0비트 31개가 남습니다.</li>
+<li><strong>첫 시도: 틀어진 토큰을 리터럴로 바꾸기</strong> 기존 토큰·부호표·자리를 그대로 두고 틀어진 복사 토큰만 리터럴로 풀어 쓰는 기존 재패킹 도구를 썼습니다. 바뀐 코드에는 9,916바이트가 필요했고 자리는 9,856바이트였습니다. 도구는 파일을 쓰기 전에 거부했습니다. 이 실패는 이 방법의 한계이며 다른 압축 방법으로도 안 된다는 뜻이 아닙니다.</li>
+<li><strong>창 재인코딩</strong> 원래 부호표는 그대로 두고 바뀐 범위와 겹치는 토큰들을 “창” 단위로 묶어 다시 구성했습니다. 창마다 원래 부호표로 적을 수 있는 리터럴·길이·거리 표현의 비트 수를 비교해 가장 짧은 조합을 고릅니다(동적 계획법). 블록 154는 창 21개에서 토큰 102개를 새로 구성했고 새 복사 토큰 48개 가운데 16개는 앞 블록의 내용을 가리킵니다. 창 밖에서 틀어진 복사 토큰도 따로 고쳤습니다. 결과는 78,817비트(9,853바이트)이고 자리 끝에 0비트 31개가 남습니다.</li>
 <li><strong>다음 블록의 참조 고치기</strong> 블록 155의 복사 토큰 하나가 앞 블록의 바뀐 범위를 가리킵니다. 그대로 두면 바꾸려던 곳 밖에서 2바이트가 달라집니다. 이 토큰을 원래 내용의 리터럴로 바꿨습니다.</li>
 <li><strong>전체 확인</strong> 448블록을 모두 다시 풀었습니다. 원본과 달라진 142바이트는 전부 바꾸려던 164바이트 범위 안에 있었습니다. 나머지 446블록과, 두 블록의 헤더·부호표·자리 크기는 그대로입니다. 파일 길이도 18,743,520바이트로 같습니다.</li>
 </ol>
@@ -261,10 +261,10 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 <thead><tr><th>블록</th><th>파일 오프셋</th><th>복원 주소</th><th class="n">원본 비트</th><th class="n">새 비트</th><th class="n">새 바이트</th><th class="n">남은 비트</th><th class="n">고친 토큰</th></tr></thead>
 <tbody><tr><th scope="row">E04 블록 154</th><td><code>0x407ef8</code>~<code>0x40abb4</code></td><td><code>0x8041b740</code>~<code>0x8041f16c</code></td><td class="n">77,993</td><td class="n">78,817</td><td class="n">9,853</td><td class="n">31</td><td class="n">95</td></tr><tr><th scope="row">E04 블록 155</th><td><code>0x40abb4</code>~<code>0x40d850</code></td><td><code>0x8041f16c</code>~<code>0x80423380</code></td><td class="n">78,770</td><td class="n">78,813</td><td class="n">9,852</td><td class="n">35</td><td class="n">1</td></tr></tbody>
 </table></div>
-<p>164바이트를 덮어썼는데 달라진 바이트가 142개인 것은, 새 코드의 22바이트가 원본의 같은 자리와 값이 같기 때문입니다. 창 인코더는 블록 전체의 후보 수가 1,000,000개를 넘으면 출력 전에 거부하고, 부호표로 적을 수 없거나 자리를 넘는 창이 있으면 실패합니다. 블록 자리의 크기와 파일 안의 위치는 바꾸지 않습니다. <a href="analysis/recompiled-numeric.json">[근거: package_attempt, package_rebuild]</a> · <a href="tools/fixed_table_encode.py">[창 인코더]</a> · <a href="tools/repack_q7.py">[재패킹 도구]</a></p>
+<p>164바이트를 덮어썼지만 달라진 바이트는 142개입니다. 새 코드의 22바이트가 원본의 같은 자리와 값이 같기 때문입니다. 창 인코더는 블록 전체의 후보 수가 1,000,000개를 넘으면 출력 전에 거부합니다. 부호표로 적을 수 없거나 자리를 넘는 창이 있으면 실패합니다. 블록 자리의 크기와 파일 안의 위치는 바꾸지 않습니다. <a href="analysis/recompiled-numeric.json">[근거: package_attempt, package_rebuild]</a> · <a href="tools/fixed_table_encode.py">[창 인코더]</a> · <a href="tools/repack_q7.py">[재패킹 도구]</a></p>
 <p>다시 만든 파일에서 복원한 분석용 ELF는, 위의 96사례와 4사례에서 실행한 이미지 B와 바이트까지 같습니다. 파일 끝 꼬리표의 체크섬도 다시 계산한 값(1,702,075,501)과 맞습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>확인한 것은 PC의 소프트웨어 압축 해제기로 풀었을 때 바이트가 맞는다는 것입니다. 카메라의 압축 해제, 업데이트 수용, 기록, 부팅을 입증하지 않습니다. 수정한 파일은 비공개 연구 경로에만 만들었고 배포하지 않습니다. <a href="tools/check_numeric_package.py">[패키지 재현 도구]</a></p></div>
+<p>PC의 소프트웨어 압축 해제기로 풀었을 때 바이트가 맞는 것까지 확인했습니다. 카메라의 압축 해제, 업데이트 수용, 기록, 부팅을 입증하지 않습니다. 수정한 파일은 비공개 연구 경로에만 만들었고 배포하지 않습니다. <a href="tools/check_numeric_package.py">[패키지 재현 도구]</a></p></div>
 <details class="evidence"><summary>다시 만든 파일의 해시</summary>
 <dl class="kv">
 <dt>다시 만든 업데이트 파일</dt><dd><code class="wrap">eb5d014b761f947b2bd1786651c56d039db8e0e281b7e96c5a8c79a93ad978d6</code></dd>
@@ -302,7 +302,7 @@ out[r,c] = (acc &gt;&gt; 13) &amp; 0xffff</code></pre>
 <li>재패킹은 원래 부호표, 블록 자리, ELF 안의 위치, 파일 크기를 지키는 범위에서만 됩니다. 코드를 다른 곳으로 옮기거나 부호표를 새로 만드는 일은 하지 않습니다.</li>
 <li>수정한 펌웨어는 배포하지 않으며 카메라에 기록하지 않았습니다. 원본 코드 전체와 컴파일한 객체 파일도 공개하지 않습니다.</li>
 </ul>
-<p>컴파일과 96 + 4사례의 실행은 서로 독립해서 두 번 했고, 기록 전체가 같았습니다. 원본에서 워드 35개와 함수 구간 7개의 해시·분기를 다시 계산했습니다. 실행 엔진은 angr 10.0.5 / VEX입니다.</p>
+<p>컴파일과 96 + 4사례의 실행은 서로 독립해서 두 번 했고 기록 전체가 같았습니다. 원본에서 워드 35개와 함수 구간 7개의 해시·분기를 다시 계산했습니다. 실행 엔진은 angr 10.0.5 / VEX입니다.</p>
 <details class="evidence"><summary>대조한 함수 구간 7개와 원본 워드</summary>
 <div class="table-wrap"><table class="compact">
 <caption>본 프로그램(E04)의 함수 구간. 끝은 다음 심볼 주소로 잡았습니다</caption>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>색 처리·HDR 안내 — PENTAX Q7 펌웨어 연구</title>
-<meta name="description" content="PENTAX Q7이 HDR 모드로 찍은 사진을 합성하고 색을 바꿔 JPEG로 저장하는 과정을 펌웨어에서 어디까지 따라갔는지 정리한 지도입니다. 다섯 문서가 각각 어느 단계를 다루는지, 내부 이름의 뜻, 확인한 것과 남은 것, 읽는 순서를 담았습니다.">
+<meta name="description" content="PENTAX Q7이 HDR 모드로 찍은 사진을 합성하고 색을 바꿔 JPEG로 저장하는 과정을 펌웨어에서 어디까지 따라갔는지 정리한 지도입니다. 각 문서가 다루는 단계, 내부 이름의 뜻, 확인한 것과 남은 것, 읽는 순서를 담았습니다. Lightroom 쪽 프로파일 파일(DCP) 분석 두 문서도 따로 묶어 소개합니다.">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-camera="q7">
@@ -16,34 +16,35 @@
 <header class="page-head">
 <p class="eyebrow">색 처리와 HDR · 이 주제의 지도</p>
 <h1>색 처리·HDR 안내</h1>
-<p class="lead">카메라는 센서가 받은 빛을 색이 정리된 JPEG 파일로 바꿉니다. Q7의 HDR 모드는 노출이 다른 사진을 합쳐 밝은 곳과 어두운 곳을 함께 살리는데, 이 주제는 그 과정에서 펌웨어가 어떤 설정을 계산해 영상 처리 회로에 넘기는지 다룹니다.</p>
+<p class="lead">카메라는 센서가 받은 빛을 색이 정리된 JPEG 파일로 바꿉니다. Q7의 HDR 모드는 노출이 다른 사진을 합쳐 밝은 곳과 어두운 곳을 함께 살립니다. 이 주제는 그 과정에서 펌웨어가 어떤 설정을 계산해 영상 처리 회로에 넘기는지 다룹니다. 같은 RAW를 PC의 Lightroom이 해석할 때 쓰는 프로파일 파일(DCP)도 별도 갈래로 함께 다룹니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#overview">한눈에 보기: HDR 사진이 JPEG가 되기까지</a></li><li><a href="#concepts">배경 지식과 내부 이름</a></li><li><a href="#status">지금까지 알아낸 것과 아직 모르는 것</a></li><li><a href="#reading">읽는 순서</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#overview">한눈에 보기: 펌웨어 경로와 프로파일 파일</a></li><li><a href="#concepts">배경 지식과 내부 이름</a></li><li><a href="#status">지금까지 알아낸 것과 아직 모르는 것</a></li><li><a href="#reading">읽는 순서</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>HDR 사진 한 장이 <strong>합성 → 톤 매핑 → 렌즈 왜곡 보정 → JPEG 압축 → 파일 저장</strong>으로 가는 동안, 같은 작업 버퍼의 주소가 어떻게 넘어가는지 펌웨어 코드로 이었습니다.</li>
-<li>HDR 톤 매핑은 영상 처리 회로(IPU)를 <strong>네 번의 패스</strong>로 돌립니다. 색 필터 FC1은 그중 둘째와 마지막 패스에서 켜지고, 마지막 패스의 FC1에는 JPEG의 RGB→YCbCr 변환 계수와 같은 값(1/2048 단위)이 설정됩니다.</li>
-<li>확인한 것은 <strong>CPU가 레지스터에 쓰는 값과 주소</strong>까지입니다. 원본 기계어를 PC 에뮬레이터에서 실행해 대조했고, 넣어 준 입력은 합성 값입니다.</li>
+<li>HDR 사진 한 장은 <strong>합성 → 톤 매핑 → 렌즈 왜곡 보정 → JPEG 압축 → 파일 저장</strong>을 거칩니다. 그동안 같은 작업 버퍼의 주소가 어떻게 넘어가는지 펌웨어 코드로 이었습니다.</li>
+<li>HDR 톤 매핑은 영상 처리 회로(IPU)를 <strong>네 번의 패스</strong>로 돌립니다. 색 필터 FC1은 그중 둘째와 마지막 패스에서 켜집니다. 마지막 패스의 FC1에는 JPEG의 RGB→YCbCr 변환 계수와 같은 값(1/2048 단위)이 설정됩니다.</li>
+<li>확인한 것은 <strong>CPU가 레지스터에 쓰는 값과 주소</strong>까지입니다. 원본 기계어를 PC 에뮬레이터에서 실행해 대조했습니다. 넣어 준 입력은 합성 값입니다.</li>
 <li>회로가 실제로 픽셀을 어떻게 계산하는지, 저장된 JPEG의 픽셀이 무엇인지는 <strong>확인하지 않았습니다</strong>. 실물 카메라에서 실행한 실험은 없습니다.</li>
+<li>별도 갈래로 Lightroom이 쓰는 Q7용 <strong>DCP 파일 두 개</strong>의 구조와 표 보간 수식을 확인했습니다. RAW 현상과 Lightroom 출력은 만들지 않았습니다. 펌웨어 색 경로와도 연결하지 않았습니다.</li>
 </ul>
 </section>
 
 <section id="overview">
-<h2>한눈에 보기: HDR 사진이 JPEG가 되기까지</h2>
-<p>가운데 줄은 HDR 촬영에서 영상 데이터가 지나가는 단계이고, 위 줄은 CPU가 그 단계에 넘기는 설정입니다. 아래 점선 아래는 이 연구가 들여다보지 못한 회로 내부입니다. 동그라미 숫자는 그 부분을 다루는 문서입니다.</p>
+<h2>한눈에 보기: 펌웨어 경로와 프로파일 파일</h2>
+<p>가운데 줄은 HDR 촬영에서 영상 데이터가 지나가는 단계입니다. 위 줄은 CPU가 그 단계에 넘기는 설정이며 점선 아래는 이 연구가 들여다보지 못한 회로 내부입니다. 맨 아래 묶음은 펌웨어와 별개인 Lightroom 쪽 프로파일 파일 분석입니다. 동그라미 숫자는 그 부분을 다루는 문서 번호이며 상자 제목을 누르면 해당 문서로 갑니다.</p>
 
 <figure class="diagram">
-<figcaption>HDR 촬영의 단계와 각 단계를 다루는 문서</figcaption>
+<figcaption>HDR 촬영의 단계, Lightroom 쪽 갈래, 각 단계를 다루는 문서</figcaption>
 <div class="dg-scroll">
-<svg class="dg" viewBox="0 0 800 400" role="img" aria-labelledby="dg-map-title dg-map-desc">
-<title id="dg-map-title">Q7 HDR 촬영에서 JPEG 저장까지의 단계와 문서 지도</title>
-<desc id="dg-map-desc">위 줄은 CPU가 계산해 넘기는 설정 네 가지입니다. 색 행렬 계산은 문서 0, 설정에서 필터와 레지스터로 가는 경로는 문서 1, 패스 구성과 계수 계산은 문서 2·3·4, task 생성과 큐 제출·완료는 문서 5가 다룹니다. 이 설정들은 영상 처리 회로의 레지스터로 전달됩니다. 가운데 줄은 HDR 촬영의 데이터 경로입니다. 노출이 다른 사진 촬영, HDR 합성(문서 2), 톤 매핑 네 패스(문서 3·4·5), 렌즈 왜곡 보정(문서 2), JPEG 압축(문서 2), EXIF와 파일 저장(문서 1) 순서입니다. 첫 단계의 입력 장 수는 펌웨어에서 확인하지 않았습니다. 점선 아래는 회로가 실제로 픽셀을 계산하고 메모리로 옮기는 과정과 최종 JPEG 픽셀로, 확인하지 않았습니다.</desc>
+<svg class="dg" viewBox="0 0 800 552" role="img" aria-labelledby="dg-map-title dg-map-desc">
+<title id="dg-map-title">Q7 HDR 촬영에서 JPEG 저장까지의 단계, Lightroom 쪽 프로파일 분석과 문서 지도</title>
+<desc id="dg-map-desc">위 줄은 CPU가 계산해 넘기는 설정 네 가지입니다. 색 행렬 계산은 문서 0, 설정에서 필터와 레지스터로 가는 경로는 문서 1, 패스 구성과 계수 계산은 문서 2·3·4, task 생성과 큐 제출·완료는 문서 5가 다룹니다. 이 설정들은 영상 처리 회로의 레지스터로 전달됩니다. 가운데 줄은 HDR 촬영의 데이터 경로입니다. 노출이 다른 사진 촬영, HDR 합성(문서 2), 톤 매핑 네 패스(문서 3·4·5), 렌즈 왜곡 보정(문서 2), JPEG 압축(문서 2), EXIF와 파일 저장(문서 1) 순서입니다. 첫 단계의 입력 장 수는 펌웨어에서 확인하지 않았습니다. 점선 아래는 회로가 실제로 픽셀을 계산하고 메모리로 옮기는 과정과 최종 JPEG 픽셀로, 확인하지 않았습니다. 맨 아래의 별도 묶음은 Lightroom 쪽 프로파일 파일 분석입니다. 문서 6은 DCP 파일 두 개의 태그와 표 구조를, 문서 7은 표 보간 수식을 다룹니다. 그 다음 단계인 Lightroom 현상 출력과 카메라 색 비교는 확인하지 않았습니다. 이 묶음은 위의 펌웨어 경로와 연결하지 않았습니다.</desc>
 <defs>
 <marker id="dg-map-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 <marker id="dg-map-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
@@ -100,33 +101,51 @@
 <rect class="b open" x="8" y="294" width="784" height="78" rx="8"/>
 <text class="t" x="20" y="322">회로 내부: 픽셀 계산, 메모리 전송(DMA), 실제 출력</text>
 <text class="s" x="20" y="346">행렬·감마·클리핑의 순서와 비트 폭, 저장된 JPEG의 픽셀 값, 실물 카메라에서의 동작</text>
+<rect class="gf" x="0" y="392" width="800" height="152" rx="12"/>
+<text class="h" x="14" y="414">Lightroom 쪽 프로파일 파일 분석 (PC 자료, 위 펌웨어 경로와 연결하지 않음)</text>
+<rect class="b ok" x="8" y="428" width="240" height="64" rx="8"/>
+<a href="reports/q7-dcp-structure.html"><text class="t" x="20" y="454">⑥ DCP 파일의 태그와 표</text></a>
+<text class="s" x="20" y="475">Adobe Standard · matrix-test</text>
+<rect class="b ok" x="280" y="428" width="240" height="64" rx="8"/>
+<a href="reports/q7-dcp-interpolation.html"><text class="t" x="292" y="454">⑦ 표의 좌표와 보간</text></a>
+<text class="s" x="292" y="475">SDK 소스 · 합성 HSV 15건</text>
+<rect class="b open" x="552" y="428" width="240" height="64" rx="8"/>
+<text class="t" x="564" y="454">RAW 현상 · Lightroom 출력</text>
+<text class="s" x="564" y="475">카메라 색 비교 없음</text>
+<path class="e" d="M248 460H278" marker-end="url(#dg-map-ah)"/>
+<path class="e open" d="M520 460H550" marker-end="url(#dg-map-ao)"/>
+<text class="n" x="14" y="522">DCP는 Lightroom이 RAW를 해석할 때 쓰는 PC 쪽 파일이며 카메라 펌웨어 안에 들어 있지 않습니다.</text>
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행해 확인한 부분이 있는 단계</li><li><i class="static"></i>코드를 읽어 확인한 단계</li><li><i class="key"></i>HDR이 더하는 처리의 중심</li><li><i class="open"></i>확인하지 않은 것</li></ul>
 </figure>
 <ul>
-<li><strong>⓪</strong> <a href="deep-report.html#color">압축 복원과 주요 함수 300개</a> — 색 행렬을 곱하고 색상을 돌리는 계산 함수(시작하기 주제)</li>
-<li><strong>①</strong> <a href="routing-report.html">AF 명령의 수신자, 색 행렬 레지스터, JPEG 저장 경로</a> — 설정이 레지스터에 닿는 경로와 파일 저장</li>
-<li><strong>②</strong> <a href="pixel-report.html">HDR 결과 버퍼가 JPEG가 되는 경로와 색 필터의 덮어쓰기</a> — 버퍼 연결, 실제 압축 위치, 패스와 덮어쓰기</li>
-<li><strong>③</strong> <a href="final-color-report.html">HDR 제출 분기와 FC 계수</a> — 출력 버퍼 선택과 FC1에 남는 계수</li>
-<li><strong>④</strong> <a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a> — 네 패스의 구성과 패스별 FC1 켜짐</li>
-<li><strong>⑤</strong> <a href="hdr-task-report.html">FC1 비트와 HDR task 완료</a> — FC1 제어 비트의 출처, task 제출과 완료 신호</li>
+<li><strong>⓪</strong> <a href="deep-report.html#color">압축 복원과 주요 함수 300개</a>: 색 행렬을 곱하고 색상을 돌리는 계산 함수(시작하기 주제)</li>
+<li><strong>①</strong> <a href="routing-report.html">AF 명령의 수신자, 색 행렬 레지스터, JPEG 저장 경로</a>: 설정이 레지스터에 닿는 경로와 파일 저장</li>
+<li><strong>②</strong> <a href="pixel-report.html">HDR 결과 버퍼가 JPEG가 되는 경로와 색 필터의 덮어쓰기</a>: 버퍼 연결, 실제 압축 위치, 패스와 덮어쓰기</li>
+<li><strong>③</strong> <a href="final-color-report.html">HDR 제출 분기와 FC 계수</a>: 출력 버퍼 선택과 FC1에 남는 계수</li>
+<li><strong>④</strong> <a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a>: 네 패스의 구성과 패스별 FC1 켜짐</li>
+<li><strong>⑤</strong> <a href="hdr-task-report.html">FC1 비트와 HDR task 완료</a>: FC1 제어 비트의 출처, task 제출과 완료 신호</li>
+<li><strong>⑥</strong> <a href="reports/q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a>: Lightroom 쪽 프로파일 파일의 구성</li>
+<li><strong>⑦</strong> <a href="reports/q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a>: 표 값이 색 보정량이 되는 수식</li>
 </ul>
 
 <h3>지금까지의 이해를 한 번에</h3>
-<p>다섯 문서는 앞 문서가 남긴 질문을 다음 문서가 좁히는 순서로 쓰였습니다. 아래는 그 결과를 합친 현재의 이해입니다. 모두 분석한 <strong>HDR 성공 경로 하나</strong>에 대한 것입니다.</p>
+<p>펌웨어 쪽 다섯 문서(①~⑤)는 앞 문서가 남긴 질문을 다음 문서가 좁히는 순서로 쓰였습니다. 아래는 그 결과를 합친 현재의 이해로, 모두 분석한 <strong>HDR 성공 경로 하나</strong>의 이야기입니다.</p>
 <ol class="steps">
 <li><strong>설정 준비</strong> 촬영 설정에서 색 행렬을 계산하고(⓪), 설정 캐시와 필터 객체를 거쳐 CM·FC1 필터에 담습니다. 레지스터 기록 함수는 갱신 표시가 있을 때만 씁니다(①).</li>
-<li><strong>HDR 합성</strong> <code>HdrImageMixing</code>이 작업 버퍼 B를 할당하고, 하위 이미지마다 B 안의 위치를 톤 매핑 출력으로 지정합니다(②). 리코 자료에 따르면 HDR 모드는 노출이 다른 세 장을 합칩니다. 펌웨어에서 입력 장 수는 따로 확인하지 않았습니다.</li>
-<li><strong>톤 매핑 패스</strong> <code>IpuToneMapRgb</code>가 새 처리 경로를 만들고 FC1용 계수를 넣습니다. HDR 보조 설정 때문에 FIPLIB가 패스 네 개를 구성하고, 제출 모드 0으로 네 패스가 모두 실행됩니다. FC1은 둘째와 마지막 패스에서 켜지고, 마지막 패스에서는 톤 매핑이 넣은 계수 11개가 FIPLIB를 지나도 그대로 남습니다(③④). 앞선 패스의 계수는 따로 확인하지 않았습니다. 네 패스는 공통 C12 task로 만들어져 드라이버 큐에 들어가고, 완료 인터럽트와 task·처리기의 완료 집계를 거쳐 <code>PathWait</code>가 풀립니다(⑤).</li>
+<li><strong>HDR 합성</strong> <code>HdrImageMixing</code>이 작업 버퍼 B를 할당합니다. 하위 이미지마다 B 안의 위치를 톤 매핑 출력으로 정합니다(②). 리코 자료에 따르면 HDR 모드는 노출이 다른 세 장을 합칩니다. 펌웨어에서 입력 장 수는 따로 확인하지 않았습니다.</li>
+<li><strong>톤 매핑 패스</strong> <code>IpuToneMapRgb</code>가 새 처리 경로를 만들고 FC1용 계수를 넣습니다. HDR 보조 설정 때문에 FIPLIB가 패스 네 개를 구성합니다. 제출 모드 0으로 네 패스가 모두 실행됩니다. FC1은 둘째와 마지막 패스에서 켜집니다. 마지막 패스에서는 톤 매핑이 넣은 계수 11개가 FIPLIB를 지나도 그대로 남습니다(③④). 그보다 앞 패스의 계수는 따로 확인하지 않았습니다. 네 패스는 공통 C12 task로 만들어져 드라이버 큐에 들어갑니다. 완료 인터럽트와 task·처리기의 완료 집계를 거쳐 <code>PathWait</code>가 풀립니다(⑤).</li>
 <li><strong>렌즈 왜곡 보정</strong> 결과가 담긴 같은 B를 LDC 패스가 입력이자 출력으로 씁니다(②).</li>
 <li><strong>JPEG 압축</strong> <code>ApsJpegDirectCompress</code>가 B를 주소 규칙에 따라 바꾼 T(B)를 압축 입력으로 넘깁니다. EXIF 단계는 다시 압축하지 않고 이미 만든 압축 크기를 씁니다(②).</li>
 <li><strong>파일 저장</strong> 압축 결과와 마커 조각이 목록으로 묶여 큐 두 개를 거쳐 FileX의 파일 쓰기 함수로 갑니다(①).</li>
 </ol>
+<div class="callout"><strong class="label">Lightroom 쪽 갈래(⑥⑦)</strong>
+<p>⑥⑦은 PC의 Lightroom이 Q7 RAW를 해석할 때 쓰는 프로파일 파일을 다룹니다. 파일 구조와 표 보간 수식까지만 확인했고 RAW를 현상하지 않았습니다. 어느 프로파일도 카메라 JPEG의 색을 재현한다고 판단할 근거는 없습니다. 펌웨어의 FC1·HDR 경로와 대응시킨 결과도 없습니다.</p></div>
 <div class="callout plain"><strong class="label">HDR이 일반 촬영에 더하는 것 (펌웨어에서 보이는 범위)</strong>
 <p>합성용 작업 버퍼와 하위 이미지, 톤 매핑용 처리 경로 하나, HDR 보조 설정(ID <code>0x1f</code>)이 만드는 네 패스 구성, FC1용 로컬 계수입니다. 일반(HDR이 아닌) 촬영의 경로는 이 주제에서 따로 추적하지 않았으므로 둘을 비교한 결론은 없습니다.</p></div>
 <div class="callout"><strong class="label">FC1 계수의 정체 (해석)</strong>
-<p>HDR이 FC1에 넣는 계수 612·1202·233 / −346·−678·1024 / 1024·−857·−167을 2048로 나누면 JPEG(JFIF)의 RGB→YCbCr 변환 계수와 같아집니다(<a href="https://www.w3.org/Graphics/JPEG/jfif3.pdf">JFIF 1.02</a>). 펌웨어의 “601” 내장 계수도 같은 값입니다(③). 그래서 FC1은 색을 밝기·색차로 바꾸는 단계로 보이지만, 회로 문서나 픽셀 관측으로 확인한 것은 아닙니다. 자세한 비교는 <a href="pixel-report.html#overwrite">②의 덮어쓰기 절</a>에 있습니다.</p></div>
+<p>HDR이 FC1에 넣는 계수 612·1202·233 / −346·−678·1024 / 1024·−857·−167을 2048로 나누면 JPEG(JFIF)의 RGB→YCbCr 변환 계수와 같아집니다(<a href="https://www.w3.org/Graphics/JPEG/jfif3.pdf">JFIF 1.02</a>). 펌웨어의 “601” 내장 계수도 같은 값입니다(③). 그래서 FC1은 색을 밝기·색차로 바꾸는 단계로 보입니다. 회로 문서나 픽셀 관측으로 확인하지는 않았습니다. 자세한 비교는 <a href="pixel-report.html#overwrite">②의 덮어쓰기 절</a>에 있습니다.</p></div>
 </section>
 
 <section id="concepts">
@@ -134,16 +153,16 @@
 <p>이 주제의 문서를 읽는 데 필요한 개념과, 문서에 자주 나오는 펌웨어 내부 이름입니다.</p>
 
 <h3>카메라 쪽 배경</h3>
-<p>Q7은 1/1.7인치 이면조사(back-illuminated) CMOS 센서와 “Q ENGINE” 영상 엔진을 씁니다. 촬영 기능으로 HDR(설정: Auto, HDR 1, HDR 2), 렌즈 왜곡 보정(Distortion Correction), 색공간 sRGB·AdobeRGB가 있고, RAW는 12비트 DNG로 저장합니다(<a href="https://www.ricoh-imaging.co.jp/english/news/2013/20130613_3.html">리코의 Q7 발표 자료</a>). 리코는 HDR 모드를 “노출이 다른 세 장으로 다이내믹 레인지가 넓은 사진을 합성하는 기능”으로 설명합니다.</p>
+<p>Q7은 1/1.7인치 이면조사(back-illuminated) CMOS 센서와 “Q ENGINE” 영상 엔진을 씁니다. 촬영 기능으로 HDR(설정: Auto, HDR 1, HDR 2), 렌즈 왜곡 보정(Distortion Correction), 색공간 sRGB·AdobeRGB가 있습니다. RAW는 12비트 DNG로 저장합니다(<a href="https://www.ricoh-imaging.co.jp/english/news/2013/20130613_3.html">리코의 Q7 발표 자료</a>). 리코는 HDR 모드를 “노출이 다른 세 장으로 다이내믹 레인지가 넓은 사진을 합성하는 기능”으로 설명합니다.</p>
 <p>JPEG 파일은 화소를 RGB 대신 밝기 Y와 색차 Cb·Cr로 저장합니다. 그래서 JPEG를 만드는 카메라는 어딘가에서 RGB→YCbCr 변환을 합니다(<a href="https://www.w3.org/Graphics/JPEG/jfif3.pdf">JFIF 1.02</a>).</p>
-<p>3×3 색 행렬은 한 화소의 세 값을 섞어 새 세 값을 만듭니다. 펌웨어는 계수를 정수로 다루는데, 이 주제에서 본 FC1 계수는 2048을 1로 보는 정수입니다.</p>
+<p>3×3 색 행렬은 한 화소의 세 값을 섞어 새 세 값을 만듭니다. 펌웨어는 계수를 정수로 다룹니다. 이 주제에서 본 FC1 계수는 2048을 1로 보는 정수입니다.</p>
 
 <h3>레지스터와 주소</h3>
 <p>CPU는 <code>0xb…</code> 주소에 값을 써서 회로를 제어합니다(<dfn title="Memory-Mapped I/O. 메모리 주소에 읽고 쓰는 방식으로 장치를 제어하는 방법">MMIO</dfn>). MIPS32에서 <code>0xa0000000</code>~<code>0xbfffffff</code>는 캐시를 거치지 않는 kseg1 구간입니다(<a href="https://ftp.riken.jp/NetBSD/NetBSD-current/src/sys/arch/mips/include/cpuregs.h">NetBSD의 MIPS 주소 정의</a>). 이 연구는 그 레지스터에 무엇이 쓰이는지까지 봅니다. 회로가 그 값으로 무엇을 하는지는 공개 칩 문서가 없어 보지 못했습니다.</p>
 
 <h3>내부 이름</h3>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>아래 이름은 펌웨어에 남은 함수·클래스 이름에서 왔고, 역할은 코드의 쓰임새로 추정한 것입니다. 공개된 데이터시트에서 확인한 명칭이 아닙니다.</p></div>
+<p>아래 이름은 펌웨어에 남은 함수·클래스 이름에서 왔습니다. 역할은 코드의 쓰임새로 추정한 것입니다. 공개된 데이터시트에서 확인한 명칭이 아닙니다.</p></div>
 <div class="table-wrap"><table>
 <caption>문서에 자주 나오는 내부 이름</caption>
 <thead><tr><th>이름</th><th>코드에서 보이는 역할</th><th>주로 다루는 문서</th></tr></thead>
@@ -158,12 +177,20 @@
 <tr><th scope="row">DirectCompress</th><td><code>ApsJpegDirectCompress</code>. HDR 주 이미지를 JPEG로 압축하는 함수. 버퍼 주소 B를 규칙에 따라 바꾼 T(B)를 압축 입력으로 넘깁니다.</td><td>②</td></tr>
 <tr><th scope="row">CBC</th><td>레지스터에 하나씩 쓰는 대신 주소·값 쌍을 묶어 제출하는 경로. 분석한 HDR 경로는 이것을 쓰지 않고 직접 씁니다.</td><td>②④</td></tr>
 </tbody></table></div>
+<h3>Lightroom 쪽 프로파일(DCP)</h3>
+<p>⑥⑦을 읽을 때 필요한 개념입니다. 각 태그의 뜻과 적용 순서는 <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격 1.7.1.0</a>이 정합니다.</p>
+<dl class="kv">
+<dt><a href="glossary.html#dcp">DCP</a></dt><dd>DNG Camera Profile. Lightroom·Camera Raw가 RAW의 센서 값을 색으로 해석하는 규칙을 담은 작은 파일입니다. 이름 붙은 값(태그)의 모음이며 카메라 펌웨어와는 별개입니다.</dd>
+<dt>ColorMatrix · ForwardMatrix</dt><dd>3×3 색 행렬입니다. ColorMatrix는 XYZ를 카메라 색공간으로 옮깁니다. ForwardMatrix는 화이트밸런스를 맞춘 카메라 색을 XYZ D50으로 보냅니다(규격 32~33, 52~53쪽).</dd>
+<dt>HueSatMap · LookTable</dt><dd>색상·채도·명도 격자마다 색상 이동과 채도·명도 배율을 적은 표입니다. LookTable은 노출 보정 뒤, 톤 곡선 앞에서 적용합니다(49~50, 56~57쪽).</dd>
+<dt>ToneCurve</dt><dd>밝기 분포를 정하는 곡선입니다. Q7용 두 DCP에는 이 태그가 없습니다(51쪽).</dd>
+</dl>
 <p>더 많은 용어는 <a href="glossary.html">용어집</a>에 있습니다.</p>
 </section>
 
 <section id="status">
 <h2>지금까지 알아낸 것과 아직 모르는 것</h2>
-<p>다섯 문서를 합친 현재 상태입니다. “확인”은 원본 기계어를 PC 에뮬레이터에서 실행해 관측했다는 뜻입니다. 이때 넣은 입력과 하드웨어 응답은 연구자가 정한 값(모델)입니다.</p>
+<p>일곱 문서를 합친 현재 상태입니다. 펌웨어 쪽에서 “확인”은 원본 기계어를 PC 에뮬레이터에서 실행해 관측한 결과를 가리킵니다. 이때 넣은 입력과 하드웨어 응답은 연구자가 정한 값(모델)입니다. DCP 쪽 “확인”은 파일 바이트를 직접 읽었거나 PC에서 두 구현으로 계산한 결과입니다.</p>
 <div class="table-wrap"><table>
 <caption>색 처리·HDR 주제의 확인 상태</caption>
 <thead><tr><th>항목</th><th>상태</th><th>내용</th><th>문서</th></tr></thead>
@@ -187,18 +214,25 @@
 <tr><th scope="row">화이트밸런스의 최종 gain</th><td><span class="badge open">미확인</span></td><td>센서·통계 설정까지만 확인. 최종 gain 레지스터 연결은 미확인</td><td><a href="routing-report.html#gamma">①</a></td></tr>
 <tr><th scope="row">DMA·캐시·실제 출력</th><td><span class="badge open">미확인</span></td><td>메모리 전송, 캐시 일관성, 저장된 JPEG의 픽셀과 파일</td><td class="nowrap">전체</td></tr>
 <tr><th scope="row">HDR이 아닌 일반 촬영</th><td><span class="badge open">미확인</span></td><td>이 주제의 결론은 분석한 HDR 경로 하나에 한정</td><td class="nowrap">전체</td></tr>
+<tr><th scope="row">Q7용 DCP 두 개의 태그 구성</th><td><span class="badge ok">확인</span></td><td>Adobe Standard는 태그 16개(행렬 4개, HueSatMap 2개 각 2,700노드, LookTable 4,608노드). matrix-test는 태그 6개로 ForwardMatrix와 표 없음</td><td><a href="reports/q7-dcp-structure.html#structure">⑥</a></td></tr>
+<tr><th scope="row">DCP의 ToneCurve와 기본 곡선</th><td><span class="badge ok">확인</span> <span class="badge open">미확인</span></td><td>두 파일 모두 저장 곡선 없음. 렌더러가 대신 쓰는 기본 곡선은 미확인</td><td><a href="reports/q7-dcp-structure.html#tone">⑥</a></td></tr>
+<tr><th scope="row">DCP 표의 보간 규칙</th><td><span class="badge static">정적 분석</span> <span class="badge ok">확인</span></td><td>SDK 1.7.1 소스로 이웃 4개·8개, 저장 순서, 색상 감싸기를 확인. 합성 HSV 15건에서 두 구현의 차이 최대 약 1.95×10⁻¹⁴</td><td><a href="reports/q7-dcp-interpolation.html#findings">⑦</a></td></tr>
+<tr><th scope="row">DCP로 RAW를 현상한 결과</th><td><span class="badge open">미확인</span></td><td>RAW 현상, 현재 Lightroom 출력, 카메라 JPEG 색과의 비교 모두 없음</td><td><a href="reports/q7-dcp-structure.html#limits">⑥</a> · <a href="reports/q7-dcp-interpolation.html#limits">⑦</a></td></tr>
+<tr><th scope="row">펌웨어 색 경로와 DCP의 관계</th><td><span class="badge open">미확인</span></td><td>두 갈래를 대응시킨 결과 없음</td><td class="nowrap">⑥⑦</td></tr>
 </tbody></table></div>
 </section>
 
 <section id="reading">
 <h2>읽는 순서</h2>
-<p>시간순이 아니라 이해하기 쉬운 순서입니다. 앞 두 문서로 큰 흐름을 잡고, 뒤 세 문서에서 FC1과 패스를 자세히 봅니다.</p>
+<p>이해하기 쉬운 순서로 놓았습니다. 앞 두 문서로 큰 흐름을 잡은 뒤 세 문서에서 FC1과 패스를 자세히 봅니다. 6·7단계는 Lightroom 쪽 갈래라서 펌웨어 문서와 따로 읽어도 됩니다.</p>
 <ul class="cards">
-<li class="card"><span class="tag">1단계</span><h3><a href="routing-report.html">AF 명령의 수신자, 색 행렬 레지스터, JPEG 저장 경로</a></h3><p class="q">색 설정은 어떤 레지스터에 쓰이고, JPEG는 어떻게 파일이 되는가</p><p>설정 캐시·필터 객체·기록 함수 경로와 파일 쓰기까지의 연결. 렌즈 부분은 <a href="guide-af.html">AF 주제</a>에 속합니다.</p></li>
-<li class="card"><span class="tag">2단계</span><h3><a href="pixel-report.html">HDR 결과 버퍼가 JPEG가 되는 경로와 색 필터의 덮어쓰기</a></h3><p class="q">HDR 결과는 정말 JPEG 압축의 입력이 되는가, 색 계수는 누가 바꾸는가</p><p>버퍼 B가 LDC를 거쳐 압축 입력 T(B)가 되고, FIPLIB는 FC1 계수까지 바꿀 수 있습니다.</p></li>
-<li class="card"><span class="tag">3단계</span><h3><a href="final-color-report.html">HDR 제출 분기와 FC 계수</a></h3><p class="q">HDR 경로에서 FC1에 최종적으로 남는 계수는 무엇인가</p><p>출력 블록 선택을 확인했고, 마지막 패스에서는 HDR 계수 11개가 FIPLIB를 지나도 그대로 남습니다.</p></li>
-<li class="card"><span class="tag">4단계</span><h3><a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a></h3><p class="q">HDR은 패스 몇 개를 실행하고, 어느 패스에서 FC1이 켜지는가</p><p>패스 4개를 모두 제출하고, FC1은 둘째와 마지막 패스에서 켜집니다.</p></li>
-<li class="card"><span class="tag">5단계</span><h3><a href="hdr-task-report.html">FC1 비트와 HDR task 완료</a></h3><p class="q">FC1 제어 비트는 어디서 오고, 패스가 끝났다는 것은 어떻게 알리는가</p><p>제어 비트는 입력 유형에서 나오며 물리적 뜻은 미확인. 완료는 인터럽트에서 PathWait까지 여러 단계를 거칩니다.</p></li>
+<li class="card"><span class="tag">1단계</span><h3><a href="routing-report.html">AF 명령의 수신자, 색 행렬 레지스터, JPEG 저장 경로</a></h3><p class="q">색 설정은 어떤 레지스터에 쓰이며 JPEG는 어떻게 파일이 되는가</p><p>설정 캐시·필터 객체·기록 함수 경로와 파일 쓰기까지의 연결. 렌즈 부분은 <a href="guide-af.html">AF 주제</a>에 속합니다.</p></li>
+<li class="card"><span class="tag">2단계</span><h3><a href="pixel-report.html">HDR 결과 버퍼가 JPEG가 되는 경로와 색 필터의 덮어쓰기</a></h3><p class="q">HDR 결과는 정말 JPEG 압축의 입력이 되는가, 색 계수는 누가 바꾸는가</p><p>버퍼 B가 LDC를 거쳐 압축 입력 T(B)가 됩니다. FIPLIB는 FC1 계수까지 바꿉니다.</p></li>
+<li class="card"><span class="tag">3단계</span><h3><a href="final-color-report.html">HDR 제출 분기와 FC 계수</a></h3><p class="q">HDR 경로에서 FC1에 최종적으로 남는 계수는 무엇인가</p><p>출력 블록 선택을 확인했습니다. 마지막 패스에서는 HDR 계수 11개가 FIPLIB를 지나도 그대로 남습니다.</p></li>
+<li class="card"><span class="tag">4단계</span><h3><a href="hdr-control-report.html">HDR FC1 활성화와 제출 패스</a></h3><p class="q">HDR은 패스 몇 개를 실행하며 어느 패스에서 FC1이 켜지는가</p><p>패스 4개를 모두 제출합니다. FC1은 둘째와 마지막 패스에서 켜집니다.</p></li>
+<li class="card"><span class="tag">5단계</span><h3><a href="hdr-task-report.html">FC1 비트와 HDR task 완료</a></h3><p class="q">FC1 제어 비트는 어디서 오며 패스가 끝났음은 어떻게 알리는가</p><p>제어 비트는 입력 유형에서 나오며 물리적 뜻은 미확인. 완료는 인터럽트에서 PathWait까지 여러 단계를 거칩니다.</p></li>
+<li class="card"><span class="tag">6단계 · Lightroom 쪽</span><h3><a href="reports/q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a></h3><p class="q">Lightroom의 Q7 프로파일 파일에는 어떤 색 처리 요소가 들어 있는가</p><p>Adobe Standard는 행렬 4개와 표 3개, matrix-test는 ColorMatrix만 있습니다. 둘 다 ToneCurve가 없으며 RAW 현상은 하지 않았습니다.</p></li>
+<li class="card"><span class="tag">7단계 · Lightroom 쪽</span><h3><a href="reports/q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a></h3><p class="q">픽셀 색이 격자점 사이에 놓이면 표의 값을 어떻게 섞는가</p><p>HueSatMap은 이웃 4개, LookTable은 8개를 섞습니다. 합성 HSV 15건을 두 구현으로 계산해 맞췄고 SDK 원본 실행은 하지 않았습니다.</p></li>
 </ul>
 <p>색 행렬 계산 함수 자체가 궁금하면 <a href="deep-report.html#color">압축 복원과 주요 함수 300개</a>의 색 처리 절과 <a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a>을 함께 보십시오.</p>
 </section>
@@ -209,6 +243,9 @@
 <li><a href="analysis/isp-routing.json">analysis/isp-routing.json</a>, <a href="analysis/isp-register-checks.json">analysis/isp-register-checks.json</a>, <a href="analysis/output-routing.json">analysis/output-routing.json</a> — ①의 근거</li>
 <li><a href="analysis/buffer-followup.json">analysis/buffer-followup.json</a>, <a href="analysis/pass-followup.json">analysis/pass-followup.json</a>, <a href="analysis/color-handoff-checks.json">analysis/color-handoff-checks.json</a> — ②의 근거</li>
 <li>③④⑤의 근거 파일은 각 문서의 “근거 파일과 참고 자료” 절에 있습니다.</li>
+<li><a href="analysis/q7-dcp-structure.json">analysis/q7-dcp-structure.json</a>, <a href="analysis/q7-dcp-interpolation.json">analysis/q7-dcp-interpolation.json</a> — ⑥⑦의 근거</li>
+<li><a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG Specification 1.7.1.0</a> — DCP 태그(ColorMatrix, ForwardMatrix, HueSatMap, LookTable, ToneCurve)의 정의</li>
+<li><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/lightroom-bridge.html">K-3 Mark III: Lightroom 색 프로파일 안내</a> — 같은 SDK·DCP 주제를 실제 Lightroom 출력으로 측정한 기록</li>
 <li><a href="https://www.ricoh-imaging.co.jp/english/news/2013/20130613_3.html">리코 이미징, PENTAX Q7 발표 자료(2013)</a> — 1/1.7인치 이면조사 CMOS, Q ENGINE, HDR(세 장 합성; Auto·HDR 1·HDR 2), Distortion Correction, sRGB·AdobeRGB, 12비트 DNG</li>
 <li><a href="https://www.w3.org/Graphics/JPEG/jfif3.pdf">JPEG File Interchange Format 1.02</a> — RGB→YCbCr 변환식</li>
 <li><a href="https://ftp.riken.jp/NetBSD/NetBSD-current/src/sys/arch/mips/include/cpuregs.h">NetBSD <code>mips/include/cpuregs.h</code></a> — MIPS kseg0·kseg1 주소 구간</li>
@@ -219,7 +256,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html" aria-current="page">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">DCP 태그·행렬·테이블 비교</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP LUT 좌표·보간·색 처리 전제</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="guide-color.html" aria-current="page">색 처리·HDR 안내</a></li><li><a href="routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="reports/q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a></li><li><a href="reports/q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="recompiled-numeric-report.html"><small>← 이전</small>색 행렬 함수 C 재컴파일</a><a class="next" href="routing-report.html"><small>다음 →</small>AF 수신자·색 행렬 레지스터·JPEG 저장</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

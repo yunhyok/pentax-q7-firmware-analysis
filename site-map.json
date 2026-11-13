@@ -64,8 +64,8 @@
       {"file": "final-color-report.html", "label": "HDR 출력 선택과 FC1 계수"},
       {"file": "hdr-control-report.html", "label": "HDR 네 패스의 FC1 활성화"},
       {"file": "hdr-task-report.html", "label": "FC1 제어 비트와 HDR task 완료"},
-      {"file": "reports/q7-dcp-structure.html", "label": "DCP 태그·행렬·테이블 비교"},
-      {"file": "reports/q7-dcp-interpolation.html", "label": "DCP LUT 좌표·보간·색 처리 전제"}
+      {"file": "reports/q7-dcp-structure.html", "label": "Q7용 DCP 두 개에 저장된 태그와 표"},
+      {"file": "reports/q7-dcp-interpolation.html", "label": "DCP 표의 좌표와 보간"}
     ]},
     {"id": "af", "title": "AF와 렌즈 제어", "nav": "AF", "hub": "guide-af.html", "pages": [
       {"file": "guide-af.html", "label": "AF·렌즈 안내"},
@@ -78,7 +78,7 @@
       {"file": "colorspace-raster-report.html", "label": "선택 강조의 픽셀"},
       {"file": "colorspace-glyph-report.html", "label": "글꼴 로딩과 글리프 픽셀"},
       {"file": "colorspace-attributes-report.html", "label": "48×48 요청과 컨텍스트 선택"},
-      {"file": "colorspace-clip-report.html", "label": "색공간 글자의 가장자리 처리"}
+      {"file": "colorspace-clip-report.html", "label": "색공간 글자가 화면 가장자리에 걸칠 때"}
     ]}
   ]
 }

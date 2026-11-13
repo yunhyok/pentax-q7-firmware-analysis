@@ -30,7 +30,7 @@
 <li>펌웨어 파일 안의 FAT16 영역에서 <strong>라틴 글꼴 파일(130,886바이트)</strong>을 찾아 위치와 해시를 고정했습니다.</li>
 <li>원본 글꼴 로더와 글자 그리기 코드를 PC 에뮬레이터에서 실행해 <strong>글자 1개와 “sRGB” 4글자</strong>를 그렸습니다. 두 경우 모두 736×176 버퍼 전체(129,536바이트)가 따로 계산한 결과와 같았습니다.</li>
 <li>글꼴 데이터는 <strong>픽셀당 2비트</strong>입니다. 값 0은 투명(기존 픽셀 유지)이고 1·2·3은 팔레트 번호 2·1·3으로 찍힙니다.</li>
-<li>시험은 새로 만든 기본 배율 화면 상태에서 했습니다. 실제 메뉴 화면의 상태를 이어받은 실행이 아니며, 화면에 보이는 실제 색과 LCD 출력은 확인하지 않았습니다.</li>
+<li>시험은 새로 만든 기본 배율 화면 상태에서 했습니다. 실제 메뉴 화면의 상태를 이어받은 실행이 아니며 화면에 보이는 실제 색과 LCD 출력은 확인하지 않았습니다.</li>
 </ul>
 </section>
 
@@ -46,7 +46,7 @@
 <li>파일 찾기·열기·읽기·닫기(글꼴 바이트는 원본 그대로 공급)</li>
 <li>메모리 할당·해제, 로그 출력</li>
 <li>화면 상태: 736×176 합성 버퍼, 기본 배율</li>
-<li>그릴 글자: 앞선 분석에서 관측한 “sRGB”를 다시 입력</li>
+<li>그릴 글자: 그리기 경로 분석에서 관측한 “sRGB”를 다시 입력</li>
 </ul></div>
 <div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
 <ul>
@@ -73,7 +73,7 @@
 
 <section id="resource">
 <h2>글꼴 파일을 찾고 원본 로더로 읽기</h2>
-<p class="takeaway">글꼴은 펌웨어 속 FAT16 영역의 파일 하나이며, 원본 로더가 이 파일을 읽어 메모리에서 바로 쓸 수 있는 형태로 바꿉니다.</p>
+<p class="takeaway">글꼴은 펌웨어 속 FAT16 영역의 파일 하나이며 원본 로더가 이 파일을 읽어 메모리에서 바로 쓸 수 있는 형태로 바꿉니다.</p>
 
 <figure class="diagram">
 <figcaption>글꼴 준비(위)와 글자 그리기(아래)</figcaption>
@@ -124,7 +124,7 @@
 </figure>
 
 <h3>파일의 위치를 고정하기</h3>
-<p>패키지 안 FAT16의 루트에서 <code>FONTDATA</code> 디렉터리를 찾고, 그 안 <code>LATINF~6.BIN</code>의 <dfn title="FAT 파일시스템이 파일의 조각(클러스터)을 이어 놓은 순서">할당 체인</dfn>을 따라갔습니다. 체인의 끝과 파일 전체의 SHA-256을 확인해 글꼴 범위를 고정했습니다.</p>
+<p>패키지 안 FAT16의 루트에서 <code>FONTDATA</code> 디렉터리를 찾고 그 안 <code>LATINF~6.BIN</code>의 <dfn title="FAT 파일시스템이 파일의 조각(클러스터)을 이어 놓은 순서">할당 체인</dfn>을 따라갔습니다. 체인의 끝과 파일 전체의 SHA-256을 확인해 글꼴 범위를 고정했습니다.</p>
 <dl class="kv">
 <dt>파일</dt><dd><code>FONTDATA/LATINF~6.BIN</code> (긴 이름 <code>LATINFONT.BIN</code>)</dd>
 <dt>크기</dt><dd>130,886바이트 (디렉터리에 기록된 값)</dd>
@@ -136,23 +136,23 @@
 <ol class="steps">
 <li><strong>경로 만들기</strong> 원본 <code>DirectLoadFontEx</code>에 <code>A:\FontData\LatinFont.bin</code>을 넘기면, <code>AppResourceGetPath</code>가 드라이브 선택값 2와 경로 <code>\FontData\LatinFont.bin</code>을 만듭니다.</li>
 <li><strong>파일 읽기</strong> 파일 조회·열기·읽기·닫기와 메모리 할당·해제·로그는 모델이 대신했습니다. 읽기 모델은 위에서 고정한 원본 글꼴 바이트를 그대로 돌려줍니다.</li>
-<li><strong>글꼴 객체 만들기</strong> 원본 <code>GdiCreateFont</code>가 파일 안의 오프셋을 메모리 포인터로 바꾸고, 글꼴 타입 <code>0x202</code>에 함수 테이블 <code>0x80236538</code>을 연결합니다.</li>
+<li><strong>글꼴 객체 만들기</strong> 원본 <code>GdiCreateFont</code>가 파일 안의 오프셋을 메모리 포인터로 바꾸고 글꼴 타입 <code>0x202</code>에 함수 테이블 <code>0x80236538</code>을 연결합니다.</li>
 </ol>
-<p>정적 글꼴 선택 크기는 0이었고, 원본 코드가 파일 API를 부르는 경로를 그대로 통과했습니다. <a href="tools/check_colorspace_glyph.py">[재현 도구: prepare_font, loader_events]</a></p>
+<p>정적 글꼴 선택 크기는 0이었고 원본 코드가 파일 API를 부르는 경로를 그대로 통과했습니다. <a href="tools/check_colorspace_glyph.py">[재현 도구: prepare_font, loader_events]</a></p>
 </section>
 
 <section id="staging">
 <h2>글자 요청이 글리프 렌더러에 닿기까지</h2>
-<p class="takeaway">앞선 분석에서 관측한 “sRGB” 요청을 원본 텍스트 함수에 다시 넣었고, 같은 네 글자가 글리프 렌더러까지 전달됐습니다.</p>
+<p class="takeaway">그리기 경로 분석에서 관측한 “sRGB” 요청을 원본 텍스트 함수에 다시 넣었고 같은 네 글자가 글리프 렌더러까지 전달됐습니다.</p>
 <p>네 글자 사례는 <code>AppDBTextOutByBufferID</code>에서 시작합니다. 인수 <code>(0, 0xffff, source, 96, 64, 4, 1)</code>은 <a href="colorspace-render-report.html">화면 갱신 분석</a>에서 관측한 값입니다. 입력 문자열은 타입 접두어 1 뒤에 원본 “sRGB”의 16비트 단위 네 개와 끝 표시(NUL)를 붙인 형태입니다.</p>
-<p>원본 <code>GdiTextOutDB</code>가 이 문자열을 변환한 뒤 글꼴의 함수 테이블을 거쳐 간접 호출하고(<code>0x8022968c</code> → <code>0x8022c058</code>), <code>FntDrawTextEx</code>가 같은 네 단위를 받았습니다.</p>
+<p>원본 <code>GdiTextOutDB</code>가 이 문자열을 변환한 뒤 글꼴의 함수 테이블을 거쳐 간접 호출했습니다(<code>0x8022968c</code> → <code>0x8022c058</code>). 그리고 <code>FntDrawTextEx</code>가 같은 네 단위를 받았습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>이 실행 앞의 화면 갱신 전체는 별도 분석입니다. 두 분석을 하나의 연속 실행으로 합친 것이 아닙니다. <a href="analysis/colorspace-glyph.json">[근거: text_draw_call]</a> · <a href="analysis/colorspace-render.json">[앞선 분석의 refresh_cases]</a></p></div>
+<p>이 실행 앞의 화면 갱신 전체는 별도 분석입니다. 두 분석을 하나의 연속 실행으로 합치지는 않았습니다. <a href="analysis/colorspace-glyph.json">[근거: text_draw_call]</a> · <a href="analysis/colorspace-render.json">[그리기 경로 분석의 refresh_cases]</a></p></div>
 </section>
 
 <section id="packing">
 <h2>2비트 글리프가 팔레트 번호로 바뀌는 규칙</h2>
-<p class="takeaway">글꼴은 픽셀 하나를 2비트로 저장합니다. 0은 “그리지 않음”이고, 1·2·3은 각각 팔레트 번호 2·1·3으로 찍힙니다.</p>
+<p class="takeaway">글꼴은 픽셀 하나를 2비트로 저장합니다. 0은 “그리지 않음”이고 1·2·3은 각각 팔레트 번호 2·1·3으로 찍힙니다.</p>
 
 <figure class="diagram">
 <figcaption>글꼴 한 바이트가 픽셀 네 개가 되는 과정</figcaption>
@@ -197,7 +197,7 @@
 
 <section id="pixels">
 <h2>결과: 버퍼 전체가 독립 계산과 일치</h2>
-<p class="takeaway">글자가 찍힌 곳만 본 것이 아니라, 그리지 않은 픽셀과 버퍼 앞뒤의 보호 영역까지 전부 비교했습니다.</p>
+<p class="takeaway">글자가 찍힌 곳은 물론 그리지 않은 픽셀과 버퍼 앞뒤의 보호 영역까지 전부 비교했습니다.</p>
 <p>“sRGB”의 네 단위 84·51·40·35는 폭 24·29·34·29를 쓰고 가로 위치 96·120·149·183에 그려집니다. 실행마다 736×176, 모두 129,536바이트인 버퍼 전체와 앞뒤 8바이트 보호 영역을 대조했습니다. 투명 코드가 남긴 기존 값도 일치했습니다.</p>
 <div class="table-wrap"><table>
 <caption>두 사례의 측정값</caption>
@@ -229,7 +229,7 @@
 <tbody><tr><th scope="row">화면 준비</th><td><code>0x8000bf28</code></td><td>Return zeroed synthetic allocations for one display context and one bitmap.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x80262fd4</code></td><td>Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.</td></tr><tr><th scope="row">화면 준비</th><td><code>0x800b3d40</code></td><td>Record cache address/length and return0 without CPU cache operations.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80240e2c</code></td><td>Return a synthetic media pointer for the observed drive selector.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8007d180</code></td><td>Supply the verified FAT file size at the stat boundary.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8000bf28</code></td><td>After raster setup, allocate the synthetic FileX control block or font buffer.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80074334</code></td><td>Accept the normalized font path at FileX open.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x80071a10</code></td><td>Supply the full verified font bytes and return success at FileX read.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8007c258</code></td><td>Accept FileX close for the modeled file.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x8000c598</code></td><td>Record release of the FileX control block without allocator effects.</td></tr><tr><th scope="row">글꼴 로딩·그리기</th><td><code>0x800a14f8</code></td><td>Record a diagnostic call without emitting text.</td></tr></tbody>
 </table></div>
 </details>
-<p>함수 구간 10개와 원본 워드 62개를 주소와 해시로 대조합니다. 이름이 겹치는 <code>FntDrawTextEx</code>와 글리프 함수는 이름이 아니라 주소로 고릅니다.</p>
+<p>함수 구간 10개와 원본 워드 62개를 주소와 해시로 대조합니다. 이름이 겹치는 <code>FntDrawTextEx</code>와 글리프 함수는 주소로 고릅니다.</p>
 <pre><code>python tools/check_colorspace_glyph.py &lt;원본 fwdc603p.bin&gt; .private/main-expanded.elf --output .private/glyph-new.json
 python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre>
 </section>
@@ -248,7 +248,7 @@ python tools/verify_report.py --firmware &lt;원본 fwdc603p.bin&gt;</code></pre
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html" aria-current="page">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li><li><a href="colorspace-clip-report.html">색공간 글자의 가장자리 처리</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html" aria-current="page">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li><li><a href="colorspace-clip-report.html">색공간 글자가 화면 가장자리에 걸칠 때</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-raster-report.html"><small>← 이전</small>선택 강조의 픽셀</a><a class="next" href="colorspace-attributes-report.html"><small>다음 →</small>48×48 요청과 컨텍스트 선택</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

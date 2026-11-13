@@ -1,86 +1,198 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PENTAX Q7 — NAND context 생성과 media-info 탐색</title><link rel="stylesheet" href="../assets/site.css"></head>
-<body data-camera="q7"><!-- chrome:top -->
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NAND 컨텍스트 등록과 별도로 실행한 매체 발견 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="원본 MIPS 코드를 PC 에뮬레이터에서 실행해 NAND 변환 계층의 컨텍스트가 전역 변수에 등록되는 경로와, 따로 실행한 매체 정보 탐색이 부트 헤더를 기록에 연결하는 경로를 확인했습니다. 두 실험은 하나의 부팅 순서가 아니며 식별값·헤더·응답은 시험용 값입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
 <div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="../index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="../guide-update.html" aria-current="true">업데이트</a><a href="../guide-color.html">색·HDR</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-update.html">업데이트와 재패킹</a></li><li aria-current="page">컨텍스트 등록과 별도 매체 발견</li></ol></nav>
-<!-- /chrome:top --><header class="page-head"><p class="eyebrow">PENTAX Q7 firmware analysis · fwdc603p.bin v1.01</p><h1>NAND context 생성과 media-info 탐색</h1><p class="lead">FileX 인수를 바꾼 context 생성 시험과 원본 media-info 선택 경로를 따르는 탐색 시험입니다. 두 기록은 별도 실행이며 이어진 전체 부팅이나 FileX 초기화의 성공을 입증하지 않습니다.</p></header>
-<div class="layout"><main class="doc" id="main"><section><h2>두 실험의 범위</h2>
-<p>실험 A는 <code>TlInitUserPartitionBlocks</code>가 media-info <code>+0xc84</code>의 0 포인터를 읽은 뒤 멈췄습니다. 실험 B는 해당 포인터의 생산자를 추적합니다. 원본 <code>AppFcuMediaInfoInit(8)</code>을 실행하면 <code>AppResourceToMediaType</code>이 <code>FcuMediaInfoInit(1,1)</code>을 선택합니다. 합성 ID 응답과 할당·동기화 모델 아래에서 원본 <code>0x8005635c</code>가 할당된 0x400바이트 버퍼를 record <code>+0xc84</code>에 등록했습니다. <a href="../analysis/nand-context-checks.json">[재현 기록]</a></p>
-<p>원본 상위 호출 <code>AppFcuInit</code>은 먼저 <code>FcuInit</code>을 호출합니다. 이번 재현은 <code>AppFcuMediaInfoInit</code>에서 시작했으며 앞선 하드웨어 초기화와 실제 부팅 중의 registry 상태를 재현하지 않았습니다. AppFb·FileX·TlDriverInit까지 이어지는 연속 실행도 수행하지 않았습니다. <a href="../analysis/nand-context-checks.json">[원본 경로]</a></p>
-<p>원본 <code>0x80003c80</code>의 심벌 이름은 <code>HceGetResidentMemoryType</code>이며 반환값은 8입니다. <code>0x80003c78</code>의 <code>HceGetResDriveInfo</code>는 별도 함수로 값 2를 반환합니다.</p></section>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">업데이트와 재패킹 · MAIN 매체 열기 아래의 NAND 계층 ③</p>
+<h1>NAND 컨텍스트 등록과 별도로 실행한 매체 발견</h1>
+<p class="lead">부트 읽기 요청이 쓰는 NAND 컨텍스트를 원본 코드가 언제 만들고 등록하는지 실행해 봤습니다. 그 컨텍스트가 기대는 매체 정보는 다른 원본 경로가 채우므로 그 경로도 따로 실행했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 컨텍스트와 매체 정보 기록</a></li><li><a href="#context">A. 인수 하나를 바꾸자 원본 코드가 컨텍스트를 등록했습니다</a></li><li><a href="#discovery">B. 원본 선택 경로가 매체 정보를 채웠습니다</a></li><li><a href="#header-bytes">헤더의 어느 바이트를 누가 쓰는지</a></li><li><a href="#package">업데이트 파일의 템플릿과 설치된 헤더는 다른 근거입니다</a></li><li><a href="#hardware">NAND 연산 아래의 하드웨어 경로는 실행하지 않았습니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-<section class="summary"><h2>A. FileX 인수를 바꾼 context 생성</h2>
-<p>FileX 진입 <code>0x80067700</code>에서 7번째 인수만 <code>0x80000000 → 0</code>으로 바꿨습니다. 그 뒤 원본 요청 4가 <code>TlDriverInit(HANDLE,&amp;hNandTlInfo,0,1)</code>을 호출했습니다. 원본 <code>0x80084d40</code>은 할당된 context에 kind 1을 쓰고 <code>0x80084c40</code>은 <code>hNandTlInfo(0x8008c14c)</code>에 그 포인터를 등록했습니다. <a href="../analysis/nand-context-checks.json">[실행 기록]</a> <a href="../analysis/nand-context-checks.json">[원본 명령]</a></p>
-<p>이후 <code>TlInitUserPartitionBlocks</code>가 현재 시험의 media-info <code>+0xc84</code>에서 0을 읽었습니다. 다음 명령 <code>0x80084ac0</code>은 <code>0x220</code>을 읽게 되므로 그 명령 직전에 멈췄습니다. 이 접근은 실행하지 않았습니다. 생성자는 아직 성공 반환하지 않았고 FileX 요청 5에도 도달하지 않았습니다.</p></section>
+<section class="summary"><h2 data-toc="no">핵심 요약</h2><ul>
+<li>실험 A: FileX의 일곱째 인수를 원래 특수값에서 0으로 바꾸는 대조 조건을 만들었습니다. 그러자 원본 드라이버 초기화가 컨텍스트를 만들어 kind 1로 표시하고 전역 변수에 등록했습니다.</li>
+<li>A는 등록 뒤 계속 실행됐지만 매체 정보의 설정 포인터가 비어 있어 빈 포인터를 읽기 직전에 멈췄습니다. 생성자는 성공 반환하지 못했고 부트 읽기 요청에도 닿지 않았습니다.</li>
+<li>실험 B: 설정 포인터를 채우는 원본 매체 정보 탐색을 따로 실행했습니다. 시험용 식별값·예비 영역·헤더 응답 아래에서 원본 코드가 헤더 버퍼를 기록에 등록하고 헤더의 두 필드를 기록으로 복사했습니다.</li>
+<li>A와 B는 하나의 부팅 순서가 아닙니다. B가 1을 돌려준 결과를 A의 초기화 완료로 이을 수 없습니다.</li>
+<li>업데이트 파일 안의 헤더 템플릿은 직접 읽었지만 카메라에 설치된 NAND 헤더와 같은지는 모릅니다. 실제 NAND는 읽거나 쓰지 않았습니다.</li></ul>
+</section>
 
-<section><h2>원본 등록과 공급한 조건</h2>
-<figure class="diagram"><figcaption>원본 생성자와 남은 매체 정보 의존성</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 595" role="img" aria-labelledby="context-title context-desc">
-<title id="context-title">Q7 context 생성과 등록 이후의 정지</title><desc id="context-desc">공급한 nonsentinel FileX 인수로 요청 4가 원본 TlDriverInit을 호출합니다. 합성 할당과 API 응답 아래에서 원본이 kind 1과 표를 초기화하고 전역 포인터를 등록합니다. 등록 후 현재 flags 2 매체 정보에서 설정 포인터를 구하지 못해 생성자가 반환하기 전에 멈춥니다.</desc>
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>A: 드라이버 초기화 요청 → <code>TlDriverInit</code> → 컨텍스트 kind 기록과 전역 등록</li>
+<li>B: 매체 정보 선택, 식별값 해석, 헤더 버퍼 등록과 필드 복사(2조건)</li>
+<li>업데이트 파일의 헤더 템플릿 1,024바이트를 직접 읽어 대조</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>상위 호출 <code>AppFcuInit</code> → <code>FcuInit</code></li>
+<li>헤더 필드를 쓰는 파티션 함수의 계산</li>
+<li>NAND 연산 아래의 클록·컨트롤러 접근</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>FileX 일곱째 인수 0(원래 값과 다른 대조 조건)</li>
+<li>식별값, 예비 영역, 헤더, 응답 상태</li>
+<li>0으로 채운 할당, 세마포어·뮤텍스·카운터 응답</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>생성자의 성공 반환, 원래 흐름의 부트 읽기 요청</li>
+<li>실제 NAND의 식별값·예비 영역·헤더·상태</li>
+<li>선행 <code>FcuInit</code> 상태, 컨트롤러 MMIO, 카메라 부팅</li>
+</ul></div>
+</div>
+
+<section id="background"><h2>배경: 컨텍스트와 매체 정보 기록</h2>
+<p>NAND 드라이버 아래에는 두 가지 상태 구조가 있습니다. 변환 계층이 쓰는 컨텍스트와, 매체마다 하나씩 있는 매체 정보 기록입니다. 부트 읽기와 파티션 계산은 둘 다 있어야 진행됩니다.</p>
+<dl class="kv">
+<dt>컨텍스트</dt><dd>전역 변수 <code>hNandTlInfo</code>(<code>0x8008c14c</code>)가 가리키는 구조체. 첫 워드가 kind이며 <a href="nand-boot-read.html">부트 읽기 문서</a>에서는 시험용 포인터를 넣었던 자리입니다.</dd>
+<dt>매체 정보 기록</dt><dd>매체 종류마다 하나씩 등록되는 레코드. <code>+0xc84</code>에 설정 포인터(부트 헤더를 담은 <code>0x400</code>바이트 버퍼)가, <code>+0xc88</code>·<code>+0xc8c</code>에 헤더에서 옮긴 값이 들어갑니다.</dd>
+<dt>flags</dt><dd>매체 정보 초기화에 넘기는 값. bit 1이 0이면 탐색을 하고 bit 0이 1이면 기록 <code>+0xc20</code>에 <code>0x100</code>을 넣습니다. MAIN의 Burn이 쓰는 flags 2는 설정 포인터를 채우는 부분을 건너뜁니다.</dd>
+<dt>FileX 일곱째 인수</dt><dd>Burn은 <code>0x80000000</code>을 넘깁니다. 이 특수값이면 드라이버 초기화의 <code>TlDriverInit</code> 호출과 부트 읽기 요청이 생략됩니다. 공개 FileX의 <code>fx_media_open</code>에는 없는 인수입니다.</dd>
+</dl>
+<p>원본 심벌 이름으로는 <code>0x80003c80</code>이 <code>HceGetResidentMemoryType</code>이며 8을 돌려줍니다. <code>0x80003c78</code>의 <code>HceGetResDriveInfo</code>는 다른 함수로 2를 돌려줍니다. B는 이 값 8에서 출발합니다.</p>
+</section>
+
+<section id="context"><h2>A. 인수 하나를 바꾸자 원본 코드가 컨텍스트를 등록했습니다</h2>
+<p class="takeaway">FileX 진입 <code>0x80067700</code>에서 일곱째 인수만 <code>0x80000000 → 0</code>으로 바꿨습니다. 원본 요청 4가 <code>TlDriverInit(HANDLE, &amp;hNandTlInfo, 0, 1)</code>을 불렀습니다. 원본 코드는 할당된 컨텍스트에 kind 1을 쓴 뒤 전역 변수에 포인터를 등록했습니다.</p>
+<figure class="diagram"><figcaption>원본 생성자의 등록 과정과 남은 매체 정보 의존성</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 560" role="img" aria-labelledby="context-title context-desc">
+<title id="context-title">Q7 컨텍스트 생성과 등록 이후의 정지</title><desc id="context-desc">맨 위: FileX 일곱째 인수를 0으로 바꾸고 시험용 NAND 식별값과 헤더, 기존 모델을 넣습니다. 원본 드라이버 요청 4가 TlDriverInit을 부릅니다. 컨텍스트 할당은 모델이 0으로 채운 버퍼를 주고, 원본 코드가 kind 1과 바이트 필드를 씁니다. 원본 FcuGetZonesConfig가 표와 캐시를 구성하며 핸들 용량을 1,048,576에서 1,024,000으로 다시 씁니다. 원본 명령이 hNandTlInfo에 컨텍스트 포인터를 등록합니다. 이어서 잠금과 표 초기화 뒤 TlInitUserPartitionBlocks가 매체 정보 +0xc84에서 0을 읽고, 다음 명령이 주소 0x220을 읽기 직전에 멈춥니다. 생성자 성공 반환과 부트 읽기 요청은 확인하지 못했습니다.</desc>
 <defs><marker id="context-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="b model" x="20" y="10" width="760" height="53" rx="8"/><text class="t" x="34" y="34">공급: FileX 인수 7 = 0 · 합성 NAND ID/헤더 · 기존 prefix 모델</text><text class="s" x="34" y="54">원래 Burn은 0x80000000을 전달함 · FileX 진입 이후 PC/RA/SP 재시작 없음</text>
-<path class="e" d="M400 63V80" marker-end="url(#context-arrow)"/><rect class="b ok" x="20" y="86" width="760" height="48" rx="8"/><text class="t" x="34" y="115">원본 driver 요청 4 → TlDriverInit(HANDLE, &amp;hNandTlInfo, 0, 1)</text>
-<path class="e" d="M195 134V151" marker-end="url(#context-arrow)"/><rect class="b model" x="20" y="157" width="350" height="65" rx="8"/><text class="t" x="34" y="181">PoolCallocEx: 1 × 0x94</text><text class="s" x="34" y="202">할당 주소 0x24500000과 0 초기값 공급</text><text class="s" x="34" y="218">semaphore create 성공 모델</text>
-<rect class="b ok" x="430" y="157" width="350" height="65" rx="8"/><text class="t" x="444" y="181">원본 kind / byte 초기화</text><text class="s" x="444" y="202">context+0 = 1 · +0x80/+0x81 = 0</text><text class="s mono" x="444" y="218">kind store 0x80084d40</text><path class="e" d="M370 189H424" marker-end="url(#context-arrow)"/>
-<path class="e" d="M605 222V239" marker-end="url(#context-arrow)"/><rect class="b ok" x="20" y="245" width="760" height="57" rx="8"/><text class="t" x="34" y="269">원본 FcuGetZonesConfig → 표·캐시 구성</text><text class="s" x="34" y="290">HANDLE+0xbf4: 1,048,576 → 1,024,000 · 추가 할당은 0 버퍼 모델</text>
-<path class="e" d="M400 302V319" marker-end="url(#context-arrow)"/><rect class="b ok" x="20" y="325" width="760" height="57" rx="8"/><text class="t" x="34" y="349">원본 0x80084c40: hNandTlInfo = 0x24500000</text><text class="s" x="34" y="370">등록 직후 0x80084c44에서 관측 · +0x80은 아직 0</text>
-<path class="e" d="M400 382V399" marker-end="url(#context-arrow)"/><rect class="b ok" x="20" y="405" width="760" height="57" rx="8"/><text class="t" x="34" y="429">+0x80 = 1 → lock → 표 초기화 → TlInitUserPartitionBlocks</text><text class="s" x="34" y="450">semaphore get 성공과 counter 값 1 × 8회는 공급한 모델</text>
-<path class="e" d="M400 462V479" marker-end="url(#context-arrow)"/><rect class="b open" x="20" y="485" width="760" height="96" rx="8"/><text class="t" x="34" y="510">현재 media-info+c84 = 0 → 0x80084ac0 직전 정지</text><text class="s" x="34" y="532">다음 원본 lw는 주소 0x220을 읽음 · 설정 포인터를 추가로 공급하지 않음</text><text class="s" x="34" y="554">미확인: 생성자 성공 반환 · 원본 FileX의 후속 요청 5 · NAND 읽기 응답</text><text class="s" x="34" y="574">포인터 등록은 완료됐지만 초기화 전체의 성공은 입증하지 않음</text>
-</svg></div></figure></section>
+<rect class="b model" x="20" y="10" width="760" height="53" rx="8"/><text class="t" x="34" y="34">넣은 값: FileX 인수 7 = 0 · 시험용 식별값·헤더 · 기존 모델</text><text class="s" x="34" y="54">원래 Burn은 0x80000000을 넘김 · FileX 진입 뒤 레지스터 재설정 없음</text>
+<path class="e" d="M400 63V80" marker-end="url(#context-arrow)"/><rect class="b ok" x="20" y="86" width="760" height="48" rx="8"/><text class="t" x="34" y="115">원본 드라이버 요청 4 → TlDriverInit(HANDLE, &amp;hNandTlInfo, 0, 1)</text>
+<path class="e" d="M195 134V151" marker-end="url(#context-arrow)"/><rect class="b model" x="20" y="157" width="350" height="70" rx="8"/><text class="t" x="34" y="180">PoolCallocEx: 1 × 0x94</text><text class="s" x="34" y="199">주소 0x24500000, 0으로 채움</text><text class="s" x="34" y="217">세마포어 생성은 성공 응답</text>
+<rect class="b ok" x="430" y="157" width="350" height="70" rx="8"/><text class="t" x="444" y="180">원본 kind·바이트 기록</text><text class="s" x="444" y="199">컨텍스트 +0 = 1 · +0x80/+0x81 = 0</text><text class="s" x="444" y="217">kind 기록 명령 0x80084d40</text><path class="e" d="M370 189H424" marker-end="url(#context-arrow)"/>
+<path class="e" d="M605 227V239" marker-end="url(#context-arrow)"/><rect class="b ok" x="20" y="245" width="760" height="57" rx="8"/><text class="t" x="34" y="269">원본 FcuGetZonesConfig → 표·캐시 구성</text><text class="s" x="34" y="290">핸들 +0xbf4: 1,048,576 → 1,024,000 · 추가 할당은 0 버퍼 모델</text>
+<path class="e" d="M400 302V319" marker-end="url(#context-arrow)"/><rect class="b key" x="20" y="325" width="760" height="57" rx="8"/><text class="t" x="34" y="349">원본 0x80084c40: hNandTlInfo = 0x24500000</text><text class="s" x="34" y="370">등록 직후 0x80084c44에서 관측 · +0x80은 아직 0</text>
+<path class="e" d="M400 382V399" marker-end="url(#context-arrow)"/><rect class="b ok" x="20" y="405" width="760" height="57" rx="8"/><text class="t" x="34" y="429">+0x80 = 1 → 잠금 → 표 초기화 → TlInitUserPartitionBlocks</text><text class="s" x="34" y="450">세마포어 획득 성공과 카운터 값 1 × 8회는 모델</text>
+<path class="e open" d="M400 462V479" marker-end="url(#context-arrow)"/><rect class="b open" x="20" y="485" width="760" height="62" rx="8"/><text class="t" x="34" y="510">매체 정보 +0xc84 = 0 → 0x80084ac0 직전에 멈춤</text><text class="s" x="34" y="532">다음 원본 명령은 주소 0x220을 읽음 · 설정 포인터를 따로 넣지 않음</text>
+</svg></div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="model"></i>시험용으로 넣은 값</li><li><i class="key"></i>이 문서의 주인공: 전역 등록</li><li><i class="open"></i>멈춘 자리</li></ul></figure>
+<p>등록은 생성자가 끝나기 전에 일어납니다. 그래서 전역 포인터가 채워졌다는 사실만으로 초기화 전체가 성공했다고 말할 수 없습니다. 원래 MAIN의 Burn은 flags 2로 매체 정보를 만들기 때문에 이 시험의 기록에는 설정 포인터가 없습니다. 원본 <code>0x80084ac0</code>의 다음 명령은 그 빈 포인터에서 <code>0x220</code>을 읽게 되므로 실행하기 전에 멈췄습니다. <a href="../analysis/nand-context-checks.json">[근거: context.final, context.writes]</a></p>
+<div class="table-wrap"><table class="compact"><caption>간격 256 조건에서 모델이 내준 0 버퍼 7개</caption><thead><tr><th>API</th><th>내준 주소</th><th class="n">크기(바이트)</th><th>원본 복귀 주소</th></tr></thead><tbody><tr><th scope="row">PoolCallocEx</th><td><code>0x24500000</code></td><td class="n">148</td><td><code>0x80084d18</code></td></tr><tr><th scope="row">PoolAllocEx</th><td><code>0x245000a0</code></td><td class="n">16,384</td><td><code>0x80084e20</code></td></tr><tr><th scope="row">PoolAllocEx</th><td><code>0x245040a0</code></td><td class="n">16,000</td><td><code>0x80084e44</code></td></tr><tr><th scope="row">PoolAllocEx</th><td><code>0x24507f20</code></td><td class="n">16</td><td><code>0x80084e68</code></td></tr><tr><th scope="row">PoolCallocEx</th><td><code>0x24507f30</code></td><td class="n">16</td><td><code>0x80084e8c</code></td></tr><tr><th scope="row">PoolAllocEx</th><td><code>0x24507f40</code></td><td class="n">131,072</td><td><code>0x8007e288</code></td></tr><tr><th scope="row">PoolAllocEx</th><td><code>0x24527f40</code></td><td class="n">131,072</td><td><code>0x8007e288</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table class="compact fit"><caption>등록 직후 컨텍스트의 앞쪽 필드</caption><thead><tr><th>위치</th><th class="n">값</th></tr></thead><tbody><tr><th scope="row"><code>+0x0</code></th><td class="n">1</td></tr><tr><th scope="row"><code>+0x4</code></th><td class="n">4,000</td></tr><tr><th scope="row"><code>+0x8</code></th><td class="n">4,096</td></tr><tr><th scope="row"><code>+0xc</code></th><td class="n">4</td></tr><tr><th scope="row"><code>+0x10</code></th><td class="n">256</td></tr><tr><th scope="row"><code>+0x14</code></th><td class="n">1,000</td></tr><tr><th scope="row"><code>+0x18</code></th><td class="n">1,024</td></tr></tbody></table></div>
+<p>zone 함수는 원본 조회로 기존 매체 정보 기록을 찾았습니다. 그 기록의 <code>+0xc88=0</code>과 <code>+0xc8c=24</code>에서 1024와 1000을 계산하고 핸들 용량을 다시 썼습니다. 컨텍스트의 이 숫자들은 시험용 식별값에서 나온 내부 값이며 실제 NAND 구조를 잰 값이 아닙니다.</p>
+<p>생성자 진입부터 등록 직후까지 VEX 이벤트는 4,057건, 멈출 때까지는 12,196건입니다. kind 기록, 전역 등록, 바이트 <code>+0x80</code>의 0→1과 <code>+0x81</code>의 0 기록을 각각 추적했습니다. VEX 이벤트 수는 CPU 명령 수나 시간과 다릅니다. <a href="../analysis/nand-context-checks.json">[근거: context.publication, context.allocations]</a></p>
+<details class="evidence"><summary>A에서 추적한 읽기·쓰기</summary>
+<div class="table-wrap"><table class="compact"><caption>원본 명령의 메모리 접근(VEX 문맥 PC 기준)</caption><thead><tr><th>종류</th><th>주소</th><th class="n">크기</th><th>값</th><th>PC</th></tr></thead><tbody><tr><th scope="row">쓰기</th><td><code>0x24002bf4</code></td><td class="n">4</td><td><code>0x0</code></td><td><code>0x800fb7ac</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24002bf4</code></td><td class="n">4</td><td><code>0xffffffff</code></td><td><code>0x80066b50</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24002bf4</code></td><td class="n">4</td><td><code>0x100000</code></td><td><code>0x80055894</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24500000</code></td><td class="n">148</td><td><code>0x0</code></td><td><code>0x80084d10</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24500080</code></td><td class="n">1</td><td><code>0x0</code></td><td><code>0x80084d38</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24500081</code></td><td class="n">1</td><td><code>0x0</code></td><td><code>0x80084d3c</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24500000</code></td><td class="n">4</td><td><code>0x1</code></td><td><code>0x80084d40</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24002bf4</code></td><td class="n">4</td><td><code>0xfa000</code></td><td><code>0x80055698</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x8008c14c</code></td><td class="n">4</td><td><code>0x24500000</code></td><td><code>0x80084c40</code></td></tr><tr><th scope="row">쓰기</th><td><code>0x24500080</code></td><td class="n">1</td><td><code>0x1</code></td><td><code>0x80084c44</code></td></tr><tr><th scope="row">읽기</th><td><code>0x8008c14c</code></td><td class="n">4</td><td><code>0x0</code></td><td><code>0x80084bf8</code></td></tr><tr><th scope="row">읽기</th><td><code>0x24004c88</code></td><td class="n">1</td><td><code>0x0</code></td><td><code>0x80055608</code></td></tr><tr><th scope="row">읽기</th><td><code>0x24004c8c</code></td><td class="n">4</td><td><code>0x18</code></td><td><code>0x80055628</code></td></tr><tr><th scope="row">읽기</th><td><code>0x8008c14c</code></td><td class="n">4</td><td><code>0x24500000</code></td><td><code>0x80084c48</code></td></tr><tr><th scope="row">읽기</th><td><code>0x8008c14c</code></td><td class="n">4</td><td><code>0x24500000</code></td><td><code>0x80084c5c</code></td></tr><tr><th scope="row">읽기</th><td><code>0x24004c84</code></td><td class="n">4</td><td><code>0x0</code></td><td><code>0x80084ab8</code></td></tr></tbody></table></div>
+<p>VEX 문맥 PC는 지연 슬롯의 쓰기를 앞 분기 명령에 붙일 수 있습니다. 정확한 명령 주소는 원본 명령으로 확인해야 합니다.</p>
+</details>
+</section>
 
-<section><h2>할당과 필드 관측</h2><div class="table-wrap"><table class="compact"><caption>stride 256 조건의 공급한 0 버퍼 7개</caption><thead><tr><th>API</th><th>공급 주소</th><th>크기</th><th>원본 반환 주소</th></tr></thead><tbody><tr><td>PoolCallocEx</td><td>0x24500000</td><td>148</td><td>0x80084d18</td></tr><tr><td>PoolAllocEx</td><td>0x245000a0</td><td>16384</td><td>0x80084e20</td></tr><tr><td>PoolAllocEx</td><td>0x245040a0</td><td>16000</td><td>0x80084e44</td></tr><tr><td>PoolAllocEx</td><td>0x24507f20</td><td>16</td><td>0x80084e68</td></tr><tr><td>PoolCallocEx</td><td>0x24507f30</td><td>16</td><td>0x80084e8c</td></tr><tr><td>PoolAllocEx</td><td>0x24507f40</td><td>131072</td><td>0x8007e288</td></tr><tr><td>PoolAllocEx</td><td>0x24527f40</td><td>131072</td><td>0x8007e288</td></tr></tbody></table></div>
-<p>zone 함수는 native lookup으로 기존 media-info record를 찾았습니다. 이 record의 <code>+0xc88=0</code>과 <code>+0xc8c=24</code>에서 1024·1000을 계산하고 핸들 용량 필드를 다시 썼습니다. context <code>+4/+8/+0xc</code>는 각각 4000/4096/4, <code>+0x10/+0x14/+0x18</code>은 256/1000/1024입니다. 이 값은 합성 ID로 만든 내부 필드이며 실제 NAND geometry 측정값이 아닙니다.</p>
-<p>생성자 진입부터 등록 직후까지 VEX 이벤트 4057건, 최종 정지까지 12196건입니다. kind store, 전역 등록, byte <code>+0x80</code>의 0→1과 <code>+0x81</code>의 0 저장을 각각 추적했습니다. VEX 이벤트 수는 CPU 명령 수나 시간이 아닙니다. <a href="../analysis/nand-context-checks.json">[독립 실행 검토]</a></p></section>
+<section id="discovery"><h2>B. 원본 선택 경로가 매체 정보를 채웠습니다</h2>
+<p class="takeaway">원본 <code>AppFcuMediaInfoInit(8)</code>을 실행하자 <code>AppResourceToMediaType</code>이 <code>FcuMediaInfoInit(1,1)</code>을 골랐습니다. 시험용 응답 아래에서 원본 코드가 <code>0x400</code>바이트 헤더 버퍼를 기록 <code>+0xc84</code>에 등록했습니다.</p>
+<figure class="diagram"><figcaption>원본 선택·등록과 시험용 응답의 경계</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 674" role="img" aria-labelledby="producer-title producer-desc"><title id="producer-title">원본 매체 정보 생성자와 NAND 응답 경계</title><desc id="producer-desc">상위 AppFcuInit 호출은 정적으로 확인했습니다. 실행은 AppFcuMediaInfoInit의 선택값 8에서 시작하며 원본 코드가 kind 1과 flags 1을 정합니다. 뮤텍스 객체와 매체 정보 객체 할당은 모델이 주고, 첫 NAND 식별 요청 직전에서 멈춥니다. 시험용 식별값을 넣으면 원본 해석과 ECC 선택이 실행되고 헤더 버퍼 포인터가 기록에 등록된 뒤 헤더 응답 직전에서 멈춥니다. 별도 대조 시험에서 예비 영역과 헤더 데이터를 넣자 원본 코드가 헤더 +0x3a8과 +0x3ac를 기록에 복사했습니다. 반환값 1은 실제 헤더나 부팅이 유효하다는 증거가 아닙니다.</desc><defs><marker id="producer-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b static" x="20" y="10" width="760" height="61" rx="8"/><text class="t" x="34" y="34">정적 상위 경로: AppFcuInit → FcuInit → resident type 8</text><text class="s" x="34" y="56">0x800e84a8 / 0x800e84b0 / 0x800e84b8 · 전체 호출은 실행하지 않음</text>
+<path class="e model" d="M400 71V89" marker-end="url(#producer-arrow)"/><rect class="b ok" x="20" y="95" width="760" height="61" rx="8"/><text class="t" x="34" y="119">실행 시작: AppFcuMediaInfoInit(8) → FcuMediaInfoInit(1,1)</text><text class="s" x="34" y="141">flags bit 1 = 0: 탐색 수행 · bit 0 = 1: 기록 +c20에 0x100</text>
+<path class="e" d="M400 156V174" marker-end="url(#producer-arrow)"/><rect class="b model" x="20" y="180" width="760" height="61" rx="8"/><text class="t" x="34" y="204">모델: 0x2c 뮤텍스 객체 · 0xc90 매체 정보 객체 · 동기화 성공</text><text class="s" x="34" y="226">원본 registry 등록 → 첫 FcuNandOperationEx(연산 2) 직전: 24 VEX 이벤트</text>
+<path class="e" d="M400 241V259" marker-end="url(#producer-arrow)"/><rect class="b model" x="20" y="265" width="760" height="61" rx="8"/><text class="t" x="34" y="289">시험용 식별값: ec dc 00 01 00 00 00 00 · 응답 상태 0</text><text class="s" x="34" y="311">원본 해석·ECC 선택: shift=8, 기록 +c20=0x105, ECC 전역=01 00</text>
+<path class="e" d="M400 326V344" marker-end="url(#producer-arrow)"/><rect class="b key" x="20" y="350" width="760" height="61" rx="8"/><text class="t" x="34" y="374">PoolAllocEx(0x400) → 원본 기록 +c84 = 0x24602000</text><text class="s" x="34" y="396">주소와 0 버퍼는 모델 · 포인터 저장은 0x8005635c의 원본 명령</text>
+<path class="e" d="M400 411V429" marker-end="url(#producer-arrow)"/><rect class="b open" x="20" y="435" width="760" height="61" rx="8"/><text class="t" x="34" y="459">헤더 응답 전 정지: 연산 6 / 위치 0 / 개수 1 / 예비 영역 16바이트</text><text class="s" x="34" y="481">61 VEX 이벤트 · 실제 예비 영역·데이터·읽기 상태는 없음</text>
+<path class="e model" d="M400 496V514" marker-end="url(#producer-arrow)"/><rect class="b model" x="20" y="520" width="760" height="61" rx="8"/><text class="t" x="34" y="544">별도 대조 시험: spare[5]=FF · 연산 4 개수 2 · 합성 0x400 데이터</text><text class="s" x="34" y="566">원본 복사: header+3a8 하위 바이트 → 기록 +c88, +3ac → +c8c</text>
+<path class="e" d="M400 581V599" marker-end="url(#producer-arrow)"/><rect class="b open" x="20" y="605" width="760" height="55" rx="8"/><text class="t" x="34" y="628">반환값 1은 실제 헤더·부팅·파티션 설정이 유효하다는 증거가 아님</text><text class="s" x="34" y="650">+0x220은 이 생성자가 검사하지 않음 · 소비자까지 이어 실행하지 않음</text>
+</svg></div><ul class="dg-legend"><li><i class="static"></i>코드를 읽어 판단</li><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="model"></i>시험용으로 넣은 값</li><li><i class="key"></i>원본 코드가 등록한 포인터</li><li><i class="open"></i>멈춘 자리·미확인</li></ul></figure>
+<p>원본 상위 호출 <code>AppFcuInit</code>은 먼저 <code>FcuInit</code>을 부릅니다. B는 <code>AppFcuMediaInfoInit</code>에서 시작했으므로 그 앞의 하드웨어 초기화와 실제 부팅 중의 registry 상태는 재현하지 않았습니다. AppFb·FileX·<code>TlDriverInit</code>으로 이어지는 실행도 하지 않았습니다. <a href="../analysis/nand-context-checks.json">[근거: discovery.cases]</a></p>
+<div class="table-wrap"><table class="compact"><caption>시험용 응답을 끝까지 넣은 대조 시험 2건</caption><thead><tr><th>시험</th><th class="n">반환</th><th>header+220</th><th>기록 +c88</th><th>기록 +c8c</th><th class="n">VEX 이벤트</th></tr></thead><tbody><tr><th scope="row"><code>all-zero-control</code></th><td class="n">1</td><td><code>0x0</code></td><td><code>0x0</code></td><td><code>0x0</code></td><td class="n">86</td></tr><tr><th scope="row"><code>arbitrary-pattern-control</code></th><td class="n">1</td><td><code>0xdeadbeef</code></td><td><code>0x78</code></td><td><code>0x76543210</code></td><td class="n">86</td></tr></tbody></table></div>
+<p>두 시험은 식별값 8바이트, 예비 영역 16바이트, 데이터 <code>0x400</code>바이트를 각각 상태 0과 함께 넣었습니다. 임의 패턴 시험은 <code>+14=0</code>, <code>+220=0xdeadbeef</code>, <code>+3a8=0x12345678</code>, <code>+3ac=0x76543210</code>이고 나머지는 A5 패턴입니다. 둘 다 원본 반환은 1이었으며 <code>+220</code>은 이 생성자가 읽지 않았습니다. 임의 패턴이 실제 형식에 맞는지는 판단하지 않았습니다.</p>
+</section>
 
-<section><h2>B. 원본 선택 경로의 media-info 탐색</h2><figure class="diagram"><figcaption>원본 선택·등록과 모델 입력의 분리</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 674" role="img" aria-labelledby="producer-title producer-desc"><title id="producer-title">원본 media-info 생성자와 NAND 응답 경계</title><desc id="producer-desc">상위 AppFcuInit 호출은 정적으로 확인했습니다. 재현은 AppFcuMediaInfoInit의 선택값 8에서 시작하여 원본이 kind 1과 flags 1을 결정합니다. 합성 할당과 mutex 응답 뒤 첫 NAND ID 요청에서 멈추고, 합성 ID를 공급한 뒤 설정 포인터를 등록하여 헤더 읽기 직전 상태를 관측합니다. 실제 NAND 내용은 미확인입니다.</desc><defs><marker id="producer-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="b static" x="20" y="10" width="760" height="61" rx="8"/><text class="t" x="34" y="34">정적 상위 경로: AppFcuInit → FcuInit → resident type 8</text><text class="s" x="34" y="56">0x800e84a8 / 0x800e84b0 / 0x800e84b8 · 전체 호출은 재현하지 않음</text>
-<path class="e dash" d="M400 71V89" marker-end="url(#producer-arrow)"/><rect class="b ok" x="20" y="95" width="760" height="61" rx="8"/><text class="t" x="34" y="119">재현 진입: AppFcuMediaInfoInit(8) → FcuMediaInfoInit(1,1)</text><text class="s" x="34" y="141">flags bit 1 = 0: discovery 수행 · bit 0 = 1: record+c20에 0x100 설정</text>
-<path class="e" d="M400 156V174" marker-end="url(#producer-arrow)"/><rect class="b model" x="20" y="180" width="760" height="61" rx="8"/><text class="t" x="34" y="204">모델: 0x2c mutex 객체 · 0xc90 media-info 객체 · 동기화 성공</text><text class="s" x="34" y="226">원본 registry 등록 → 첫 FcuNandOperationEx(op 2) 직전: 24 VEX 이벤트</text>
-<path class="e" d="M400 241V259" marker-end="url(#producer-arrow)"/><rect class="b model" x="20" y="265" width="760" height="61" rx="8"/><text class="t" x="34" y="289">합성 ID 공급: ec dc 00 01 00 00 00 00 · 응답 status = 0</text><text class="s" x="34" y="311">원본 parser·ECC 선택 실행: shift=8, record+c20=0x105, ECC 전역=01 00</text>
-<path class="e" d="M400 326V344" marker-end="url(#producer-arrow)"/><rect class="b ok" x="20" y="350" width="760" height="61" rx="8"/><text class="t" x="34" y="374">PoolAllocEx(0x400) → 원본 record+c84 = 0x24602000</text><text class="s" x="34" y="396">주소·초기 0 버퍼는 모델 · 포인터 저장은 0x8005635c의 원본 명령</text>
-<path class="e" d="M400 411V429" marker-end="url(#producer-arrow)"/><rect class="b open" x="20" y="435" width="760" height="61" rx="8"/><text class="t" x="34" y="459">헤더 응답 전 정지: op 6 / position 0 / count 1 / spare 16바이트</text><text class="s" x="34" y="481">61 VEX 이벤트 · 실제 spare, 데이터, 읽기 status는 확보하지 못함</text>
-<path class="e model" d="M400 496V514" marker-end="url(#producer-arrow)"/><rect class="b model" x="20" y="520" width="760" height="61" rx="8"/><text class="t" x="34" y="544">별도 통제 시험: spare[5]=FF · op 4 count 2 · 합성 0x400 데이터</text><text class="s" x="34" y="566">원본 복사: header+3a8의 하위 바이트 → record+c88, +3ac → +c8c</text>
-<path class="e" d="M400 581V599" marker-end="url(#producer-arrow)"/><rect class="b open" x="20" y="605" width="760" height="55" rx="8"/><text class="t" x="34" y="628">함수 반환 1은 실제 헤더·부팅·partition 설정의 유효성 증거가 아님</text><text class="s" x="34" y="650">+0x220은 이 생산자가 검사하지 않음 · 소비자까지 연속 재현하지 않음</text>
-</svg></div><ul class="dg-legend"><li><i class="static"></i>정적 확인</li><li><i class="ok"></i>모델 아래 원본 실행</li><li><i class="model"></i>공급한 값</li><li><i class="open"></i>미확인 경계</li></ul></figure></section>
-
-<section><h2>헤더에서 사용하는 바이트</h2><p>선택한 원본 helper는 <code>spare+5</code> 바이트가 <code>0xff</code>인지 확인합니다. 값이 다르면 stride만큼 다음 후보로 이동합니다. op 4 읽기 성공 뒤 헤더 <code>+0x14</code>의 bit 31이 켜져 있으면 하위 31비트 값을 stride로 나눈 정수 몫을 새 시작 인덱스로 사용합니다. NAND ABI에 전달하는 위치는 이 인덱스에 stride를 곱한 값이며 spare 조건에 따라 더 전진할 수 있습니다. 이 helper 구간에는 헤더 magic·CRC·서명을 검사하는 분기가 없습니다. 이는 전체 부팅 체인의 검증 부재를 뜻하지 않습니다. <a href="../analysis/nand-context-checks.json">[선택 명령 구간]</a></p>
-<div class="table-wrap"><table class="compact"><caption>원본 load/store 폭과 값의 사용처</caption><thead><tr><th>위치</th><th>읽기 폭</th><th>사용</th><th>원본 주소</th></tr></thead><tbody>
-<tr><td>spare+5</td><td>1바이트</td><td>FF이면 데이터 읽기, 아니면 다음 stride 후보</td><td>80055ab4 / 80055abc</td></tr>
-<tr><td>header+14</td><td>4바이트</td><td>bit31: redirect, 하위31비트: 다음 탐색 위치 계산</td><td>80055c10 / 80055c28</td></tr>
-<tr><td>header+3a8</td><td>4바이트</td><td>하위 8비트를 record+c88에 저장</td><td>80055cd4 / 80055cd8</td></tr>
-<tr><td>header+3ac</td><td>4바이트</td><td>record+c8c에 4바이트 저장</td><td>80055cdc / 80055ce4</td></tr>
-<tr><td>header+220 / +230</td><td>각 4바이트</td><td>후속 partition helper가 stride에 따른 개수·시작 인덱스 계산에 사용</td><td>80084ac0 / 80084ad8</td></tr>
-<tr><td>header+310 / +314</td><td>각 4바이트</td><td>후속 table 시작 인덱스의 하위16비트 / 반복 횟수</td><td>80084af8 / 80084ac4</td></tr>
+<section id="header-bytes"><h2>헤더의 어느 바이트를 누가 쓰는지</h2>
+<p class="takeaway">헤더를 고르는 함수는 예비 영역의 한 바이트와 헤더 <code>+0x14</code>만 봅니다. 파티션 계산은 다른 함수가 헤더를 다시 조회해 <code>+0x220</code>·<code>+0x230</code>·<code>+0x310</code>·<code>+0x314</code>를 씁니다.</p>
+<div class="table-wrap"><table class="compact"><caption>원본 읽기·쓰기 폭과 값의 쓰임(정적 분석)</caption><thead><tr><th>위치</th><th>읽기 폭</th><th>쓰임</th><th>원본 주소</th></tr></thead><tbody>
+<tr><th scope="row">spare+5</th><td>1바이트</td><td><code>0xff</code>이면 데이터 읽기, 아니면 간격만큼 다음 후보</td><td><code>80055ab4 / 80055abc</code></td></tr>
+<tr><th scope="row">header+14</th><td>4바이트</td><td>bit 31: 재지정, 하위 31비트: 다음 탐색 위치</td><td><code>80055c10 / 80055c28</code></td></tr>
+<tr><th scope="row">header+3a8</th><td>4바이트</td><td>하위 8비트를 기록 +c88에 저장</td><td><code>80055cd4 / 80055cd8</code></td></tr>
+<tr><th scope="row">header+3ac</th><td>4바이트</td><td>기록 +c8c에 4바이트 저장</td><td><code>80055cdc / 80055ce4</code></td></tr>
+<tr><th scope="row">header+220 / +230</th><td>각 4바이트</td><td>파티션 함수가 간격으로 나눠 개수·시작 인덱스 계산</td><td><code>80084ac0 / 80084ad8</code></td></tr>
+<tr><th scope="row">header+310 / +314</th><td>각 4바이트</td><td>표 시작 인덱스의 하위 16비트 / 반복 횟수</td><td><code>80084af8 / 80084ac4</code></td></tr>
 </tbody></table></div>
-<p>후속 helper는 <code>((header[220]+stride−1) mod 2³²)/stride</code>와 <code>header[230]/stride</code>를 계산합니다. 실제 NAND에서 읽은 필드와 범위를 확보하지 못했으므로 임의값으로 table 쓰기를 계속하지 않았습니다. helper의 반환과 카메라의 partition 배치를 연결하려면 실제 입력의 근거가 더 필요합니다.</p></section>
+<p>재지정이 켜지면 하위 31비트를 간격으로 나눈 몫이 새 시작 인덱스가 됩니다. NAND 요청에 넘기는 위치는 이 인덱스에 간격을 곱한 값이고 예비 영역 조건에 따라 더 나아갈 수 있습니다. 이 함수 구간에는 헤더 magic·CRC·서명을 검사하는 분기가 없습니다. 부팅 체인 전체에 검증이 없다는 뜻으로 읽으면 안 됩니다. <a href="../analysis/nand-context-checks.json">[근거: source.focused_ranges]</a></p>
+<p>파티션 함수는 <code>((header[220]+stride−1) mod 2³²)/stride</code>와 <code>header[230]/stride</code>를 계산합니다. 실제 NAND에서 읽은 필드와 범위를 모르므로 임의값으로 표 쓰기를 이어 가지 않았습니다. 이 함수의 결과를 카메라의 파티션 배치와 이으려면 실제 입력이 더 필요합니다.</p>
+</section>
 
-<section><h2>업데이트 패키지와 설치된 매체의 구분</h2><p>패키지의 <code>0x1000c0</code>에 대응하는 헤더 템플릿은 있습니다. 첫 0x400바이트 SHA-256은 <code class="wrap">a13cfeb149310c4f692811780e98581dda9b713aef5ec3ea8b3fbacf6a6da623</code>입니다. 원본 값은 <code>+220=0x18000</code>, <code>+230=0xffffffff</code>, <code>+310/+314/+3a8/+3ac=0xadadadad</code>입니다. <a href="../analysis/nand-context-checks.json">[패키지 바이트 대조]</a></p>
-<p>기존 E01 모델 재현은 프로그램 버퍼에서 <code>+310/+314</code>를 640/384로, <code>+3a8/+3ac</code>를 1/0으로 바꿨습니다. 이는 업데이트 과정에서 값이 구성되는 템플릿임을 뒷받침합니다. 해당 과거 시험도 합성 geometry와 설치 헤더를 사용했습니다. 카메라에 기록된 실제 바이트나 현재 bad-block 배치는 관측하지 않았습니다. 이 재현은 패키지 템플릿을 NAND 응답으로 공급하지 않았습니다. <a href="../tools/check_burn_header.py">[기존 E01 검사]</a></p>
-<figure class="diagram"><figcaption>파일에 있는 템플릿과 아직 읽지 못한 실제 헤더</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 235" role="img" aria-labelledby="bytes-title bytes-desc"><title id="bytes-title">패키지 템플릿과 실제 매체 내용의 서로 다른 근거</title><desc id="bytes-desc">업데이트 파일의 헤더 템플릿은 직접 읽을 수 있습니다. 모델을 사용한 기존 업데이트 재현은 일부 값을 수정합니다. 현재 카메라에 설치된 NAND 헤더와의 동일성은 확인하지 못했습니다.</desc>
-<defs><marker id="bytes-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="b static" x="15" y="20" width="235" height="112" rx="8"/><text class="t" x="28" y="46">원본 업데이트 패키지</text><text class="s" x="28" y="71">offset 0x1000c0</text><text class="s" x="28" y="94">필드 일부: ADADADAD</text><text class="s" x="28" y="117">템플릿 바이트 직접 대조</text>
-<path class="e" d="M250 76H272" marker-end="url(#bytes-arrow)"/><rect class="b model" x="280" y="20" width="235" height="112" rx="8"/><text class="t" x="293" y="46">기존 E01 모델 재현</text><text class="s" x="293" y="71">+310/+314 → 640 / 384</text><text class="s" x="293" y="94">+3a8/+3ac → 1 / 0</text><text class="s" x="293" y="117">합성 geometry·설치 헤더 사용</text>
-<path class="e open" d="M515 76H537" marker-end="url(#bytes-arrow)"/><rect class="b open" x="545" y="20" width="240" height="112" rx="8"/><text class="t" x="558" y="46">현재 카메라의 NAND</text><text class="s" x="558" y="71">실제 헤더 / spare / status</text><text class="s" x="558" y="94">bad-block·redirect·설정</text><text class="s" x="558" y="117">미확보 · 동일성 미입증</text>
-<text class="t mid" x="400" y="174">FcuNandReadRomBootHeader는 파일 템플릿을 직접 읽지 않음</text><text class="s mid" x="400" y="199">NAND ABI의 응답 버퍼가 record+c84의 내용이 됨</text><text class="s mid" x="400" y="223">점선은 아직 증명하지 못한 연결이며 실제 쓰기·읽기를 수행하지 않음</text>
-</svg></div></figure></section>
+<section id="package"><h2>업데이트 파일의 템플릿과 설치된 헤더는 다른 근거입니다</h2>
+<p class="takeaway">업데이트 파일의 오프셋 <code>0x1000c0</code>에는 같은 칸을 가진 헤더 템플릿이 있습니다. 카메라에 이미 설치된 NAND 헤더와 같은지는 확인하지 못했습니다.</p>
+<figure class="diagram"><figcaption>파일에 있는 템플릿과 아직 읽지 못한 실제 헤더</figcaption><div class="dg-scroll"><svg class="dg" viewBox="0 0 800 235" role="img" aria-labelledby="bytes-title bytes-desc"><title id="bytes-title">패키지 템플릿과 실제 매체 내용의 서로 다른 근거</title><desc id="bytes-desc">왼쪽: 업데이트 파일의 헤더 템플릿은 직접 읽을 수 있고 일부 칸이 ADADADAD입니다. 가운데: 모델을 쓴 기존 E01 재현은 그 칸 일부를 640, 384, 1, 0으로 바꿉니다. 오른쪽: 현재 카메라에 설치된 NAND 헤더, 예비 영역, 상태는 확보하지 못했으며 템플릿과 같은지 입증하지 못했습니다. 헤더를 읽는 원본 함수는 파일 템플릿을 직접 읽지 않고 NAND 요청의 응답 버퍼를 씁니다.</desc>
+<defs><marker id="bytes-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="bytes-arrow-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="15" y="20" width="235" height="112" rx="8"/><text class="t" x="28" y="46">원본 업데이트 파일</text><text class="s" x="28" y="71">오프셋 0x1000c0</text><text class="s" x="28" y="94">칸 일부: ADADADAD</text><text class="s" x="28" y="117">바이트를 직접 대조</text>
+<path class="e" d="M250 76H272" marker-end="url(#bytes-arrow)"/><rect class="b model" x="280" y="20" width="235" height="112" rx="8"/><text class="t" x="293" y="46">기존 E01 모델 재현</text><text class="s" x="293" y="71">+310/+314 → 640 / 384</text><text class="s" x="293" y="94">+3a8/+3ac → 1 / 0</text><text class="s" x="293" y="117">합성 저장장치·설치 헤더</text>
+<path class="e open" d="M515 76H537" marker-end="url(#bytes-arrow-o)"/><rect class="b open" x="545" y="20" width="240" height="112" rx="8"/><text class="t" x="558" y="46">현재 카메라의 NAND</text><text class="s" x="558" y="71">실제 헤더 / 예비 영역 / 상태</text><text class="s" x="558" y="94">불량 블록·재지정·설정</text><text class="s" x="558" y="117">확보 못 함 · 같은지 모름</text>
+<text class="t mid" x="400" y="174">FcuNandReadRomBootHeader는 파일 템플릿을 직접 읽지 않음</text><text class="s mid" x="400" y="199">NAND 요청의 응답 버퍼가 기록 +c84의 내용이 됨</text><text class="s mid" x="400" y="223">점선은 아직 증명하지 못한 연결 · 실제 읽기·쓰기는 하지 않음</text>
+</svg></div>
+<ul class="dg-legend"><li><i class="ok"></i>파일 바이트를 직접 대조</li><li><i class="model"></i>모델 아래의 재현</li><li><i class="open"></i>미확인</li></ul></figure>
+<div class="table-wrap"><table class="compact fit"><caption>업데이트 파일 템플릿의 리틀엔디언 워드</caption><thead><tr><th>위치</th><th>값</th></tr></thead><tbody><tr><th scope="row"><code>+0x14</code></th><td><code>0x2</code></td></tr><tr><th scope="row"><code>+0x200</code></th><td><code>0x2</code></td></tr><tr><th scope="row"><code>+0x214</code></th><td><code>0x1367b</code></td></tr><tr><th scope="row"><code>+0x220</code></th><td><code>0x18000</code></td></tr><tr><th scope="row"><code>+0x230</code></th><td><code>0xffffffff</code></td></tr><tr><th scope="row"><code>+0x310</code></th><td><code>0xadadadad</code></td></tr><tr><th scope="row"><code>+0x314</code></th><td><code>0xadadadad</code></td></tr><tr><th scope="row"><code>+0x3a8</code></th><td><code>0xadadadad</code></td></tr><tr><th scope="row"><code>+0x3ac</code></th><td><code>0xadadadad</code></td></tr></tbody></table></div>
+<p>템플릿 첫 <code>0x400</code>바이트의 SHA-256은 <code class="wrap">a13cfeb149310c4f692811780e98581dda9b713aef5ec3ea8b3fbacf6a6da623</code>입니다. <a href="../analysis/nand-context-checks.json">[근거: source.package_template]</a></p>
+<p><a href="../loader-hash-report.html">기존 E01 모델 재현</a>은 프로그램 버퍼에서 <code>+310/+314</code>를 640/384로, <code>+3a8/+3ac</code>를 1/0으로 바꿨습니다. 업데이트 과정에서 값을 채워 넣는 템플릿이라는 해석을 뒷받침합니다. 그 재현도 합성 저장장치와 설치 헤더를 썼고 카메라에 기록된 실제 바이트나 불량 블록 배치는 보지 않았습니다. 이 문서의 시험은 패키지 템플릿을 NAND 응답으로 넣지 않았습니다. <a href="../tools/check_burn_header.py">[기존 E01 검사]</a></p>
+</section>
 
-<section><h2>통제 시험과 물리 장치 경계</h2><div class="table-wrap"><table class="compact"><caption>합성 응답에 따른 원본 함수 관측</caption><thead><tr><th>시험</th><th>반환</th><th>header+220</th><th>record+c88</th><th>record+c8c</th><th>VEX 이벤트</th></tr></thead><tbody><tr><td>all-zero-control</td><td>1</td><td>0x0</td><td>0x0</td><td>0x0</td><td>86</td></tr><tr><td>arbitrary-pattern-control</td><td>1</td><td>0xdeadbeef</td><td>0x78</td><td>0x76543210</td><td>86</td></tr></tbody></table></div>
-<p>두 시험은 NAND ID 8바이트, spare 16바이트, 데이터 0x400바이트와 각각 status 0을 공급했습니다. 임의 패턴 시험은 <code>+14=0</code>, <code>+220=0xdeadbeef</code>, <code>+3a8=0x12345678</code>, <code>+3ac=0x76543210</code>이며 나머지는 A5 패턴입니다. 두 경우 모두 원본 반환은 1이었고 +220은 생산자에서 읽지 않았습니다. 임의 패턴의 실제 형식 유효성은 판단하지 않았습니다.</p>
-<p>재현은 <code>FcuNandOperationEx=0x80053124</code> 안으로 들어가지 않고 응답을 모델링합니다. 이 지점은 하드웨어를 향하는 ABI 경계이며 물리 MMIO 그 자체는 아닙니다. 원본 하위 경로에는 clock 조회, lock, clock enable, controller operation이 있습니다. 선택된 driver 행의 clock index는 2입니다. 참조 바이트가 0이면 CguUnitSetEnabled는 <code>0x8000f87c</code>에서 <code>0xb0008228</code>로 먼저 씁니다. 공통 validation 경로에는 <code>0x8000f63c</code>의 <code>0xb000800c</code> 읽기가 있습니다. 실제 선행 초기화 상태를 모르므로 어느 접근이 카메라에서 최초인지 단정하지 않습니다. 이 MMIO들은 실행하지 않았습니다. <a href="../analysis/nand-context-checks.json">[하위 경로 근거]</a></p></section>
+<section id="hardware"><h2>NAND 연산 아래의 하드웨어 경로는 실행하지 않았습니다</h2>
+<p class="takeaway">재현은 <code>FcuNandOperationEx</code>(<code>0x80053124</code>) 안으로 들어가지 않고 응답을 모델로 넣었습니다. 이 자리는 하드웨어 쪽으로 가는 함수 경계이며 MMIO 레지스터 자체는 아닙니다.</p>
+<p>원본 하위 경로에는 클록 조회, 잠금, 클록 켜기, 컨트롤러 연산이 있습니다. 정적으로 확인한 내용은 아래와 같습니다. 이 MMIO 접근은 하나도 실행하지 않았습니다. 실제 선행 초기화 상태를 모르므로 어느 접근이 카메라에서 처음 일어나는지도 단정하지 않습니다. <a href="../analysis/nand-context-checks.json">[근거: source.focused_ranges]</a></p>
+<ul>
+<li>선택된 드라이버 행의 클록 번호는 2입니다. 참조 바이트가 0이면 <code>CguUnitSetEnabled</code>가 <code>0x8000f87c</code>에서 <code>0xb0008228</code>에 먼저 씁니다.</li>
+<li>공통 검사 경로에는 <code>0x8000f63c</code>의 <code>0xb000800c</code> 읽기가 있습니다.</li>
+<li>연산 2는 <code>FcuOperation(dev,0x106,desc,8,1,id)</code>로, 시험용 식별값 조건의 연산 6은 <code>FcuOperation(dev,0x103,desc,0,2,spare)</code>로 이어집니다.</li>
+<li>컨트롤러 오프셋 0 구성에서는 <code>0x80050098</code>에 <code>0xb0080000</code> 쓰기가 있습니다.</li>
+<li>연산 6이 끝나면 <code>0x80053bf0</code>이 <code>0xb0080600 + 16×(position &amp; 3)</code>에서 예비 영역 데이터를 읽습니다.</li>
+</ul>
+</section>
 
-<section><h2>선택된 controller 데이터 경로</h2><p>정적으로 추적한 op 2는 <code>FcuOperation(dev,0x106,desc,8,1,id)</code>로, 합성 ID 조건의 op 6은 <code>FcuOperation(dev,0x103,desc,0,2,spare)</code>로 이어집니다. controller offset 0인 구성에서는 <code>0x80050098</code>에 <code>0xb0080000</code> store가 있습니다. 선택된 op 6 완료 뒤 <code>0x80053bf0</code>은 <code>0xb0080600 + 16×(position &amp; 3)</code>에서 spare 데이터를 읽습니다. 이 controller 동작과 data-RAM 읽기는 실행하지 않았습니다. <a href="../analysis/nand-context-checks.json">[원본 하위 경로]</a></p></section>
-<section><h2>재현과 검증</h2><p>전체 firmware와 분석 ELF의 SHA-256을 확인한 뒤 프로젝트 의존 소스 11개를 모두 해시 검사합니다. 검사한 소스 바이트를 직접 컴파일하므로 기존 모듈 캐시와 .pyc를 사용하지 않습니다. 원본 plain 구간 전체와 새로 디코딩한 E05 전체를 ELF와 대조한 다음 angr를 불러옵니다. 두 실험은 CLI에서 순차 실행하며 동시 실행 서비스로 제공하지 않습니다.</p>
-<p>각 실험의 전체 JSON 기록을 고정된 정규화 SHA-256과 비교하고 메타데이터를 포함한 전체 보고서도 별도로 검사합니다. 출력은 새 경로만 허용하며 생성 시점에도 exclusive create를 사용합니다. <code>-O</code> 실행은 거부합니다. <a href="../tools/check_nand_context.py">[공개 CLI]</a> · <a href="../tests/test_nand_context.py">[보호 테스트]</a></p>
+<section id="limits"><h2>한계와 남은 과제</h2>
+<ul>
+<li>A는 전역 등록 뒤 <code>0x80084ac0</code>의 빈 설정 포인터 접근 직전에 멈췄습니다. 생성자 성공 반환과 FileX 요청 5에는 닿지 않았습니다.</li>
+<li>A의 FileX 일곱째 인수 0은 의도적으로 만든 대조 조건입니다. 원래 Burn의 특수값 경로가 아닙니다.</li>
+<li>B는 별도 기록 생성 경로에서 시험용 식별값·예비 영역·헤더 응답을 썼습니다. 그 결과를 A의 완료로 이을 수 없습니다.</li>
+<li>실제 NAND의 식별값·예비 영역·헤더·상태, 선행 <code>FcuInit</code> 상태, registry 재사용, 물리 단위·주소 별칭·캐시·DMA, 카메라 부팅은 미확인입니다.</li>
+<li>실제 할당기·뮤텍스·세마포어·카운터는 실행하지 않았습니다. 카운터 모델은 1을 여덟 번 돌려줍니다. 실패 정리와 컨트롤러 MMIO도 범위 밖입니다.</li>
+<li>패키지의 헤더 템플릿은 현재 설치된 NAND 내용의 증거가 아닙니다.</li>
+</ul>
+</section>
+
+<section id="reproduce"><h2>재현 방법</h2>
 <pre><code>python -B tools/check_nand_context.py fwdc603p.bin main-expanded.elf --output new-context-report.json
 python -B tools/build_nand_context_report.py
 python -B -m unittest discover -s tests -p test_nand_context.py</code></pre>
-<p>펌웨어 원본과 분석 ELF는 저장소에 포함하지 않습니다. 첫 명령에는 본인이 확보한 파일을 지정해야 합니다. 파일의 해시는 고정 해시와 일치해야 합니다. HTML builder와 JSON 검증에는 firmware나 angr가 필요하지 않습니다.</p>
-<div class="table-wrap"><table class="compact"><caption>재현 대상과 완전 기록의 SHA-256</caption><thead><tr><th>대상</th><th>SHA-256</th></tr></thead><tbody><tr><td>원본 firmware</td><td><code class="wrap">8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b</code></td></tr><tr><td>분석 ELF</td><td><code class="wrap">a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796</code></td></tr><tr><td>A 전체 관측 정규화 JSON</td><td><code class="wrap">f0f4609458ecd5672c06d32283126e8436098287f2238048897e203bab43bcd2</code></td></tr><tr><td>B 전체 관측 정규화 JSON</td><td><code class="wrap">4afea405404e982c96da0b1c3f5e35c4fc7909d6470b4b47d716f520863c42e7</code></td></tr><tr><td>메타데이터 포함 전체 정규화 JSON</td><td><code class="wrap">839dfbd595270d08a1ad772d9325b5a48fe98b23819ec3546e67c35aa3b79757</code></td></tr></tbody></table></div>
-<p>angr 10.0.5의 MIPS32LE/VEX로 검증했습니다. Unicorn DLL은 사용할 수 없었습니다. source pins는 설치된 외부 Python·angr 패키지의 공급망 검증을 대신하지 않습니다.</p></section>
-<section><h2>확인하지 못한 연결</h2><p>A는 전역 context 등록 뒤 <code>0x80084ac0</code>의 null 설정 포인터 접근 직전에 멈춥니다. 그 접근은 실행하지 않았으며 생성자 성공 반환과 후속 FileX 요청 5에 도달하지 않았습니다. B는 별도 레코드 생성 경로에서 합성 ID·spare·헤더 응답을 사용했습니다. B의 반환값 1을 A의 초기화 완료로 연결할 수는 없습니다.</p>
-<p>실제 NAND ID·spare·헤더·status, 선행 FcuInit 상태, registry 재사용, 물리 단위·주소 alias·cache·DMA와 카메라 부팅은 미확인입니다. 실제 allocator·mutex·semaphore·counter를 실행하지 않았으며 실패 정리와 controller MMIO도 이번 재현에 포함하지 않았습니다. 패키지의 헤더 템플릿은 현재 설치된 NAND 내용의 증거가 아닙니다.</p>
-<ul class="refs"><li><a href="../analysis/nand-context-checks.json">전체 재현 기록</a> · <a href="../analysis/nand-context-template.html">HTML 템플릿</a></li><li><a href="nand-boot-read.html">선행 헤더·정보 조회와 별도 요청 5 분석</a></li></ul></section></main></div><!-- chrome:bottom -->
+<p>재현기는 펌웨어 전체와 분석 ELF의 SHA-256을 확인한 뒤 의존하는 프로젝트 소스 11개를 모두 해시로 검사합니다. 검사한 소스 바이트를 직접 컴파일하므로 기존 모듈 캐시와 .pyc는 쓰지 않습니다. 원본 plain 구간 전체와 새로 풀어 낸 E05 전체를 ELF와 대조한 다음에야 angr를 불러옵니다. 두 실험은 CLI에서 순차 실행하며 동시 실행 서비스로 제공하지 않습니다.</p>
+<p>각 실험의 전체 JSON 기록을 고정된 정규화 SHA-256과 비교하고 메타데이터를 포함한 전체 보고서도 따로 검사합니다. 출력은 새 경로만 허용하고 만들 때도 exclusive create를 씁니다. <code>-O</code> 실행은 거부합니다. 펌웨어와 분석 ELF는 저장소에 없으니 첫 명령에는 직접 확보한 파일을 지정해야 하며 해시가 고정값과 같아야 합니다. HTML 빌더와 JSON 검증에는 펌웨어나 angr가 필요 없습니다. <a href="../tools/check_nand_context.py">[공개 CLI]</a> · <a href="../tests/test_nand_context.py">[보호 테스트]</a></p>
+<p>angr 10.0.5의 MIPS32LE/VEX로 검증했습니다. Unicorn DLL은 쓸 수 없었습니다. 소스 해시 고정은 설치된 외부 Python·angr 패키지의 공급망 검증을 대신하지 않습니다.</p>
+<details class="evidence"><summary>재현 대상과 전체 기록의 SHA-256</summary>
+<div class="table-wrap"><table class="compact"><caption>재현 대상과 완전 기록의 SHA-256</caption><thead><tr><th>대상</th><th>SHA-256</th></tr></thead><tbody><tr><th scope="row">원본 펌웨어</th><td><code class="wrap">8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b</code></td></tr><tr><th scope="row">분석 ELF</th><td><code class="wrap">a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796</code></td></tr><tr><th scope="row">A 전체 관측 정규화 JSON</th><td><code class="wrap">f0f4609458ecd5672c06d32283126e8436098287f2238048897e203bab43bcd2</code></td></tr><tr><th scope="row">B 전체 관측 정규화 JSON</th><td><code class="wrap">4afea405404e982c96da0b1c3f5e35c4fc7909d6470b4b47d716f520863c42e7</code></td></tr><tr><th scope="row">메타데이터 포함 전체 정규화 JSON</th><td><code class="wrap">839dfbd595270d08a1ad772d9325b5a48fe98b23819ec3546e67c35aa3b79757</code></td></tr></tbody></table></div>
+<p>원본 대조에는 plain 구간 4개, 새로 푼 E05 전체(2,960,896바이트), 집중 검사 구간 58개가 들어 있습니다.</p>
+</details>
+</section>
+
+<section id="refs"><h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="../analysis/nand-context-checks.json">analysis/nand-context-checks.json</a> — 두 실험의 전체 재현 기록 · <a href="../analysis/nand-context-template.html">HTML 템플릿</a></li>
+<li><a href="../tools/check_nand_context.py">tools/check_nand_context.py</a> — 재현 CLI · <a href="../tests/test_nand_context.py">tests/test_nand_context.py</a> — 보호 테스트</li>
+<li><a href="../tools/check_burn_header.py">tools/check_burn_header.py</a> — 템플릿 칸을 바꾸는 기존 E01 검사</li>
+<li><a href="nand-boot-read.html">부트 헤더 값의 소비와 별도 읽기 요청</a> — 헤더·정보 조회와 따로 넣은 요청 5</li>
+<li><a href="nand-filex.html">AppFb의 FileX 열기와 NAND 응답 경계</a> — B의 결과를 이어받은 AppFb 실행</li>
+<li><a href="https://github.com/eclipse-threadx/filex/blob/master/common/inc/fx_api.h">Eclipse ThreadX FileX: fx_api.h</a> — <code>fx_media_open</code>의 공개 인수 목록</li>
+</ul>
+</section>
+</main></div>
+<!-- chrome:bottom -->
 <nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">업데이트와 재패킹 — 이 주제의 문서</h2><ol><li><a href="../guide-update.html">업데이트·재패킹 안내</a></li><li><a href="../implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="../update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="../loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="../main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="../nand-header-report.html">NAND 식별값과 부트 헤더 재지정</a></li><li><a href="nand-boot-read.html">부트 헤더 값과 별도 읽기 요청</a></li><li><a href="nand-context.html" aria-current="page">컨텍스트 등록과 별도 매체 발견</a></li><li><a href="nand-filex.html">AppFb의 FileX 열기와 NAND 응답 경계</a></li><li><a href="../loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="../burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="../storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="../recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="nand-boot-read.html"><small>← 이전</small>부트 헤더 값과 별도 읽기 요청</a><a class="next" href="nand-filex.html"><small>다음 →</small>AppFb의 FileX 열기와 NAND 응답 경계</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
-</body></html>
+</body>
+</html>

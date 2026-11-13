@@ -29,7 +29,7 @@
 <ul>
 <li>로더는 첫 블록(131,072바이트)을 저장장치에 쓰기 직전에 <strong>281바이트</strong>를 바꿉니다. 바뀌는 곳은 모두 맨 앞 1,536바이트 안의 헤더와 파티션 표입니다.</li>
 <li>281바이트를 전부 원본 코드의 쓰기 명령에 연결했습니다. 그 쓰기만 원본 데이터에 적용해도 로더가 준비한 버퍼와 SHA-256이 같았습니다.</li>
-<li>로더에 들어 있는 MD5 코드는 26개 입력에서 표준 MD5와 같은 값을 냈습니다. 이 코드를 부르는 <strong>해시 작업자</strong>와 카드 읽기 함수까지 이어 실행했습니다. 값이 맞으면 성공하고, 다르면 되감아 한 번만 더 읽습니다.</li>
+<li>로더에 들어 있는 MD5 코드는 26개 입력에서 표준 MD5와 같은 값을 냈습니다. 이 코드를 부르는 <strong>해시 작업자</strong>와 카드 읽기 함수까지 이어 실행했습니다. 값이 맞으면 성공하고 다르면 되감아 한 번만 더 읽습니다.</li>
 <li>실제 업데이트 파일은 이 MD5 경로를 켜지 않습니다. MD5 시험은 설정값을 바꾼 합성 조건입니다. 설치된 헤더, 저장장치 크기, 큐 전달도 시험용 값이며 카메라의 저장장치에는 아무것도 쓰지 않았습니다.</li>
 </ul>
 </section>
@@ -73,8 +73,8 @@
 <ul>
 <li><strong>블록과 섹터</strong>: 섹터는 512바이트입니다. 시험 조건에서는 256섹터, 곧 131,072바이트를 블록 하나로 두었습니다. 로더가 카드에서 한 번에 읽는 크기(청크)와 같습니다.</li>
 <li><strong>설치된 헤더</strong>: 카메라의 저장장치에 이미 기록돼 있는 배치 정보입니다. 업데이트 파일에 든 헤더와 구분합니다. 이 문서에서는 시험용으로 만든 값을 넣었습니다.</li>
-<li><strong>섹션</strong>: 저장장치를 용도별로 나눈 구역입니다. 로더는 번호 0~6으로 다루고, 섹션마다 36바이트짜리 정보를 헤더에 둡니다.</li>
-<li><strong>해시 플래그</strong>: 업데이트 헤더의 값 하나입니다. 0이면 카드를 두 번 읽어 비교하고, 1이면 MD5 검사를 씁니다. <a href="loader-lens-report.html">실제 파일의 값은 0</a>입니다.</li>
+<li><strong>섹션</strong>: 저장장치를 용도별로 나눈 구역입니다. 로더는 번호 0~6으로 다루고 섹션마다 36바이트짜리 정보를 헤더에 둡니다.</li>
+<li><strong>해시 플래그</strong>: 업데이트 헤더의 값 하나입니다. 0이면 카드를 두 번 읽어 비교하고 1이면 MD5 검사를 씁니다. <a href="loader-lens-report.html">실제 파일의 값은 0</a>입니다.</li>
 <li><strong>다이제스트</strong>: MD5가 입력에서 계산해 내는 16바이트 값입니다. 데이터가 도중에 바뀌었는지 확인하는 데 씁니다.</li>
 <li><strong>연산 번호</strong>: 로더가 저장 계층에 보내는 요청의 내부 번호입니다. 이 문서에는 연산 5(기록)가 나옵니다. 번호별 역할은 <a href="storage-readiness-report.html#program">저장 경계 문서의 표</a>에 있습니다.</li>
 </ul>
@@ -147,7 +147,7 @@
 <h3>크기 값의 계산</h3>
 <p>①의 새 값은 원본 코드가 다음 식으로 계산합니다.</p>
 <pre><code>+0x214 = 0x1367b + 0x982 − 0xa00 + 3 = 0x13600</code></pre>
-<p><code>0x1367b</code>는 업데이트 헤더 <code>+0x214</code>의 원래 값이고 <code>0x982</code>는 <code>+0x224</code>의 값입니다. <code>0xa00</code>은 코드 영역 크기를 올림한 값입니다. 마지막의 3은 원본 명령에 들어 있는 상수이며, 섹터 규칙을 추정해 넣은 값이 아닙니다. <a href="analysis/header-hash.json">[근거: findings.map_size]</a></p>
+<p><code>0x1367b</code>는 업데이트 헤더 <code>+0x214</code>의 원래 값이고 <code>0x982</code>는 <code>+0x224</code>의 값입니다. <code>0xa00</code>은 코드 영역 크기를 올림한 값입니다. 마지막의 3은 원본 명령에 들어 있는 상수이며 섹터 규칙을 추정해 넣은 값이 아닙니다. <a href="analysis/header-hash.json">[근거: findings.map_size]</a></p>
 
 <h3>쓰기 이벤트 3,242개 가운데 170개가 차이를 만듭니다</h3>
 <p>첫 기록 요청 직전까지 에뮬레이터는 이 버퍼에 쓰는 이벤트를 3,242개 기록했습니다. 이 수는 에뮬레이터(VEX)가 센 메모리 쓰기 횟수입니다. <code>SWL</code>·<code>SWR</code> 명령은 에뮬레이터 안에서 바이트 단위 쓰기 여러 개로 나뉘므로, MIPS 저장 명령이 실행된 횟수와는 단위가 다릅니다.</p>
@@ -157,7 +157,7 @@
 </ul>
 <p>그림의 회색 칸(<code>0x318</code>~<code>0x397</code>, 128바이트)과 <code>+0x230</code>의 4바이트는 설치된 헤더에서 복사하는 곳입니다. 이 입력에서는 원래 값과 같아서 차이에 들지 않았습니다. <a href="analysis/header-hash.json">[근거: header_replay.trace, findings.copied_fields]</a></p>
 <div class="callout warn"><strong class="label">어디까지 실행했나</strong>
-<p>첫 기록 요청은 연산 5, 섹터 0, 256섹터, 예비 영역 16바이트였습니다. 이 요청을 부르는 명령과 그 지연 슬롯까지 실행하고, 저장 계층의 진입점 <code>0x8008249c</code>에서 멈췄습니다. 기록 자체는 실행하지 않았습니다. 기록이 실패했을 때의 재시도와, 135개 청크를 다 쓴 뒤의 마무리를 모델로 이어 본 결과는 <a href="burn-continuation-report.html">NAND 재시도와 최종 반환</a>에 있습니다.</p></div>
+<p>첫 기록 요청은 연산 5, 섹터 0, 256섹터, 예비 영역 16바이트였습니다. 이 요청을 부르는 명령과 그 지연 슬롯까지 실행하고 저장 계층의 진입점 <code>0x8008249c</code>에서 멈췄습니다. 기록 자체는 실행하지 않았습니다. 기록이 실패했을 때의 재시도와, 135개 청크를 다 쓴 뒤의 마무리를 모델로 이어 본 결과는 <a href="burn-continuation-report.html">NAND 재시도와 최종 반환</a>에 있습니다.</p></div>
 
 <details class="evidence"><summary>바뀐 범위 14개와 버퍼 해시</summary>
 <div class="table-wrap"><table class="fit compact">
@@ -203,7 +203,7 @@
 <thead><tr><th>ID</th><th><code>+0</code> 바이트</th><th class="n"><code>+4</code> 바이트</th><th class="n"><code>+8</code> 시작값</th><th class="n"><code>+12</code> 길이</th></tr></thead>
 <tbody><tr><th scope="row">0</th><td><code>0x80</code></td><td class="n">1</td><td class="n">81,920</td><td class="n">24,576</td></tr><tr><th scope="row">1</th><td><code>0x80</code></td><td class="n">1</td><td class="n">13,280</td><td class="n">68,640</td></tr><tr><th scope="row">2</th><td><code>0x80</code></td><td class="n">1</td><td class="n">106,496</td><td class="n">4,096</td></tr><tr><th scope="row">3</th><td><code>0x80</code></td><td class="n">1</td><td class="n">110,592</td><td class="n">53,248</td></tr></tbody>
 </table></div>
-<p>네 항목 모두 <code>+0</code>이 <code>0x80</code>입니다. 로더가 직접 쓴 것은 ID 0뿐이고, 나머지 세 항목은 원래 값이 이미 <code>0x80</code>이었습니다. 그래서 바뀐 12바이트는 ID 0의 <code>+0</code> 한 바이트와, 네 항목의 <code>+4</code>·<code>+8</code>·<code>+12</code>에서 달라진 바이트들입니다. <a href="analysis/header-hash.json">[근거: findings.partition, trace.partition_fields]</a></p>
+<p>네 항목 모두 <code>+0</code>이 <code>0x80</code>입니다. 로더가 직접 쓴 것은 ID 0뿐이고 나머지 세 항목은 원래 값이 이미 <code>0x80</code>이었습니다. 그래서 바뀐 12바이트는 ID 0의 <code>+0</code> 한 바이트와, 네 항목의 <code>+4</code>·<code>+8</code>·<code>+12</code>에서 달라진 바이트들입니다. <a href="analysis/header-hash.json">[근거: findings.partition, trace.partition_fields]</a></p>
 
 <h3>쓰기를 건너뛰는 조건</h3>
 <p>섹션 정보 <code>+0xc</code>의 ID가 999이거나 <code>+4</code>의 값(span)이 0이면 함수는 아무것도 쓰지 않습니다. 이 조건과 ID 0~3의 쓰기를 따로 만든 7사례로 실행했습니다. 사례마다 항목 주변 512바이트와 앞뒤 보호 바이트를 예상값과 비교했습니다.</p>
@@ -219,10 +219,10 @@
 
 <section id="md5">
 <h2>MD5 계산 코드와 해시 작업자</h2>
-<p class="takeaway">로더 안의 MD5 코드는 표준 MD5와 같은 값을 냅니다. 해시 작업자는 큐로 받은 세 가지 명령으로 이 코드를 부르고, 계산한 값이 기대값과 같은지 응답합니다.</p>
+<p class="takeaway">로더 안의 MD5 코드는 표준 MD5와 같은 값을 냅니다. 해시 작업자는 큐로 받은 세 가지 명령으로 이 코드를 부르고 계산한 값이 기대값과 같은지 응답합니다.</p>
 
 <h3>MD5 계산 코드</h3>
-<p><dfn title="입력에서 128비트 값을 계산하는 해시 함수. RFC 1321에 정의돼 있습니다">MD5</dfn>는 길이가 얼마든 입력을 받아 128비트, 곧 16바이트의 다이제스트를 냅니다. 입력을 64바이트 블록으로 나눠 처리하고, 마지막에 패딩과 64비트 길이 값을 붙입니다. 그래서 55바이트까지는 패딩과 길이가 한 블록에 들어가고, 56바이트부터는 블록이 하나 더 필요합니다. <a href="https://www.rfc-editor.org/rfc/rfc1321">[RFC 1321, 3.1~3.4절]</a></p>
+<p><dfn title="입력에서 128비트 값을 계산하는 해시 함수. RFC 1321에 정의돼 있습니다">MD5</dfn>는 길이가 얼마든 입력을 받아 128비트, 곧 16바이트의 다이제스트를 냅니다. 입력을 64바이트 블록으로 나눠 처리하고 마지막에 패딩과 64비트 길이 값을 붙입니다. 그래서 55바이트까지는 패딩과 길이가 한 블록에 들어가고 56바이트부터는 블록이 하나 더 필요합니다. <a href="https://www.rfc-editor.org/rfc/rfc1321">[RFC 1321, 3.1~3.4절]</a></p>
 <p>원본 <code>md5_init</code>·<code>md5_append</code>·<code>md5_finish</code>와 내부 압축 함수를 아무것도 대체하지 않고 실행했습니다. 입력 길이는 블록 경계 앞뒤인 0·1·3·55·56·63·64·65·119·120·127·128·129바이트입니다. 길이마다 한 번에 넣은 경우와 나눠 넣은 경우를 실행해 모두 26사례입니다. 결과는 Python 표준 라이브러리의 MD5와 전부 같았습니다.</p>
 <pre><code>MD5("")    = d41d8cd98f00b204e9800998ecf8427e
 MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
@@ -236,7 +236,7 @@ MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
 </details>
 
 <h3>해시 작업자가 명령을 받는 순서</h3>
-<p>MD5 계산은 카드 읽기 함수가 직접 하지 않습니다. 따로 도는 <dfn title="큐에서 명령을 받아 MD5를 계산하고 결과를 돌려주는 원본 함수 BurnHashManager">해시 작업자</dfn>(<code>BurnHashManager</code>)에게 큐로 요청합니다. 요청과 응답은 세 워드짜리 메시지이고, 첫 워드가 명령 번호입니다.</p>
+<p>MD5 계산은 카드 읽기 함수가 직접 하지 않습니다. 따로 도는 <dfn title="큐에서 명령을 받아 MD5를 계산하고 결과를 돌려주는 원본 함수 BurnHashManager">해시 작업자</dfn>(<code>BurnHashManager</code>)에게 큐로 요청합니다. 요청과 응답은 세 워드짜리 메시지이고 첫 워드가 명령 번호입니다.</p>
 
 <figure class="diagram">
 <figcaption>MD5 검사 한 번의 호출 순서</figcaption>
@@ -279,7 +279,7 @@ MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="model"></i>시험 도구가 대신한 큐 전달</li></ul>
-<p>작업자를 끝내는 명령 5는 시험 도구가 보냈고, 그 응답도 시험 도구가 거뒀습니다. 래퍼에는 작업자가 실제로 낸 3 또는 4만 돌려보냈습니다.</p>
+<p>작업자를 끝내는 명령 5는 시험 도구가 보냈고 그 응답도 시험 도구가 거뒀습니다. 래퍼에는 작업자가 실제로 낸 3 또는 4만 돌려보냈습니다.</p>
 </figure>
 
 <div class="table-wrap"><table>
@@ -295,10 +295,10 @@ MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
 <tr><th scope="row">그 밖</th><td>요청</td><td>정해진 뜻 없음</td><td>아무것도 하지 않고 다음 메시지를 기다림</td></tr>
 </tbody>
 </table></div>
-<p>명령 1에서 작업자는 받은 주소를 그대로 쓰지 않습니다. 주소의 <code>0x40000000</code> 비트가 켜져 있으면 <code>0x80000000</code>을 더해 켜고, 꺼져 있으면 <code>0xdfffffff</code>로 걸러 <code>0x20000000</code> 비트를 끕니다. 두 갈래 모두 따로 준비한 합성 주소에서 실행했습니다. 이 변환이 실제 캐시에 어떤 영향을 주는지는 확인하지 않았습니다. <a href="analysis/header-hash.json">[근거: findings.pointer, worker_cases]</a></p>
+<p>명령 1에서 작업자는 받은 주소를 그대로 쓰지 않습니다. 주소의 <code>0x40000000</code> 비트가 켜져 있으면 <code>0x80000000</code>을 더해 켜고 꺼져 있으면 <code>0xdfffffff</code>로 걸러 <code>0x20000000</code> 비트를 끕니다. 두 갈래 모두 따로 준비한 합성 주소에서 실행했습니다. 이 변환이 실제 캐시에 어떤 영향을 주는지는 확인하지 않았습니다. <a href="analysis/header-hash.json">[근거: findings.pointer, worker_cases]</a></p>
 
 <h3>래퍼는 큐의 상태값을 보지 않습니다</h3>
-<p>카드 읽기 함수는 큐를 직접 다루지 않고 래퍼 세 개를 부릅니다. 초기화 래퍼와 추가 래퍼는 큐 보내기가 어떤 상태값을 돌려주든 1을 반환합니다. 마무리 래퍼(<code>BurnHashFanalize</code>, 원본의 철자)는 보내기·받기의 상태값을 보지 않고, 받은 메시지의 첫 워드가 3인지만 검사합니다.</p>
+<p>카드 읽기 함수는 큐를 직접 다루지 않고 래퍼 세 개를 부릅니다. 초기화 래퍼와 추가 래퍼는 큐 보내기가 어떤 상태값을 돌려주든 1을 반환합니다. 마무리 래퍼(<code>BurnHashFanalize</code>, 원본의 철자)는 보내기·받기의 상태값을 보지 않고 받은 메시지의 첫 워드가 3인지만 검사합니다.</p>
 <div class="table-wrap"><table>
 <caption>해시 래퍼 9사례. 상태값은 시험용으로 넣었습니다</caption>
 <thead><tr><th>래퍼와 사례</th><th class="n">보내기 상태</th><th class="n">받기 상태</th><th class="n">받은 첫 워드</th><th class="n">반환값</th></tr></thead>
@@ -317,7 +317,7 @@ MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
 
 <section id="callback">
 <h2>MD5 결과에 따라 카드 읽기를 다시 시도하는 규칙</h2>
-<p class="takeaway">해시 플래그가 1이면 카드 읽기 함수는 요청받은 길이보다 16바이트를 더 읽어 뒤 16바이트를 기대값으로 씁니다. 값이 다르면 읽은 만큼 되감고, 한 번만 더 시도합니다.</p>
+<p class="takeaway">해시 플래그가 1이면 카드 읽기 함수는 요청받은 길이보다 16바이트를 더 읽어 뒤 16바이트를 기대값으로 씁니다. 값이 다르면 읽은 만큼 되감고 한 번만 더 시도합니다.</p>
 
 <figure class="diagram">
 <figcaption>해시 플래그가 1일 때 카드 읽기 함수의 분기</figcaption>
@@ -360,14 +360,14 @@ MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행한 구간</li><li><i class="model"></i>원본이 요청하고 모델이 응답한 파일 동작</li><li><i class="key"></i>성공 반환</li></ul>
 </figure>
 
-<p>이 분기를 7사례로 실행했습니다. 이 시험에서는 MD5의 판정을 값으로 넣어 주지 않았습니다. 카드 읽기 함수가 만든 메시지를 원본 해시 작업자에게 그대로 넘기고, 작업자가 실제로 계산해 낸 응답을 돌려받았습니다. 해시 작업은 모두 9건이었습니다.</p>
+<p>이 분기를 7사례로 실행했습니다. 이 시험에서는 MD5의 판정을 값으로 넣어 주지 않았습니다. 카드 읽기 함수가 만든 메시지를 원본 해시 작업자에게 그대로 넘기고 작업자가 실제로 계산해 낸 응답을 돌려받았습니다. 해시 작업은 모두 9건이었습니다.</p>
 <div class="table-wrap"><table>
 <caption>카드 읽기 함수 7사례. 성공한 읽기는 80바이트(데이터 64 + 다이제스트 16) 전체를 건넸습니다</caption>
 <thead><tr><th>사례</th><th class="n">읽기</th><th class="n">되감기</th><th class="n">해시 작업</th><th>작업자의 응답</th><th class="n">반환값</th></tr></thead>
 <tbody><tr><th scope="row">다이제스트가 일치 <code>match</code></th><td class="n">1</td><td class="n">0</td><td class="n">1</td><td>3</td><td class="n">1</td></tr><tr><th scope="row">다이제스트 첫 바이트가 달랐고, 다시 읽어 일치 <code>first-digest-byte-retry-match</code></th><td class="n">2</td><td class="n">1</td><td class="n">2</td><td>4 → 3</td><td class="n">1</td></tr><tr><th scope="row">다이제스트 끝 바이트가 달랐고, 다시 읽은 새 데이터로 일치 <code>last-digest-byte-retry-new-payload</code></th><td class="n">2</td><td class="n">1</td><td class="n">2</td><td>4 → 3</td><td class="n">1</td></tr><tr><th scope="row">두 번 모두 불일치 (첫 바이트, 끝 바이트) <code>first-and-last-digest-byte-fail</code></th><td class="n">2</td><td class="n">2</td><td class="n">2</td><td>4 → 4</td><td class="n">0</td></tr><tr><th scope="row">불일치 뒤 되감기에서 오류 <code>digest-mismatch-seek-error</code></th><td class="n">1</td><td class="n">1</td><td class="n">1</td><td>4</td><td class="n">0</td></tr><tr><th scope="row">첫 읽기에서 오류 <code>file-read-error</code></th><td class="n">1</td><td class="n">0</td><td class="n">0</td><td>—</td><td class="n">0</td></tr><tr><th scope="row">불일치 뒤 다시 읽기에서 오류 <code>digest-mismatch-retry-read-error</code></th><td class="n">2</td><td class="n">1</td><td class="n">1</td><td>4</td><td class="n">0</td></tr></tbody>
 </table></div>
 <ul>
-<li><strong>길이 계산</strong>: 원본은 읽기가 성공했을 때 실제로 읽힌 길이에서 16을 뺀 값을 해시할 길이로 씁니다. 기대값의 주소는 읽은 데이터의 끝에서 16바이트 앞입니다. 64+16은 시험 입력이며, 모든 패키지의 고정 크기가 아닙니다.</li>
+<li><strong>길이 계산</strong>: 원본은 읽기가 성공했을 때 실제로 읽힌 길이에서 16을 뺀 값을 해시할 길이로 씁니다. 기대값의 주소는 읽은 데이터의 끝에서 16바이트 앞입니다. 64+16은 시험 입력이며 모든 패키지의 고정 크기가 아닙니다.</li>
 <li><strong>되감기</strong>: 불일치하면 실제로 읽힌 길이(여기서는 80)만큼 되감기를 요청합니다. 상위 워드는 0, 옵션은 3입니다. 두 번 불일치한 사례에서는 되감기를 두 번 요청한 뒤 0을 반환했습니다.</li>
 <li><strong>실행 방식</strong>: 래퍼가 결과를 기다릴 때마다 시험 도구가 작업자를 따로 실행했습니다. 작업자에는 카드 읽기 함수의 메모리 복사본과 실제 메시지를 넘겼습니다. 두 코드가 동시에 도는 상황은 만들지 않았습니다.</li>
 </ul>
@@ -395,7 +395,7 @@ MD5("abc") = 900150983cd24fb0d6963f7d28e17f72</code></pre>
 <section id="limits">
 <h2>한계와 재현 방법</h2>
 <ul>
-<li>설치된 헤더와 저장장치 형상은 합성 값입니다. 첫 기록 요청은 저장 계층 진입점에서 멈췄고, 연산 5의 처리는 실행하지 않았습니다.</li>
+<li>설치된 헤더와 저장장치 형상은 합성 값입니다. 첫 기록 요청은 저장 계층 진입점에서 멈췄고 연산 5의 처리는 실행하지 않았습니다.</li>
 <li>카드 읽기 시험은 80바이트가 전부 읽힌 경우만 다뤘습니다. 짧게 읽힌 경우, 읽힌 길이가 16보다 작은 경우, 큰 청크, 실제 RTOS의 스케줄링은 확인하지 않았습니다.</li>
 <li><code>BurnNand</code>의 기록·복구 반복 전체, 하드웨어 캐시, 카메라의 패키지 수용·기록·부팅은 확인하지 않았습니다.</li>
 <li>파티션 필드에 쓰는 값만으로 파일시스템 종류를 판단하지 않았습니다.</li>
