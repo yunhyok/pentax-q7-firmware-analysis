@@ -48,6 +48,8 @@ from build_nand_header_report import main as build_nand_headers
 from check_nand_headers import validate_report as verify_nand_headers, source_evidence as nand_source
 from build_nand_boot_read_report import main as build_nand_boot_read
 from check_nand_boot_read import validate_report as verify_nand_boot_read
+from build_nand_context_report import main as build_nand_context
+from check_nand_context import validate_report as verify_nand_context
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -197,6 +199,8 @@ def verify_deep(firmware):
     verify_html(ROOT / "nand-header-report.html", build_nand_headers)
     verify_nand_boot_read(read('nand-boot-read-checks.json'))
     verify_html(ROOT / "reports/nand-boot-read.html", build_nand_boot_read)
+    verify_nand_context(read('nand-context-checks.json'))
+    verify_html(ROOT / "reports/nand-context.html", build_nand_context)
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode

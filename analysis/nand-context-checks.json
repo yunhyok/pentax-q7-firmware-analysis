@@ -1,0 +1,1433 @@
+{
+  "schema_version": 1,
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "source": {
+    "project_source_sha256": {
+      "build_analysis_elf": "2dae569e60f7f46c101341b44e87d7a08c230d9fa81ef517b2f88c64d6db557b",
+      "check_burn_storage": "c76aa266afff9060d0b1cff4810b555f8aafe0dbb6623b8a191e00b1ff4e5867",
+      "check_isp_registers": "f04d12f97d55624ffab5fa59eddf8bce8b2900d7ef3127bd30761ae7d074cf92",
+      "check_main_burn": "047efc4e813360b224e86a545292079f74f7f3d09353f4ff7fd7c8fe6ee22d94",
+      "check_nand_boot_read": "b66c5e588012af53cdc813b93cf5c6fd9d12c4fbcb6458e74b3545fffd32977d",
+      "check_nand_headers": "791cefee6157368f610edf33ca8d10c733f6ef1167b83441adf00524ab43fd5b",
+      "check_q7_portability": "63d52486e6979a15520e97cf33c003f897dae7fbcce4dde08011dce265706af7",
+      "decode_segments": "050993664b956416f2d85a9dc98cdfa45646fb0a2834018217e41f3e5629220a",
+      "inspect_q7": "3e8df227d9bf96c6b2bdbd20433e2c80a1d80019d05c0778d978736c606bc2b8",
+      "pentax_lz": "5a8a60bdbaf7be7c5acead0ab04877b93a3c6e753e8b8f332281974f36c3b6bf",
+      "q7_symbols": "2b1e228deee232cc7b78ed347cf7319bed711ce1e54dc1bbfc1e63de4e3f0ec7"
+    },
+    "plain_segments": [
+      {
+        "virtual_address": "0x80000180",
+        "size": 416,
+        "original_file_offset": "0x102774",
+        "analysis_elf_offset": "0x134",
+        "sha256": "695eb75129101409618a190796191dd9da3b799ef1a1ef8031474d5f9c66c3de"
+      },
+      {
+        "virtual_address": "0x80000600",
+        "size": 340,
+        "original_file_offset": "0x102914",
+        "analysis_elf_offset": "0x2d4",
+        "sha256": "fc730e98b23db7c4107ccd45774e13259bda7b35f75d3194994dd5081af89438"
+      },
+      {
+        "virtual_address": "0x80000780",
+        "size": 1233080,
+        "original_file_offset": "0x102a68",
+        "analysis_elf_offset": "0x428",
+        "sha256": "522c4f5e86982b6130a9a331c57ed08c1cd8c8415ae3c27486ef1e1fdded04c5"
+      },
+      {
+        "virtual_address": "0xbfc08000",
+        "size": 3908,
+        "original_file_offset": "0x22fb20",
+        "analysis_elf_offset": "0x12d4e0",
+        "sha256": "d24c4967133a69e65e49332a6ce414fd0fbd3d4fa4903bfdffac98b9e012bbf8"
+      }
+    ],
+    "decoded_e05": {
+      "virtual_address": "0x8051fe00",
+      "size": 2960896,
+      "sha256": "a411eecc87e46c88cd58548fdd677a20419494110b2c1b19bf1852ad4bfa78b2",
+      "analysis_elf_offset": "0x520724"
+    },
+    "focused_ranges": [
+      {
+        "address": "0x80003c78",
+        "size": 44,
+        "sha256": "c6e18d2e82cdaffb31906d8b2368ba91d14e288ca72960014e110c7ecfdf90a2",
+        "analysis_elf_offset": "0x3920"
+      },
+      {
+        "address": "0x80003d9c",
+        "size": 8,
+        "sha256": "5ce5ad86d452c4d2422bd63e15223d5d6b3dfb77f224a88c1f476e9fb34e359d",
+        "analysis_elf_offset": "0x3a44"
+      },
+      {
+        "address": "0x800099fc",
+        "size": 96,
+        "sha256": "9cfc171435b6937ed3ee36e270d2d0c7c348856c20a3a6f9cd8efde5db99aced",
+        "analysis_elf_offset": "0x96a4"
+      },
+      {
+        "address": "0x8000c2b4",
+        "size": 516,
+        "sha256": "583ea853ffb2cb4982f128cd2bce5d90f0d9db86d4ff3baa4962c2e7a37ff643",
+        "analysis_elf_offset": "0xbf5c"
+      },
+      {
+        "address": "0x8000c598",
+        "size": 120,
+        "sha256": "2a87c5fcd9fe3510d979a9985eb7cfa9d20ab839d9264f015f50b447f44464fd",
+        "analysis_elf_offset": "0xc240"
+      },
+      {
+        "address": "0x8000f524",
+        "size": 40,
+        "sha256": "eb3a2d9db78b3c93637b32d1f79e0aaff4157345a3500bf9b3b871faf7260763",
+        "analysis_elf_offset": "0xf1cc"
+      },
+      {
+        "address": "0x8000f598",
+        "size": 752,
+        "sha256": "cddcba1df3c358e7fd30df43d25b8d65c17558ac70a1d05845afde92822ea6e1",
+        "analysis_elf_offset": "0xf240"
+      },
+      {
+        "address": "0x8004f400",
+        "size": 160,
+        "sha256": "f2bb5a26d967a3ffaac2506b1ee2cf8b1130c33e653dcc358777808db724e7b6",
+        "analysis_elf_offset": "0x4f0a8"
+      },
+      {
+        "address": "0x8004f658",
+        "size": 92,
+        "sha256": "d89edab3197494f68b91c51029431479d1e6e42c9968fe23101b2dfd173a490c",
+        "analysis_elf_offset": "0x4f300"
+      },
+      {
+        "address": "0x8004fc94",
+        "size": 1388,
+        "sha256": "08c39096dffdadc089904df60b00102a3e955f3021a0678fb318cf695de85250",
+        "analysis_elf_offset": "0x4f93c"
+      },
+      {
+        "address": "0x8005072c",
+        "size": 36,
+        "sha256": "92a67ed4492add3e06aad687616b5556cefbdaf4a0de04e3aecc81b824d137d9",
+        "analysis_elf_offset": "0x503d4"
+      },
+      {
+        "address": "0x80050cfc",
+        "size": 196,
+        "sha256": "428491312ccc80646096a922c527f2d9c259f8e40d00920af7a9cbe47428b721",
+        "analysis_elf_offset": "0x509a4"
+      },
+      {
+        "address": "0x80051204",
+        "size": 32,
+        "sha256": "9c57a4e7f88dd2ab195b8ec3e778d1afa5fe114f30ead2b21ca9e439d7559b00",
+        "analysis_elf_offset": "0x50eac"
+      },
+      {
+        "address": "0x80051288",
+        "size": 28,
+        "sha256": "dc5eed702368e1d4e9105d5fcd5379e203e9a52bbeae406cf2e9df401643496a",
+        "analysis_elf_offset": "0x50f30"
+      },
+      {
+        "address": "0x80053124",
+        "size": 3404,
+        "sha256": "05ed3abca064e3f6aeb652959b5892ed29927d593a62cb8c84ec54d61cbbb70c",
+        "analysis_elf_offset": "0x52dcc"
+      },
+      {
+        "address": "0x80053e70",
+        "size": 248,
+        "sha256": "8a444636faf7b94af640164c1df5bc726d2ac4adef9dbc16ee6bbdfba6f0c9ed",
+        "analysis_elf_offset": "0x53b18"
+      },
+      {
+        "address": "0x80055410",
+        "size": 184,
+        "sha256": "f7131d4ac79240cebecc4fea986191ca318dc94969035d8587592f872c1677d2",
+        "analysis_elf_offset": "0x550b8"
+      },
+      {
+        "address": "0x800554c8",
+        "size": 108,
+        "sha256": "3846fb09a0513e7eb4be3cc4914b287e073f7d81f5c4eec3451810b93b7ae14a",
+        "analysis_elf_offset": "0x55170"
+      },
+      {
+        "address": "0x80055534",
+        "size": 392,
+        "sha256": "0f41c226a4e825d2a1f1e88a715b679f8ac0a4f983115b6e2593a163658bd556",
+        "analysis_elf_offset": "0x551dc"
+      },
+      {
+        "address": "0x800556bc",
+        "size": 896,
+        "sha256": "1420f37ad85c1459e9ff8c50fca4f923bd571e8065dfd4313c37175595bc356d",
+        "analysis_elf_offset": "0x55364"
+      },
+      {
+        "address": "0x80055a3c",
+        "size": 352,
+        "sha256": "8a5c3ccbccc3b7d1da9b3914151c61fa2b5909f2e1268d9a344c7f42f321e9a5",
+        "analysis_elf_offset": "0x556e4"
+      },
+      {
+        "address": "0x80055b9c",
+        "size": 184,
+        "sha256": "9e11c7cb8cf4d8d3c2ef24264eed7b731ec9a8b68619c6e3d8088bc5a519591f",
+        "analysis_elf_offset": "0x55844"
+      },
+      {
+        "address": "0x80055c54",
+        "size": 148,
+        "sha256": "eac6ea72b2167df476bbfe69417ace0dd9e829e725b226d7645e885d23f99421",
+        "analysis_elf_offset": "0x558fc"
+      },
+      {
+        "address": "0x80055f20",
+        "size": 1324,
+        "sha256": "f7ab7f95393a4ea40ebd5d823a09c826b094bc92ef29f5c20c9cdf16f696ae7b",
+        "analysis_elf_offset": "0x55bc8"
+      },
+      {
+        "address": "0x80056510",
+        "size": 24,
+        "sha256": "db88ca01b975e0dcd2060a4de9b9792895880d281ba8ca5bc8dc539051dfd70d",
+        "analysis_elf_offset": "0x561b8"
+      },
+      {
+        "address": "0x800599a0",
+        "size": 84,
+        "sha256": "b5c1c1722de5603de3544fa46fb1f7540a299ec8c86eedb4e0a5da3786f58f6d",
+        "analysis_elf_offset": "0x59648"
+      },
+      {
+        "address": "0x800631d0",
+        "size": 12,
+        "sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+        "analysis_elf_offset": "0x62e78"
+      },
+      {
+        "address": "0x80063754",
+        "size": 96,
+        "sha256": "fd8d64813d2f32570b0afd240158100adffde6be27f3a370b52363d78e849153",
+        "analysis_elf_offset": "0x633fc"
+      },
+      {
+        "address": "0x8006423c",
+        "size": 520,
+        "sha256": "94e9b58a4f9931a5722b1a9117b93529aeecd52741e8a1b201cf0b73e8a3c913",
+        "analysis_elf_offset": "0x63ee4"
+      },
+      {
+        "address": "0x800643dc",
+        "size": 36,
+        "sha256": "f6a8fc5159fd1c755c316bf93aa2849756554c75ab758d71a83fad14a17cb1d4",
+        "analysis_elf_offset": "0x64084"
+      },
+      {
+        "address": "0x8006444c",
+        "size": 8,
+        "sha256": "89c6f1f94ee704e19d46a68511eb96882092f79b9f2b4a29f02765af1b34ee59",
+        "analysis_elf_offset": "0x640f4"
+      },
+      {
+        "address": "0x80066b2c",
+        "size": 168,
+        "sha256": "76815990b3bf6d6c140ea4240cb6a90029669c5fabc1c5752bd0da774306a627",
+        "analysis_elf_offset": "0x667d4"
+      },
+      {
+        "address": "0x80067700",
+        "size": 56,
+        "sha256": "c2d83767793fa790ea2847ca3dda66c9c9485ed7aa5c79762dab83ea6b61214e",
+        "analysis_elf_offset": "0x673a8"
+      },
+      {
+        "address": "0x800768b4",
+        "size": 36,
+        "sha256": "710282eaae5536cd0b6b5bfec5b2438bdab6f773191c832a3f0fffeeedaff9b8",
+        "analysis_elf_offset": "0x7655c"
+      },
+      {
+        "address": "0x80076bfc",
+        "size": 36,
+        "sha256": "77fe581c85b7986ed1c3bb5cc7d15efac9e8279a0a1ed29b9ecbc4c1cabcdaa9",
+        "analysis_elf_offset": "0x768a4"
+      },
+      {
+        "address": "0x80076d40",
+        "size": 36,
+        "sha256": "4ae477fe3f3b8dcef13438e68ae5735b8a19cbbde72e68229f5814690bbdc9cb",
+        "analysis_elf_offset": "0x769e8"
+      },
+      {
+        "address": "0x8007aed4",
+        "size": 36,
+        "sha256": "4e4c833a50262e3ebb8bf1eafece515c32daa170a189db55d1f4d69c4d4c3c23",
+        "analysis_elf_offset": "0x7ab7c"
+      },
+      {
+        "address": "0x8007b5c8",
+        "size": 36,
+        "sha256": "05896c32d283f9e1655e8ac5d45fa76691561c5615715283fb074d11f2a56346",
+        "analysis_elf_offset": "0x7b270"
+      },
+      {
+        "address": "0x8007d81c",
+        "size": 20,
+        "sha256": "4aad244c38e951e04b329b464b0f12b7416adb7b293f37fb030fc307960da518",
+        "analysis_elf_offset": "0x7d4c4"
+      },
+      {
+        "address": "0x8007e1ac",
+        "size": 228,
+        "sha256": "35e27f46315f693d3b5964e8ffba050a882f0b244897d553e7f7c3c6640c3e68",
+        "analysis_elf_offset": "0x7de54"
+      },
+      {
+        "address": "0x80082d8c",
+        "size": 172,
+        "sha256": "07121662fdb24ce20d30ac48574ee6d22ccc39c15706b6857fc6b34b4327f105",
+        "analysis_elf_offset": "0x82a34"
+      },
+      {
+        "address": "0x80084a58",
+        "size": 360,
+        "sha256": "6957a0f6111f86a7e27e030ce783fc51c07fad6800e0a4b730489b7c44dbb6f2",
+        "analysis_elf_offset": "0x84700"
+      },
+      {
+        "address": "0x80084bc0",
+        "size": 2104,
+        "sha256": "1151348da86ded9853102cf247f067f6593267a4b746d3e2cfd42da7f8ac4169",
+        "analysis_elf_offset": "0x84868"
+      },
+      {
+        "address": "0x80084f68",
+        "size": 32,
+        "sha256": "09b85e8cdc3a2708673bf7ea2938b3c648cd3335ac0d2cadf92dac3da80dfd84",
+        "analysis_elf_offset": "0x84c10"
+      },
+      {
+        "address": "0x8008c14c",
+        "size": 4,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+        "analysis_elf_offset": "0x8bdf4"
+      },
+      {
+        "address": "0x8008ce5c",
+        "size": 80,
+        "sha256": "75bdcaf1540ac552d856c44604b652901ce9d6e80a0647725bce35a9187ae02f",
+        "analysis_elf_offset": "0x8cb04"
+      },
+      {
+        "address": "0x800e79b8",
+        "size": 164,
+        "sha256": "2435b6edda23918266f8919e19bfbf0ddca938840c371853597abde9c608b5b9",
+        "analysis_elf_offset": "0xe7660"
+      },
+      {
+        "address": "0x800e7d8c",
+        "size": 160,
+        "sha256": "18122479569946e36a47c64627c446ad56f456c5c3d99f9854683815cf4fd1b8",
+        "analysis_elf_offset": "0xe7a34"
+      },
+      {
+        "address": "0x800e84a8",
+        "size": 60,
+        "sha256": "badc227009d64f6bb267125636af3ad2b33491f8c8e28b9f8db591b8671abfad",
+        "analysis_elf_offset": "0xe8150"
+      },
+      {
+        "address": "0x800ecde8",
+        "size": 120,
+        "sha256": "003cdf196fb7910ee2abdfc880b665c3afd6d3df139fe9e5a08e3e7fab4792ad",
+        "analysis_elf_offset": "0xeca90"
+      },
+      {
+        "address": "0x800ed240",
+        "size": 196,
+        "sha256": "e8f36a415b4c59359520e3e5ec13fa3ef8fbd2db62a87af9bea325f875a4ff16",
+        "analysis_elf_offset": "0xecee8"
+      },
+      {
+        "address": "0x800f49cc",
+        "size": 44,
+        "sha256": "3547db7c1856ad75c5cf793aab92e4be467fbcc0f14dfb6cc6256ff21b15f3b0",
+        "analysis_elf_offset": "0xf4674"
+      },
+      {
+        "address": "0x800f4b04",
+        "size": 20,
+        "sha256": "81eb04e6d7bf7db25d8663a757bd1166ac4ed03a6888bfcb871ec455fba5a2bf",
+        "analysis_elf_offset": "0xf47ac"
+      },
+      {
+        "address": "0x800f4cf0",
+        "size": 292,
+        "sha256": "479ee32944d392e3ec3e47eb1091ef1dcce791ff23ef76a64ac07fb30ea4a946",
+        "analysis_elf_offset": "0xf4998"
+      },
+      {
+        "address": "0x800f7b88",
+        "size": 4,
+        "sha256": "e1e58d88a834a01bc48b5009349c61617fd8fb0e38e053a4748c2d16fd2caa89",
+        "analysis_elf_offset": "0xf7830"
+      },
+      {
+        "address": "0x800f7c2c",
+        "size": 4,
+        "sha256": "31d9b816a9814589277a7c2e9f20fcfb096dcb32037b4048ff6e8bc35197332e",
+        "analysis_elf_offset": "0xf78d4"
+      },
+      {
+        "address": "0x805e5374",
+        "size": 80,
+        "sha256": "94747d76ad95da9e753b793c06daec0a600a5e36fcc67c3ed4b9bcf4e4fb29e3",
+        "analysis_elf_offset": "0x5e5c98"
+      },
+      {
+        "address": "0x806000f4",
+        "size": 196,
+        "sha256": "a928fcc2f76c4c9b0a89fe850baa93e936b7fb7a8fe0913eb6ee0a1717490647",
+        "analysis_elf_offset": "0x600a18"
+      }
+    ],
+    "package_template": {
+      "original_file_offset": "0x1000c0",
+      "size": 1024,
+      "sha256": "a13cfeb149310c4f692811780e98581dda9b713aef5ec3ea8b3fbacf6a6da623",
+      "little_endian_words": {
+        "0x14": "0x2",
+        "0x200": "0x2",
+        "0x214": "0x1367b",
+        "0x220": "0x18000",
+        "0x230": "0xffffffff",
+        "0x310": "0xadadadad",
+        "0x314": "0xadadadad",
+        "0x3a8": "0xadadadad",
+        "0x3ac": "0xadadadad"
+      },
+      "actual_installed_media": false
+    },
+    "boundary": "Original plain regions and freshly decoded entire E05 compared before engine import. Focused range digests checked within those regions. No firmware bytes included."
+  },
+  "context": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / original MIPS32LE / VEX",
+    "public_checker_sha256": "b66c5e588012af53cdc813b93cf5c6fd9d12c4fbcb6458e74b3545fffd32977d",
+    "scope": "Controlled FileX argument7 changed at original entry, then original request4 and TlDriverInit; no supplied hNandTlInfo pointer or kind store.",
+    "runtime": "Pinned analysis ELF RWX and shared synthetic prefix RAM/globals. Guard adds write access only to hNandTlInfo and synthetic heap24500000..24580000. Native null config dereference is not allowed.",
+    "supplied_filex_argument": [
+      {
+        "pc": "0x80067700",
+        "stack_address": "0x70000fd0",
+        "argument": 7,
+        "before": "0x80000000",
+        "after": 0
+      }
+    ],
+    "prefix": {
+      "header": {
+        "name": "nonsentinel-stride256",
+        "fourth": 1,
+        "first_word": 291,
+        "second_word": 0,
+        "redirect": false,
+        "fail": false
+      },
+      "existing_models": {
+        "0x8000c2b4": "Supply zeroed synthetic allocation for the handle, media-info state and FileX buffer.",
+        "0x800cbee4": "Accept mutex get for the seeded synthetic mutex.",
+        "0x800d193c": "Accept mutex put for the seeded synthetic mutex.",
+        "0x800a14f8": "Record diagnostics without printing firmware text."
+      },
+      "synthetic_id": "ecdc000100000000",
+      "header_word_200": "0x123",
+      "modeled_header_allocation_and_release_request": true,
+      "actual_free": false,
+      "constructor_entry": "0x80084bc0",
+      "constructor_arguments": [
+        "0x24002000",
+        "0x8008c14c",
+        "0x0",
+        "0x1"
+      ],
+      "return_address": "0x800643fc",
+      "prefix_vex_events": 377
+    },
+    "initial_media_record": {
+      "pointer": "0x24004000",
+      "kind": 1,
+      "c84": 0,
+      "c88": 0,
+      "c8c": 24
+    },
+    "allocations": [
+      {
+        "api": "PoolCallocEx",
+        "address": "0x24500000",
+        "size": 148,
+        "arguments": [
+          "0x0",
+          "0x1",
+          "0x94",
+          "0x0",
+          "0x8008ef6c",
+          "0x1331"
+        ],
+        "return_address": "0x80084d18",
+        "supplied_zeroed": true
+      },
+      {
+        "api": "PoolAllocEx",
+        "address": "0x245000a0",
+        "size": 16384,
+        "arguments": [
+          "0x0",
+          "0x4000",
+          "0x0",
+          "0x8008ef6c",
+          "0x1385"
+        ],
+        "return_address": "0x80084e20",
+        "supplied_zeroed": true
+      },
+      {
+        "api": "PoolAllocEx",
+        "address": "0x245040a0",
+        "size": 16000,
+        "arguments": [
+          "0x0",
+          "0x3e80",
+          "0x0",
+          "0x8008ef6c",
+          "0x138a"
+        ],
+        "return_address": "0x80084e44",
+        "supplied_zeroed": true
+      },
+      {
+        "api": "PoolAllocEx",
+        "address": "0x24507f20",
+        "size": 16,
+        "arguments": [
+          "0x0",
+          "0x10",
+          "0x0",
+          "0x8008ef6c",
+          "0x138e"
+        ],
+        "return_address": "0x80084e68",
+        "supplied_zeroed": true
+      },
+      {
+        "api": "PoolCallocEx",
+        "address": "0x24507f30",
+        "size": 16,
+        "arguments": [
+          "0x0",
+          "0x4",
+          "0x4",
+          "0x0",
+          "0x8008ef6c",
+          "0x1393"
+        ],
+        "return_address": "0x80084e8c",
+        "supplied_zeroed": true
+      },
+      {
+        "api": "PoolAllocEx",
+        "address": "0x24507f40",
+        "size": 131072,
+        "arguments": [
+          "0x0",
+          "0x20000",
+          "0x0",
+          "0x8008ef6c",
+          "0xc8f"
+        ],
+        "return_address": "0x8007e288",
+        "supplied_zeroed": true
+      },
+      {
+        "api": "PoolAllocEx",
+        "address": "0x24527f40",
+        "size": 131072,
+        "arguments": [
+          "0x0",
+          "0x20000",
+          "0x0",
+          "0x8008ef6c",
+          "0xc8f"
+        ],
+        "return_address": "0x8007e288",
+        "supplied_zeroed": true
+      }
+    ],
+    "api_models": [
+      {
+        "api": "0x800ce6d4",
+        "arguments": [
+          "0x24500064",
+          "0x8008f854",
+          "0x1"
+        ],
+        "return_address": "0x80084d30",
+        "result": 0
+      },
+      {
+        "api": "0x800cef4c",
+        "arguments": [
+          "0x24500064",
+          "0xffffffff"
+        ],
+        "return_address": "0x80084c5c",
+        "result": 0
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x8008502c",
+        "result": 1
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x8008503c",
+        "result": 1
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x80085080",
+        "result": 1
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x80085090",
+        "result": 1
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x8008502c",
+        "result": 1
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x8008503c",
+        "result": 1
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x80085080",
+        "result": 1
+      },
+      {
+        "api": "0x800d9ac8",
+        "arguments": [],
+        "return_address": "0x80085090",
+        "result": 1
+      }
+    ],
+    "publication": {
+      "stop_before": "0x80084c44",
+      "context_pointer": "0x24500000",
+      "context_kind": 1,
+      "reference_byte": "00",
+      "context_fields": {
+        "0x0": 1,
+        "0x4": 4000,
+        "0x8": 4096,
+        "0xc": 4,
+        "0x10": 256,
+        "0x14": 1000,
+        "0x18": 1024,
+        "0x1c": 609255200,
+        "0x20": 609222816,
+        "0x24": 609239200,
+        "0x28": 609255216,
+        "0x2c": 609255232,
+        "0x30": 609386304,
+        "0x60": 16777215
+      },
+      "capacity": 1024000,
+      "constructor_vex_events": 4057
+    },
+    "final": {
+      "stop_before": "0x80084ac0",
+      "reason": "Original media-info+c84 is zero; next original lw uses address0x220, outside guarded memory. No replacement config pointer or data supplied.",
+      "next_instruction": "lw t6,0x220(t4)",
+      "t4": 0,
+      "next_read_address": "0x220",
+      "context_pointer": "0x24500000",
+      "context_kind": 1,
+      "reference_byte": 1,
+      "constructor_vex_events": 12196,
+      "request5_reached": false,
+      "nand_ex_reached": false
+    },
+    "writes": [
+      {
+        "address": "0x24002bf4",
+        "size": 4,
+        "value": 0,
+        "vex_context_pc": "0x800fb7ac",
+        "state_pc": "0x800fb7ac"
+      },
+      {
+        "address": "0x24002bf4",
+        "size": 4,
+        "value": 4294967295,
+        "vex_context_pc": "0x80066b50",
+        "state_pc": "0x80066b50"
+      },
+      {
+        "address": "0x24002bf4",
+        "size": 4,
+        "value": 1048576,
+        "vex_context_pc": "0x80055894",
+        "state_pc": "0x80055894"
+      },
+      {
+        "address": "0x24500000",
+        "size": 148,
+        "value": 0,
+        "vex_context_pc": "0x80084d10",
+        "state_pc": "0x8000c2b4"
+      },
+      {
+        "address": "0x24500080",
+        "size": 1,
+        "value": 0,
+        "vex_context_pc": "0x80084d38",
+        "state_pc": "0x80084d38"
+      },
+      {
+        "address": "0x24500081",
+        "size": 1,
+        "value": 0,
+        "vex_context_pc": "0x80084d3c",
+        "state_pc": "0x80084d3c"
+      },
+      {
+        "address": "0x24500000",
+        "size": 4,
+        "value": 1,
+        "vex_context_pc": "0x80084d40",
+        "state_pc": "0x80084d40"
+      },
+      {
+        "address": "0x24002bf4",
+        "size": 4,
+        "value": 1024000,
+        "vex_context_pc": "0x80055698",
+        "state_pc": "0x80055698"
+      },
+      {
+        "address": "0x8008c14c",
+        "size": 4,
+        "value": 609222656,
+        "vex_context_pc": "0x80084c40",
+        "state_pc": "0x80084c40"
+      },
+      {
+        "address": "0x24500080",
+        "size": 1,
+        "value": 1,
+        "vex_context_pc": "0x80084c44",
+        "state_pc": "0x80084c44"
+      }
+    ],
+    "reads": [
+      {
+        "address": "0x8008c14c",
+        "size": 4,
+        "value": 0,
+        "vex_context_pc": "0x80084bf8",
+        "state_pc": "0x80084bf8"
+      },
+      {
+        "address": "0x24004c88",
+        "size": 1,
+        "value": 0,
+        "vex_context_pc": "0x80055608",
+        "state_pc": "0x80055608"
+      },
+      {
+        "address": "0x24004c8c",
+        "size": 4,
+        "value": 24,
+        "vex_context_pc": "0x80055628",
+        "state_pc": "0x80055628"
+      },
+      {
+        "address": "0x8008c14c",
+        "size": 4,
+        "value": 609222656,
+        "vex_context_pc": "0x80084c48",
+        "state_pc": "0x80084c48"
+      },
+      {
+        "address": "0x8008c14c",
+        "size": 4,
+        "value": 609222656,
+        "vex_context_pc": "0x80084c5c",
+        "state_pc": "0x80084c5c"
+      },
+      {
+        "address": "0x24004c84",
+        "size": 4,
+        "value": 0,
+        "vex_context_pc": "0x80084ab8",
+        "state_pc": "0x80084ab8"
+      }
+    ],
+    "limitations": [
+      "FileX argument7=0 is a deliberate counterfactual control, not the original Burn sentinel.",
+      "NAND ID/header and allocations/API status are supplied models; not camera observations.",
+      "PoolAllocEx buffers are supplied zeroed too; physical allocator contents unobserved.",
+      "No native semaphore or counter implementation. Counter model returns1 eight times.",
+      "Context is published but constructor has not returned successfully. No natural request5 or NAND Ex response reached.",
+      "Current Burn flags2 skip media-config producer. Full discovery would require additional actual media response evidence."
+    ]
+  },
+  "discovery": {
+    "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "analysis_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+    "engine": "angr 10.0.5 / VEX",
+    "cases": [
+      {
+        "name": "all-zero-control",
+        "entry": "AppFcuMediaInfoInit(8), isolated source-derived selector; AppFcuInit and prior FcuInit not replayed",
+        "native_init_entry": {
+          "pc": "0x80055f20",
+          "args": [
+            1,
+            1
+          ]
+        },
+        "first_hardware_facing_boundary": {
+          "pc": "0x80053124",
+          "return_address": "0x80053f0c",
+          "arguments": [
+            "0x1",
+            "0x24601008",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x70000fa0",
+            "0x0",
+            "0x0"
+          ],
+          "vex_events": 24
+        },
+        "after_supplied_id_boundary": {
+          "request": {
+            "pc": "0x80053124",
+            "return_address": "0x80053f0c",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x6",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x70000ef8",
+              "0x10"
+            ],
+            "vex_events": 61
+          },
+          "context_config_pointer": "0x24602000",
+          "record_c20": "0x105",
+          "stride_shift": 8,
+          "record_c80": 2048,
+          "ecc_bytes": "0100",
+          "header_sha256_before_response": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+        },
+        "allocations": [
+          {
+            "api": "0x8000c2b4",
+            "arguments": [
+              "0x0",
+              "0x1",
+              "0x2c",
+              "0x0",
+              "0x80063a88",
+              "0x4de"
+            ],
+            "size": 44,
+            "address": "0x24600000",
+            "return_address": "0x80056194",
+            "supplied_zeroed": true
+          },
+          {
+            "api": "0x8000c2b4",
+            "arguments": [
+              "0x0",
+              "0x1",
+              "0xc90",
+              "0x0",
+              "0x80063a88",
+              "0x507"
+            ],
+            "size": 3216,
+            "address": "0x24601000",
+            "return_address": "0x80055fdc",
+            "supplied_zeroed": true
+          },
+          {
+            "api": "0x8000bf28",
+            "arguments": [
+              "0x0",
+              "0x400",
+              "0x0",
+              "0x80063a88",
+              "0x3e1"
+            ],
+            "size": 1024,
+            "address": "0x24602000",
+            "return_address": "0x8005635c",
+            "supplied_zeroed": true
+          }
+        ],
+        "api_models": [
+          {
+            "address": "0x8000c2b4",
+            "return_address": "0x80056194",
+            "result": 610271232
+          },
+          {
+            "address": "0x800cdb00",
+            "return_address": "0x800561ac",
+            "result": 0
+          },
+          {
+            "address": "0x800cbee4",
+            "return_address": "0x80055f70",
+            "result": 0
+          },
+          {
+            "address": "0x8000c2b4",
+            "return_address": "0x80055fdc",
+            "result": 610275328
+          },
+          {
+            "address": "0x8000bf28",
+            "return_address": "0x8005635c",
+            "result": 610279424
+          },
+          {
+            "address": "0x800d193c",
+            "return_address": "0x80056138",
+            "result": 0
+          }
+        ],
+        "io_models": [
+          {
+            "operation": 2,
+            "position": 0,
+            "count": 0,
+            "status": 0,
+            "bytes": 8,
+            "supplied_sha256": "9d74e743c16167db090852cb29f73fc04896fd2f3d34429fad365105a36ab234",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x2",
+              "0x0",
+              "0x0",
+              "0x70000fa0",
+              "0x0",
+              "0x0"
+            ]
+          },
+          {
+            "operation": 6,
+            "position": 0,
+            "count": 1,
+            "status": 0,
+            "bytes": 16,
+            "supplied_sha256": "5ac6a5945f16500911219129984ba8b387a06f24fe383ce4e81a73294065461b",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x6",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x70000ef8",
+              "0x10"
+            ]
+          },
+          {
+            "operation": 4,
+            "position": 0,
+            "count": 2,
+            "status": 0,
+            "bytes": 1024,
+            "supplied_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x4",
+              "0x0",
+              "0x2",
+              "0x24602000",
+              "0x0",
+              "0x0"
+            ]
+          }
+        ],
+        "native_writes": [
+          {
+            "pc": "0x800561a4",
+            "address": "0x800631d0",
+            "size": 4,
+            "value": 610271232
+          },
+          {
+            "pc": "0x80055fd4",
+            "address": "0x24601000",
+            "size": 3216,
+            "value": 0
+          },
+          {
+            "pc": "0x80055fdc",
+            "address": "0x800631d4",
+            "size": 4,
+            "value": 610275328
+          },
+          {
+            "pc": "0x80055fe0",
+            "address": "0x24601c88",
+            "size": 1,
+            "value": 0
+          },
+          {
+            "pc": "0x80055ff0",
+            "address": "0x24601c8c",
+            "size": 4,
+            "value": 24
+          },
+          {
+            "pc": "0x80055ff4",
+            "address": "0x24601000",
+            "size": 4,
+            "value": 1
+          },
+          {
+            "pc": "0x800558a4",
+            "address": "0x24601c20",
+            "size": 4,
+            "value": 5
+          },
+          {
+            "pc": "0x800562f8",
+            "address": "0x24601c20",
+            "size": 4,
+            "value": 261
+          },
+          {
+            "pc": "0x80053f48",
+            "address": "0x80059a58",
+            "size": 1,
+            "value": 1
+          },
+          {
+            "pc": "0x80053f4c",
+            "address": "0x80059a59",
+            "size": 1,
+            "value": 0
+          },
+          {
+            "pc": "0x8005633c",
+            "address": "0x24601c80",
+            "size": 4,
+            "value": 2048
+          },
+          {
+            "pc": "0x8005635c",
+            "address": "0x24601c84",
+            "size": 4,
+            "value": 610279424
+          },
+          {
+            "pc": "0x80055cd8",
+            "address": "0x24601c88",
+            "size": 1,
+            "value": 0
+          },
+          {
+            "pc": "0x80055ce0",
+            "address": "0x24601c8c",
+            "size": 4,
+            "value": 0
+          }
+        ],
+        "header_reads": [
+          {
+            "pc": "0x80055c10",
+            "address": "0x24602014",
+            "size": 4,
+            "value": 0
+          },
+          {
+            "pc": "0x80055cd4",
+            "address": "0x246023a8",
+            "size": 4,
+            "value": 0
+          },
+          {
+            "pc": "0x80055cdc",
+            "address": "0x246023ac",
+            "size": 4,
+            "value": 0
+          }
+        ],
+        "final": {
+          "return_value": 1,
+          "vex_events": 86,
+          "config_pointer": "0x24602000",
+          "config_word_220": "0x0",
+          "record_c88": 0,
+          "record_c8c": 0,
+          "header_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+        },
+        "limits": [
+          "Synthetic ID and header, no camera validity or hardware response.",
+          "Whole AppFcuInit/FcuInit, AppFb/FileX and TlDriverInit not replayed.",
+          "Allocator and mutex/diagnostic APIs modeled; initial registry from pinned ELF.",
+          "No header+220 semantic validity established; producer does not consume it."
+        ]
+      },
+      {
+        "name": "arbitrary-pattern-control",
+        "entry": "AppFcuMediaInfoInit(8), isolated source-derived selector; AppFcuInit and prior FcuInit not replayed",
+        "native_init_entry": {
+          "pc": "0x80055f20",
+          "args": [
+            1,
+            1
+          ]
+        },
+        "first_hardware_facing_boundary": {
+          "pc": "0x80053124",
+          "return_address": "0x80053f0c",
+          "arguments": [
+            "0x1",
+            "0x24601008",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x70000fa0",
+            "0x0",
+            "0x0"
+          ],
+          "vex_events": 24
+        },
+        "after_supplied_id_boundary": {
+          "request": {
+            "pc": "0x80053124",
+            "return_address": "0x80053f0c",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x6",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x70000ef8",
+              "0x10"
+            ],
+            "vex_events": 61
+          },
+          "context_config_pointer": "0x24602000",
+          "record_c20": "0x105",
+          "stride_shift": 8,
+          "record_c80": 2048,
+          "ecc_bytes": "0100",
+          "header_sha256_before_response": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+        },
+        "allocations": [
+          {
+            "api": "0x8000c2b4",
+            "arguments": [
+              "0x0",
+              "0x1",
+              "0x2c",
+              "0x0",
+              "0x80063a88",
+              "0x4de"
+            ],
+            "size": 44,
+            "address": "0x24600000",
+            "return_address": "0x80056194",
+            "supplied_zeroed": true
+          },
+          {
+            "api": "0x8000c2b4",
+            "arguments": [
+              "0x0",
+              "0x1",
+              "0xc90",
+              "0x0",
+              "0x80063a88",
+              "0x507"
+            ],
+            "size": 3216,
+            "address": "0x24601000",
+            "return_address": "0x80055fdc",
+            "supplied_zeroed": true
+          },
+          {
+            "api": "0x8000bf28",
+            "arguments": [
+              "0x0",
+              "0x400",
+              "0x0",
+              "0x80063a88",
+              "0x3e1"
+            ],
+            "size": 1024,
+            "address": "0x24602000",
+            "return_address": "0x8005635c",
+            "supplied_zeroed": true
+          }
+        ],
+        "api_models": [
+          {
+            "address": "0x8000c2b4",
+            "return_address": "0x80056194",
+            "result": 610271232
+          },
+          {
+            "address": "0x800cdb00",
+            "return_address": "0x800561ac",
+            "result": 0
+          },
+          {
+            "address": "0x800cbee4",
+            "return_address": "0x80055f70",
+            "result": 0
+          },
+          {
+            "address": "0x8000c2b4",
+            "return_address": "0x80055fdc",
+            "result": 610275328
+          },
+          {
+            "address": "0x8000bf28",
+            "return_address": "0x8005635c",
+            "result": 610279424
+          },
+          {
+            "address": "0x800d193c",
+            "return_address": "0x80056138",
+            "result": 0
+          }
+        ],
+        "io_models": [
+          {
+            "operation": 2,
+            "position": 0,
+            "count": 0,
+            "status": 0,
+            "bytes": 8,
+            "supplied_sha256": "9d74e743c16167db090852cb29f73fc04896fd2f3d34429fad365105a36ab234",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x2",
+              "0x0",
+              "0x0",
+              "0x70000fa0",
+              "0x0",
+              "0x0"
+            ]
+          },
+          {
+            "operation": 6,
+            "position": 0,
+            "count": 1,
+            "status": 0,
+            "bytes": 16,
+            "supplied_sha256": "5ac6a5945f16500911219129984ba8b387a06f24fe383ce4e81a73294065461b",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x6",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x70000ef8",
+              "0x10"
+            ]
+          },
+          {
+            "operation": 4,
+            "position": 0,
+            "count": 2,
+            "status": 0,
+            "bytes": 1024,
+            "supplied_sha256": "add5455e1540dcb98155de260bdf8fd56c8eef4b7532d13c830cae97d13f8837",
+            "arguments": [
+              "0x1",
+              "0x24601008",
+              "0x4",
+              "0x0",
+              "0x2",
+              "0x24602000",
+              "0x0",
+              "0x0"
+            ]
+          }
+        ],
+        "native_writes": [
+          {
+            "pc": "0x800561a4",
+            "address": "0x800631d0",
+            "size": 4,
+            "value": 610271232
+          },
+          {
+            "pc": "0x80055fd4",
+            "address": "0x24601000",
+            "size": 3216,
+            "value": 0
+          },
+          {
+            "pc": "0x80055fdc",
+            "address": "0x800631d4",
+            "size": 4,
+            "value": 610275328
+          },
+          {
+            "pc": "0x80055fe0",
+            "address": "0x24601c88",
+            "size": 1,
+            "value": 0
+          },
+          {
+            "pc": "0x80055ff0",
+            "address": "0x24601c8c",
+            "size": 4,
+            "value": 24
+          },
+          {
+            "pc": "0x80055ff4",
+            "address": "0x24601000",
+            "size": 4,
+            "value": 1
+          },
+          {
+            "pc": "0x800558a4",
+            "address": "0x24601c20",
+            "size": 4,
+            "value": 5
+          },
+          {
+            "pc": "0x800562f8",
+            "address": "0x24601c20",
+            "size": 4,
+            "value": 261
+          },
+          {
+            "pc": "0x80053f48",
+            "address": "0x80059a58",
+            "size": 1,
+            "value": 1
+          },
+          {
+            "pc": "0x80053f4c",
+            "address": "0x80059a59",
+            "size": 1,
+            "value": 0
+          },
+          {
+            "pc": "0x8005633c",
+            "address": "0x24601c80",
+            "size": 4,
+            "value": 2048
+          },
+          {
+            "pc": "0x8005635c",
+            "address": "0x24601c84",
+            "size": 4,
+            "value": 610279424
+          },
+          {
+            "pc": "0x80055cd8",
+            "address": "0x24601c88",
+            "size": 1,
+            "value": 120
+          },
+          {
+            "pc": "0x80055ce0",
+            "address": "0x24601c8c",
+            "size": 4,
+            "value": 1985229328
+          }
+        ],
+        "header_reads": [
+          {
+            "pc": "0x80055c10",
+            "address": "0x24602014",
+            "size": 4,
+            "value": 0
+          },
+          {
+            "pc": "0x80055cd4",
+            "address": "0x246023a8",
+            "size": 4,
+            "value": 305419896
+          },
+          {
+            "pc": "0x80055cdc",
+            "address": "0x246023ac",
+            "size": 4,
+            "value": 1985229328
+          }
+        ],
+        "final": {
+          "return_value": 1,
+          "vex_events": 86,
+          "config_pointer": "0x24602000",
+          "config_word_220": "0xdeadbeef",
+          "record_c88": 120,
+          "record_c8c": 1985229328,
+          "header_sha256": "add5455e1540dcb98155de260bdf8fd56c8eef4b7532d13c830cae97d13f8837"
+        },
+        "limits": [
+          "Synthetic ID and header, no camera validity or hardware response.",
+          "Whole AppFcuInit/FcuInit, AppFb/FileX and TlDriverInit not replayed.",
+          "Allocator and mutex/diagnostic APIs modeled; initial registry from pinned ELF.",
+          "No header+220 semantic validity established; producer does not consume it."
+        ]
+      }
+    ]
+  },
+  "scope": "Two separate controlled experiments, preserving complete accepted records. They do not form one camera boot or FileX initialization sequence.",
+  "trace_pc_semantics": "VEX instruction-context PCs can name a branch for its delay-slot store; exact native addresses require original instruction evidence.",
+  "limitations": [
+    "Context: FileX arg7 changed from 80000000 to0; pointer publication precedes successful initialization; stop before null config dereference80084ac0.",
+    "Discovery: isolated AppFcuMediaInfoInit(8), native kind1/flags1; prior AppFcuInit/FcuInit and subsequent constructor/FileX not executed.",
+    "Supplied ID, header/spare bytes, statuses, zeroed heaps and synchronization/counter responses are models, not camera observations.",
+    "Discovery stops at NAND Ex ABI boundaries before supplying explicit responses. Its low MMIO body is never executed.",
+    "No actual media, boot, physical units, controller behavior, firmware write or recovery established."
+  ]
+}
