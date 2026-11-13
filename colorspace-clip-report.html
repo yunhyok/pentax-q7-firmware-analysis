@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>색공간 글자의 가장자리 처리 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="PENTAX Q7의 원본 축소 글리프 함수가 합성 8비트 표면에서 네 가장자리와 좌상단을 처리하는 순서를 확인합니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html">개요</a><a href="guide-update.html">업데이트</a><a href="guide-color.html">색·HDR</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX Q7</a></li><li><a href="guide-ui.html">화면과 글꼴</a></li><li aria-current="page">색공간 글자의 가장자리 처리</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">화면과 글꼴</p>
+<h1>색공간 글자의 가장자리 처리</h1>
+<p class="lead">Q7 v1.01의 원본 글리프 함수에 좌상단 좌표 (−9, −12)를 주면, 화면 첫 행에 들어오는 픽셀 8개도 건너뜁니다. 개별 픽셀의 가로 좌표를 검사하기 전에 글리프 행의 시작 주소를 확인하기 때문입니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#gates">행 시작 주소를 먼저 검사합니다</a></li><li><a href="#cases">네 가장자리와 좌상단 두 조건</a></li><li><a href="#scope">준비 단계와 원본 실행 범위</a></li><li><a href="#replay">기록 검사와 단계별 재현</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="gates">
+<h2>행 시작 주소를 먼저 검사합니다</h2>
+<p><a href="colorspace-attributes-report.html#pixels">기존 48×48 축소 그리기</a>가 사용한 LatinFont에서 Color Space의 sRGB 행 첫 글자(내부 코드 84)를 골랐습니다. 64×48 셀의 요청 크기는 48×48입니다. 이 글리프의 실제 폭은 24에서 18로 줄고 높이는 48을 유지합니다. 합성 표면은 736바이트 피치, 176행, 8비트 인덱스로 준비했습니다.</p>
+<figure>
+<div class="dg-scroll" tabindex="0" role="region" aria-label="행 주소와 가로 좌표 검사 순서">
+<svg class="dg narrow" viewBox="0 0 480 332" role="img" aria-labelledby="clip-title clip-desc">
+<title id="clip-title">글리프가 팔레트 인덱스를 쓰기까지</title>
+<desc id="clip-desc">가로 Q16 샘플링 후 먼저 행 시작 주소를 검사하고 다음에 개별 픽셀의 X를 검사합니다. 어느 검사에서든 범위를 벗어나면 쓰기를 건너뜁니다. 두 검사를 통과한 0이 아닌 코드만 1바이트로 저장됩니다.</desc>
+<defs><marker id="clip-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" style="fill:var(--edge)"/></marker></defs>
+<g style="fill:var(--soft);stroke:var(--edge)">
+<rect x="19" y="13" width="290" height="54" rx="7"/>
+<rect x="19" y="95" width="290" height="54" rx="7"/>
+<rect x="19" y="177" width="290" height="54" rx="7"/>
+<rect x="19" y="259" width="290" height="54" rx="7"/>
+<rect x="365" y="128" width="99" height="63" rx="7"/>
+</g>
+<g fill="none" style="stroke:var(--edge);stroke-width:1.5" marker-end="url(#clip-arrow)">
+<path d="M164 67V93"/><path d="M164 149V175"/><path d="M164 231V257"/>
+<path d="M309 121H344V148H363"/><path d="M309 203H344V172H363"/>
+</g>
+<g text-anchor="middle">
+<text class="t" x="164" y="36">Q16 샘플링</text>
+<text class="s" x="164" y="55">목적지 열 j에 대응하는 원본 열</text>
+<text class="t" x="164" y="118">글리프 행 시작 주소 rowStart</text>
+<text class="s" x="164" y="137">frame ≤ rowStart &lt; frameEnd</text>
+<text class="t" x="164" y="200">개별 픽셀의 X 좌표</text>
+<text class="s" x="164" y="219">0 ≤ originX + j &lt; width</text>
+<text class="t" x="164" y="282">팔레트 인덱스 1바이트 저장</text>
+<text class="s" x="164" y="301">투명 모드에서 코드 0은 건너뜀</text>
+<text class="t" x="415" y="155">범위 밖</text>
+<text class="s" x="415" y="174">쓰기 생략</text>
+</g>
+</svg></div>
+<figcaption>행 주소의 상한은 <code>0x802269B4</code>, 하한과 분기는 <code>0x80226A5C–70</code>에서 확인합니다. 두 조건을 통과하면 <code>0x80226A78–90</code>이 부호 있는 X를 검사합니다. 실제 인덱스 저장은 <code>0x80226C5C</code>의 1바이트 쓰기입니다. <a href="analysis/colorspace-clip.json">원본 E04 구간과 SHA-256</a></figcaption>
+</figure>
+<p>원본 열은 <code>(j × 87381 + 43690) &gt;&gt; 16</code>입니다. 역스텝 87381은 <code>floor(24 × 65536 / 18)</code>, 43690은 그 절반을 버림한 값입니다. 먼저 이 식으로 샘플을 고르므로, 왼쪽이나 위가 잘려도 남은 부분의 첫 픽셀을 기준으로 다시 샘플링하지 않습니다. 이 설정에서 코드 1·2·3은 각각 인덱스 2·1·3으로 매핑됩니다.</p>
+</section>
+<section id="cases">
+<h2>네 가장자리와 좌상단 두 조건</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="배치별 저장 횟수와 프레임 해시">
+<table class="fit">
+<caption>원본 함수에 좌표를 직접 공급한 단일 글리프 시험</caption>
+<thead><tr><th scope="col">배치</th><th scope="col">시작 좌표</th><th scope="col">1바이트 쓰기</th><th scope="col">프레임 SHA-256 앞 12자리</th></tr></thead>
+<tbody>
+<tr><th scope="row">내부 대조</th><td>(96, 64)</td><td>425</td><td><code>4897710e8087</code></td></tr>
+<tr><th scope="row">왼쪽</th><td>(−9, 64)</td><td>244</td><td><code>c5c7cde0dc27</code></td></tr>
+<tr><th scope="row">오른쪽</th><td>(725, 64)</td><td>245</td><td><code>0f798c97f047</code></td></tr>
+<tr><th scope="row">위</th><td>(96, −19)</td><td>298</td><td><code>ad399941f89e</code></td></tr>
+<tr><th scope="row">아래</th><td>(96, 157)</td><td>127</td><td><code>47f34ab033a7</code></td></tr>
+<tr><th scope="row">좌상단 대조</th><td>(−9, 0)</td><td>244</td><td><code>14a833a8536e</code></td></tr>
+<tr><th scope="row">획이 걸친 좌상단</th><td>(−9, −12)</td><td>220</td><td><code>688a4442d035</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>마지막 조건에서 원본 글리프의 12행은 화면 0행에 닿습니다. 좌표 교집합만 검사하면 화면 0행의 X=0…7에 인덱스를 써서 전체 쓰기가 228회가 됩니다. 원본은 해당 글리프 행의 시작 주소가 프레임보다 9바이트 앞에 있어 이 여덟 곳의 초기 인덱스 <code>0xA5</code>를 유지했습니다.</p>
+<p>각 실행의 864개 소스 열과 2비트 코드, 쓰기 순서와 인덱스, 129,536바이트 표면 전체가 독립 계산과 일치했습니다. 앞뒤 16바이트 보호값을 확인했습니다. 독립 검토에서 획이 걸친 좌상단 1건을 다시 실행해 기록 전체가 일치했고, 나머지 6건은 저장된 원본 실행 기록을 독립 계산과 대조했습니다. <a href="analysis/colorspace-clip.json">사례별 해시와 원본 구간</a></p>
+</section>
+<section id="scope">
+<h2>준비 단계와 원본 실행 범위</h2>
+<p>기존 시험과 같은 합성 ID 0·17 연결에서 원본 글꼴 선택과 속성 설정을 실행했습니다. 준비 단계의 미디어·FileX·할당·버퍼 메타데이터·캐시는 모델이 응답합니다. 준비된 컨텍스트에서 <code>0x80226748</code>에 직접 진입하면 모델 호출 없이 호스트가 넣은 반환 센티널 <code>0x0BADF000</code>에 도달하고 스택 포인터가 복귀합니다. 일곱 기록에서 컨텍스트의 최종 바이트 차이는 없었습니다. 하네스는 최종 차이 검사에서 팔레트 슬롯 영역 <code>+0x24…+0x33</code>을 허용합니다. 글꼴과 스테이징 입력은 그대로였습니다.</p>
+<p>실제 메뉴가 음수 좌표를 공급하는지, 다른 회전·반전·수직 배율과 보조 클리핑 비트맵이 어떻게 동작하는지, 물리 팔레트나 LCD에 무엇이 표시되는지는 확인하지 않았습니다. 이 실험은 기존 Color Space의 한 글리프와 합성 표면의 동작을 다룹니다. <a href="colorspace-attributes-report.html#binding">원본 컨텍스트 선택과 합성 등록표의 관계</a></p>
+</section>
+<section id="replay">
+<h2>기록 검사와 단계별 재현</h2>
+<p>기록 검사에는 펌웨어와 에뮬레이터가 필요 없습니다. 원본 재현에는 Q7 v1.01 패키지와 그 패키지로 구성한 분석 ELF, 검증한 환경은 Python 3.12.3, angr 10.0.5, pyelftools 0.33입니다. CLI는 두 입력의 크기와 해시를 고정하고 패키지의 E04를 다시 디코딩해 분석 ELF의 해당 영역과 대조합니다. 원본 재현은 두 단계로 나뉘며, 내부 대조를 포함한 <code>edges</code> 여섯 건은 수 분이 걸립니다.</p>
+<details class="evidence"><summary>원본 패키지에서 분석 ELF 준비</summary>
+<pre><code>python -B tools/decode_segments.py &lt;package&gt; --output-dir decoded-q7
+python -B tools/build_analysis_elf.py &lt;package&gt; --decoded-dir decoded-q7 --output analysis-q7.elf</code></pre>
+<p>새 로컬 경로를 사용합니다. 이 두 명령의 출력은 분석 입력이며 카메라 업데이트 파일이 아닙니다.</p>
+</details>
+<pre><code>python -B tools/check_colorspace_clip.py check
+python -B tools/check_colorspace_clip.py replay &lt;package&gt; &lt;analysis-elf&gt; --stage corner --output corner.json
+python -B tools/check_colorspace_clip.py replay &lt;package&gt; &lt;analysis-elf&gt; --stage edges --output edges.json
+python -B tools/check_colorspace_clip.py project edges.json corner.json --output clip-summary.json</code></pre>
+<p>두 단계의 전체 실행 기록을 각각 고정 해시와 비교한 뒤에만 일곱 건의 공개 요약을 만듭니다. 기존 출력 경로와 <code>python -O</code> 실행은 거부합니다. 공개 요약에는 원본 글꼴이나 프레임 바이트가 포함되지 않습니다. <a href="tools/check_colorspace_clip.py">재현 코드</a> · <a href="analysis/colorspace-clip.json">공개 요약</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">화면과 글꼴 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">화면·글꼴 안내</a></li><li><a href="colorspace-ui-report.html">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-render-report.html">색공간 화면: 그리기 경로</a></li><li><a href="colorspace-raster-report.html">선택 강조의 픽셀</a></li><li><a href="colorspace-glyph-report.html">글꼴 로딩과 글리프 픽셀</a></li><li><a href="colorspace-attributes-report.html">48×48 요청과 컨텍스트 선택</a></li><li><a href="colorspace-clip-report.html" aria-current="page">색공간 글자의 가장자리 처리</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-attributes-report.html"><small>← 이전</small>48×48 요청과 컨텍스트 선택</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
+

@@ -1,0 +1,480 @@
+{
+  "schema": "q7-colorspace-clip-v1",
+  "input_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+  "elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796",
+  "e04_sha256": "e7d06ec99f6e95025721b62d42f39845a2f2277991f4dfcabc3e3f930ff5bd5b",
+  "font_sha256": "9ba8e0f0b4fe85a9c097f7cd3e992ca6a159eef76ddc2340c2b6f6d22c1cc44b",
+  "stage_units": [
+    84
+  ],
+  "model_setup": {
+    "raster_setup": {
+      "0x8000bf28": "Return zeroed synthetic allocations for one display context and one bitmap.",
+      "0x80262fd4": "Return synthetic buffer ID17 metadata: 736-byte stride and176 rows.",
+      "0x800b3d40": "Record cache address/length and return0 without CPU cache operations."
+    },
+    "font_load_and_draw": {
+      "0x80240e2c": "Return a synthetic media pointer for the observed drive selector.",
+      "0x8007d180": "Supply the verified FAT file size at the stat boundary.",
+      "0x8000bf28": "After raster setup, allocate the synthetic FileX control block or font buffer.",
+      "0x80074334": "Accept the normalized font path at FileX open.",
+      "0x80071a10": "Supply the full verified font bytes and return success at FileX read.",
+      "0x8007c258": "Accept FileX close for the modeled file.",
+      "0x8000c598": "Record release of the FileX control block without allocator effects.",
+      "0x800a14f8": "Record a diagnostic call without emitting text."
+    }
+  },
+  "captured_attrs": [
+    [
+      17,
+      7,
+      48,
+      48,
+      0,
+      0
+    ],
+    [
+      17,
+      12,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      17,
+      4,
+      2,
+      0,
+      0,
+      0
+    ]
+  ],
+  "engine": {
+    "setup": "angr 10.0.5 / VEX",
+    "draw": "angr 10.0.5 / VEX"
+  },
+  "surface": {
+    "pitch": 736,
+    "height": 176,
+    "format": "8-bit indexed",
+    "fill": 165,
+    "initial_index_map": [
+      null,
+      2,
+      1,
+      3
+    ]
+  },
+  "snapshot_sha256": {
+    "context": "371917ef4cd0954a2c7ae59705bd284cf81e154cf313ce2a3d065e29fcb19e3f",
+    "bitmap": "5cf43861393063a4db759045d2d926b13213740095c65cd17c5060542dddf0b3",
+    "registry": "d1516a5bdedffef1818b30e73e631316f7d33fee80e1f69f6ee170a612743d3c",
+    "font": "7f1ec32ce25d4f44dbc0ee0fe468f604f1f00d6f77815b044ad7e6ae1a15dba4",
+    "text": "f032019f6b7117810714cbe7b28fa55d6ddeecef8ddb68126cd718f5827b643c",
+    "screen": "947374184fedd73e151daf55fc3c5b511f76a4aad385a9915b034f1b28e98210",
+    "default_context": "83440636eff7b2ec0f78ef7b8e480a033e8aeb67e6ecb657ce9bcdfdb21aa744",
+    "color_control": "8d71b3faab8201459ad37ef499beb336ba88bdcfa0f51ee6f0a46ec3192d750a",
+    "registry_pointer": "e9de4f2827eac65f79256ccf9fbf74268722079b71613162fcaab287147a533c"
+  },
+  "native_draw_entry": "0x80226748",
+  "draw_model_calls": 0,
+  "draw_instruction_cap": 800000,
+  "host_return_sentinel": "0xbadf000",
+  "source_revision": "77dfa9db8b9a93ed1e413a157ccba8595141fd24",
+  "source_pins_lf": {
+    "tools/check_colorspace_attributes.py": "4c4f24cc88582f9db58318bca674999dc3199c1b32f439ea98ed57e118d3ebc1",
+    "tools/check_colorspace_glyph.py": "cc5a69d3a826a0a81137806e5eab44562c7904c2201023067f142340ea6480e2",
+    "tools/check_colorspace_raster.py": "ad0127dca8888364653837d6072097b7a0b52d63dc1f40ba6523974772694e29",
+    "tools/check_colorspace_render.py": "3fc8175f5a90236a24b24887097d5aa4ce04d02f9167f3b984e8a81fc7339607",
+    "tools/check_colorspace_ui.py": "cfc5d3ffed73cd9e420e95813c7b2bfd86f2279be25f2fc620b2f5de2242cb64",
+    "tools/check_isp_registers.py": "f04d12f97d55624ffab5fa59eddf8bce8b2900d7ef3127bd30761ae7d074cf92",
+    "tools/check_q7_portability.py": "63d52486e6979a15520e97cf33c003f897dae7fbcce4dde08011dce265706af7",
+    "tools/q7_symbols.py": "2b1e228deee232cc7b78ed347cf7319bed711ce1e54dc1bbfc1e63de4e3f0ec7",
+    "tools/inspect_q7.py": "3e8df227d9bf96c6b2bdbd20433e2c80a1d80019d05c0778d978736c606bc2b8",
+    "tools/pentax_lz.py": "5a8a60bdbaf7be7c5acead0ab04877b93a3c6e753e8b8f332281974f36c3b6bf",
+    "tools/decode_segments.py": "fdad9e9abbbd4dfe1ee36bdf340ac8cbd5cea9064d5345ab32165c78dd12ba9d",
+    "analysis/colorspace-attributes.json": "7604d1cb9649e705b8bb6f2a381841c3bf183eac3268432cac5a5bff0dba5305",
+    "analysis/context-binding.json": "06202757da1b222f384ea79188d64f23f3f8625c2dea097ec8881303948ec3ec"
+  },
+  "recorded_private_sources_raw": {
+    "edges": {
+      "probe_sha256": "13cf1a60decaca93a1026afa2c62e80b99247c120126ec7a3e4fea00a73e6e7b",
+      "recording_sha256": "1b765693a7ba808fe092824cac251e54d1e3d7f11b7fc02013692507cae4da8a"
+    },
+    "corner": {
+      "probe_sha256": "f80d9459ece12005e557f967a4480ed42e70f72d71b92a7dcc4594545ff0a70c",
+      "recording_sha256": "e2aa6d1662eccf0fe52a7bf7d3938f2f409c9a1362ba51393e6c5954f237c3bd"
+    }
+  },
+  "complete_typed_witness_sha256": {
+    "edges": "9c8f96829c1b4c57bf6f535ab2890246cc5036a74c92647718fb554e3f77bc7c",
+    "corner": "6a9b411c16e56bb102da1c1f70f7f58ab41d19c2585eccb45e4711beea237444"
+  },
+  "font_selection": {
+    "color_space_row_first_code": 84,
+    "source_cell": [
+      64,
+      48
+    ],
+    "requested_cell": [
+      48,
+      48
+    ],
+    "glyph": {
+      "unit": 84,
+      "source_width": 24,
+      "dest_width": 18,
+      "font_offset": 64838,
+      "step": 87381,
+      "source_columns": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        11,
+        12,
+        13,
+        15,
+        16,
+        17,
+        19,
+        20,
+        21,
+        23
+      ]
+    }
+  },
+  "source_ranges": [
+    {
+      "start": "0x8022684c",
+      "end_exclusive": "0x802268c0",
+      "e04_offset": "0xf8dcc",
+      "sha256": "576d34f4a01dc8cfa409fdc00125794159cb21caa791598fd01014d8022c570c"
+    },
+    {
+      "start": "0x802269b4",
+      "end_exclusive": "0x802269c0",
+      "e04_offset": "0xf8f34",
+      "sha256": "3a82cd7e4bcd325b008e212fe22cdd912d014c7d20faa94dd451a66d63809e7d"
+    },
+    {
+      "start": "0x80226a5c",
+      "end_exclusive": "0x80226a94",
+      "e04_offset": "0xf8fdc",
+      "sha256": "3875974dde97e31959da02953e240e72dc41f8d338e852daf5b1fa2247bc355f"
+    },
+    {
+      "start": "0x80226a94",
+      "end_exclusive": "0x80226abc",
+      "e04_offset": "0xf9014",
+      "sha256": "33325e681e796e6b8a85c731137e8f05121843e9c3e801449b86fd2c3f985e2d"
+    },
+    {
+      "start": "0x80226c54",
+      "end_exclusive": "0x80226cb4",
+      "e04_offset": "0xf91d4",
+      "sha256": "1d01f10fab8dc0c6d74e6b23f60c9057a56945cbda552d3e0a5c71a166eefa38"
+    }
+  ],
+  "rectangular_counterexample": {
+    "case": "upper-left-painted",
+    "source_row": 12,
+    "destination_row": 0,
+    "glyph_row_start_relative_to_frame": -9,
+    "visible_x_inclusive": [
+      0,
+      7
+    ],
+    "ordinary_rectangle_store_count": 228,
+    "original_store_count": 220,
+    "skipped_index_count": 8,
+    "retained_fill": 165
+  },
+  "independent_review": {
+    "replayed_native_cases": [
+      "upper-left-painted"
+    ],
+    "compared_original_recordings": [
+      "interior",
+      "left",
+      "right",
+      "top",
+      "bottom",
+      "upper-left"
+    ],
+    "executed_span_records_rehashed": 224,
+    "source_opcode_words_rechecked": 217
+  },
+  "scope": {
+    "draw": "Separate original stretch calls in a synthetic indexed buffer with supplied origins.",
+    "setup": "Original context, font and attribute setup with the enumerated service models and synthetic ID 0/17 alias.",
+    "limits": "Actual menu edge coordinates, alternate orientation or scale modes, LCD output and a firmware UI port are unverified."
+  },
+  "cases": [
+    {
+      "name": "interior",
+      "origin": [
+        96,
+        64
+      ],
+      "returned": true,
+      "canaries_per_end": 16,
+      "sample_count": 864,
+      "samples_sha256": "c217d1e04cb39830bc6d9116b2cc345d000b3dce047459627d2cbced99df946d",
+      "store_count": 425,
+      "stores_sha256": "833b801c0ec4a4994521f1937d429f2e73c25f9a7818d14d13228735916a6981",
+      "frame_sha256": "4897710e8087fed245a74c79e8f1ca7b25506d5bb8a0bec84bbe9152be65e4d8",
+      "gate_hits": {
+        "0x80226748": 1,
+        "0x80226a5c": 864,
+        "0x80226a78": 864,
+        "0x80226a8c": 864,
+        "0x80226a94": 864,
+        "0x80226c5c": 425
+      },
+      "rejected_candidates": {
+        "transparent_zero": 439
+      },
+      "histogram": {
+        "1": 253,
+        "2": 172,
+        "165": 129111
+      },
+      "instruction_events": 51634,
+      "instruction_trace_sha256": "55e00e084c0af18da6eef8bbe4ef2bf4b237fb5f8a6b706615be5e3c51058b31",
+      "changed_context_offsets": [],
+      "complete_case_sha256": "77aa5fd5ef234efc47ca3643551890ccbc837930e8e4f5b18910ab7c16ff13ac",
+      "executed_span_count": 32,
+      "executed_spans_sha256": "09963a31697d5429c19278fbf5a3fd6a9e76e6ad9b25a7e946be744c3d190372"
+    },
+    {
+      "name": "left",
+      "origin": [
+        -9,
+        64
+      ],
+      "returned": true,
+      "canaries_per_end": 16,
+      "sample_count": 864,
+      "samples_sha256": "c217d1e04cb39830bc6d9116b2cc345d000b3dce047459627d2cbced99df946d",
+      "store_count": 244,
+      "stores_sha256": "8043d6daeb3db4f02cd095238204fe2c190bbfd9d188a93f6c86a74b5707bfd7",
+      "frame_sha256": "c5c7cde0dc27430c330514cdeff9f79a9bf6caa646363ee666226ac7ecc8c25e",
+      "gate_hits": {
+        "0x80226748": 1,
+        "0x80226a5c": 864,
+        "0x80226a78": 864,
+        "0x80226a8c": 864,
+        "0x80226a94": 432,
+        "0x80226c5c": 244
+      },
+      "rejected_candidates": {
+        "column": 432,
+        "transparent_zero": 188
+      },
+      "histogram": {
+        "1": 137,
+        "2": 107,
+        "165": 129292
+      },
+      "instruction_events": 47705,
+      "instruction_trace_sha256": "f66731499adbb74b7412256fcfd24fe1a3e8882a08c9db23d57630a5de184821",
+      "changed_context_offsets": [],
+      "complete_case_sha256": "3c286b7f25583b23a5f3196143048b44c93459b9aa2edd90baa2ada6d3e6e356",
+      "executed_span_count": 32,
+      "executed_spans_sha256": "09963a31697d5429c19278fbf5a3fd6a9e76e6ad9b25a7e946be744c3d190372"
+    },
+    {
+      "name": "right",
+      "origin": [
+        725,
+        64
+      ],
+      "returned": true,
+      "canaries_per_end": 16,
+      "sample_count": 864,
+      "samples_sha256": "c217d1e04cb39830bc6d9116b2cc345d000b3dce047459627d2cbced99df946d",
+      "store_count": 245,
+      "stores_sha256": "f037d23e37fc35d23cad1bea24717841bab26e4afe598735888b2ad976015a77",
+      "frame_sha256": "0f798c97f0471833e64ac3c5f19d88ce2558b6ddb1ff332153962cfecbc0a4eb",
+      "gate_hits": {
+        "0x80226748": 1,
+        "0x80226a5c": 864,
+        "0x80226a78": 864,
+        "0x80226a8c": 528,
+        "0x80226a94": 528,
+        "0x80226c5c": 245
+      },
+      "rejected_candidates": {
+        "transparent_zero": 283,
+        "column": 336
+      },
+      "histogram": {
+        "1": 150,
+        "2": 95,
+        "165": 129291
+      },
+      "instruction_events": 48046,
+      "instruction_trace_sha256": "ff0f8a703a63f7110fafebac1ea6e5869c2942fe32decb3b989daa1882318806",
+      "changed_context_offsets": [],
+      "complete_case_sha256": "5aa92e0c7fe4970d29747019d607d681477d2d66166d07ab7dd9beaa04283905",
+      "executed_span_count": 32,
+      "executed_spans_sha256": "09963a31697d5429c19278fbf5a3fd6a9e76e6ad9b25a7e946be744c3d190372"
+    },
+    {
+      "name": "top",
+      "origin": [
+        96,
+        -19
+      ],
+      "returned": true,
+      "canaries_per_end": 16,
+      "sample_count": 864,
+      "samples_sha256": "c217d1e04cb39830bc6d9116b2cc345d000b3dce047459627d2cbced99df946d",
+      "store_count": 298,
+      "stores_sha256": "08c9551a9b4cefc14e573fcc0949f59b2b9ec234b92df995e13941418695db7f",
+      "frame_sha256": "ad399941f89e2e83ad38bb2f9b3196231d31fab3a9f390d29043baf9b3c15f2b",
+      "gate_hits": {
+        "0x80226748": 1,
+        "0x80226a5c": 864,
+        "0x80226a78": 522,
+        "0x80226a8c": 522,
+        "0x80226a94": 522,
+        "0x80226c5c": 298
+      },
+      "rejected_candidates": {
+        "row_start": 342,
+        "transparent_zero": 224
+      },
+      "histogram": {
+        "1": 172,
+        "2": 126,
+        "165": 129238
+      },
+      "instruction_events": 46895,
+      "instruction_trace_sha256": "408e8784bc3833719012b0a91527d2e37c87fdb299c644ba3168f0375a989e0d",
+      "changed_context_offsets": [],
+      "complete_case_sha256": "bb6aa37719e4109453ff1d76aeeefded90d094ad127c3ef178080092b9b09a6e",
+      "executed_span_count": 32,
+      "executed_spans_sha256": "09963a31697d5429c19278fbf5a3fd6a9e76e6ad9b25a7e946be744c3d190372"
+    },
+    {
+      "name": "bottom",
+      "origin": [
+        96,
+        157
+      ],
+      "returned": true,
+      "canaries_per_end": 16,
+      "sample_count": 864,
+      "samples_sha256": "c217d1e04cb39830bc6d9116b2cc345d000b3dce047459627d2cbced99df946d",
+      "store_count": 127,
+      "stores_sha256": "99e02b68f62913eb90b29cfa6f78fdfdcf3959b591fa10069588653b1a21fbc1",
+      "frame_sha256": "47f34ab033a74101521ecd236010a09789d8cab37ec73b11180bf0f4b494c4e0",
+      "gate_hits": {
+        "0x80226748": 1,
+        "0x80226a5c": 864,
+        "0x80226a78": 342,
+        "0x80226a8c": 342,
+        "0x80226a94": 342,
+        "0x80226c5c": 127
+      },
+      "rejected_candidates": {
+        "transparent_zero": 215,
+        "row_start": 522
+      },
+      "histogram": {
+        "1": 81,
+        "2": 46,
+        "165": 129409
+      },
+      "instruction_events": 43880,
+      "instruction_trace_sha256": "51b9ec6569d7744c76e3c593b753960873b1ecc8643b61ef264258154b6fc429",
+      "changed_context_offsets": [],
+      "complete_case_sha256": "8cdc97495dbd7e24688090069fcc8e81d7439e78dc0ba4bf6ac1f6694f3348bf",
+      "executed_span_count": 32,
+      "executed_spans_sha256": "09963a31697d5429c19278fbf5a3fd6a9e76e6ad9b25a7e946be744c3d190372"
+    },
+    {
+      "name": "upper-left",
+      "origin": [
+        -9,
+        0
+      ],
+      "returned": true,
+      "canaries_per_end": 16,
+      "sample_count": 864,
+      "samples_sha256": "c217d1e04cb39830bc6d9116b2cc345d000b3dce047459627d2cbced99df946d",
+      "store_count": 244,
+      "stores_sha256": "345a87c3d13dd13c699b9224a23c31cf1feb47eb3318671ffabcdefb622a7e15",
+      "frame_sha256": "14a833a8536ef1cdbed962c990c8abe4a40fd892715cc55f1c0bb71fb84694bd",
+      "gate_hits": {
+        "0x80226748": 1,
+        "0x80226a5c": 864,
+        "0x80226a78": 846,
+        "0x80226a8c": 846,
+        "0x80226a94": 423,
+        "0x80226c5c": 244
+      },
+      "rejected_candidates": {
+        "row_start": 18,
+        "column": 423,
+        "transparent_zero": 179
+      },
+      "histogram": {
+        "1": 137,
+        "2": 107,
+        "165": 129292
+      },
+      "instruction_events": 47552,
+      "instruction_trace_sha256": "9b40b1acb7046d0f7fcf9c9c6d50fd6bf840ae3a2680ce06ffdf6ce141821acd",
+      "changed_context_offsets": [],
+      "complete_case_sha256": "2fd973124a0db90b07362398467c6edbc1002f056c8ba4061dd7cbc5ccce7649",
+      "executed_span_count": 32,
+      "executed_spans_sha256": "09963a31697d5429c19278fbf5a3fd6a9e76e6ad9b25a7e946be744c3d190372"
+    },
+    {
+      "name": "upper-left-painted",
+      "origin": [
+        -9,
+        -12
+      ],
+      "returned": true,
+      "canaries_per_end": 16,
+      "sample_count": 864,
+      "samples_sha256": "c217d1e04cb39830bc6d9116b2cc345d000b3dce047459627d2cbced99df946d",
+      "store_count": 220,
+      "stores_sha256": "651467a9309dd3e7071d03fd949825ad8a1a9c978db22ab9f2d7e7d459a7a1b2",
+      "frame_sha256": "688a4442d03593f57decfc741787e3f19a1f3aea2e1766d5570c466091b946eb",
+      "gate_hits": {
+        "0x80226748": 1,
+        "0x80226a5c": 864,
+        "0x80226a78": 630,
+        "0x80226a8c": 630,
+        "0x80226a94": 315,
+        "0x80226c5c": 220
+      },
+      "rejected_candidates": {
+        "row_start": 234,
+        "column": 315,
+        "transparent_zero": 95
+      },
+      "histogram": {
+        "1": 118,
+        "2": 102,
+        "165": 129316
+      },
+      "instruction_events": 45596,
+      "instruction_trace_sha256": "fd44dae49a9751fc336a86100297f6050ed6d51e75b1f83aa30606844a4f0c71",
+      "changed_context_offsets": [],
+      "complete_case_sha256": "d58407ab95d3acf184ac737dc231a96d6149caeb47b0dd5872fbefcf1f6192e1",
+      "executed_span_count": 32,
+      "executed_spans_sha256": "09963a31697d5429c19278fbf5a3fd6a9e76e6ad9b25a7e946be744c3d190372"
+    }
+  ]
+}

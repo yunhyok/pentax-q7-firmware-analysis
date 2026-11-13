@@ -73,7 +73,8 @@
       {"file": "colorspace-render-report.html", "label": "색공간 화면: 그리기 경로"},
       {"file": "colorspace-raster-report.html", "label": "선택 강조의 픽셀"},
       {"file": "colorspace-glyph-report.html", "label": "글꼴 로딩과 글리프 픽셀"},
-      {"file": "colorspace-attributes-report.html", "label": "48×48 요청과 컨텍스트 선택"}
+      {"file": "colorspace-attributes-report.html", "label": "48×48 요청과 컨텍스트 선택"},
+      {"file": "colorspace-clip-report.html", "label": "색공간 글자의 가장자리 처리"}
     ]}
   ]
 }
