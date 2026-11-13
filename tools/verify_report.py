@@ -44,6 +44,8 @@ from build_update_service_report import main as build_update_service
 from verify_update_service import verify as verify_update_service
 from verify_main_burn import verify as verify_main_burn
 from build_main_burn_report import main as build_main_burn
+from build_nand_header_report import main as build_nand_headers
+from check_nand_headers import validate_report as verify_nand_headers, source_evidence as nand_source
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -189,6 +191,8 @@ def verify_deep(firmware):
     verify_update_service()
     verify_html(ROOT / "main-burn-prefix-report.html", build_main_burn)
     verify_main_burn()
+    verify_nand_headers(read('nand-header-checks.json'))
+    verify_html(ROOT / "nand-header-report.html", build_nand_headers)
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode
@@ -220,7 +224,9 @@ def verify_deep(firmware):
         assert trace(firmware, read("selected-functions.json")) == read("threadx-shutter-transfers.json")
         segments = [(va, firmware[offset:offset+size]) for offset,va,size in PLAIN]
         segments += [(va, outputs[name[:-4]]) for name,va,size in DECODED]
-        assert hashlib.sha256(assemble(segments)).hexdigest() == decomp["analysis_elf_sha256"]
+        analysis_elf = assemble(segments)
+        assert hashlib.sha256(analysis_elf).hexdigest() == decomp["analysis_elf_sha256"]
+        assert nand_source(firmware, analysis_elf) == read('nand-header-checks.json')['source']
         print("Original firmware: symbols, 448 blocks, 300 function hashes/transfers and analysis ELF reproduced")
 
 

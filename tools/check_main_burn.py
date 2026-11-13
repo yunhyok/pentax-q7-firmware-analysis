@@ -39,7 +39,10 @@ INSTALLED_HEADER_MODELS = {
 REPLAY_SHA256 = "7d038adc5fd168e566bcb78079878bc91c3cc8e9547cb0bcb312b15f1676f2c1"
 
 
-def replay_mode(p, angr, header, installed, *, native_open):
+def replay_mode(p, angr, header, installed, *, native_open, on_native_open=None):
+    """Optionally continue only after the original native-open boundary checks."""
+    if on_native_open is not None and not native_open:
+        raise ValueError("continuation requires the native-open path")
     events=[]
 
     class Model(angr.SimProcedure):
@@ -154,6 +157,8 @@ def replay_mode(p, angr, header, installed, *, native_open):
                     entry=hex(BURN),stop_before=hex(NAND_EX),arguments=[hex(x) for x in first_args],
                     return_address=hex(num(first,first.regs.ra)),vex_blocks=len(history),events=events)
         assert set(models) == {row['api'] for row in events}
+        if on_native_open is not None:
+            return on_native_open(p, angr, first, events, before, report)
         return report
     assert first_args[:7]==[1,HANDLE,6,0,1,0,STACK_TOP-0x48-0x690-0x40-0x50+0x20],first_args
     assert first_args[7]==16 and num(first,first.regs.ra)==0x80053F0C
