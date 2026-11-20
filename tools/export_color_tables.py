@@ -15,13 +15,24 @@ from q7_symbols import recover
 
 # group, struct format, value count, name pattern
 GROUPS = (
-    ("matrices_s16", "h", 9,
-     r"^(cnsCameraBasicMatrix(Inverse)?|cnsFlatMatrix|cnsMakeUpMatrix[A-Za-z]+|cnarsSatCtlMatrix\d\d|"
-     r"cnsHueShiftMatrix\d\d|cnsHueShiftDisableMatrix|cnarsFilterEffectMatrix\d\d|arsActualMatrix3DDefault)$"),
+    ("matrices_s16", "h", 9, r"^(cnsCameraBasicMatrix(Inverse)?|cnsFlatMatrix|cnsMakeUpMatrix[A-Za-z]+|cnarsSatCtlMatrix\d\d|"
+                              r"cnsHueShiftMatrix\d\d|cnsHueShiftDisableMatrix|cnarsFilterEffectMatrix\d\d|arsActualMatrix3DDefault|"
+                              r"arcnsSRGBAdobeRGB)$"),
     ("matrix_sets_6_s16", "h", 54, r"^cnsMakeUpMatrix[A-Za-z]+6$"),
     ("tone_u16", "H", 256, r"^(cnarwBasicTone\d+(Low|Middle|High)|cnarwReversalTone\d+)$"),
     ("dng_color_matrix_s32_pairs", "i", 18, r"^arcnlDNGColorMatrix[12]$"),
     ("ycbcr_s16", "h", 9, r"^arcnwYCbCrConversionMatrixDefault$"),
+    ("chroma_offsets_s16", "h", 9, r"^(cnars(Cb|Cr)(Offset|Addition)(AdobeRGB)?|cnarsCbCrOAdditionNon)$"),
+    ("tone_constants_u16", "H", 1, r"^cnwBasicTone(SaturationPointMin|SaturationPointOutput|BaseNumber)$"),
+    ("custom_image_records_u8", "B", 28, r"^cntCustomImageUnit[A-Za-z0-9]+$"),
+    ("chroma_suppression_u16", "H", 2048, r"^arwCChromaSuppressionRatioLut$"),
+)
+# Statics that have no symbol of their own: (label, preceding symbol, offset from it, format, count).
+ANONYMOUS = (
+    ("key_table_u32", "arcwXvdEvtoRatio256", 0x124, "I", 9),
+    ("reversal_bounds_u32", "arcwXvdEvtoRatio256", 0x148, "I", 7),
+    ("cm_base_matrix_s16", "arcnwYCbCrConversionMatrixDefault", 0x80, "h", 9),
+    ("lut_node_levels_u16", "arcnwYCbCrConversionMatrixDefault", 0x94, "H", 9),
 )
 SEGMENT = "E04"
 
@@ -35,8 +46,8 @@ def export(data):
     for row in rows:
         address.setdefault(row["name"], row["address"])
     result = {
-        "scope": "Colour tables read from PENTAX Q7 firmware by symbol name. Values as stored; "
-                 "how the firmware uses them is not yet verified.",
+        "scope": "Colour tables read from PENTAX Q7 firmware by symbol name. Values as stored; how the f"
+                 "irmware combines them is described in the research notes that accompany this file.",
         "firmware": {"file": "fwdc603p.bin", "sha256": summary["input_sha256"]},
     }
     for group, fmt, count, pattern in GROUPS:
@@ -51,6 +62,13 @@ def export(data):
         if not table:
             raise ValueError(f"no symbol matched {group}")
         result[group] = table
+    result["anonymous"] = {}
+    for label, symbol, offset, fmt, count in ANONYMOUS:
+        value = address[symbol] + offset
+        if not start <= value <= start + len(image) - struct.calcsize(f"<{count}{fmt}"):
+            raise ValueError(f"{label} is outside the decoded {SEGMENT} segment")
+        result["anonymous"][label] = {"after": symbol, "offset": offset, "address": f"{value:#010x}",
+                                      "values": list(struct.unpack_from(f"<{count}{fmt}", image, value - start))}
     return result
 
 
