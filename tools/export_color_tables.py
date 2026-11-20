@@ -1,0 +1,73 @@
+"""Export the Q7 v1.01 colour engine tables, selected by symbol name, as numbers.
+
+The tables are read from the decoded E04 segment at the addresses that the main
+address/name sidecars give for the names matched below. Values are written as
+stored; nothing here states how the firmware combines them.
+"""
+import argparse
+import json
+from pathlib import Path
+import re
+import struct
+
+from decode_segments import inspect as decode
+from q7_symbols import recover
+
+# group, struct format, value count, name pattern
+GROUPS = (
+    ("matrices_s16", "h", 9,
+     r"^(cnsCameraBasicMatrix(Inverse)?|cnsFlatMatrix|cnsMakeUpMatrix[A-Za-z]+|cnarsSatCtlMatrix\d\d|"
+     r"cnsHueShiftMatrix\d\d|cnsHueShiftDisableMatrix|cnarsFilterEffectMatrix\d\d|arsActualMatrix3DDefault)$"),
+    ("matrix_sets_6_s16", "h", 54, r"^cnsMakeUpMatrix[A-Za-z]+6$"),
+    ("tone_u16", "H", 256, r"^(cnarwBasicTone\d+(Low|Middle|High)|cnarwReversalTone\d+)$"),
+    ("dng_color_matrix_s32_pairs", "i", 18, r"^arcnlDNGColorMatrix[12]$"),
+    ("ycbcr_s16", "h", 9, r"^arcnwYCbCrConversionMatrixDefault$"),
+)
+SEGMENT = "E04"
+
+
+def export(data):
+    report, outputs = decode(data)
+    segment = next(item for item in report["segments"] if item["name"] == SEGMENT)
+    start, image = segment["virtual_address"], outputs[SEGMENT]
+    summary, rows = recover(data)
+    address = {}
+    for row in rows:
+        address.setdefault(row["name"], row["address"])
+    result = {
+        "scope": "Colour tables read from PENTAX Q7 firmware by symbol name. Values as stored; "
+                 "how the firmware uses them is not yet verified.",
+        "firmware": {"file": "fwdc603p.bin", "sha256": summary["input_sha256"]},
+    }
+    for group, fmt, count, pattern in GROUPS:
+        size = struct.calcsize(f"<{count}{fmt}")
+        table = {}
+        for name, value in sorted(address.items(), key=lambda item: item[1]):
+            if re.search(pattern, name):
+                if not start <= value <= start + len(image) - size:
+                    raise ValueError(f"{name} is outside the decoded {SEGMENT} segment")
+                table[name] = {"address": f"{value:#010x}",
+                               "values": list(struct.unpack_from(f"<{count}{fmt}", image, value - start))}
+        if not table:
+            raise ValueError(f"no symbol matched {group}")
+        result[group] = table
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("firmware", type=Path)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    if args.output.exists() or args.output.is_symlink():
+        parser.error("output must not exist")
+    result = export(args.firmware.read_bytes())
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with args.output.open("x", encoding="utf-8") as stream:
+        json.dump(result, stream, indent=1, sort_keys=True)
+        stream.write("\n")
+    print(json.dumps({group: len(result[group]) for group, *_ in GROUPS}))
+
+
+if __name__ == "__main__":
+    main()
