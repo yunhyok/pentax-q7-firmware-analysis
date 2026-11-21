@@ -15,7 +15,7 @@ class ColorTableTests(unittest.TestCase):
         counts = {group: len(table) for group, table in TABLES.items() if group not in ('firmware', 'scope')}
         self.assertEqual(counts, {'matrices_s16': 44, 'matrix_sets_6_s16': 11, 'tone_u16': 22,
                                   'dng_color_matrix_s32_pairs': 2, 'ycbcr_s16': 1, 'chroma_offsets_s16': 9,
-                                  'tone_constants_u16': 3, 'custom_image_records_u8': 23,
+                                  'tone_constants_u16': 3, 'composition_rate_u16': 1, 'custom_image_records_u8': 23,
                                   'chroma_suppression_u16': 1, 'anonymous': 4})
 
     def test_addresses_lie_in_the_decoded_segment(self):
@@ -81,6 +81,12 @@ class ColorTableTests(unittest.TestCase):
             number = int(''.join(ch for ch in name[len('cnarw'):] if ch.isdigit()))
             if name.startswith('cnarwBasicTone'):
                 self.assertEqual(record['values'][number // 16], 64 * 118, name)
+
+    def test_composition_rates_rise_from_zero_to_one(self):
+        # The basic gamma joins two tone curves with these rates; 2048 = the outer curve alone.
+        rates = TABLES['composition_rate_u16']['cnwHighlightShadowCompositionRate2048']['values']
+        self.assertEqual((len(rates), rates[0], rates[32], rates[-1]), (97, 0, 1536, 2048))
+        self.assertTrue(all(a <= b for a, b in zip(rates, rates[1:])))
 
     def test_custom_image_records_and_toning(self):
         records = {name[len('cntCustomImageUnit'):]: record['values'] for name, record in TABLES['custom_image_records_u8'].items()}

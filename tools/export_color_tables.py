@@ -24,6 +24,7 @@ GROUPS = (
     ("ycbcr_s16", "h", 9, r"^arcnwYCbCrConversionMatrixDefault$"),
     ("chroma_offsets_s16", "h", 9, r"^(cnars(Cb|Cr)(Offset|Addition)(AdobeRGB)?|cnarsCbCrOAdditionNon)$"),
     ("tone_constants_u16", "H", 1, r"^cnwBasicTone(SaturationPointMin|SaturationPointOutput|BaseNumber)$"),
+    ("composition_rate_u16", "H", 97, r"^cnwHighlightShadowCompositionRate2048$"),
     ("custom_image_records_u8", "B", 28, r"^cntCustomImageUnit[A-Za-z0-9]+$"),
     ("chroma_suppression_u16", "H", 2048, r"^arwCChromaSuppressionRatioLut$"),
 )
@@ -81,7 +82,7 @@ def main():
         parser.error("output must not exist")
     result = export(args.firmware.read_bytes())
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("x", encoding="utf-8") as stream:
+    with args.output.open("x", encoding="utf-8", newline="\n") as stream:    # the same bytes on every platform
         json.dump(result, stream, indent=1, sort_keys=True)
         stream.write("\n")
     print(json.dumps({group: len(result[group]) for group, *_ in GROUPS}))
