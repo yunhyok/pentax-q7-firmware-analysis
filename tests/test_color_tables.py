@@ -16,7 +16,7 @@ class ColorTableTests(unittest.TestCase):
         self.assertEqual(counts, {'matrices_s16': 44, 'matrix_sets_6_s16': 11, 'tone_u16': 22,
                                   'dng_color_matrix_s32_pairs': 2, 'ycbcr_s16': 1, 'chroma_offsets_s16': 9,
                                   'tone_constants_u16': 3, 'composition_rate_u16': 1, 'custom_image_records_u8': 23,
-                                  'chroma_suppression_u16': 1, 'anonymous': 4})
+                                  'chroma_suppression_u16': 1, 'chroma_suppression_param_u16': 1, 'anonymous': 4})
 
     def test_addresses_lie_in_the_decoded_segment(self):
         segment = next(item for item in json.loads(
@@ -87,6 +87,11 @@ class ColorTableTests(unittest.TestCase):
         rates = TABLES['composition_rate_u16']['cnwHighlightShadowCompositionRate2048']['values']
         self.assertEqual((len(rates), rates[0], rates[32], rates[-1]), (97, 0, 1536, 2048))
         self.assertTrue(all(a <= b for a, b in zip(rates, rates[1:])))
+
+    def test_chroma_suppression_block_parameters(self):
+        # One byte and sixteen words handed to the image processor; the same record for every sensitivity.
+        values = TABLES['chroma_suppression_param_u16']['arcntChromaSuppression']['values']
+        self.assertEqual(values, [3, 256, 0, 512, 256, 256, 182, 512, 256, 0, 512, 256, 24, 200, 2048, 4096, 0])
 
     def test_custom_image_records_and_toning(self):
         records = {name[len('cntCustomImageUnit'):]: record['values'] for name, record in TABLES['custom_image_records_u8'].items()}

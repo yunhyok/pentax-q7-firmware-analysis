@@ -191,6 +191,30 @@
    ]
   }
  },
+ "chroma_suppression_param_u16": {
+  "arcntChromaSuppression": {
+   "address": "0x804d529c",
+   "values": [
+    3,
+    256,
+    0,
+    512,
+    256,
+    256,
+    182,
+    512,
+    256,
+    0,
+    512,
+    256,
+    24,
+    200,
+    2048,
+    4096,
+    0
+   ]
+  }
+ },
  "chroma_suppression_u16": {
   "arwCChromaSuppressionRatioLut": {
    "address": "0x804a6470",
