@@ -27,6 +27,7 @@ GROUPS = (
     ("composition_rate_u16", "H", 97, r"^cnwHighlightShadowCompositionRate2048$"),
     ("custom_image_records_u8", "B", 28, r"^cntCustomImageUnit[A-Za-z0-9]+$"),
     ("chroma_suppression_u16", "H", 2048, r"^arwCChromaSuppressionRatioLut$"),
+    ("chroma_suppression_param_u16", "H", 17, r"^arcntChromaSuppression$"),      # the first of its equal records
 )
 # Statics that have no symbol of their own: (label, preceding symbol, offset from it, format, count).
 ANONYMOUS = (
