@@ -89,6 +89,7 @@ python tools/verify_report.py
 | `source/reconstructed/` | 직접 작성한 재구성 C 코드 |
 | `tests/` | 단위 테스트 |
 | `assets/` | 문서 스타일과 사진 |
+| `docs/color-engine-tables.md` | Custom Image 색 엔진의 숫자 표(행렬·톤 곡선)와 그 표를 조합하는 계산식, 기본 감마와 3차원 표, K-3 Mark III와의 대응, Q7로 찍은 사진의 카메라 JPEG과 비교한 결과. 값은 `analysis/color-engine-tables.json` |
 | `docs/audit/` | 문서 검수 기록 (무엇을 확인했고 무엇을 고쳤는지, 판단이 필요한 항목) |
 | `docs/releases/` | 릴리스 노트 |
 
