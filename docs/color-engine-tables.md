@@ -57,7 +57,7 @@ CalcBasicGammaCorrectionTable (4096 entries) and MakeColorReproductionLutParam (
 
 인자는 설정 구조체, 화이트밸런스 자료(또는 0), 서술자 A, 서술자 B, 행렬 여섯 개의 출력 버퍼입니다. 설정에서 읽는 필드는 `+0x34` 모드 번호, `+0x35` 채도, `+0x39` 색상, `+0x3a` 필터 효과, `+0x3b` 모노톤 조색, `+0x3c` 조색 색, `+0x178` 이득, `+0x1fc` 색 공간, `+0x200` 현상 감도(0…4 → 128, 181, 256, 362, 512)입니다.
 
-- **모드 번호** (`GetMakeUpMatrix`의 분기표): 0 Natural, 1 Vivid, 2 Portrait, 3 Landscape, 4 Miyabi, 5 Honoka, 6 Reversal, 7 BleachBypass, 8 PopTune, 9 Vivid(다시), 10 Monotone.
+- **모드 번호** (`GetMakeUpMatrix`의 분기표): 0 Natural, 1 Vivid, 2 Portrait, 3 Landscape, 4 Miyabi, 5 Honoka, 6 Reversal, 7 BleachBypass, 8 PopTune, 9 Vivid(다시. 9번은 Cross Processing이고 행렬은 Vivid의 것을 씁니다), 10 Monotone.
 - **행렬 곱** `MatrixMultiplication(out, A, B)`는 `A × B`이고 `(합 + 0x1000) >> 13`(논리 시프트)의 아래 16비트입니다. [재구성한 C 코드](../source/reconstructed/q7_numeric.c)와 같습니다.
 - **색 행렬 여섯 개:** `채도[n] × MakeUp6[i] × CameraBasic`을 구하고(모노톤은 채도 자리에 `FilterEffect[n]`), 각 값을 0 쪽으로 32로 나눈 다음 대각 성분을 "256 − 같은 행의 나머지 둘"로 바꿉니다. 결과는 **1.0 = 256**이고 각 행의 합이 256입니다.
 - **서술자 A(`+0x18`, 기존 경로 분석의 CM 레지스터)는 색 행렬이 아닙니다.** `256 × 단위행렬 × 이득 / 8192`에 화이트밸런스 이득을 곱해 ±`0x7ff`로 제한한 값입니다. 루틴이 스택에 따로 계산하는 단일 행렬(`채도 × MakeUp × CameraBasic × 이득`)은 어떤 출력에도 쓰이지 않습니다.
@@ -167,8 +167,45 @@ ColorChecker Classic을 Q7(펌웨어 1.01)로 찍은 DNG 한 장입니다. ISO 1
 
 - 색상·키를 0이 아닌 값으로 현상한 Natural이 출고값 컷만큼 맞습니다. 메이커노트 값(채도 3, 색상 3, 키 `-1 0`, 대비 4)을 ExifTool의 값 표로 읽은 결과와 계산식이 함께 확인됩니다.
 - 메이커노트 `0x007f`는 Muted에서 0(조색 끔), Bleach Bypass에서 1(Green), 조색이 없는 모드에서 65535입니다. Muted의 조색 색도 이 태그에 기록됩니다.
-- **Reversal Film은 화이트밸런스가 다릅니다.** 같은 DNG인데 이 JPEG의 `0x0201`만 `13056 8192 8192 15552`이고 나머지 열 장은 DNG와 같은 `12960 8192 8192 15968`입니다. DNG의 값으로 계산하면 회색이 R·G +4, B −1(255 기준) 어긋나고, JPEG에 기록된 값으로 계산하면 위 표처럼 맞습니다. 펌웨어의 어디서 정해지는지는 찾지 않았습니다.
+- **Reversal Film은 화이트밸런스가 다릅니다.** 같은 DNG인데 이 JPEG의 `0x0201`만 `13056 8192 8192 15552`이고 나머지 열 장은 DNG와 같은 `12960 8192 8192 15968`입니다. DNG의 값으로 계산하면 회색이 R·G +4, B −1(255 기준) 어긋나고, JPEG에 기록된 값으로 계산하면 위 표처럼 맞습니다. 이유는 아래 "Custom Image별 화이트밸런스" 절에 있습니다.
 - Cross Processing(열한 번째 JPEG)은 채널별 곡선을 써서 이 계산의 범위 밖입니다.
+
+## Custom Image별 화이트밸런스: Reversal Film은 태양광으로 계산
+
+Reversal Film만 화이트밸런스가 달랐던 이유를 사진 없이 펌웨어에서 찾았습니다(**정적 분석**. 프리셋 표는 DNG의 프리셋 목록과 대조).
+
+**기록.** `m_arpcPictureArrangeParameter` (`0x804457a8`)는 모드 번호마다 포인터 하나씩 42개입니다. 각 포인터가 가리키는 기록의 `+0`은 `cntCustomImageUnit<모드>`, `+4`는 32바이트 화이트밸런스 기록입니다. 화이트밸런스 기록의 칸은 그것을 읽는 함수 이름으로 알 수 있습니다.
+
+| 오프셋 | 읽는 함수 (`ImageTuningRelay_GetDefault…`) | Regular | Reversal | Cte | ForcableCte |
+|---|---|---:|---:|---:|---:|
+| `+0x00` | `WhiteBalanceModeLimitation` | 0 | 0 | 1 | 1 |
+| `+0x04` | `WhiteBalanceMode` | 0 | 0 | 0x10 | 0 |
+| `+0x08` | `WhiteBalanceInnerModeLimitation` | **1** | **0** | 0 | 0 |
+| `+0x0c` | `WhiteBalanceInnerMode` | **0** | **1** | 0x10 | 0x10 |
+
+Custom Image 열한 개 가운데 Reversal(6번)만 `cntWhiteBalanceReversal`을 쓰고 나머지 열 개는 모두 `cntWhiteBalanceRegular`입니다. 카메라가 현상한 JPEG 열한 장에서 Reversal Film만 이득이 달랐던 것과 맞습니다. `cntWhiteBalanceCte`·`ForcableCte`·`SakuraHonoka`는 장면 모드와 스마트 효과가 씁니다.
+
+**적용.** `SetupWhiteBalanceUnit` (`0x8040dfcc`)이 사용자가 고른 화이트밸런스 모드를 `+0x54`에, 기록의 세 값을 `+0x50`·`+0x58`·`+0x5c`에 옮깁니다. `CWhiteBalanceService_vCalclation` (`0x804103b8`, 촬영·RAW 현상·라이브뷰가 모두 부름)은 모드를 읽어 **모드가 0(Auto)이고 InnerModeLimitation이 0이면 InnerMode로 바꿉니다.** 그다음 CTE와 자동 결과를 계산하고 분기표(`0x804a35f4`)로 갑니다: 0과 12…14는 자동 결과, 1…8과 15는 `CWhiteBalanceAlgorithm_bGainCalclationPreset`, 9…11은 수동, 16은 CTE, 17은 저장된 값입니다. 따라서 Reversal Film에서 Auto를 고르면 1번 모드로 계산됩니다. 프리셋이나 수동을 고르면 Reversal Film이 바꾸는 것은 없습니다.
+
+**1번 모드는 태양광입니다.** `bGainCalclationPreset` (`0x803764a8`)은 모드를 프리셋 값(16비트 넷: R, G, G, B)과 광원 분류에 대응시킵니다. 프리셋 값을 `0x803a1bd8`의 값(`420 256 256 146`, 루틴의 기준값이기도 함)으로 나누면, Q7 DNG의 메이커노트에 있는 프리셋 이득을 그 태양광 이득으로 나눈 값과 프리셋 아홉 개 모두 소수 넷째 자리까지 같습니다.
+
+| 모드 | 프리셋 값 | R·B (태양광 대비) | DNG의 프리셋 (태양광 대비) |
+|---:|---|---|---|
+| 1 | `420 256 256 146` | 1.0000 · 1.0000 | 태양광 1.0000 · 1.0000 |
+| 2 | `516 256 256 114` | 1.2286 · 0.7808 | 그늘 1.2286 · 0.7808 |
+| 3 | `484 256 256 130` | 1.1524 · 0.8904 | 흐림 1.1524 · 0.8905 |
+| 4 | `559 256 256 144` | 1.3310 · 0.9863 | 형광등 D 1.3310 · 0.9863 |
+| 5 | `480 256 256 163` | 1.1429 · 1.1164 | 형광등 N 1.1429 · 1.1165 |
+| 6 | `448 256 256 202` | 1.0667 · 1.3836 | 형광등 W 1.0667 · 1.3836 |
+| 7 | `256 256 256 256` | 0.6095 · 1.7534 | 백열등 0.6096 · 1.7535 |
+| 8 | `500 256 256 122` | 1.1905 · 0.8356 | 플래시 1.1905 · 0.8356 |
+| 15 | `376 256 256 235` | 0.8952 · 1.6096 | 형광등 L 0.8952 · 1.6097 |
+
+**프리셋은 고정값이 아닙니다.** 이 루틴은 화면을 16 × 16 블록으로 나눈 화이트밸런스 통계를 광원 분류(12가지, 분류표 `0x803a2438`)별로 더하고, 블록의 5% 미만인 분류는 버린 뒤, 그 프리셋에 속하는 분류(태양광은 1번)의 합을 씁니다. 합이 0이 아니면 그 합에 행렬 `256 -268 268 / 256 77 -196 / 256 305 305`를 곱해 G/R, G/B를 구하고 기기의 기준 이득을 곱합니다. 합이 0이면 표의 값을 씁니다. 곧 Reversal Film의 Auto는 "장면에서 태양광으로 분류된 부분으로 맞춘 태양광 화이트밸런스"입니다. JPEG의 이득(13056, 15552)이 자동 결과(12960, 15968)와도, 표의 태양광(14363, 15300)과도 다른 이유입니다.
+
+- 이 두 숫자를 계산으로 재현하지는 않았습니다. 그 촬영의 블록 통계가 필요하고, 통계를 만드는 루틴은 실행하지 않았습니다.
+- Reversal Film으로 찍은 DNG에 이 이득이 촬영 화이트밸런스로 기록되는지는 파일로 확인하지 않았습니다. 촬영도 같은 루틴을 부른다는 점에서 그렇게 추정합니다.
+- 대조 스크립트는 firmware-color-studio의 `tools/q7/white_balance.py`입니다.
 
 ## Custom Image 기본값 기록
 
