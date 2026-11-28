@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Custom Image 색 엔진 표와 계산 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="PENTAX Q7 펌웨어 1.01에서 꺼낸 Custom Image 색 행렬·톤 곡선·채도 억제·기본값 기록 123건과 다섯 계산 루틴, 9×9×9 3차원 표 사면체 보간, 실물 DNG의 카메라 JPEG 10종 비교 결과를 정리합니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="../index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="../guide-update.html">업데이트</a><a href="../guide-color.html" aria-current="true">색·HDR</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-color.html">색 처리와 HDR</a></li><li aria-current="page">Custom Image 색 엔진 표와 계산</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">색 처리와 HDR · Custom Image 색 엔진</p>
+<h1>Custom Image 색 엔진 표와 계산</h1>
+<p class="lead">Q7 펌웨어 1.01 본 프로그램(E04)에서 Custom Image의 색과 밝기를 결정하는 숫자 표 122건을 추출하고, 다섯 루틴의 정수 계산과 9×9×9 3차원 표 보간을 카메라 JPEG와 대조했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#tables">E04에서 추출한 색 엔진 표</a></li><li><a href="#routines">다섯 루틴과 9×9×9 3차원 표 경로</a></li><li><a href="#presets">Custom Image 기본값과 Reversal Film 화이트밸런스</a></li><li><a href="#validation">실물 사진·에뮬레이터 검증 요약</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>E04 세그먼트에서 색 행렬·톤 곡선·조색 오프셋·채도 억제·Custom Image 기본값 기록 등 <strong>122건</strong>을 추출했습니다(<code>analysis/color-engine-tables.json</code>).</li>
+<li><code>MakeColorMatrix</code>(276건), <code>CalcGammaCorrectionTable</code>과 <code>Reversal</code>(1,636건), <code>CalcBasicGammaCorrectionTable</code>·<code>MakeColorReproductionLutParam</code>(794건)을 Unicorn MIPS 에뮬레이터로 돌려 파이썬 이식과 <strong>전수 일치</strong>를 확인했습니다.</li>
+<li>Q7은 색 행렬과 감마를 따로 적용하지 않고 <code>CalcBasicGammaCorrectionTable</code>(표 D)로 <strong>9×9×9 3차원 색 재현 표</strong>의 격자 입력을 정합니다. 실물 DNG 한 장의 카메라 JPEG 10종과 비교하면 사면체 보간과 하이라이트 채도 억제를 넣었을 때 24패치 평균 <strong>ΔE76 0.97~1.43</strong>으로 맞습니다.</li>
+<li>Reversal Film(모드 6)만 화이트밸런스 기본 기록의 <code>InnerModeLimitation</code>이 0이라 Auto 화이트밸런스에서도 태양광 분류(1번)로 계산됩니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 표 추출과 에뮬레이션으로 확인한 것</h3>
+<ul>
+<li>E04 내 색 표 122건의 주소·크기·값</li>
+<li>정수 루틴 다섯 개의 에뮬레이션 대조(276 / 1,636 / 794건 모두 일치)</li>
+<li>DNG ColorMatrix 1·2 및 AdobeRGB 변환 행렬의 펌웨어 값 일치</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드 읽기로 확인한 것</h3>
+<ul>
+<li>9×9×9 3차원 표 생성과 R·G·B 크기 순서 6구역 행렬 분기</li>
+<li><code>SetupWhiteBalanceUnit</code>·<code>CWhiteBalanceService_vCalclation</code>의 Reversal 예외 경로</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 사진 비교·하드웨어 모델 가정</h3>
+<ul>
+<li>사면체 보간 방식과 평상시 감마 기준값(<code>v = 512</code>)</li>
+<li>하이라이트 채도 억제 기울기 <code>(255 − 밝기) / 55</code>(시작점 200은 펌웨어 표)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>Cross Processing(모드 9·10의 채널별 감마 B·C)의 전체 톤 곡선 생성 규칙</li>
+<li>고감도·하이라이트/섀도 보정 켜짐 상태에서의 <code>+0x164</code>·<code>+0x174</code> 동적 변화</li>
+</ul></div>
+</div>
+
+<section id="tables">
+<h2>E04에서 추출한 색 엔진 표</h2>
+<p class="takeaway">추출 표는 <code>analysis/color-engine-tables.json</code>에 있으며 총 12개 범주 122건입니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>추출된 표 범주별 건수와 대표 내용</caption>
+<thead><tr><th scope="col">범주</th><th scope="col">건수</th><th scope="col">대표 심볼 및 단위</th></tr></thead>
+<tbody>
+<tr><th scope="row">단일 색 행렬 (signed 16-bit)<br><code class="small muted">matrices_s16</code></th><td class="n"><strong>44</strong></td><td>CameraBasic, MakeUp, SatCtl, FilterEffect, HueShift, sRGB→AdobeRGB</td></tr><tr><th scope="row">6구역 색 행렬 묶음<br><code class="small muted">matrix_sets_6_s16</code></th><td class="n"><strong>11</strong></td><td>Custom Image 11종의 색상 6분할 행렬 (v1.01에서는 6개 모두 동일)</td></tr><tr><th scope="row">톤·리버설 곡선 (256점 unsigned 16-bit)<br><code class="small muted">tone_u16</code></th><td class="n"><strong>22</strong></td><td>BasicTone 15개 + ReversalTone 7개 (포화점 16130)</td></tr><tr><th scope="row">DNG ColorMatrix 분수 쌍<br><code class="small muted">dng_color_matrix_s32_pairs</code></th><td class="n"><strong>2</strong></td><td>arcnlDNGColorMatrix1(A광), arcnlDNGColorMatrix2(D65, 분모 65536)</td></tr><tr><th scope="row">YCbCr 변환 행렬<br><code class="small muted">ycbcr_s16</code></th><td class="n"><strong>1</strong></td><td>arcnwYCbCrConversionMatrixDefault (1.0 = 256)</td></tr><tr><th scope="row">조색 Cb·Cr 오프셋<br><code class="small muted">chroma_offsets_s16</code></th><td class="n"><strong>9</strong></td><td>cnarsCb/CrAddition (+AdobeRGB), cnarsCb/CrOffset (+AdobeRGB)</td></tr><tr><th scope="row">톤 포화 상수<br><code class="small muted">tone_constants_u16</code></th><td class="n"><strong>3</strong></td><td>cnwBasicToneSaturationPointMin(16130), Output(4095), BaseNumber(64)</td></tr><tr><th scope="row">하이라이트·섀도 합성 비율 (97점)<br><code class="small muted">composition_rate_u16</code></th><td class="n"><strong>1</strong></td><td>cnwHighlightShadowCompositionRate2048 (1.0 = 2048)</td></tr><tr><th scope="row">Custom Image · 장면 기본값 (28바이트)<br><code class="small muted">custom_image_records_u8</code></th><td class="n"><strong>23</strong></td><td>cntCustomImageUnit* 23개 레코드</td></tr><tr><th scope="row">암부 채도 억제 LUT (2048점)<br><code class="small muted">chroma_suppression_u16</code></th><td class="n"><strong>1</strong></td><td>arwCChromaSuppressionRatioLut (1.0 = 8192, 최하 0.5)</td></tr><tr><th scope="row">하이라이트 채도 억제 파라미터<br><code class="small muted">chroma_suppression_param_u16</code></th><td class="n"><strong>1</strong></td><td>arcntChromaSuppression (시작 밝기 200 등 17워드)</td></tr><tr><th scope="row">미명명 정적 표 4종<br><code class="small muted">anonymous</code></th><td class="n"><strong>4</strong></td><td>키 표 9개, 리버설 경계 7개, CM 기본 행렬, 3D LUT 격자 9개</td></tr>
+</tbody>
+</table></div>
+<p><code>cnsCameraBasicMatrix</code>(<code>0x804add38</code>)는 <code>11243 -3459 408 -2736 12937 -2009 -2 -4343 12537</code>(1.0 = 8192)입니다. <code>cnwHighlightShadowCompositionRate2048</code>(<code>0x804b4a78</code>) 97개 값은 K-3 Mark III의 톤 전이 가중치와 같습니다.</p>
+</section>
+
+<section id="routines">
+<h2>다섯 루틴과 9×9×9 3차원 표 경로</h2>
+<p class="takeaway">Q7은 기본 감마(표 D)를 하드웨어 감마 블록에 넣고 그 출력을 9×9×9 3차원 표의 격자 인덱스로 씁니다.</p>
+<figure class="diagram">
+<figcaption>Custom Image 설정에서 CM·FC1·기본 감마·3차원 LUT까지의 계산 연결</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 220" role="img" aria-labelledby="dg-q7c-title dg-q7c-desc"><title id="dg-q7c-title">Q7 Custom Image 색 처리 계산 구조</title><desc id="dg-q7c-desc">MakeColorMatrix가 6구역 색 행렬과 FC1 계수를 만들고, CalcGammaCorrectionTable이 표 A를, CalcBasicGammaCorrectionTable이 표 D를 만듭니다. MakeColorReproductionLutParam은 표 D의 격자 입력에 6행렬과 암부 채도 억제와 표 A를 순서대로 적용해 9x9x9 3차원 표를 출력합니다.</desc><defs><marker id="dg-q7c-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs><rect class="b ok" x="10" y="20" width="180" height="58" rx="8"/><text class="t" x="22" y="44">MakeColorMatrix</text><text class="s" x="22" y="64">6구역 색 행렬 · FC1 · 조색</text><rect class="b ok" x="10" y="92" width="180" height="54" rx="8"/><text class="t" x="22" y="116">CalcGammaCorrection</text><text class="s" x="22" y="136">표 A (일반 또는 Reversal)</text><rect class="b ok" x="10" y="158" width="180" height="52" rx="8"/><text class="t" x="22" y="180">CalcBasicGamma</text><text class="s" x="22" y="200">표 D (하드웨어 감마)</text><rect class="b key" x="240" y="68" width="248" height="86" rx="8"/><text class="t" x="254" y="96">MakeColorReproductionLutParam</text><text class="s" x="254" y="118">표 D 격자 → 6행렬 → YCbCr → 암부억제 → 표 A</text><text class="s" x="254" y="138">9×9×9 = 729 RGB 격자 출력</text><rect class="b model" x="538" y="68" width="250" height="86" rx="8"/><text class="t" x="552" y="96">사면체 보간 + 하이라이트 억제</text><text class="s" x="552" y="118">FC1(색상 회전·조색) · 채도 억제(≥200)</text><text class="s" x="552" y="138">카메라 JPEG 10종 ΔE76 0.97~1.43</text><path class="e" d="M190 49H215V95H238" marker-end="url(#dg-q7c-ah)"/><path class="e" d="M190 119H238" marker-end="url(#dg-q7c-ah)"/><path class="e" d="M190 184H215V130H238" marker-end="url(#dg-q7c-ah)"/><path class="e" d="M488 111H536" marker-end="url(#dg-q7c-ah)"/></svg>
+</div>
+</figure>
+<ul>
+<li><strong>색 행렬 여섯 개</strong>: <code>MakeColorMatrix</code>(<code>0x8041c180</code>)가 <code>채도 × MakeUp6[i] × CameraBasic</code>을 32로 나누고 대각 성분을 행의 합 256에 맞추어 저장합니다.</li>
+<li><strong>서술자 A·B(CM·FC1)</strong>: 서술자 A(<code>+0x18</code>)는 단위행렬 기반 이득 행렬이고 서술자 B(FC1)는 <code>HueShift × YCbCr</code>(AdobeRGB면 <code>arcnsSRGBAdobeRGB</code> 곱)에 조색 Cb·Cr 오프셋을 <code>0x800</code> 더해 넣습니다.</li>
+<li><strong>일반 감마 · 리버설 · 기본 감마</strong>: <code>CalcGammaCorrectionTable</code>(<code>0x8041d058</code>)은 128..2048 5개 열 256점 가운데 앞 129점(0..128)을 쓰고 위쪽은 직선으로 잇습니다. <code>CalcBasicGammaCorrectionTable</code>(<code>0x8041d7e8</code>)은 고정 대비(−7, −4, −6)로 256점을 모두 써서 표 D를 만듭니다.</li>
+<li><strong>3차원 표(<code>0x8041c7dc</code>)</strong>: 표 D가 처음 <code>0, 512, …, 4095</code>에 닿는 입력 9점을 축마다 골라 729점에서 RGB 크기 순서 행렬, YCbCr 변환, <code>arwCChromaSuppressionRatioLut</code> 암부 억제, 표 A 조회를 순서대로 실행합니다.</li>
+</ul>
+</section>
+
+<section id="presets">
+<h2>Custom Image 기본값과 Reversal Film 화이트밸런스</h2>
+<p class="takeaway">펌웨어 기본값 기록(<code>cntCustomImageUnit*</code>)과 DNG 메이커노트 값이 0..8(가운데 4 = 0) 부호화까지 일치합니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>주요 Custom Image 출고 기본값 (설정은 −4..+4, 저장값은 4가 0)</caption>
+<thead><tr><th scope="row">모드</th><th scope="col">ID</th><th scope="col">채도</th><th scope="col">대비</th><th scope="col">샤프니스</th><th scope="col">키</th><th scope="col">색상</th><th scope="col">조색 색</th></tr></thead>
+<tbody>
+<tr><th scope="row">Natural</th><td class="n">0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Bright (Vivid)</th><td class="n">1</td><td class="n">+0</td><td class="n">+1</td><td class="n">+1</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Portrait</th><td class="n">2</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Landscape</th><td class="n">3</td><td class="n">+0</td><td class="n">+1</td><td class="n">+1</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Vibrant (Miyabi)</th><td class="n">4</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Radiant (Gokusai)</th><td class="n">8</td><td class="n">+3</td><td class="n">+3</td><td class="n">+1</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Muted (Honoka)</th><td class="n">5</td><td class="n">+0</td><td class="n">-3</td><td class="n">-2</td><td class="n">+4</td><td class="n">-4</td><td class="n">0</td></tr><tr><th scope="row">Bleach Bypass</th><td class="n">7</td><td class="n">+0</td><td class="n">+4</td><td class="n">-1</td><td class="n">-4</td><td class="n">-3</td><td class="n">1</td></tr><tr><th scope="row">Reversal Film</th><td class="n">6</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Cross Processing</th><td class="n">9</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr><tr><th scope="row">Monochrome (Monotone)</th><td class="n">10</td><td class="n">-4</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">+0</td><td class="n">0</td></tr>
+</tbody>
+</table></div>
+<p><code>m_arpcPictureArrangeParameter</code>(<code>0x804457a8</code>)에서 6번 Reversal Film만 <code>cntWhiteBalanceReversal</code>(<code>InnerModeLimitation = 0</code>, <code>InnerMode = 1</code>)을 씁니다. 따라서 Auto 화이트밸런스를 골라도 <code>CWhiteBalanceService_vCalclation</code>이 태양광 분류(1번)로 돌려 계산합니다.</p>
+</section>
+
+<section id="validation">
+<h2>실물 사진·에뮬레이터 검증 요약</h2>
+<p>ColorChecker Classic DNG 한 장을 카메라에서 10종 Custom Image로 다시 현상한 JPEG와 비교한 결과, 사면체 보간과 하이라이트 채도 억제를 함께 적용했을 때 24패치 평균 ΔE76은 <strong>0.97(Muted·Monochrome)</strong>에서 <strong>1.43(Bleach Bypass Green)</strong> 사이로 측정되었습니다.</p>
+<p>루틴별 세부 계산식과 JPEG 패치별 오차 표 원문은 <a href="../docs/color-engine-tables.md">docs/color-engine-tables.md</a>에 있으며 이식 코드와 에뮬레이터 대조 스크립트는 <code>firmware-color-studio</code>의 <code>q7_engine.py</code>·<code>tools/q7/check_port.py</code>에서 유지합니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="../analysis/color-engine-tables.json">analysis/color-engine-tables.json</a> — E04에서 추출한 표 122건의 주소와 수치 데이터</li>
+<li><a href="../docs/color-engine-tables.md">docs/color-engine-tables.md</a> — 루틴 다섯 개의 상세 수식, JPEG 10종 비교, Reversal WB 분석 원문</li>
+<li><a href="../tools/export_color_tables.py">tools/export_color_tables.py</a> — 원본 <code>fwdc603p.bin</code>에서 JSON을 재생성하는 스크립트</li>
+<li><a href="../tools/build_color_engine_report.py">tools/build_color_engine_report.py</a> — 이 문서 생성 스크립트</li>
+<li><a href="../tests/test_color_tables.py">tests/test_color_tables.py</a> — 표 불변식 단위 테스트</li>
+<li><a href="q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a> · <a href="q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">색 처리와 HDR — 이 주제의 문서</h2><ol><li><a href="../guide-color.html">색 처리·HDR 안내</a></li><li><a href="../routing-report.html">AF 수신자·색 행렬 레지스터·JPEG 저장</a></li><li><a href="../pixel-report.html">HDR 버퍼의 JPEG 경로와 색 필터</a></li><li><a href="../final-color-report.html">HDR 출력 선택과 FC1 계수</a></li><li><a href="../hdr-control-report.html">HDR 네 패스의 FC1 활성화</a></li><li><a href="../hdr-task-report.html">FC1 제어 비트와 HDR task 완료</a></li><li><a href="color-engine-tables.html" aria-current="page">Custom Image 색 엔진 표와 계산</a></li><li><a href="q7-dcp-structure.html">Q7용 DCP 두 개에 저장된 태그와 표</a></li><li><a href="q7-dcp-interpolation.html">DCP 표의 좌표와 보간</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../hdr-task-report.html"><small>← 이전</small>FC1 제어 비트와 HDR task 완료</a><a class="next" href="q7-dcp-structure.html"><small>다음 →</small>Q7용 DCP 두 개에 저장된 태그와 표</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

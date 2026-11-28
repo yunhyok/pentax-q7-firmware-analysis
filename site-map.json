@@ -28,6 +28,8 @@
     "hdr-task-report.html": "analysis/task-template.html",
     "reports/q7-dcp-structure.html": "analysis/q7-dcp-template.html",
     "reports/q7-dcp-interpolation.html": "analysis/q7-dcp-interpolation-template.html",
+    "reports/lens-firmware-update.html": "analysis/lens-firmware-update-template.html",
+    "reports/color-engine-tables.html": "analysis/color-engine-template.html",
     "af-completion-report.html": "analysis/af-template.html",
     "colorspace-ui-report.html": "analysis/colorspace-template.html",
     "colorspace-render-report.html": "analysis/render-template.html",
@@ -55,7 +57,8 @@
       {"file": "loader-hash-report.html", "label": "첫 블록 281바이트와 MD5 경로"},
       {"file": "burn-continuation-report.html", "label": "NAND 기록의 재시도와 마무리"},
       {"file": "storage-readiness-report.html", "label": "기록 전 저장장치 검사와 렌즈 준비"},
-      {"file": "recompiled-numeric-report.html", "label": "색 행렬 함수 C 재컴파일"}
+      {"file": "recompiled-numeric-report.html", "label": "색 행렬 함수 C 재컴파일"},
+      {"file": "reports/lens-firmware-update.html", "label": "Q 마운트 렌즈 펌웨어 검증"}
     ]},
     {"id": "color", "title": "색 처리와 HDR", "nav": "색·HDR", "hub": "guide-color.html", "pages": [
       {"file": "guide-color.html", "label": "색 처리·HDR 안내"},
@@ -64,6 +67,7 @@
       {"file": "final-color-report.html", "label": "HDR 출력 선택과 FC1 계수"},
       {"file": "hdr-control-report.html", "label": "HDR 네 패스의 FC1 활성화"},
       {"file": "hdr-task-report.html", "label": "FC1 제어 비트와 HDR task 완료"},
+      {"file": "reports/color-engine-tables.html", "label": "Custom Image 색 엔진 표와 계산"},
       {"file": "reports/q7-dcp-structure.html", "label": "Q7용 DCP 두 개에 저장된 태그와 표"},
       {"file": "reports/q7-dcp-interpolation.html", "label": "DCP 표의 좌표와 보간"}
     ]},

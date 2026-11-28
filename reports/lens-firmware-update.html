@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q 마운트 렌즈 펌웨어 검사 — PENTAX Q7 펌웨어 연구</title>
+<meta name="description" content="PENTAX Q7 본체 펌웨어 fwdc603p.bin의 렌즈 업데이트 검사 함수와 실제 배포 파일 fwlq101.bin·fwlq102.bin을 MIPS 에뮬레이터로 실행해 헤더 구조와 두 단계 CRC-16/CCITT 검증을 확인했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="q7">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="../index.html" aria-current="true">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="../guide-update.html" aria-current="true">업데이트</a><a href="../guide-color.html">색·HDR</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX Q7</a></li><li><a href="../guide-update.html">업데이트와 재패킹</a></li><li aria-current="page">Q 마운트 렌즈 펌웨어 검증</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">업데이트와 재패킹 · 렌즈 펌웨어 검증</p>
+<h1>Q 마운트 렌즈 펌웨어 검증</h1>
+<p class="lead">Q7 본체 펌웨어(<code>fwdc603p.bin</code>) 안에는 SD 카드의 Q 마운트 렌즈 업데이트 파일(<code>fwlq101.bin</code>·<code>fwlq102.bin</code>)을 읽고 검증하는 코드가 들어 있습니다. 원본 MIPS 기계어를 Unicorn 에뮬레이터에서 실행해 두 실제 렌즈 펌웨어 파일과 대조했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#layout">렌즈 펌웨어 파일 구조 (fwlq101.bin · fwlq102.bin)</a></li><li><a href="#execution">실행 검증: ExecutionCheck 6사례</a></li><li><a href="#limits">한계와 재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li><code>LensFirmwareUpdateService_GetCrc_BYTE</code>(<code>0x807dceec</code>)는 초기값 <code>0x0000</code>, 다항식 <code>0x1021</code>의 빅엔디언 CRC-16/CCITT를 계산합니다.</li>
+<li><code>fwlq101.bin</code>(01 STANDARD PRIME)과 <code>fwlq102.bin</code>(02 STANDARD ZOOM) 모두 크기 <strong>262,288바이트</strong>(<code>0x40090</code>)입니다. 끝 2바이트는 전체 파일(<code>[:-2]</code>)의 CRC(<code>0x1ca0</code>·<code>0x1f20</code>)이고 헤더 오프셋 <code>0x30</code>의 2바이트는 256KiB 본문(<code>0x80..0x4007f</code>)의 CRC(<code>0x2668</code>·<code>0xfea2</code>)입니다.</li>
+<li><code>UserLensFirmwareUpdateExecutionCheck</code>(<code>0x807dcf48</code>)를 파일 I/O·<code>LensDataServer</code> 스텁과 함께 에뮬레이터로 실행한 결과 정상 2건은 <strong>1</strong>을, 렌즈 ID 불일치·파일 CRC 불일치·체크 바이트 0 아님·파일 열기 실패 4건은 <strong>0</strong>을 반환했습니다.</li>
+<li>실제 렌즈 통신선 전송과 렌즈 내부 플래시 기록(<code>ComLensFirmUpdateWrite</code> 이후)은 실기 렌즈가 없어 실행하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 코드 실행과 파일로 확인한 것</h3>
+<ul>
+<li><code>GetCrc_BYTE</code> 원본 MIPS 명령의 CRC-16/CCITT 출력과 <code>fwlq101.bin</code>·<code>fwlq102.bin</code> 일치</li>
+<li><code>UserLensFirmwareUpdateExecutionCheck</code> 6사례 분기와 <code>Printf_B</code> 로그 메시지</li>
+<li>렌즈 펌웨어 파일의 128바이트 헤더, 256KiB LOM 본문, 16바이트 꼬리 구조</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드 읽기로 확인한 것</h3>
+<ul>
+<li><code>UserLensFirmwareUpdateExecution</code>(<code>0x807ddc58</code>)이 본문 CRC(<code>0x30</code>)를 본체 전송 직전에 <code>GetCrc_BYTE</code>로 다시 대조하는 흐름</li>
+<li><code>LensDataServer_GetLensFirmupFileNamePLC</code>(<code>0x80112490</code>)와 <code>GetLensIdPLC</code>(<code>0x801122d8</code>)의 레지스터 규약</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 에뮬레이션에서 대신 넣은 것</h3>
+<ul>
+<li>장착된 렌즈의 ID와 파일 이름 응답(<code>LensDataServer</code> 스텁)</li>
+<li><code>I:\fwlq*.bin</code> 파일 열기·위치 이동·읽기와 힙 할당(FileX·Pool 스텁)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>Q 마운트 렌즈 통신 버스 프로토콜과 렌즈 측 플래시 소거·기록 결과</li>
+<li>세이프 모드(<code>LENS_SAFEMODE_FIRMUPDATE</code>) 진입 조건과 실기 복구 동작</li>
+</ul></div>
+</div>
+
+<section id="layout">
+<h2>렌즈 펌웨어 파일 구조 (fwlq101.bin · fwlq102.bin)</h2>
+<p class="takeaway">두 파일은 128바이트 빅엔디언 헤더, 256KiB 본문(LOM), 16바이트 꼬리표로 나뉩니다.</p>
+<figure class="diagram">
+<figcaption>Q 마운트 렌즈 업데이트 파일(262,288바이트)의 구획과 두 가지 CRC 범위</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 228" role="img" aria-labelledby="dg-lens-title dg-lens-desc"><title id="dg-lens-title">Q 마운트 렌즈 업데이트 파일의 구획과 두 가지 CRC 범위</title><desc id="dg-lens-desc">전체 262,288바이트 파일은 앞 128바이트 헤더, 가운데 262,144바이트 렌즈 ROM 본문, 끝 16바이트 꼬리로 나뉩니다. 헤더 오프셋 0x30에는 본문 전체의 CRC가 들어가고, 파일 끝 2바이트에는 앞 262,286바이트 전체의 CRC가 들어갑니다.</desc><rect class="b" x="12" y="24" width="176" height="84" rx="8"/><text class="t" x="24" y="50">헤더 (128B)</text><text class="s mono" x="24" y="72">0x0000..0x007f</text><text class="s" x="24" y="93">ID·버전·0x30 LOM CRC</text><rect class="b ok" x="200" y="24" width="430" height="84" rx="8"/><text class="t" x="214" y="50">렌즈 ROM 본문 LOM (256KiB = 262,144B)</text><text class="s mono" x="214" y="72">0x0080..0x4007f</text><text class="s" x="214" y="93">PENTAX 식별 문자열 · 버전 문자열 · 실행 코드</text><rect class="b key" x="642" y="24" width="146" height="84" rx="8"/><text class="t" x="654" y="50">꼬리 (16B)</text><text class="s mono" x="654" y="72">0x40080..0x4008f</text><text class="s" x="654" y="93">끝 2B = 파일 CRC</text><path class="e ok" d="M200 132H630"/><text class="n" x="204" y="152">LOM CRC-16/CCITT 범위 (256KiB) → 헤더 0x30과 일치 (0x2668 / 0xfea2)</text><path class="e" d="M12 180H774"/><text class="n" x="16" y="200">전체 파일 CRC-16/CCITT 범위 (262,286B) → 끝 2바이트와 일치 (0x1ca0 / 0x1f20)</text></svg>
+</div>
+</figure>
+<div class="table-wrap"><table class="compact">
+<caption>배포 파일 두 개에서 확인한 헤더·CRC 값</caption>
+<thead><tr><th scope="col">항목</th><th scope="col"><code>fwlq101.bin</code></th><th scope="col"><code>fwlq102.bin</code></th></tr></thead>
+<tbody>
+<tr><th scope="row">파일 크기</th><td>262,288 B (<code>0x40090</code>)</td><td>262,288 B (<code>0x40090</code>)</td></tr><tr><th scope="row">SHA-256</th><td><code class="wrap">0484d7718ff3ebf705a2d7c57c6c2babffa394aef883b1096749b271935cce3b</code></td><td><code class="wrap">ffd125bb12c7b60716bf497185cfab21c99be44ee8d1d9caa9c5761247a53b62</code></td></tr><tr><th scope="row">체크 바이트 (<code>0x00</code>)</th><td>0</td><td>0</td></tr><tr><th scope="row">렌즈 ID (<code>0x02..0x03</code>)</th><td>1</td><td>2</td></tr><tr><th scope="row">렌즈 이름 (<code>0x04..0x1f</code>)</th><td><code>01 STANDARD PRIME</code></td><td><code>02 STANDARD ZOOM</code></td></tr><tr><th scope="row">헤더 버전 (<code>0x22..0x25</code>)</th><td>1.1.14.0</td><td>1.1.14.0</td></tr><tr><th scope="row">본문 내 버전 / 날짜</th><td><code>0049000.02</code> (Oct 19 2011)</td><td><code>0049010.00</code> (Oct 19 2011)</td></tr><tr><th scope="row">LOM 크기 / 시작 위치</th><td><code>0x40000</code> / <code>0x80</code></td><td><code>0x40000</code> / <code>0x80</code></td></tr><tr><th scope="row">LOM CRC (헤더 <code>0x30</code> · 에뮬레이션)</th><td><code>0x2668</code> (<code>0x2668</code>)</td><td><code>0xfea2</code> (<code>0xfea2</code>)</td></tr><tr><th scope="row">파일 CRC (끝 2B · 에뮬레이션)</th><td><code>0x1ca0</code> (<code>0x1ca0</code>)</td><td><code>0x1f20</code> (<code>0x1f20</code>)</td></tr>
+</tbody>
+</table></div>
+<p>본문 시작 오프셋 <code>0x80</code> 뒤쪽 메타데이터 문자열 영역에는 두 파일 모두 <code>PENTAX / INNOVATION!!</code> 식별 문자열과 빌드 날짜 <code>Oct 19 2011</code>이 들어 있습니다. 버전 표시는 <code>0049000.02</code>와 <code>0049010.00</code>으로 나뉩니다.</p>
+</section>
+
+<section id="execution">
+<h2>실행 검증: ExecutionCheck 6사례</h2>
+<p class="takeaway">체크 바이트가 0이고 파일의 <code>LENS_ID</code>가 장착 렌즈와 같으며 파일 전체 CRC가 맞을 때만 1을 반환합니다.</p>
+<p>에뮬레이터는 복원한 본체 ELF에서 <code>UserLensFirmwareUpdateExecutionCheck</code>를 그대로 실행하고 외부 함수 10개만 호출 경계에서 가로채 인수를 기록했습니다. 여섯 사례의 반환값과 로그 핵심 문자열은 아래와 같습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption><code>UserLensFirmwareUpdateExecutionCheck</code> 에뮬레이션 6사례</caption>
+<thead><tr><th scope="col">사례</th><th scope="col">장착 ID</th><th scope="col">파일명</th><th scope="col">반환</th><th scope="col">핵심 로그</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>fwlq101_valid</code></th><td class="n">1</td><td><code>fwlq101.bin</code></td><td class="n"><strong>1</strong></td><td><code>LENS_FW_CHECK_BYTE:0 / [LENS ID] AGREEMENT / CALC_FILE_CRC:1ca0 / [FILE_CRC] AGREEMENT</code></td></tr><tr><th scope="row"><code>fwlq102_valid</code></th><td class="n">2</td><td><code>fwlq102.bin</code></td><td class="n"><strong>1</strong></td><td><code>LENS_FW_CHECK_BYTE:0 / [LENS ID] AGREEMENT / CALC_FILE_CRC:1f20 / [FILE_CRC] AGREEMENT</code></td></tr><tr><th scope="row"><code>lens_id_mismatch</code></th><td class="n">2</td><td><code>fwlq101.bin</code></td><td class="n"><strong>0</strong></td><td><code>LENS_FW_CHECK_BYTE:0 / [LENS ID] DISAGREEMENT</code></td></tr><tr><th scope="row"><code>file_crc_mismatch</code></th><td class="n">1</td><td><code>fwlq101.bin</code></td><td class="n"><strong>0</strong></td><td><code>LENS_FW_CHECK_BYTE:0 / [LENS ID] AGREEMENT / CALC_FILE_CRC:b7a5 / [FILE_CRC] DISAGREEMENT</code></td></tr><tr><th scope="row"><code>check_byte_nonzero</code></th><td class="n">1</td><td><code>fwlq101.bin</code></td><td class="n"><strong>0</strong></td><td><code>LENS_FW_CHECK_BYTE:1</code></td></tr><tr><th scope="row"><code>file_open_failed</code></th><td class="n">1</td><td><code>fwlq101.bin</code></td><td class="n"><strong>0</strong></td><td><code>FILE OPEN FAILED! HEADER</code></td></tr>
+</tbody>
+</table></div>
+<p>사전 검사를 통과해 실제 업데이트 함수 <code>UserLensFirmwareUpdateExecution</code>(<code>0x807ddc58</code>)으로 들어가면 카메라 배터리 확인 뒤 파일의 <code>0x80</code> 위치에서 <code>LENS_LOM_SIZE</code>(<code>0x40000</code>)바이트만 다시 읽어 <code>GetCrc_BYTE</code>로 계산합니다. 그 값이 헤더 <code>0x30</code>에서 저장한 값과 같을 때(<code>[LENSROM_CRC] AGREEMENT</code>)만 렌즈 통신을 시작합니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 재현 방법</h2>
+<p>이 검증은 본체 펌웨어 <code>fwdc603p.bin</code>에서 복원한 ELF와 실제 배포 렌즈 파일 <code>fwlq101.bin</code>·<code>fwlq102.bin</code>을 PC에서 대조한 결과입니다. 카메라와 렌즈 사이의 직렬 통신이나 렌즈 플래시 기록은 실행하지 않았습니다.</p>
+<pre><code>python -m unittest discover -s tests -p test_lens_firmware_update.py -v
+python tools/check_lens_firmware_update.py --check analysis/lens-firmware-update.json
+python tools/check_lens_firmware_update.py --firmware fwdc603p.bin --elf .private/main-expanded.elf \
+  --lens fwlq101.bin fwlq102.bin --output .private/lens-check.json</code></pre>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="../analysis/lens-firmware-update.json">analysis/lens-firmware-update.json</a> — 헤더 분석, CRC 대조, 에뮬레이션 6사례 기록</li>
+<li><a href="../tools/check_lens_firmware_update.py">tools/check_lens_firmware_update.py</a> — MIPS32LE Unicorn 실행·검증 도구</li>
+<li><a href="../tools/build_lens_firmware_update_report.py">tools/build_lens_firmware_update_report.py</a> — 이 문서 생성 스크립트</li>
+<li><a href="../tests/test_lens_firmware_update.py">tests/test_lens_firmware_update.py</a> — 공개 JSON 무결성 테스트</li>
+<li><a href="../guide-update.html">업데이트·재패킹 안내</a> — 본체 NAND 업데이트와 재패킹 연구 지도</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">업데이트와 재패킹 — 이 주제의 문서</h2><ol><li><a href="../guide-update.html">업데이트·재패킹 안내</a></li><li><a href="../implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="../update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="../loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="../main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="../nand-header-report.html">NAND 식별값과 부트 헤더 재지정</a></li><li><a href="nand-boot-read.html">부트 헤더 값과 별도 읽기 요청</a></li><li><a href="nand-context.html">컨텍스트 등록과 별도 매체 발견</a></li><li><a href="nand-filex.html">AppFb의 FileX 열기와 NAND 응답 경계</a></li><li><a href="../loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="../burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="../storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="../recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li><li><a href="lens-firmware-update.html" aria-current="page">Q 마운트 렌즈 펌웨어 검증</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../recompiled-numeric-report.html"><small>← 이전</small>색 행렬 함수 C 재컴파일</a><a class="next" href="../guide-color.html"><small>다음 →</small>색 처리·HDR 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

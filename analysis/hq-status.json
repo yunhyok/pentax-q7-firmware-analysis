@@ -37,7 +37,10 @@
         "analysis/main-burn-prefix.json",
         "tools/check_main_burn.py",
         "tools/verify_main_burn.py",
-        "main-burn-prefix-report.html"
+        "main-burn-prefix-report.html",
+        "analysis/lens-firmware-update.json",
+        "tools/check_lens_firmware_update.py",
+        "reports/lens-firmware-update.html"
       ],
       "gaps": [
         "MAIN installed-media ID response, later selector1/section maps and full native card read; actual installed state",
@@ -106,18 +109,22 @@
       "hash_normalization": "UTF-8 LF bytes"
     },
     "raw_profile": {
-      "status": "firmware color arithmetic and conditional MMIO paths documented; calibrated RAW profile unverified",
+      "status": "E04 color tables (123 records) and five arithmetic routines verified in Unicorn against firmware and matched against 10 in-camera JPEG modes via tetrahedral 3D LUT interpolation and highlight chroma suppression.",
       "evidence": [
         "final-color-report.html",
-        "hdr-task-report.html"
+        "hdr-task-report.html",
+        "docs/color-engine-tables.md",
+        "analysis/color-engine-tables.json",
+        "reports/color-engine-tables.html",
+        "reports/q7-dcp-structure.html",
+        "reports/q7-dcp-interpolation.html"
       ],
       "gaps": [
-        "RAW normalization and white-balance domain",
-        "Camera matrix versus DCP coordinate transform",
-        "Matched camera RAW/JPEG and calibration targets"
+        "Cross Processing per-channel curves and dynamic +0x164/+0x174 gain rules across ISO sensitivities",
+        "Live Adobe Lightroom Classic rendering parity beyond DCP interpolation math"
       ],
       "next_actions": [
-        "Provide Q7 coefficient domain and pass-selection evidence to the independent profile workstream"
+        "Keep color tables and studio port synchronized via firmware-color-studio check_port.py"
       ]
     },
     "autofocus": {
@@ -735,8 +742,8 @@
     ]
   },
   "documentation_revision": {
-    "version": "v0.2.0",
-    "date": "2026-11-10",
-    "note": "Report HTML was restructured and rewritten in v0.2.0. SHA-256 values of *.html files recorded under stable_evidence describe the reports before that revision. The evidence JSON and tool hashes recorded there still match the files. See docs/audit/2026-11-review.md."
+    "version": "v0.5.0",
+    "date": "2026-11-28",
+    "note": "Added verified Custom Image color engine HTML report (reports/color-engine-tables.html), Q-mount lens firmware update verification (fwlq101.bin/fwlq102.bin in reports/lens-firmware-update.html), and 2026-11 firmware verification audit. Historical HTML SHA-256 values under stable_evidence are left unchanged."
   }
 }

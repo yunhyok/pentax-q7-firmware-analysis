@@ -1,0 +1,218 @@
+{
+  "firmware": {
+    "file": "fwdc603p.bin",
+    "sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+    "main_elf_sha256": "a973912dbce5c8e09422c0009892dd47e1d7088e8bd8c9020f2a9c8804149796"
+  },
+  "routines": {
+    "GetCrc_BYTE": "0x807dceec",
+    "UserLensFirmwareUpdateExecutionCheck": "0x807dcf48",
+    "GetLensFirmupFileNamePLC": "0x80112490",
+    "GetLensIdPLC": "0x801122d8",
+    "UserLensFirmwareUpdateExecution": "0x807ddc58"
+  },
+  "crc_algorithm": {
+    "name": "CRC-16/CCITT-XMODEM",
+    "poly": "0x1021",
+    "init": "0x0000"
+  },
+  "lens_images": [
+    {
+      "filename": "fwlq101.bin",
+      "size_bytes": 262288,
+      "sha256": "0484d7718ff3ebf705a2d7c57c6c2babffa394aef883b1096749b271935cce3b",
+      "check_byte": 0,
+      "format_tag_byte": 61,
+      "lens_id": 1,
+      "lens_name": "01 STANDARD PRIME",
+      "fw_version": [
+        1,
+        1,
+        14,
+        0
+      ],
+      "fwup_model": 0,
+      "lom_size": 262144,
+      "lom_offset": 128,
+      "lom_crc_header": 9832,
+      "lom_crc_computed": 9832,
+      "file_crc_trailer": 7328,
+      "file_crc_computed": 7328,
+      "build_date": "Oct 19 2011",
+      "lens_version_string": "0049000.02",
+      "emu_file_crc": 7328,
+      "emu_lom_crc": 9832
+    },
+    {
+      "filename": "fwlq102.bin",
+      "size_bytes": 262288,
+      "sha256": "ffd125bb12c7b60716bf497185cfab21c99be44ee8d1d9caa9c5761247a53b62",
+      "check_byte": 0,
+      "format_tag_byte": 61,
+      "lens_id": 2,
+      "lens_name": "02 STANDARD ZOOM",
+      "fw_version": [
+        1,
+        1,
+        14,
+        0
+      ],
+      "fwup_model": 0,
+      "lom_size": 262144,
+      "lom_offset": 128,
+      "lom_crc_header": 65186,
+      "lom_crc_computed": 65186,
+      "file_crc_trailer": 7968,
+      "file_crc_computed": 7968,
+      "build_date": "Oct 19 2011",
+      "lens_version_string": "0049010.00",
+      "emu_file_crc": 7968,
+      "emu_lom_crc": 65186
+    }
+  ],
+  "execution_check_cases": [
+    {
+      "case": "fwlq101_valid",
+      "mounted_lens_id": 1,
+      "card_filename": "fwlq101.bin",
+      "return_value": 1,
+      "alloc_sizes": [
+        256,
+        1048576
+      ],
+      "logs": [
+        "LENS_FIRMUP_FILE_NAME: I:\\fwlq101.bin",
+        "----------LENS FW HEADER DATA ----------",
+        "LENS_FW_CHECK_BYTE:0",
+        "LENS_FW_HEADER_SIZE:128",
+        "LENS_ID:1",
+        "LENS_NAME:01 STANDARD PRIME",
+        "LENS_FW_VERSION:[1. 1. 14. 0] ",
+        "LENS_FWUP_MODEL:0",
+        "LENS_LOM_SIZE:40000",
+        "LENS_LOM_ADDRESS:80",
+        "[LENS ID] AGREEMENT",
+        "dwLensFwAllFileSize:40090",
+        "LENS_FILE_CRC:1ca0",
+        "CALC_FILE_CRC:1ca0",
+        "[FILE_CRC] AGREEMENT"
+      ]
+    },
+    {
+      "case": "fwlq102_valid",
+      "mounted_lens_id": 2,
+      "card_filename": "fwlq102.bin",
+      "return_value": 1,
+      "alloc_sizes": [
+        256,
+        1048576
+      ],
+      "logs": [
+        "LENS_FIRMUP_FILE_NAME: I:\\fwlq102.bin",
+        "----------LENS FW HEADER DATA ----------",
+        "LENS_FW_CHECK_BYTE:0",
+        "LENS_FW_HEADER_SIZE:128",
+        "LENS_ID:2",
+        "LENS_NAME:02 STANDARD ZOOM",
+        "LENS_FW_VERSION:[1. 1. 14. 0] ",
+        "LENS_FWUP_MODEL:0",
+        "LENS_LOM_SIZE:40000",
+        "LENS_LOM_ADDRESS:80",
+        "[LENS ID] AGREEMENT",
+        "dwLensFwAllFileSize:40090",
+        "LENS_FILE_CRC:1f20",
+        "CALC_FILE_CRC:1f20",
+        "[FILE_CRC] AGREEMENT"
+      ]
+    },
+    {
+      "case": "lens_id_mismatch",
+      "mounted_lens_id": 2,
+      "card_filename": "fwlq101.bin",
+      "return_value": 0,
+      "alloc_sizes": [
+        256
+      ],
+      "logs": [
+        "LENS_FIRMUP_FILE_NAME: I:\\fwlq101.bin",
+        "----------LENS FW HEADER DATA ----------",
+        "LENS_FW_CHECK_BYTE:0",
+        "LENS_FW_HEADER_SIZE:128",
+        "LENS_ID:1",
+        "LENS_NAME:01 STANDARD PRIME",
+        "LENS_FW_VERSION:[1. 1. 14. 0] ",
+        "LENS_FWUP_MODEL:0",
+        "LENS_LOM_SIZE:40000",
+        "LENS_LOM_ADDRESS:80",
+        "[LENS ID] DISAGREEMENT"
+      ]
+    },
+    {
+      "case": "file_crc_mismatch",
+      "mounted_lens_id": 1,
+      "card_filename": "fwlq101.bin",
+      "return_value": 0,
+      "alloc_sizes": [
+        256,
+        1048576
+      ],
+      "logs": [
+        "LENS_FIRMUP_FILE_NAME: I:\\fwlq101.bin",
+        "----------LENS FW HEADER DATA ----------",
+        "LENS_FW_CHECK_BYTE:0",
+        "LENS_FW_HEADER_SIZE:128",
+        "LENS_ID:1",
+        "LENS_NAME:01 STANDARD PRIME",
+        "LENS_FW_VERSION:[1. 1. 14. 0] ",
+        "LENS_FWUP_MODEL:0",
+        "LENS_LOM_SIZE:40000",
+        "LENS_LOM_ADDRESS:80",
+        "[LENS ID] AGREEMENT",
+        "dwLensFwAllFileSize:40090",
+        "LENS_FILE_CRC:1ca0",
+        "CALC_FILE_CRC:b7a5",
+        "[FILE_CRC] DISAGREEMENT"
+      ]
+    },
+    {
+      "case": "check_byte_nonzero",
+      "mounted_lens_id": 1,
+      "card_filename": "fwlq101.bin",
+      "return_value": 0,
+      "alloc_sizes": [
+        256
+      ],
+      "logs": [
+        "LENS_FIRMUP_FILE_NAME: I:\\fwlq101.bin",
+        "----------LENS FW HEADER DATA ----------",
+        "LENS_FW_CHECK_BYTE:1",
+        "LENS_FW_HEADER_SIZE:128",
+        "LENS_ID:1",
+        "LENS_NAME:01 STANDARD PRIME",
+        "LENS_FW_VERSION:[1. 1. 14. 0] ",
+        "LENS_FWUP_MODEL:0",
+        "LENS_LOM_SIZE:40000",
+        "LENS_LOM_ADDRESS:80"
+      ]
+    },
+    {
+      "case": "file_open_failed",
+      "mounted_lens_id": 1,
+      "card_filename": "fwlq101.bin",
+      "return_value": 0,
+      "alloc_sizes": [
+        256
+      ],
+      "logs": [
+        "LENS_FIRMUP_FILE_NAME: I:\\fwlq101.bin",
+        "FILE OPEN FAILED! HEADER"
+      ]
+    }
+  ],
+  "scope": {
+    "emulated_crc_and_execution_check": true,
+    "lens_rom_crc_header_checked_via_getcrc": true,
+    "actual_lens_communication_or_flash_write": false,
+    "firmware_bytes_exported": false
+  }
+}

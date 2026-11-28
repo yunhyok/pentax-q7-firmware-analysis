@@ -57,6 +57,9 @@ from build_q7_dcp_report import main as build_q7_dcp
 from check_q7_dcp_structure import validate_report as verify_q7_dcp
 from build_q7_dcp_interpolation_report import main as build_q7_dcp_interpolation
 from check_q7_dcp_interpolation import validate_report as verify_q7_dcp_interpolation
+from build_lens_firmware_update_report import main as build_lens_firmware_update
+from check_lens_firmware_update import validate_report as verify_lens_firmware_update
+from build_color_engine_report import main as build_color_engine
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -214,6 +217,9 @@ def verify_deep(firmware):
     verify_html(ROOT / "reports/q7-dcp-structure.html", build_q7_dcp)
     verify_q7_dcp_interpolation(read("q7-dcp-interpolation.json"))
     verify_html(ROOT / "reports/q7-dcp-interpolation.html", build_q7_dcp_interpolation)
+    verify_lens_firmware_update(read("lens-firmware-update.json"))
+    verify_html(ROOT / "reports/lens-firmware-update.html", build_lens_firmware_update)
+    verify_html(ROOT / "reports/color-engine-tables.html", build_color_engine)
     if firmware is not None:
         from q7_symbols import recover
         from decode_segments import inspect as decode

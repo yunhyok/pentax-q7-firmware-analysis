@@ -289,6 +289,8 @@
 <tr><td>기록이 실패하면 불량 표시를 요청하고 같은 데이터를 다음 블록에 기록. 보호 구간은 건너뜀</td><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="burn-continuation-report.html">11</a></td></tr>
 <tr><td>135덩어리 뒤 확장 헤더 쓰기, 블록 0 재기록, 준비 확인 함수 호출을 거쳐 <code>BurnNand</code>가 0을 반환</td><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="burn-continuation-report.html">11</a></td></tr>
 <tr><td>지우기가 실패했을 때의 경로</td><td><span class="badge open">미확인</span></td><td><a href="burn-continuation-report.html">11</a></td></tr>
+<tr><th scope="row" colspan="3">렌즈 펌웨어 업데이트</th></tr>
+<tr><td><code>fwlq101.bin</code>·<code>fwlq102.bin</code> 헤더, LOM CRC(<code>0x2668</code>·<code>0xfea2</code>), 파일 CRC(<code>0x1ca0</code>·<code>0x1f20</code>)와 실행 검사 6사례</td><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="reports/lens-firmware-update.html">13</a></td></tr>
 <tr><th scope="row" colspan="3">전체</th></tr>
 <tr><td>MAIN과 E01이 실제 업데이트에서 어떻게 이어지는지, E01이 언제 실행되는지</td><td><span class="badge open">미확인</span></td><td><a href="update-service-report.html#bridge">2</a></td></tr>
 <tr><td>실제 카메라의 설치 헤더, NAND 배치와 크기, 저장장치의 응답</td><td><span class="badge open">미확인</span></td><td><a href="loader-lens-report.html#map">8</a>, <a href="reports/nand-context.html#package">6</a></td></tr>
@@ -314,6 +316,7 @@
 <li class="card"><span class="tag">문서 10 · E01</span><h3><a href="loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></h3><p class="q">첫 덩어리는 왜 입력과 281바이트 다릅니까? MD5 검사는 어떻게 동작합니까?</p><p>달라진 바이트를 원본 쓰기 명령으로 재구성했습니다. MD5 계산과 재시도를 원본 코드로 실행했습니다.</p></li>
 <li class="card"><span class="tag">문서 11 · E01</span><h3><a href="burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></h3><p class="q">기록이 실패하면 어떻게 하고 끝은 어떻게 맺습니까?</p><p>실패한 데이터를 다음 블록으로 보냅니다. 135덩어리 뒤 블록 0을 다시 쓰고 0을 반환합니다. 저장장치의 응답은 모델입니다.</p></li>
 <li class="card"><span class="tag">문서 12 · 재패킹</span><h3><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></h3><p class="q">C로 다시 짠 함수를 원래 자리에 넣을 수 있습니까?</p><p>164바이트 함수가 원본과 같은 결과를 냈고 블록 두 개만 바꿔 원래 자리에 넣었습니다. 카메라 수용은 미확인입니다.</p></li>
+<li class="card"><span class="tag">문서 13 · 렌즈</span><h3><a href="reports/lens-firmware-update.html">Q 마운트 렌즈 펌웨어 검증</a></h3><p class="q">렌즈 업데이트 파일의 헤더와 CRC는 본체 코드에서 어떻게 검사합니까?</p><p><code>fwlq101.bin</code>·<code>fwlq102.bin</code>의 두 단계 CRC-16/CCITT 검증과 실행 검사 6사례를 에뮬레이터로 재현했습니다.</p></li>
 </ul>
 </section>
 
@@ -329,6 +332,7 @@
 <li><a href="analysis/header-hash.json">analysis/header-hash.json</a> · <a href="analysis/hash-card.json">analysis/hash-card.json</a> — 첫 덩어리의 헤더 변환과 MD5 경로</li>
 <li><a href="analysis/burn-continuation.json">analysis/burn-continuation.json</a> · <a href="analysis/burn-finalization.json">analysis/burn-finalization.json</a> — 재시도, 보호 구간, 마무리와 반환</li>
 <li><a href="analysis/recompiled-numeric.json">analysis/recompiled-numeric.json</a> — C로 다시 짠 함수와 고정 자리 재부호화</li>
+<li><a href="analysis/lens-firmware-update.json">analysis/lens-firmware-update.json</a> — Q 마운트 렌즈 펌웨어 헤더·CRC 검증과 에뮬레이션 6사례</li>
 <li><a href="analysis/hq-status.json">analysis/hq-status.json</a> — 연구 목표별 상태와 남은 과제</li>
 <li><a href="https://www.ricoh-imaging.co.jp/english/support/digital/q7_s.html">리코 이미징: PENTAX Q7 펌웨어 업데이트 안내</a> — 버전 1.01, 공개일, 변경 내용, 업데이트 절차</li>
 <li><a href="https://blogs.microsoft.com/blog/2019/04/18/microsoft-acquires-express-logic-accelerating-iot-development-for-billions-of-devices-at-scale/">마이크로소프트 공식 블로그(2019-04-18)</a> — ThreadX를 만든 Express Logic 인수</li>
@@ -346,7 +350,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">업데이트와 재패킹 — 이 주제의 문서</h2><ol><li><a href="guide-update.html" aria-current="page">업데이트·재패킹 안내</a></li><li><a href="implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="nand-header-report.html">NAND 식별값과 부트 헤더 재지정</a></li><li><a href="reports/nand-boot-read.html">부트 헤더 값과 별도 읽기 요청</a></li><li><a href="reports/nand-context.html">컨텍스트 등록과 별도 매체 발견</a></li><li><a href="reports/nand-filex.html">AppFb의 FileX 열기와 NAND 응답 경계</a></li><li><a href="loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">업데이트와 재패킹 — 이 주제의 문서</h2><ol><li><a href="guide-update.html" aria-current="page">업데이트·재패킹 안내</a></li><li><a href="implementation-report.html">재패킹 검증과 업데이트 검사</a></li><li><a href="update-service-report.html">MAIN의 업데이트 진입과 반환값</a></li><li><a href="loader-lens-report.html">Loader 입력 검증과 렌즈 AF 정책</a></li><li><a href="main-burn-prefix-report.html">MAIN Burn의 매체 열기와 헤더 요청</a></li><li><a href="nand-header-report.html">NAND 식별값과 부트 헤더 재지정</a></li><li><a href="reports/nand-boot-read.html">부트 헤더 값과 별도 읽기 요청</a></li><li><a href="reports/nand-context.html">컨텍스트 등록과 별도 매체 발견</a></li><li><a href="reports/nand-filex.html">AppFb의 FileX 열기와 NAND 응답 경계</a></li><li><a href="loader-hash-report.html">첫 블록 281바이트와 MD5 경로</a></li><li><a href="burn-continuation-report.html">NAND 기록의 재시도와 마무리</a></li><li><a href="storage-readiness-report.html">기록 전 저장장치 검사와 렌즈 준비</a></li><li><a href="recompiled-numeric-report.html">색 행렬 함수 C 재컴파일</a></li><li><a href="reports/lens-firmware-update.html">Q 마운트 렌즈 펌웨어 검증</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="glossary.html"><small>← 이전</small>용어집</a><a class="next" href="implementation-report.html"><small>다음 →</small>재패킹 검증과 업데이트 검사</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-q7-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX Q7 펌웨어 1.01 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 ELF·심볼·디컴파일 원문은 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
